@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<title>Deep test cases</title>
+	 <meta charset="utf-8">
+	 <script src="/common/js-lib/jquery/jquery-1.7.1.min.js"></script>
+	 <script data-main="main" src="/common/js-lib/require.js"></script>
+	 <script>
+	 var totalSuccess = 0;
+	 var totalFailed = 0;
+	 var totalDone = 0;
+	 var updateFullReport = function () {
+	 	$("#full-reports-container .success").html("success : "+totalSuccess+"/"+totalDone );
+		$("#full-reports-container .failed").html("failed : "+totalFailed+"/"+totalDone );
+	 }
+	 	var printReport = function(title, success, failed, count){
+	 		totalFailed += failed;
+	 		totalSuccess  += success;
+	 		totalDone += count;
+	 		updateFullReport();
+			$("#reports-container").append("<br/><strong>Report : </strong> "+title );
+			$("#reports-container").append("<br/>success : "+success+"/"+count );
+			$("#reports-container").append("<br/>failed : "+failed+"/"+count );
+			console.log("final report : "+success+"/"+count+" : "+title);
+
+		}
+		var printInterlude = function(title){
+			$("#content-container").append("<br/>_____________________________________________________________ "+title+"<br/>" );
+		}
+	 	function show(path){
+	 		$.get(path).then(function(e){
+	 			$("#content-container").html(e);
+	 		})
+	 	}
+	 </script>
+</head>
+<body>
+	<h1>Deep test cases</h1>
+	<ul id="menu-container">
+		<li><a href="#" onclick="show('deep.html');">deep/deep</a></li>
+		<li><a href="#" onclick="show('deep.interpret.html');">deep/deep.interpret</a></li>
+		<li><a href="#" onclick="show('deep.deepload.html');">deep/deep.deepload</a></li>
+		<li><a href="#" onclick="show('deep.load.html');">deep/deep.load</a></li>
+		<li><a href="#" onclick="show('deep.query.html');">deep/deep.query</a></li>
+		<li><a href="#" onclick="show('chain.remove.html');">deep/chain.remove</a></li>
+		<li><a href="#" onclick="show('chain.replace.html');">deep/chain.replace</a></li>
+		<li><a href="#" onclick="show('deep-equal.html');">deep/deep-equal</a></li>
+		<li><a href="#" onclick="show('flatten.html');">deep/flatten</a></li>
+
+		<br/>
+		<li><a href="#" onclick="show('deep.pilou.html');">deep/deep.pilou</a></li>
+	</ul>
+	<div id="full-reports-container">
+		<strong>Final report : </strong>
+		<div class="success" style="color:#00AA00"></div>
+		<div class="failed"  style="color:#AA0000"></div>
+	</div>
+	<div id="reports-container"></div>
+	<div id="content-container"></div>
+</body>
+</html>

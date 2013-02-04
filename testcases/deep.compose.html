@@ -1,0 +1,21 @@
+var a = {
+    load:function(){
+        return deep("json::/json/dummies/contribute-schema.json")
+        .log("a")
+
+    }
+}
+
+var b = {
+    load:deep.compose.after(function(){
+        console.log("b")
+        return deep("json::/json/dummies/contribute-schema.json")
+    })
+}
+
+deep(a).up(b).load();
+
+
+//verifier si le load de b se fait bien apres le load de a....
+
+

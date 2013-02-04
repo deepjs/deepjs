@@ -1,0 +1,201 @@
+/**
+ * @author Gilles Coomans <gilles.coomans@gmail.com>
+ */
+if(typeof define !== 'function')
+	var define = require('amdefine')(module);
+
+define(function(require, exports, module){
+	var promise = require("deep/promise");
+	var DeepDecorator = function () {
+		this.stack = [];
+	}
+	function chain(before, after)
+	{
+		return function () {
+			var self = this;
+			var args = [];
+			for(var i in arguments)
+				args.push(arguments[i]);
+			var def = promise.Deferred();
+			var r = before.apply(this, args);
+			//console.log("chain.first : result == ", r)
+
+			if(typeof r === 'undefined')
+			{
+				//console.log("chain.first : result == undefined")
+				r = after.apply(self,args);
+				//console.log("chain.second : result : ", r)
+				if(typeof r === 'undefined')
+					return r;
+				if(!r.then)
+					return r;
+				promise.when(r).then(function (suc) {
+					def.resolve(suc);
+				}, function (error) {
+					def.reject(error);
+				})
+			}
+			else if(!r.then)
+			{
+				r = after.apply(self,[r]);
+				if(typeof r === 'undefined')
+					return r;
+				if(!r.then)
+					return r;
+				promise.when(r).then(function (suc) {
+					//	console.log("chain.second.promise.when : result : ", suc)
+					def.resolve(suc);
+				}, function (error) {
+					def.reject(error);
+				})
+			}
+			else
+			{
+				//console.log("________________BEFORE promise.when___________");
+				promise.when(r).then(function (r)
+				{
+					//console.log("after : promise.when(first) res : ", r);
+					var argus = args ;
+					if(typeof r !== 'undefined' )
+						argus = [r];
+					r = after.apply(self,argus);
+					if(typeof r === 'undefined' )
+						return	def.resolve(r);
+					if(!r.then)
+						return def.resolve(r);
+					promise.when(r).then(function (suc) {
+						def.resolve(suc);
+					}, function (error) {
+						def.reject(error);
+					});
+				}, function (error) {
+					def.reject(error);
+				})
+			}
+			return promise.promise(def);
+		}
+	}
+	DeepDecorator.prototype = {
+		around : function (argument, options) 
+		{
+			var wrapper = function (previous) 
+			{
+				return argument(previous);
+			}
+			this.stack.push(wrapper);
+			return this;
+		},
+		after : function (argument, options) 
+		{
+			var wrapper = function (previous) 
+			{
+				return chain(previous, argument);
+			}
+			this.stack.push(wrapper);
+			return this;
+		},
+		before : function (argument, options) 
+		{
+			var wrapper = function (previous) 
+			{
+				return chain(argument, previous);
+			}
+			this.stack.push(wrapper);
+			return this;
+		},
+		parallele : function (argument, options) 
+		{
+			var wrapper = function (previous) 
+			{
+				return function () 
+				{
+					var args = [];
+					for(var i in arguments)
+						args.push(arguments[i]);
+					var promises = [argument.apply(this, args), previous.apply(this,args)];
+					return promise.all(promises);
+				}
+			}
+			this.stack.push(wrapper);
+			return this;
+		}
+	}
+	var createStart= function () 
+	{
+		var decorator = new DeepDecorator();
+		var start = function () {
+			if(!decorator.createIfNecessary)
+				throw new Error("Decorator not applied !");
+			var args = [];
+			for(var i in arguments)
+				args.push(arguments[i]);
+			return wrap(function(){}, decorator).apply(this, args)
+		}
+		start.decorator = decorator;
+		start.after = function (argument) {
+			decorator.after(argument);
+			return start;
+		};
+		start.before = function (argument) {
+			decorator.before(argument);
+			return start;
+		};
+		start.around = function (argument) {
+			decorator.around(argument);
+			return start;
+		};
+		start.parallele = function (argument) {
+			decorator.parallele(argument);
+			return start;
+		};
+		return start;
+	}
+	var compose = {
+		Decorator:DeepDecorator,
+		wrap:function (func, decorator) 
+		{
+			var fin = func;
+			decorator.stack.forEach(function (wrapper) 
+			{
+				fin = wrapper(fin);
+			})
+			return fin;
+		},
+		createIfNecessary : function () 
+		{
+			var start = createStart();
+			start.decorator.createIfNecessary = true;
+			return start;
+		},
+		collide : function (bottom, up) 
+		{
+			if(typeof up !== 'function' || typeof bottom !== 'function')
+				throw new Error("DeepDecorator.collide : you could only apply function together");
+			if(!up.decorator || !(up.decorator instanceof DeepDecorator))
+				return up;
+			if(bottom.decorator && bottom.decorator instanceof DeepDecorator)
+			{
+				bottom.decorator.stack = bottom.decorator.stack.concat(up.decorator.stack);
+				return bottom;
+			}
+			return compose.wrap(bottom,up.decorator);
+		},
+		around : function (argument) 
+		{
+			return createStart().around(argument);
+		},
+		after : function (argument) 
+		{
+			return createStart().after(argument);
+		},
+		before : function (argument) 
+		{
+			return createStart().before(argument);
+		},
+		parallele : function (argument) 
+		{
+			return createStart().parallele(argument);
+		}
+	}
+	return compose;
+})

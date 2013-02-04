@@ -1,0 +1,1408 @@
+<h2>deep core : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep/deep");
+	var utils = require("deep/utils");
+	var deepEqual = utils.deepEqual;
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		count++;
+		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
+		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
+		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+		{
+			//console.log("deep-copy : needed result not matched : "+title+" ("+count+")")
+			failed++;
+		}
+	//	$("#content-container").append("<br/><strong  style=\"color:#"+((ok)?"000000":"FF0000")+"\">test :</strong>", JSON.stringify(ok, null, ' ')+"<br/>");
+	}
+
+
+	var obj = {
+		subs:{
+			testFunc:function (argument) {
+				deep(this).query("/!").log("___________subs "+argument);
+			},
+			hello:"world"
+		}
+	};
+	deep(obj).query("/subs").log("___").query("/!").log("___ end ")
+	//.run("testFunc", {args:["hello"]})
+
+	return;
+
+/*
+	var a = {
+		fromA:"test"
+	}
+	var f = function (){
+		if(this !== a)
+		{	
+			f.apply(a);
+			return;
+		}
+		console.log("f.call : this : ", this)
+		console.log("f.call : this.bye : ", this.bye)
+		this.hello = "world";
+		console.log("f.call : this.hello : ", this.hello)
+	}
+
+	f.bye = "tssss";
+
+	f();
+
+	console.log("f.hello : ",f.hello)
+	console.log("f.bye : ",f.bye)
+
+	return;
+*/
+	var a = { 
+		func:function (argument) {
+			console.log("func from a : arg : ", argument);
+			this.vala = "a";
+			return argument + " __ a ";
+		},
+		obj:{
+			array:[ 1, 2],
+			string:"hello",
+			obj2:{
+				a:3
+			}
+		},
+		string2:"bye",
+		array2:[ 12, 22],
+	}
+
+	var b = {
+		func:deep.compose.createIfNecessary().after(function (argument) {
+			console.log("func from b (after) : arg : ", argument);
+			this.valb = "b";
+			return argument+ " __ b";
+		})
+	}
+
+	var c = {
+		func:deep.compose.before(function (argument) {
+			console.log("func from c (before) : arg : ", argument);
+			this.valc = "c";
+			return argument + " __ c ";
+		})
+	}
+	var d = {
+		func:deep.compose.around(function (old) {
+			return function (argument) {
+				console.log("func from d (around) : arg : ", argument);
+				this.vald= "d";
+				return old.apply(this,[argument+" __ d "]);
+			}
+		}),
+		test2:{
+			backgrounds:["#../test"],
+			func:deep.compose.after(function (argument) {
+				console.log("/test2/func.after()")
+			})
+		}
+	}
+
+	var e = {
+		func:deep.compose.after(function (argument) {
+			console.log("func from e (after with promise) : arg : ", argument);
+			this.vale= "e";
+			var def = deep.Deferred();
+			setTimeout(function () {
+				def.resolve(argument+ " __ e ");
+			},3000);
+			return deep.promise(def);
+		}),
+		test:{
+			yes:"inherited",
+			func:function (argument) {
+				console.log("/test/func()")
+			}
+		}
+	}
+
+	var g = {
+		func:deep.compose.after(function (argument) {
+			console.log("func from g (after with deep promise) : arg : ", argument);
+			this.valg = "g";
+			return deep.promise(deep({
+				result:argument+" __ g "
+			}).delay(3000).log(" g res : "));
+		}),
+		obj:{
+			array:[ 5, 4 ],
+			string:"hello modified",
+			obj2:{
+				a:4,
+				h:34
+			},
+			obj3:{
+				a:5,
+				h:345
+			}
+		},
+		array2:[ 123, 22 ]
+	}
+	var h = {
+		func:deep.compose.after(function (argument) {
+			console.log("func from h (after with deep chain) : arg : ", argument);
+			this.valh = "h";
+			return deep({
+				result:argument+" __ h "
+			}).delay(3000).log("___h : res ");
+		})
+	}
+
+	//a.func = deep.compose.collide(a.func, b.func);
+	//a.func = deep.compose.collide(a.func, c.func);
+	//a.func = deep.compose.collide(a.func, d.func);
+	//a.func = deep.compose.collide(a.func, e.func);
+	//a.func = deep.compose.collide(a.func, g.func);
+	//a.func = deep.compose.collide(a.func, h.func);
+	//a = deep.utils.up(g, a);
+
+	deep(a).up(b,c,d,e,g,h).flatten();
+	//deep(h).bottom(a,b,c,d,e,g);
+	/*deep(h).up({
+		backgrounds:[a,b,c,d,e,g]
+	}).flatten();*/
+	
+	var fin = deep.when(a.func("kssssssss")).then(function (argument) {
+		console.log("end chain ", argument);
+		a.test2.func();
+	});
+	console.log("final return : ",fin);
+	console.log("flattened : ",a);
+
+
+	//b.func("hello");
+	return;
+
+//__________________________________________________________________
+
+
+	var viewController = 
+	{
+		parentController:null,
+		domSelectors:{},
+		externals:{},
+		templates:{},
+		render:function (argument) {
+			
+		},
+		setBehaviour:function (argument) {
+			
+		},
+		placeInDOM:function (argument) {
+			
+		},
+		isInDOM:function (argument) {
+			
+		},
+		load:function(arg) {
+			return  deep(this).query("./[externals,templates]").deepLoad();
+		}
+	}
+	//app.load({})
+
+	var appController = {
+		externals:{
+		},
+		load:function() {
+			return deep(this).flatten().query("/externals").deepLoad();
+		}
+	}
+//____________________________
+	var myView =  {
+		backgrounds:[viewController],
+		load:deep.parralele(function (arg) {
+			return deep(this).query("./datas2").load("json::/hello/2");
+		})
+		.before(function (arg) {
+			return deep(this).query("./datas").load("json::/hello/");
+		})
+		.after(function (arg) {
+			return deep(this).branches(function (b) {
+				b.branch().query("./subs/[content,menu]").load();
+				b.branch().query("../myotherview").load();
+				return b;
+			});
+		}),
+		refresh:deep.after(function() {
+			return deep(this).query("./views/content").run('refresh');	
+		}), 
+		datas:null,
+		views:{
+			topBar:{
+				templates:{
+					where:"jquery.append::#id"
+				},
+				externals:{
+					json:"myjson.json"
+				},
+				domSelectors:{
+					self:""
+				}
+			},
+			menu:{
+				backgrounds:[viewController]
+			},
+			content:{
+				backgrounds:[viewController]
+			}
+		}
+	}
+
+
+
+	var myApp = {
+		backgrounds:[appController],
+		load:deep.after(function() {
+			return deep(this).query("./views/myView").load();	
+		}),
+		views:{
+			myView:{
+				backgrounds:[myView]
+			}
+		}
+	}
+
+	deep(myApp, schema).load();
+
+	return;
+	
+
+	var maClass2 = function  (argument) {
+		this.hello2 = "world maClass2";
+	}
+	maClass2.prototype = {
+		testez:Compose.after(function(){
+			console.log("hello from second composed")
+		}),
+		testez2:function(){
+			console.log("hello from second")
+		}
+	}
+
+	var maClass = function  (argument) {
+		this.hello = "world maClass";
+	}
+	maClass.prototype = {
+		testez:function(){
+			console.log("hello from first");
+		}
+	}
+
+	var test1 = {
+		compositions:[ maClass ]
+	}
+
+	//deep(test1).compose(maClass2).run("testez").run("testez2").log("__ test1 ");	
+	// As we use only compositions : keep in mind that compositions constructor is never called. So in the final log : you will not find hello and hello2
+
+	var test2 = {
+		brol:{
+			controller: maClass 
+		}
+	}
+	deep(test2).query("/brol").instanciate().run("testez").log("__ test1 ");	
+
+return	printReport("deep core", success, failed, count);
+
+
+	var base = { 
+ 		backgrounds:[{ hello:"world" }],
+ 		compositions:[maClass],
+ 		prototype:{
+ 			test:function  () {
+ 				var othis = this;
+ 				var def = deep.Deferred();
+ 				setTimeout(function  (argument) {
+ 					console.log("delayed with promise");
+ 					def.resolve(othis);
+ 				}, 2000);
+ 				return deep.promise(def);
+ 			}
+ 		},
+ 		brolBase:{
+ 			yesssss:"grrr"
+ 		},
+ 		brol:{
+ 			backgrounds:["#../brolBase"],
+ 			controller:maClass2,
+ 			prototype:{
+	 			test:function  () {
+	 				console.log("WEEeeeeee")
+	 			}
+	 		}
+ 		}
+ 	}
+
+/*
+
+
+
+
+	deep.compose.parallele()
+	deep.compose.after()
+	deep.compose.around()
+	deep.compose.before()
+	deep.compose.success( res )
+	deep.compose.errors()
+	deep.compose.then()
+
+
+ 	var hand = deep({
+ 		hello:"world"
+ 	})
+ 	.equal({hello:"world"})
+ 	.run(function(arg){
+ 		//console.log("deep run call back");
+ 		console.log("deep.run : ", this.hello, arg);
+ 		this.addedVar = "hey";
+ 	}, "from args")
+ 	.delay(500)
+ 	.query("./hello")
+ 	.errors(console.log)
+ 	.success(console.log);
+ 
+ 	 hand.errorsBranch()	
+ 	.log("error branch end  _________________________________ ");
+ 	
+ 	hand.successBranch()	
+ 	.log("success branch end  _________________________________ ");
+ */	
+
+ 	deep(base)
+ 	.flatten()
+ 	.run("test")
+ 	.run("testez")
+ 	.errors(console.log)
+ 	.success(console.log)
+ 	.then(function (results) {
+ 		base.brol.testez2();
+ 		base.brol.test();
+ 	})
+ 	.log();
+
+
+return	printReport("deep core", success, failed, count);
+
+ var datas = { 
+		"store": {
+		    "book": [ 
+		      { 
+		      	"category": "reference",
+		        "author": "Nigel Rees",
+		        "isbn": "0-553-21311-3",
+		        "title": "Sayings of the Century",
+		        "price": 8.95,
+		        "warehouse":{
+		        	"stock":12
+		        }
+		      },
+		      { 
+		      	"category": "reference",
+		        "author": "Jean Meslier",
+		        "isbn": "0-553-21311-3",
+		        "title": "Profession curée",
+		        "price": 18.95,
+		        "warehouse":{
+		        	"stock":0
+		        }
+		      },
+		      { 
+		      	"category": "fiction",
+		        "author": "Evelyn Waugh",
+		        "isbn": "0-553-21311-4",
+		        "title": "Sword of Honour",
+		        "price": 12.99
+		      },
+		      { 
+		      	"category": "fiction",
+		        "author": "Herman Melville",
+		        "title": "Moby Dick",
+		        "isbn": "0-553-21311-3",
+		        "price": 8.99,
+		       "warehouse":{ 
+		        	stock:12
+		        }
+		      },
+		      { 
+		      	"category": "fiction",
+		        "author": "J. R. R. Tolkien",
+		        "title": "The Lord of the Rings",
+		        "isbn": "0-395-19395-8",
+		        "price": 22.99
+		      }
+		    ],
+		    "bicycle": {
+		    	"category":"ride",
+		      	"col": "red",
+		      	"price": 19.95
+		    },
+		    "helmet": {
+		    	"category":"ride",
+		      	"col": "red",
+		      	"price": 9.95
+		    },
+		    "gloves": {
+		    	"category":"ride",
+		      	"col": "red",
+		      	"price": 15.95
+		    }
+		},
+		"account": {
+		    	"total":1234,
+		    	"sell":[
+		    		{
+		    			"isbn":"0-395-19395-8",
+		    			"quantity":12
+		    		}
+		    	]
+		    }
+	}
+
+deep(datas).query("/store/[]").errors(console.log).valuesEqual([
+				[{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],
+				{"category":"ride","col":"red","price":19.95},
+				{"category":"ride","col":"red","price":9.95},
+				{"category":"ride","col":"red","price":15.95}
+			],report);
+
+
+deep(datas).query("/store/book/3/warehouse/stock").valuesEqual([12],report);
+
+deep(datas).query("/store/[(glo.*),helmet]").valuesEqual([
+				{"category":"ride","col":"red","price":15.95},
+				{"category":"ride","col":"red","price":9.95}
+			],report);
+
+
+deep(datas).query("/(store)/book/[0:2]?category=fiction").valuesEqual([{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99}],report);
+
+
+deep(datas).query( "/*/book/[2:3,0]?price=lt=10&isbn/price" ).valuesEqual( [8.99,8.95] ,report);
+
+deep(datas).query( "/(.*)/book/?price=lt=10&category=fiction" ).valuesEqual( [
+			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			],report );
+
+deep(datas).query( "/store//[:3]?warehouse.stock" ).valuesEqual( [
+			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},
+			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			],report );
+
+deep(datas).query( "//?price=lt=18" ).valuesEqual( [ 
+			
+			  {"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
+			, {"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99}
+			, {"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			, {"category":"ride","col":"red","price":9.95}
+			, {"category":"ride","col":"red","price":15.95}
+			] ,report);
+
+
+deep(datas).query( "//category?=in=(reference,ride)&sort(+)" ).valuesEqual( ["reference","reference","ride","ride","ride"] ,report);
+deep(datas).query( "//category?distinct()&sort(-)" ).valuesEqual( ["ride", "reference", "fiction"] ,report);
+deep(datas).query( "//price?=gt=10&sort(-)" ).valuesEqual( [22.99,19.95,18.95,15.95,12.99] ,report);
+
+deep(datas).query( "//(^bo)/?price=lt=15" ).valuesEqual( [
+			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},
+			{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},
+			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			],report );
+
+
+deep(datas).query( "//?length=gt=4" ).valuesEqual( [
+  [
+   {
+    "category": "reference",
+    "author": "Nigel Rees",
+    "isbn": "0-553-21311-3",
+    "title": "Sayings of the Century",
+    "price": 8.95,
+    "warehouse": {
+     "stock": 12
+    }
+   },
+   {
+    "category": "reference",
+    "author": "Jean Meslier",
+    "isbn": "0-553-21311-3",
+    "title": "Profession curée",
+    "price": 18.95,
+    "warehouse": {
+     "stock": 0
+    }
+   },
+   {
+    "category": "fiction",
+    "author": "Evelyn Waugh",
+    "isbn": "0-553-21311-4",
+    "title": "Sword of Honour",
+    "price": 12.99
+   },
+   {
+    "category": "fiction",
+    "author": "Herman Melville",
+    "title": "Moby Dick",
+    "isbn": "0-553-21311-3",
+    "price": 8.99,
+    "warehouse": {
+     "stock": 12
+    }
+   },
+   {
+    "category": "fiction",
+    "author": "J. R. R. Tolkien",
+    "title": "The Lord of the Rings",
+    "isbn": "0-395-19395-8",
+    "price": 22.99
+   }
+  ],
+  "reference",
+  "Nigel Rees",
+  "0-553-21311-3",
+  "Sayings of the Century",
+  "reference",
+  "Jean Meslier",
+  "0-553-21311-3",
+  "Profession curée",
+  "fiction",
+  "Evelyn Waugh",
+  "0-553-21311-4",
+  "Sword of Honour",
+  "fiction",
+  "Herman Melville",
+  "Moby Dick",
+  "0-553-21311-3",
+  "fiction",
+  "J. R. R. Tolkien",
+  "The Lord of the Rings",
+  "0-395-19395-8",
+  "0-395-19395-8"
+ ] ,report);
+
+
+deep(datas).query( "//[@.length-1]" ).valuesEqual( [
+  {
+   "category": "reference",
+   "author": "Nigel Rees",
+   "isbn": "0-553-21311-3",
+   "title": "Sayings of the Century",
+   "price": 8.95,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  {
+   "isbn": "0-395-19395-8",
+   "quantity": 12
+  }
+ ] ,report).log("________________________________________");
+
+deep(datas).query("//length").valuesEqual([5,1]).log("________________________________________");;
+
+
+deep(datas).query("//[::2]").valuesEqual([
+  {
+   "category": "reference",
+   "author": "Nigel Rees",
+   "isbn": "0-553-21311-3",
+   "title": "Sayings of the Century",
+   "price": 8.95,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  {
+   "category": "fiction",
+   "author": "Evelyn Waugh",
+   "isbn": "0-553-21311-4",
+   "title": "Sword of Honour",
+   "price": 12.99
+  },
+  {
+   "category": "fiction",
+   "author": "J. R. R. Tolkien",
+   "title": "The Lord of the Rings",
+   "isbn": "0-395-19395-8",
+   "price": 22.99
+  },
+  {
+   "isbn": "0-395-19395-8",
+   "quantity": 12
+  }
+ ],report).log("______________________________");
+
+deep(datas).query("//?_schema.type=string").valuesEqual([
+  "reference",
+  "Nigel Rees",
+  "0-553-21311-3",
+  "Sayings of the Century",
+  "reference",
+  "Jean Meslier",
+  "0-553-21311-3",
+  "Profession curée",
+  "fiction",
+  "Evelyn Waugh",
+  "0-553-21311-4",
+  "Sword of Honour",
+  "fiction",
+  "Herman Melville",
+  "Moby Dick",
+  "0-553-21311-3",
+  "fiction",
+  "J. R. R. Tolkien",
+  "The Lord of the Rings",
+  "0-395-19395-8",
+  "ride",
+  "red",
+  "ride",
+  "red",
+  "ride",
+  "red",
+  "0-395-19395-8"
+ ],report);
+
+
+
+deep(datas).query("//?_schema.type=number").valuesEqual([
+			8.95,
+			12,
+			18.95,
+			0,
+			12.99,
+			8.99,
+			12,
+			22.99,
+			19.95,
+			9.95,
+			15.95,
+			1234,
+			12
+			],report);
+
+deep(datas).query("//?_schema.type=object").errors(console.log).log("__________________")
+//.query("./!?&isbn&quantity=eq=12").errors(console.log).log("__________________")
+.valuesEqual([
+  {
+   "book": [
+    {
+     "category": "reference",
+     "author": "Nigel Rees",
+     "isbn": "0-553-21311-3",
+     "title": "Sayings of the Century",
+     "price": 8.95,
+     "warehouse": {
+      "stock": 12
+     }
+    },
+    {
+     "category": "reference",
+     "author": "Jean Meslier",
+     "isbn": "0-553-21311-3",
+     "title": "Profession curée",
+     "price": 18.95,
+     "warehouse": {
+      "stock": 0
+     }
+    },
+    {
+     "category": "fiction",
+     "author": "Evelyn Waugh",
+     "isbn": "0-553-21311-4",
+     "title": "Sword of Honour",
+     "price": 12.99
+    },
+    {
+     "category": "fiction",
+     "author": "Herman Melville",
+     "title": "Moby Dick",
+     "isbn": "0-553-21311-3",
+     "price": 8.99,
+     "warehouse": {
+      "stock": 12
+     }
+    },
+    {
+     "category": "fiction",
+     "author": "J. R. R. Tolkien",
+     "title": "The Lord of the Rings",
+     "isbn": "0-395-19395-8",
+     "price": 22.99
+    }
+   ],
+   "bicycle": {
+    "category": "ride",
+    "col": "red",
+    "price": 19.95
+   },
+   "helmet": {
+    "category": "ride",
+    "col": "red",
+    "price": 9.95
+   },
+   "gloves": {
+    "category": "ride",
+    "col": "red",
+    "price": 15.95
+   }
+  },
+  {
+   "category": "reference",
+   "author": "Nigel Rees",
+   "isbn": "0-553-21311-3",
+   "title": "Sayings of the Century",
+   "price": 8.95,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  {
+   "stock": 12
+  },
+  {
+   "category": "reference",
+   "author": "Jean Meslier",
+   "isbn": "0-553-21311-3",
+   "title": "Profession curée",
+   "price": 18.95,
+   "warehouse": {
+    "stock": 0
+   }
+  },
+  {
+   "stock": 0
+  },
+  {
+   "category": "fiction",
+   "author": "Evelyn Waugh",
+   "isbn": "0-553-21311-4",
+   "title": "Sword of Honour",
+   "price": 12.99
+  },
+  {
+   "category": "fiction",
+   "author": "Herman Melville",
+   "title": "Moby Dick",
+   "isbn": "0-553-21311-3",
+   "price": 8.99,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  {
+   "stock": 12
+  },
+  {
+   "category": "fiction",
+   "author": "J. R. R. Tolkien",
+   "title": "The Lord of the Rings",
+   "isbn": "0-395-19395-8",
+   "price": 22.99
+  },
+  {
+   "category": "ride",
+   "col": "red",
+   "price": 19.95
+  },
+  {
+   "category": "ride",
+   "col": "red",
+   "price": 9.95
+  },
+  {
+   "category": "ride",
+   "col": "red",
+   "price": 15.95
+  },
+  {
+   "total": 1234,
+   "sell": [
+    {
+     "isbn": "0-395-19395-8",
+     "quantity": 12
+    }
+   ]
+  },
+  {
+   "isbn": "0-395-19395-8",
+   "quantity": 12
+  }
+ ],report);
+
+
+deep(datas).query("//?isbn/?_schema.type=object").valuesEqual([
+			{"stock":12}
+			, {"stock":0}
+			, {"stock":12}
+			],report);
+			
+deep(datas).query("//?_schema.type=object&_parent.isbn").valuesEqual([
+			{"stock":12}
+			, {"stock":0}
+			, {"stock":12}
+			],report);
+
+deep(datas).query("//?_schema.type=object&_parent.isbn/../!").valuesEqual( 
+			[
+			 {"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
+			, {"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
+			,{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			],report);
+
+deep(datas).query("//?_schema.type=object/../!?isbn").valuesEqual(  
+			[
+  {
+   "category": "reference",
+   "author": "Nigel Rees",
+   "isbn": "0-553-21311-3",
+   "title": "Sayings of the Century",
+   "price": 8.95,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  {
+   "category": "reference",
+   "author": "Jean Meslier",
+   "isbn": "0-553-21311-3",
+   "title": "Profession curée",
+   "price": 18.95,
+   "warehouse": {
+    "stock": 0
+   }
+  },
+  {
+   "category": "fiction",
+   "author": "Herman Melville",
+   "title": "Moby Dick",
+   "isbn": "0-553-21311-3",
+   "price": 8.99,
+   "warehouse": {
+    "stock": 12
+   }
+  }
+ ],report)
+
+
+deep(datas).query("//?isbn/?_schema.type=object/../!").valuesEqual(  
+			[
+			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
+			,{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
+			,{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			],report)
+		
+deep(datas).query("//?_schema.type=array").valuesEqual(  
+			[
+			
+			 [{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],
+			 [{"isbn":"0-395-19395-8","quantity":12}]
+			],report);
+
+		deep(datas).query("//?_schema.type=array/").valuesEqual( 
+			[
+			 {"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
+			, {"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
+			, {"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99}
+			, {"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			, {"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}
+			, {"isbn":"0-395-19395-8","quantity":12}
+			],report);
+
+
+		deep(datas).query("//[:]").valuesEqual( 
+			[
+			 {"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
+			, {"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
+			, {"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99}
+			, {"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
+			, {"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}
+			, {"isbn":"0-395-19395-8","quantity":12}
+			],report);
+		deep(datas).query("//?_schema.type=array/../").valuesEqual(  
+			[
+			 [{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}]
+			 , {"category":"ride","col":"red","price":19.95}
+			, {"category":"ride","col":"red","price":9.95}
+			, {"category":"ride","col":"red","price":15.95}
+			, 1234
+			, [{"isbn":"0-395-19395-8","quantity":12}]
+			
+			],report);
+
+		deep(datas).query("//?_schema.type=array/../!").valuesEqual(  
+			[
+			{"book":[{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],"bicycle":{"category":"ride","col":"red","price":19.95},"helmet":{"category":"ride","col":"red","price":9.95},"gloves":{"category":"ride","col":"red","price":15.95}}
+			, {"total":1234,"sell":[{"isbn":"0-395-19395-8","quantity":12}]}
+
+			],report);
+
+
+deep(datas).query("//").valuesEqual(  
+[
+  {
+   "store": {
+    "book": [
+     {
+      "category": "reference",
+      "author": "Nigel Rees",
+      "isbn": "0-553-21311-3",
+      "title": "Sayings of the Century",
+      "price": 8.95,
+      "warehouse": {
+       "stock": 12
+      }
+     },
+     {
+      "category": "reference",
+      "author": "Jean Meslier",
+      "isbn": "0-553-21311-3",
+      "title": "Profession curée",
+      "price": 18.95,
+      "warehouse": {
+       "stock": 0
+      }
+     },
+     {
+      "category": "fiction",
+      "author": "Evelyn Waugh",
+      "isbn": "0-553-21311-4",
+      "title": "Sword of Honour",
+      "price": 12.99
+     },
+     {
+      "category": "fiction",
+      "author": "Herman Melville",
+      "title": "Moby Dick",
+      "isbn": "0-553-21311-3",
+      "price": 8.99,
+      "warehouse": {
+       "stock": 12
+      }
+     },
+     {
+      "category": "fiction",
+      "author": "J. R. R. Tolkien",
+      "title": "The Lord of the Rings",
+      "isbn": "0-395-19395-8",
+      "price": 22.99
+     }
+    ],
+    "bicycle": {
+     "category": "ride",
+     "col": "red",
+     "price": 19.95
+    },
+    "helmet": {
+     "category": "ride",
+     "col": "red",
+     "price": 9.95
+    },
+    "gloves": {
+     "category": "ride",
+     "col": "red",
+     "price": 15.95
+    }
+   },
+   "account": {
+    "total": 1234,
+    "sell": [
+     {
+      "isbn": "0-395-19395-8",
+      "quantity": 12
+     }
+    ]
+   }
+  },
+  {
+   "book": [
+    {
+     "category": "reference",
+     "author": "Nigel Rees",
+     "isbn": "0-553-21311-3",
+     "title": "Sayings of the Century",
+     "price": 8.95,
+     "warehouse": {
+      "stock": 12
+     }
+    },
+    {
+     "category": "reference",
+     "author": "Jean Meslier",
+     "isbn": "0-553-21311-3",
+     "title": "Profession curée",
+     "price": 18.95,
+     "warehouse": {
+      "stock": 0
+     }
+    },
+    {
+     "category": "fiction",
+     "author": "Evelyn Waugh",
+     "isbn": "0-553-21311-4",
+     "title": "Sword of Honour",
+     "price": 12.99
+    },
+    {
+     "category": "fiction",
+     "author": "Herman Melville",
+     "title": "Moby Dick",
+     "isbn": "0-553-21311-3",
+     "price": 8.99,
+     "warehouse": {
+      "stock": 12
+     }
+    },
+    {
+     "category": "fiction",
+     "author": "J. R. R. Tolkien",
+     "title": "The Lord of the Rings",
+     "isbn": "0-395-19395-8",
+     "price": 22.99
+    }
+   ],
+   "bicycle": {
+    "category": "ride",
+    "col": "red",
+    "price": 19.95
+   },
+   "helmet": {
+    "category": "ride",
+    "col": "red",
+    "price": 9.95
+   },
+   "gloves": {
+    "category": "ride",
+    "col": "red",
+    "price": 15.95
+   }
+  },
+  [
+   {
+    "category": "reference",
+    "author": "Nigel Rees",
+    "isbn": "0-553-21311-3",
+    "title": "Sayings of the Century",
+    "price": 8.95,
+    "warehouse": {
+     "stock": 12
+    }
+   },
+   {
+    "category": "reference",
+    "author": "Jean Meslier",
+    "isbn": "0-553-21311-3",
+    "title": "Profession curée",
+    "price": 18.95,
+    "warehouse": {
+     "stock": 0
+    }
+   },
+   {
+    "category": "fiction",
+    "author": "Evelyn Waugh",
+    "isbn": "0-553-21311-4",
+    "title": "Sword of Honour",
+    "price": 12.99
+   },
+   {
+    "category": "fiction",
+    "author": "Herman Melville",
+    "title": "Moby Dick",
+    "isbn": "0-553-21311-3",
+    "price": 8.99,
+    "warehouse": {
+     "stock": 12
+    }
+   },
+   {
+    "category": "fiction",
+    "author": "J. R. R. Tolkien",
+    "title": "The Lord of the Rings",
+    "isbn": "0-395-19395-8",
+    "price": 22.99
+   }
+  ],
+  {
+   "category": "reference",
+   "author": "Nigel Rees",
+   "isbn": "0-553-21311-3",
+   "title": "Sayings of the Century",
+   "price": 8.95,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  "reference",
+  "Nigel Rees",
+  "0-553-21311-3",
+  "Sayings of the Century",
+  8.95,
+  {
+   "stock": 12
+  },
+  12,
+  {
+   "category": "reference",
+   "author": "Jean Meslier",
+   "isbn": "0-553-21311-3",
+   "title": "Profession curée",
+   "price": 18.95,
+   "warehouse": {
+    "stock": 0
+   }
+  },
+  "reference",
+  "Jean Meslier",
+  "0-553-21311-3",
+  "Profession curée",
+  18.95,
+  {
+   "stock": 0
+  },
+  0,
+  {
+   "category": "fiction",
+   "author": "Evelyn Waugh",
+   "isbn": "0-553-21311-4",
+   "title": "Sword of Honour",
+   "price": 12.99
+  },
+  "fiction",
+  "Evelyn Waugh",
+  "0-553-21311-4",
+  "Sword of Honour",
+  12.99,
+  {
+   "category": "fiction",
+   "author": "Herman Melville",
+   "title": "Moby Dick",
+   "isbn": "0-553-21311-3",
+   "price": 8.99,
+   "warehouse": {
+    "stock": 12
+   }
+  },
+  "fiction",
+  "Herman Melville",
+  "Moby Dick",
+  "0-553-21311-3",
+  8.99,
+  {
+   "stock": 12
+  },
+  12,
+  {
+   "category": "fiction",
+   "author": "J. R. R. Tolkien",
+   "title": "The Lord of the Rings",
+   "isbn": "0-395-19395-8",
+   "price": 22.99
+  },
+  "fiction",
+  "J. R. R. Tolkien",
+  "The Lord of the Rings",
+  "0-395-19395-8",
+  22.99,
+  {
+   "category": "ride",
+   "col": "red",
+   "price": 19.95
+  },
+  "ride",
+  "red",
+  19.95,
+  {
+   "category": "ride",
+   "col": "red",
+   "price": 9.95
+  },
+  "ride",
+  "red",
+  9.95,
+  {
+   "category": "ride",
+   "col": "red",
+   "price": 15.95
+  },
+  "ride",
+  "red",
+  15.95,
+  {
+   "total": 1234,
+   "sell": [
+    {
+     "isbn": "0-395-19395-8",
+     "quantity": 12
+    }
+   ]
+  },
+  1234,
+  [
+   {
+    "isbn": "0-395-19395-8",
+    "quantity": 12
+   }
+  ],
+  {
+   "isbn": "0-395-19395-8",
+   "quantity": 12
+  },
+  "0-395-19395-8",
+  12
+ ],report);
+
+
+return	printReport("deep core", success, failed, count);
+
+
+
+
+
+
+
+
+var a = {};
+	var schema = {};
+
+	var posted = deep(a, schema)
+	.bottom(b)
+	.flatten()
+	.validate()
+	.errors(function(errors) {
+		console.log("validation errors : ", errors)
+	}, true)
+	.query("./toPost")
+	.post("/brol/");
+
+	posted.errorsBranch(function (error) {
+		console.log("error on post : ", error)
+	})
+	.query("/subs/login")
+	.run("refresh");
+
+	posted.successBranch()
+	.query("/subs/dashboard")
+	.run("refresh")
+	.query("./subs/*")
+	.branches(function (branches) {
+		// each call on paral make a clone and retain it to get
+		branches().query("./brol").load("myjson.json");
+		branches().query("./foo").load("myotherjson.json");
+		return branches;  // if you don't return a promise : the chain will continue directly
+	})
+	.errors(function (error) {
+		// body...
+	}, true) // will stop the chaining if errors
+	.run("refresh");
+
+
+	// will be executed jst after the LAUCNH of the success/errors branching (when post() is resolved).
+	// It will not wait for branches end.
+	posted.branch(a.test == 2).query("./toDo").log("...");
+	posted.branch(a.zoo == "antwerpen").query("./toSee").log("...");
+
+	// form usage example
+	var def = deep.Deferred();
+	$("#my_button_selector").click(function () {
+		def.resolve(this);
+	})
+	deep.ui.dataBind("#parent", {}, schema).wait(deep.promise(def)).validate().post("...").success( /*...*/ );
+
+	// autobahn example : 
+	var autobahn = deep.autobahn(autobahnLayer, schema); // flatten and load
+
+	var login = autobahn
+	.role() // select current role (public by default)
+	.facet("login")	// select login facet
+	.post({ hello:"world" });
+
+	login.errorsBranch().
+
+	var route = login
+	.route("/campaigns/") // select campaigns route
+	.branches(function (branches) {
+		branches().query("./externals/campaigns").load("/campaigns/12");
+		branches().facet("contact").get("?user=2").done(function (contact) {
+			contact.lastSeen = new Date().toUTCString();
+		}).put();
+		return branches;
+	});
+
+	var facet = {
+		store:{
+			backgrounds:[stores.memory()]
+		},
+		schema:{
+			get:{},
+			post:{},
+			//...
+		},
+		get:facets.get().success(function (objct) {
+			// retrieve other stuffs, return their promises
+		}).owner().schema().help("..."),
+		post:facets.forbidden(),
+		put:facets.owner(),
+		"delete":facets.owner()
+	}
+
+	route
+	.output(def) // resolve de deffered with his render 
+	.log();
+
+
+	//maybe we could end with
+	return deep.promise(route);
+	/*
+		Autobahn need :
+			autobahn(obj, schema)
+			autobahn handler
+				role : 	empty select current role, string or array of strings select compiled role
+				facet :   could not be empty
+				session :    null delete current session, empty force session to start, object are deep copied in session abd saved
+				user   : empty gives current user, object set current user, null delete it
+			facet handler
+				inherit from autobahn handler
+				get, put, post, delete on facet
+			ressource handler
+				inherit from autobahn handler
+				get, put, post, delete ressource itself
+				applySchema : error
+			statics handler
+				put, post : error
+				get
+			route handler
+				inherit from autobahn handler
+				output
+				put, post, applySchema,... error
+
+
+		deep.ui.app(a, s).flatten().load().subs("login").load().refresh().subs("confirmation").load()
+
+	*/
+
+
+
+
+
+
+
+
+
+
+
+})();
+</script>

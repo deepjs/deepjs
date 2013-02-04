@@ -1,0 +1,52 @@
+<h2>deep core : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep/deep");
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		count++;
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+			failed++;
+	}
+
+	var tests = [];
+
+	var a = {
+		aString : "Hello",
+		anInt : 5,
+		anArray : ["1","2","3"],
+		anObject : {
+			anArray : ["4","5","6"],
+			aString : "World"
+		}
+	}
+
+	// 1
+	deep(a)
+	.pushHandlerTo(tests)
+	.remove("./anArray/1").log().valuesEqual([{
+		aString : "Hello",
+		anInt : 5,
+		anArray : ["1","3"],
+		anObject : {
+			anArray : ["4","5","6"],
+			aString : "World"
+		}
+	}], report);
+
+
+	deep.all(tests).then(function (argument) {
+		printReport("chain.remove : success ", success, tests.length-success, tests.length);
+	}, function (argument) {
+		printReport("chain.remove : errors ", success, tests.length-success, tests.length);
+	});
+})();
+</script>

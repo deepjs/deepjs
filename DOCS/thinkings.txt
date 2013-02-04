@@ -1,0 +1,211 @@
+deep fait exactement ce qu'il fat quandil faut
+14:12
+et les problème rencontrés ne viennet pas de deep
+14:12
+mais de la modélisationd e l'app ente autre
+Eric Van Damme 14:12 
+ahwé ça aussi
+Gilles Coomans 14:12 
+parce que deep n'est pas là pour remplacer une belle pattern MVC
+14:13
+c'est pas son role
+14:13
+et pour une app pleinement workable et facile à utiliser
+14:13
+faut un beau model MVC tout propre
+Eric Van Damme 14:13 
+méwé
+14:14
+si on a un bon marteau on n'est pas bon menuisier pour autant Clin d'œil
+Gilles Coomans 14:14 
+Sourire
+14:14
+non mais c'est comme jquery
+14:14
+jquery c'est génial
+14:14
+mais avec jquery seul
+14:14
+ca fait pas une belle page Sourire
+Eric Van Damme 14:14 
+clair Sourire
+Gilles Coomans 14:14 
+faut savoir quoi faire et avoir le bon code html derrière
+14:14
+ben deep c'est pareil
+Eric Van Damme 14:15 
+yep
+Gilles Coomans 14:15 
+c'est totalement non obstrusif
+14:15
+ce qui est super
+14:15
+comme jquery
+Eric Van Damme 14:15 
+atta phone
+Gilles Coomans 14:15 
+et donc parce que c'est non obstrusif
+14:15
+ben ca demande un beau js derrière
+14:15
+puisque deep est au js ce que jquery est au dom
+14:15
+Sourire
+14:16
+et donc deep aide à manipuler n'importe quelle app fait en js
+14:16
+comme jquery aide à manipuler n'importe quelle page web
+14:17
+mais donc deep n'est ps responsable de l'app elle mêe
+14:17
+Sourire
+14:17
+deep-ui oui puisqu'elle dicteune strucure, un framework Sourire
+14:17
+tu voisla dif ?
+14:18
+en fixant deep-ui et ses controller
+14:18
+ca devient osbstrusif
+14:18
+et donc ca fixe la gueule de l'app (oud'une partie)
+14:18
+et donc la ca peux poser des incohérence du au modèle
+14:18
+mais bon ce n'est pas le cas
+14:19
+deep-ui est suffisament light pour pas faire chier
+14:19
+mais c'est ca le truc
+14:19
+deep n'est que des outils
+14:19
+et les outils ne force rien
+14:20
+c'est pas deep qui force le fait d'utiliser _APP en global par exemple
+14:20
+ca c'est la manière dont on a construit le model d'une app chz nous
+14:20
+doncdeep-ui
+14:21
+tu vois la dif ?
+14:21
+Sourire
+14:21
+et donc aussi
+14:21
+comme jquery
+14:21
+deep peut toujours ere remplacer par du js standard à tout moment
+14:21
+sans poser de problème
+14:21
+puisqu'iol ne force rien
+14:22
+donc faut pas utiliser deep absolument pour tout
+14:22
+c'est la qu'on utilise pas les outils de la bonne manière
+14:22
+quand en js standard c'est plus court Sourire
+14:23
+maisbon deep raccourcit déjà énormemen les choses
+14:23
+et gère beaucoup des erreurs etc
+14:24
+donc c'esttjrs bon d'utilser deep
+14:24
+ca assainit les méthode
+14:24
+comme jquery de nouveau
+14:24
+Sourire
+Eric Van Damme 14:31 
+oué Sourire
+Gilles Coomans 14:32 
+et donc pour terminer Sourire
+14:32
+ben deep c'est trois choses au final
+14:33
+un API complet des outils derières (deep-request, deep-query, deep-rql, deep-compose, etc)
+14:33
++ une chaine asynch
+14:33
++ une chain synch
+14:33
+donc les deux chaines sont la pour masquer la complexité de l'API complet
+14:33
+mais donc à tout moment on peut quand même l'utiliser
+14:34
+c'est pas si complexe dans plein de cas
+14:34
+et souvent c'est plus direct qu'une chain asynch
+
+
+
+
+pourquoi jquery+dom like : c'est le coeur de la philo de deep
+
+Cadre
+Puisque web et qu'on est moderne :) : 
+	on veut MVC/Thin serveur
+
+	succès d'un beau MVC : réduire le couplage du controller vers Model et View
+	
+	Ici couplage Controller-Model est minimum grace au rest : Keep things simple.
+	
+	Et jquery permet de réduire le couplage vue.
+
+	View (mVC) ----- MC 
+	Avec le controlleur serveur qui manipule le modele (ressources + relations + droits d'accès) au travers d'un interface Restful/OCM
+
+
+
+jquery/css : qu'est ce que ca change : 
+
+	Queries : 
+
+	plus on peut programmer à l'aveugle : plus on peut faire générique...
+
+	si jquery fonctionne si bien : c'est qu'on peut faire du super MVC où le controller ne conait que le minimum structurel (les jqueries) de la vue.
+
+	ici : en passant par une query nous ne sommes plus obligé de connaitre la gueule de l'objet réel.
+
+	Deux aspects dans la jquery : 
+		query structurelle : path
+		query meta-données : classes + ids
+			Le coté pratique et optimisé de la query tient surtout la dedans.
+
+	Layers :
+
+	Double effet kiss cool : 
+		jquery + css :  réduit le couplage d'une deuxième manière : 
+			l'empilement
+				exemple : click : anim en couche
+				réouverture css
+
+Application à la modélisation JS : 
+
+	OO super : encapsulation/responsabilité, héritage.
+
+	OO classique : rigide parce que pas de localité floue à posteriori : tout est forgé.
+	OO classique : rigide parce que pas de couche.
+		ornitorinque
+
+	
+
+up, bottom : DEEP
+deep-queries :
+	meta données : équivalent 
+aspects
+
+Formule : 
+layered and queried object oriented programmation 
+
+couches view-controller + server-controller = MDD oriented : 
+	puisque chaque aspect est un model appliqué
+
+
+Implémentation : 
+et donc asynch puisque thin-server
+
+	donc la chaine : linéarisation au lieu de récursion

@@ -1,0 +1,66 @@
+<script type="text/javascript">
+(function(){
+	var deep = require("deep/deep");
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result, reports)
+	{
+		//console.log("report");
+		count++;
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+			failed++;
+	}
+
+	var tests = [];
+	// 1
+	deep({
+	    msg:"hello { name }"
+	})
+	.pushHandlerTo(tests)
+	.deepInterpret({ name:"john" })
+	.equal({ msg:"hello john" }, report);
+
+
+	// 2
+	deep({
+	    msg:"hello { name }"
+	})
+	.pushHandlerTo(tests)
+	.query("./msg")
+	.interpret({ name:"john" })
+	.equal("hello john", report);
+	
+
+	// 3
+	deep({
+	    msg:"hello { names }"
+	})
+	.pushHandlerTo(tests)
+	.query("./msg")
+	.interpret("./json/simple.json")
+	.equal("hello cedric", report);
+
+
+	// 4
+	var d = deep("mystring { id }")
+	.delay(200)
+	.interpret({id:12});
+
+	deep(d)
+	.pushHandlerTo(tests)
+	.equal("mystring 12", report);
+
+	// report
+	deep.all(tests).then(function (argument) {
+		printReport("chain.interpret : success ", success, tests.length-success, tests.length);
+	}, function (argument) {
+		printReport("chain.interpret : errors ", success, tests.length-success, tests.length);
+	});
+
+})();
+</script>

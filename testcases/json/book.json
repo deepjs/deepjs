@@ -1,0 +1,10 @@
+{ 
+	"category": "reference",
+	"author": "Nigel Rees",
+	"isbn": "0-553-21311-3",
+	"title": "Sayings of the Century",
+	"price": 8.95,
+	"warehouse":{
+		"stock":12
+	}
+}

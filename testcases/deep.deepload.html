@@ -1,0 +1,60 @@
+<h2>deep core : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep/deep");
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		//console.log("deep.load RESULT = ", result.equal);
+		count++;
+		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
+		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
+		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+		{
+			//console.log("deep-copy : needed result not matched : "+title+" ("+count+")")
+			failed++;
+		}
+	//	$("#content-container").append("<br/><strong  style=\"color:#"+((ok)?"000000":"FF0000")+"\">test :</strong>", JSON.stringify(ok, null, ' ')+"<br/>");
+	}
+
+	var tests = [];
+	deep({		
+		obj:{
+			subObj:{
+				datas2:"json::./json/book.json"
+			}
+		},
+		datas:"json::./json/book.json"
+	})
+	.pushHandlerTo(tests)
+	.deepLoad()
+	.query(["/datas","/obj/subObj/datas2"])
+	.equal(
+	{ 
+		"category": "reference",
+		"author": "Nigel Rees",
+		"isbn": "0-553-21311-3",
+		"title": "Sayings of the Century",
+		"price": 8.95,
+		"warehouse":{
+			"stock":12
+		}
+	}
+	, report);
+
+	deep.all(tests).then(function (argument) {
+		printReport("chain.deepLoad : success ", success, tests.length-success, tests.length);
+	}, function (argument) {
+		printReport("chain.deepLoad : errors ", success, tests.length-success, tests.length);
+	});
+
+})();
+</script>
