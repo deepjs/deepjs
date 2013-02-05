@@ -668,7 +668,7 @@ define(function(require){
 					url:path,
 					//queryString: query,
 					headers: {
-						Accept:"application/json;charset=utf-8;",
+						Accept:"application/json;charset=utf-8;"
 
 					}
 				}).then(function  (response) {
@@ -801,7 +801,7 @@ define(function(require){
 					url:path,
 					//queryString: query,
 					headers: {
-						Accept:"application/json;charset=utf-8;",
+						Accept:"application/json;charset=utf-8;"
 
 					}
 				}).then(function  (response) {

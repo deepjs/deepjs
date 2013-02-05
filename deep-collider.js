@@ -356,7 +356,7 @@ define(function(require)
 					this.__layerComposition = true;
 					return Math.min(value, min);
 				}
-			},
+			}
 		},
 		object:{
 			merge:function merge(newObject, overwrite, schema){

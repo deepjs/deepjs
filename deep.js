@@ -149,7 +149,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 }
 
-define(//["require", "deep/deep-request", "deep/utils", "deep/promise", "deep/deep-query"],
+define(["require", "deep/ie-hacks","deep/utils", "deep/deep-rql","deep/deep-request", "deep/deep-schema",  "deep/promise", "deep/deep-query", "deep/deep-compose"],
 function(require){
 
 
@@ -212,7 +212,7 @@ function(require){
 		{
 			if(!this.branches)
 				this.branches = [];
-			var cloned = cloneHandler(self, true);
+			var cloned = cloneHandler(this.chain, true);
 			cloned.running = false;
 			this.branches.push(cloned);
 			nextQueueItem.apply(cloned, [this.chain.result, this.chain.failure]);
@@ -259,22 +259,7 @@ function(require){
 		}
 	}
 
-	var DeepHandler = function(options)
-	{
-		this.context = deep.context;
-		options = options || {};
-		this.querier = new Querier();
-		this.callQueue = [];
-		this._root = options._root || {};
-		this._entries = options._entries || [];
-		this.queries = [];
-		this.deferred = deep.Deferred();
-		this.rejected=false;
-		this.reports = {
-			result:null,
-			failure:null
-		}
-	}
+
 
 	function callFunctionFromValue(entry, functionName, options) 
 	{
@@ -284,7 +269,7 @@ function(require){
 		if(entry.value && entry.value[functionName])
 		{
 			entry.value._deep_entry = entry;
-			var prom = entry.value[functionName].apply(entry.value, options.args || null);
+			var prom = entry.value[functionName].apply(entry.value, options.args || []);
 			if(prom && prom.then)
 				prom.then(function () {
 					delete entry.value._deep_entry;
@@ -303,7 +288,7 @@ function(require){
 		//console.log("runFunctionFromValue", entry)
 		options = options || {};
 		entry.value._deep_entry = entry;
-		var prom = func.apply(entry.value, options.args || null);
+		var prom = func.apply(entry.value, options.args || []);
 		if(prom && prom.then)
 			prom.then(function () {
 				delete entry.value._deep_entry;
@@ -316,9 +301,7 @@ function(require){
 		return prom;
 	}
 
-	function createSynchHandler(self, s, e){
-		return new SynchHandler(self);
-	}
+
 
 	function nextQueueItem(result, failure )
 	{
@@ -369,6 +352,8 @@ function(require){
 			{
 				var msg = "Internal chain error : ";
 				console.error(msg, e);
+				if(deep.rethrow)
+					throw e;
 				setTimeout(function(){
 					self.running = false;
 					nextQueueItem.apply(self, [null, e]);
@@ -420,6 +405,10 @@ function(require){
 			nextQueueItem.apply(this);
 	}
 
+	function createSynchHandler(self, s, e){
+		return new SynchHandler(self);
+	}
+
 	function cloneHandler(handler, cloneValues)
 	{
 		var newRes = [];
@@ -432,9 +421,26 @@ function(require){
 			queries:utils.copyArray(handler.queries),
 			_entries:newRes
 		});
+		newHandler.reports.result = handler.reports.result;
+		newHandler.reports.failure = handler.reports.failure;
 		return newHandler;
 	}
-	
+	var DeepHandler = function(options)
+	{
+		this.context = deep.context;
+		options = options || {};
+		this.querier = new Querier();
+		this.callQueue = [];
+		this._root = options._root || {};
+		this._entries = options._entries || [];
+		this.queries = [];
+		this.deferred = deep.Deferred();
+		this.rejected=false;
+		this.reports = {
+			result:null,
+			failure:null
+		}
+	}
 	DeepHandler.prototype = {
 		querier:null,
 		_entries:null,
@@ -498,6 +504,8 @@ function(require){
 					nextQueueItem.apply(self, [s, e]);
 					return;
 				}
+				//console.log("done : self : ", self._entries);
+
 				deep.when(callBack(s, createSynchHandler(self,s,e))).then(function (argument) {
 					var error = null;
 					if(typeof argument === 'undefined')
@@ -1008,10 +1016,10 @@ function(require){
 					
 				});
 				if(self._entries.length == 0)
-					{
-						self.running = false;
-						nextQueueItem.apply(self, [deep.chain.values(self), null]);
-					}
+				{
+					self.running = false;
+					nextQueueItem.apply(self, [deep.chain.values(self), null]);
+				}
 			}
 			addInQueue.apply(this,[func]);
 			return this;
@@ -1294,20 +1302,21 @@ function(require){
 			 	args.push(arguments[i]);
 			// if(args.length == 0)
 			 //	args.push("deep.log");
-			function func(){
-				return function(s,e)
+			var func = function(s,e)
+			{
+				if(args.length == 0)
 				{
-					if(args.length == 0)
-					{
-						args.push("deep.log : last success : ");
-						args.push(s);
-					}
-					console.log.apply(console, args);
-					self.running = false;
-					nextQueueItem.apply(self,[s, null]);
+					args.push("deep.log : last success : ");
+					args.push(s);
 				}
+				args.forEach(function (a) {
+					console.log(a);
+				});
+				self.running = false;
+				nextQueueItem.apply(self,[s, null]);
 			}
-			addInQueue.apply(this,[func()]);
+			
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 		logValues:function (title, options) 
@@ -2359,7 +2368,7 @@ function(require){
 			$.address.path(path);
 		}		
 	}
-
+//deep.rethrow = true;
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________
