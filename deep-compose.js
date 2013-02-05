@@ -13,9 +13,8 @@ define(function(require, exports, module){
 	{
 		return function () {
 			var self = this;
-			var args = [];
-			for(var i in arguments)
-				args.push(arguments[i]);
+			var args = Array.prototype.slice.call(arguments);
+			
 			var def = promise.Deferred();
 			var r = before.apply(this, args);
 			//console.log("chain.first : result == ", r)
@@ -109,9 +108,7 @@ define(function(require, exports, module){
 			{
 				return function () 
 				{
-					var args = [];
-					for(var i in arguments)
-						args.push(arguments[i]);
+					var args = Array.prototype.slice.call(arguments);	
 					var promises = [argument.apply(this, args), previous.apply(this,args)];
 					return promise.all(promises);
 				}
@@ -126,9 +123,8 @@ define(function(require, exports, module){
 		var start = function () {
 			if(!decorator.createIfNecessary)
 				throw new Error("Decorator not applied !");
-			var args = [];
-			for(var i in arguments)
-				args.push(arguments[i]);
+			var args = Array.prototype.slice.call(arguments);
+			
 			return wrap(function(){}, decorator).apply(this, args)
 		}
 		start.decorator = decorator;

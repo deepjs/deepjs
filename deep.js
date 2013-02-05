@@ -228,23 +228,26 @@ function(require){
 			return this;
 		},
 		up:function () {
+			var args = Array.prototype.slice.call(arguments);
+
 			this.chain._entries.forEach(function (e) {
-				for(var i in arguments)
-					deep.utils.up( arguments[i], e.value, e.schema );
+				args.forEach(function  (a) {
+					deep.utils.up( a, e.value, e.schema );
+				})	
 			})
 			return this;
 		},
 		bottom:function () {
+			var args = Array.prototype.slice.call(arguments);
 			this.chain._entries.forEach(function (e) {
-				for(var i in arguments)
+				args.forEach(function  (a) {
 					deep.utils.bottom( arguments[i], e.value, e.schema );
+				});
 			})
 			return this;
 		},
 		log:function () {
-			var agrs = [];
-			for(var i in arguments)
-				args.push(arguments[i]);
+			var args = Array.prototype.slice.call(arguments);
 			this.chain.log.apply(this.chain, args);
 			return this;
 		},
@@ -771,9 +774,7 @@ function(require){
 		},
 		up : function(retrievables)
 		{
-			var args = [];
-			for(var i in arguments)
-				args.push(arguments[i]);
+			var args = Array.prototype.slice.call(arguments);
 			var self = this;
 			var func = function(){
 				deep.when(deep.request.retrieveAll(args)).then(function (objects) 
@@ -796,9 +797,8 @@ function(require){
 		},
 		bottom : function(retrievables)
 		{
-			var args = [];
-			for(var i in arguments)
-				args.push(arguments[i]);
+			var args = Array.prototype.slice.call(arguments);
+			
 			args.reverse();
 			var self = this;
 			var func = function(){
@@ -1297,16 +1297,16 @@ function(require){
 		log:function () 
 		{
 			var self = this;
-			var args = [];
-			for(var i in arguments)
-			 	args.push(arguments[i]);
+	
+			var args = Array.prototype.slice.call(arguments);
 			// if(args.length == 0)
 			 //	args.push("deep.log");
+			 console.log("deep.log : args : ",JSON.stringify(arguments))
 			var func = function(s,e)
 			{
 				if(args.length == 0)
 				{
-					args.push("deep.log : last success : ");
+					args.push("deep.log : last success : ");	
 					args.push(s);
 				}
 				args.forEach(function (a) {

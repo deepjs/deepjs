@@ -209,7 +209,8 @@ define(function(require){
 						deferred.resolve(data);
 					})
 				}, function(){
-					deferred.reject(arguments);
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
 				} );
 			}
 			else
@@ -224,8 +225,9 @@ define(function(require){
 					deferred.resolve(data);
 				}, 
 				function(){
-					console.log("DeepRequest.json failed : "+JSON.stringify(arguments));
-					deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path, options:options}); 
+					var args = Array.prototype.slice.call(arguments);
+					console.log("DeepRequest.json failed : "+JSON.stringify(args));
+					deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
 				}
 			);
 		}
@@ -249,7 +251,8 @@ define(function(require){
 				//console.log("json success : ", path, query, data);
 				deferred.resolve(data);
 			}, function(){ 
-				deferred.reject({msg:"DeepRequest.get failed : "+path, details:arguments, uri:path, options:options}); 
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:"DeepRequest.get failed : "+path, details:args, uri:path, options:options}); 
 			})
 		return promise.promise(deferred) ;
 	}
@@ -468,7 +471,8 @@ define(function(require){
 					//console.log("compiled swig : ", resi)
 					defs.resolve(resi);
 				}, function(){
-					defs.reject({ emiter:"deep-request", msg:"retrieve swig failed for path : "+info.uri, details:arguments, basePath:uri, caller:othis });
+					var args = Array.prototype.slice.call(arguments);
+					defs.reject({ emiter:"deep-request", msg:"retrieve swig failed for path : "+info.uri, details:args, basePath:uri, caller:othis });
 				});
 				return promise.promise(defs) ;
 				break;
@@ -681,7 +685,8 @@ define(function(require){
 					})
 
 				}, function(){
-					deferred.reject(arguments);
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
 
 				} );
 			}
@@ -710,7 +715,8 @@ define(function(require){
 										data = Querier.query(data.toString(), query,  { keepCache:false });
 									deferred.resolve(data);
 								}, function  (error) {
-									deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path}); 
+									var args = Array.prototype.slice.call(arguments);
+									deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path}); 
 								});
 							}
 							else
@@ -727,8 +733,9 @@ define(function(require){
 									deferred.resolve(data);
 								}, 
 								function(){
-									console.log("DeepRequest.json failed : "+JSON.stringify(arguments));
-									deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path}); 
+									var args = Array.prototype.slice.call(arguments);
+									console.log("DeepRequest.json failed : "+JSON.stringify(args));
+									deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path}); 
 								});
 							}
 						});
@@ -745,8 +752,9 @@ define(function(require){
 							deferred.resolve(data);
 						}, 
 						function(){
-							console.log("DeepRequest.json failed : "+JSON.stringify(arguments));
-							deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path}); 
+							var args = Array.prototype.slice.call(arguments);
+							console.log("DeepRequest.json failed : "+JSON.stringify(args));
+							deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path}); 
 						});
 				}
 				getFacet(path);
@@ -773,7 +781,8 @@ define(function(require){
 				//console.log("json success : ", path, query, data);
 				deferred.resolve(data);
 			}, function(){ 
-				deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path, options:options}); 
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
 			})
 		return promise.promise(deferred) ;
 	}
@@ -814,8 +823,8 @@ define(function(require){
 					})
 
 				}, function(){
-					deferred.reject(arguments);
-
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
 				} );
 			}
 			else
@@ -827,8 +836,9 @@ define(function(require){
 					deferred.resolve(data);
 				}, 
 				function(){
-					console.log("DeepRequest.html failed : "+JSON.stringify(arguments));
-					deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path}); 
+					var args = Array.prototype.slice.call(arguments);
+					console.log("DeepRequest.html failed : "+JSON.stringify(args));
+					deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path}); 
 				});
 			/*	promise.when(fs.readFile(path, "utf-8")).then( 
 					function(data){ 
@@ -879,8 +889,9 @@ define(function(require){
 					deferred.resolve( data.toString() ); 
 				}, 
 				function(msg){
-					console.log("DeepRequest.xml failed : "+JSON.stringify(arguments));
-					deferred.reject({msg:"deep-request : xml load failed ", arguments:arguments});
+					var args = Array.prototype.slice.call(arguments);
+					console.log("DeepRequest.xml failed : "+JSON.stringify(args));
+					deferred.reject({msg:"deep-request : xml load failed ", arguments:args});
 					
 				}
 			);
@@ -897,8 +908,9 @@ define(function(require){
 		})).then(function(data){
 			deferred.resolve(jQuery.parseXML(data));
 		}, function(jqXHR){
-			console.log("DeepRequest.xml failed : "+JSON.stringify(arguments));
-			deferred.reject({msg:"deep-request : xml load failed ", arguments:arguments});
+			var args = Array.prototype.slice.call(arguments);
+			console.log("DeepRequest.xml failed : "+JSON.stringify(args));
+			deferred.reject({msg:"deep-request : xml load failed ", arguments:args});
 		});
 		return promise.promise(deferred);
 	}
@@ -954,7 +966,8 @@ define(function(require){
 					})
 
 				}, function(){
-					deferred.reject(arguments);
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
 
 				} );
 			}
@@ -971,8 +984,9 @@ define(function(require){
 
 				}, 
 				function(){
-					console.log("DeepRequest.get failed : "+JSON.stringify(arguments));
-					deferred.reject({msg:"DeepRequest.json failed : "+path, details:arguments, uri:path, options:options}); 
+					var args = Array.prototype.slice.call(arguments);
+					console.log("DeepRequest.get failed : "+JSON.stringify(args));
+					deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
 				}
 			);
 		}
@@ -994,7 +1008,8 @@ define(function(require){
 				//console.log("json success : ", path, query, data);
 				deferred.resolve(data);
 			}, function(){ 
-				deferred.reject({msg:"DeepRequest.get failed : "+path, details:arguments, uri:path, options:options}); 
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:"DeepRequest.get failed : "+path, details:args, uri:path, options:options}); 
 			})
 		return promise.promise(deferred) ;
 	}
@@ -1028,8 +1043,9 @@ define(function(require){
 			}
 			else
 			{
+				var args = Array.prototype.slice.call(arguments);
 				console.log("DeepRequest.put : failed (status > 2xx) : ", test, " - status provided : ", jqXHR.status )
-				deferred.reject({msg:"DeepRequest.put failed : "+info.request, status:jqXHR.status, details:arguments, uri:info.uri})
+				deferred.reject({msg:"DeepRequest.put failed : "+info.request, status:jqXHR.status, details:args, uri:info.uri})
 			}
 			// body...
 		})
@@ -1065,7 +1081,8 @@ define(function(require){
 			else
 			{
 				//console.log("DeepRequest.post : failed (status > 2xx) : ", test, " - status provided : ", jqXHR.status )
-				deferred.reject({msg:"DeepRequest.post failed : "+info.request, status:jqXHR.status, details:arguments, uri:info.uri})
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:"DeepRequest.post failed : "+info.request, status:jqXHR.status, details:args, uri:info.uri})
 			}
 			// body...
 		})
@@ -1172,10 +1189,11 @@ define(function(require){
 			success(jqXHR, data);
 		}, function  (jqXHR, statusText, errorThrown) {
 			//console.log("get range failed : ", jqXHR)
+			var args = Array.prototype.slice.call(arguments);
 			if(jqXHR.status == 200 || jqXHR.status == 206)
 				success(jqXHR, JSON.parse(jqXHR.responseText));
 			else
-				deferred.reject(arguments);
+				deferred.reject(args);
 		});
 		return promise.promise(deferred);
 	}
@@ -1189,6 +1207,7 @@ define(function(require){
 	    // Request that YSQL string, and run a callback function.
 	    // Pass a defined function to prevent cache-busting.
 	    $.getJSON(yql).then(function(data){
+			var args = Array.prototype.slice.call(arguments);
 	    	if (data.results[0])
 	    	{
 	    		var res = null;
@@ -1201,13 +1220,14 @@ define(function(require){
 	    			res = new JFeed($.parseXML(data.results));
 	    			break;
 	    			default :
-	        			def.reject({msg:"deep-request : cross domain xml load failed : bad type provided : "+type, arguments:arguments});
+	        			def.reject({msg:"deep-request : cross domain xml load failed : bad type provided : "+type, arguments:args});
 	    		} 
 	                def.resolve(res);
 	        }else
-	        	def.reject({msg:"deep-request : cross domain xml load failed ", arguments:arguments});
+	        	def.reject({msg:"deep-request : cross domain xml load failed ", arguments:args});
 	    }, function(){
-	    	def.reject({msg:"deep-request : cross domain xml load failed ", arguments:arguments});
+			var args = Array.prototype.slice.call(arguments);
+	    	def.reject({msg:"deep-request : cross domain xml load failed ", arguments:args});
 	    });
 		return promise.promise(def);
 	}
