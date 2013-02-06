@@ -1840,45 +1840,46 @@ function(require){
 		if(schema)
 			alls.push(DeepRequest.retrieve(schema));
 
-		 // console.log("deep(root) init : ", alls);
+		  console.log("deep(root) init : ", alls);
 
 		deep.all(alls).then(function (results) {
-			// console.log("deep(root) : loaded : ", results)
+			 console.log("deep(root) : loaded : ",  results instanceof Array)
 			handler.initialised = true;
 			var root = results[0];
 			var schema = results[1];
-			if(root && root._isDQ_NODE_)
+			if(typeof root === 'object' && root._isDQ_NODE_)
 			{
-				//console.log("deep(..) with DQNode : ", root)
+				console.log("deep(..) with DQNode : ", root)
 				handler._root = root.root;
 				handler._entries = [root];	
 				handler.queries = [root.path];
 			}
-			else if(root && root._deep_entry)
+			else if(typeof root === 'object' && root._deep_entry)
 			{
-				 // console.log("deep(..) with _deep_entry")
+				 console.log("deep(..) with _deep_entry")
 				handler._root = root._deep_entry;
 				handler._entries = [root._deep_entry];	
 				handler.queries = [root._deep_entry.path];
 			}
 			else if(broot instanceof DeepHandler)
 			{
-				// console.log("deep(..) with DeepHandler");
+				 console.log("deep(..) with DeepHandler");
 				handler._entries = utils.copyArray(broot._entries)	
 				handler._root = broot._root;
 				handler.queries = utils.copyArray(broot.queries);
 			}
 			else
 			{
-				// console.log("deep(..) simple object")
-				handler._entries = handler.querier.query(root, "/!", {resultType:"full", schema:schema || {}});	
-				handler._root = handler._entries[0];
+				console.log("deep(..) simple object")
+				handler._root = Querier.createRootNode(root, schema);
+				handler._entries = [handler._root];	
 				handler.queries = ["/!"];
-				if(root && root.uri)
+				if(typeof root === 'object' && root.uri)
 					handler.name = root.uri;
 				else
 					handler.name = "untitled";
 			}
+			console.log("chain will run next item");
 			handler.running = false;
 			nextQueueItem.apply(handler, [deep.chain.values(handler), null]);
 		}, function (error) {
@@ -2184,7 +2185,7 @@ function(require){
 			catch(e)
 			{
 				var msg = "Internal deep.promise error : ";
-				console.error(msg, e);
+				console.error(msg, JSON.stringify(e));
 				setTimeout(function(){
 					self.running = false;
 					nextPromiseHandler.apply(self, [null, e]);
@@ -2368,7 +2369,7 @@ function(require){
 			$.address.path(path);
 		}		
 	}
-//deep.rethrow = true;
+deep.rethrow = true;
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________

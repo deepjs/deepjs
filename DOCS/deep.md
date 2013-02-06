@@ -606,13 +606,17 @@ deep({
     datas:"json::./json/simple.json", 
     render:function(){
         $("#content-container").html(this.template(this));
-    }
+    },
+    setBehaviour:function(){
+
+	}
 })
 .query("/[template,datas]")
 .load()
 .root()
 .run("render")
-.log("____ after render");
+.run("setBehaviour")
+.log("____ refreshed");
 
 //_____
 

@@ -592,8 +592,13 @@ define(function defineDeepQuery(require)
 		//console.log("DO MOVE gives : ", newItems);
 		return newItems;
 	}
+	
 	DQ.prototype.query = function (obj, q, options) 
 	{
+		if(typeof obj !== 'object')
+		{
+			return [];
+		}
 		//console.log("DQ.query : ", obj, q, options)
 		options = options || {};
 		if(!this.cache || !options.keepQueryCache)
@@ -617,15 +622,7 @@ define(function defineDeepQuery(require)
 		}
 		else
 		{
-			this.root = this.cache["/"] = {
-				_isDQ_NODE_:true,
-				value:obj,
-				path:"/",
-				key:null,
-				ancestor:null,
-				schema:options.schema || {},
-				depth:0
-			}
+			this.root = this.cache["/"] = DQ.createRootNode(obj, options.schema)
 			//this.root.root = this.root;
 			items = [this.cache["/"]];
 		}
@@ -684,6 +681,17 @@ define(function defineDeepQuery(require)
 		if(!globalQuerier)
 			globalQuerier = new DQ();
 		return globalQuerier.query(root, path, options);
+	}
+	DQ.createRootNode = function (obj, schema) {
+		return {
+				_isDQ_NODE_:true,
+				value:obj,
+				path:"/",
+				key:null,
+				ancestor:null,
+				schema:schema || {},
+				depth:0
+			}
 	}
 	return DQ;
 })
