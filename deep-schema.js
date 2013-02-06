@@ -260,8 +260,8 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 	var swig = require("swig");
 }	
-define(["require", "deep/deep"],
-function(require, exports, module){
+define(["require", "deep/utils", "deep/promise"],
+function(require){
 
 	var utils = require("deep/utils");
 	var promise = require("deep/promise");
@@ -919,8 +919,8 @@ function(require, exports, module){
 					return true;
 				if(type != "string" && type != "number" && type != "integer") return true;
 				var ok = false;
-				for(var i = 0; i < schema.enum.length; ++i)
-					if(value == schema.enum[i])
+				for(var i = 0; i < schema["enum"].length; ++i)
+					if(value == schema['enum'][i])
 					{
 						ok = true;
 						break;
@@ -932,8 +932,8 @@ function(require, exports, module){
 		disallow:{
 			schema:{
 				type:["array", "string"],
-				enum:["string", "array", "number", "integer", "date", "function", "null", "object"],
-				items:{ type:"string", enum:["string", "array", "number", "integer", "date", "function", "null", "object"]}
+				'enum':["string", "array", "number", "integer", "date", "function", "null", "object"],
+				items:{ type:"string", 'enum':["string", "array", "number", "integer", "date", "function", "null", "object"]}
 			},
 			test:function(value, type, schema){
 				if((!value) && !schema.required)
@@ -1227,7 +1227,7 @@ function(require, exports, module){
 				return res.length > 0 && res[0] == value;
 			},
 			error:"this field need to match {{ schema.needMatchingOn }}"
-		},
+		}
 	}
 
 	var jsonExt = {

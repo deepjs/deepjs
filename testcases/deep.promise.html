@@ -28,7 +28,7 @@
 
 	deep.when(deep().delay(500)).then(function(arg){
 	    console.log("arg : ",arg)
-	    return deep.when(deep().delay(100)).then(function(arg){
+	    return deep.when(deep(1).delay(100)).then(function(arg){
 	        console.log("arg 1: ",arg);
 	        return "hello"+arg;
 	    })
@@ -43,7 +43,7 @@
 	   // $("#content-container").html(this.template(this.datas));
 	    return deep().delay(1000);
 	})
-	.log("helloced");
+	.log("hello ced");
 
 	//________________________________________________
 	deep({

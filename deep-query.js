@@ -91,7 +91,7 @@ define(function defineDeepQuery(require)
 					if(new RegExp(this.value,this.options).test(i))
 					{
 						var filtered = self.returnProperty(parent, i);
-						if(filtered)
+						if(typeof filtered !== 'undefined' && filtered != null)
 							res.push(filtered);
 					}	
 				}
@@ -198,7 +198,7 @@ define(function defineDeepQuery(require)
 				{
 
 					var prop = self.returnProperty(parent, st);
-					if(prop != null && prop != undefined && typeof prop !== 'undefined')
+					if(prop != null && typeof prop !== 'undefined')
 						return [prop];
 					return [];	
 				}	
@@ -206,7 +206,7 @@ define(function defineDeepQuery(require)
 				for(var i = st; i <= this.end(parent); i += this.step(parent))
 				{
 					var prop = self.returnProperty(parent, i);
-					if(prop != null && prop != undefined && typeof prop !== 'undefined')
+					if(prop != null && typeof prop !== 'undefined')
 						res.push(prop);
 				}	
 				return res;
@@ -324,8 +324,8 @@ define(function defineDeepQuery(require)
 			path += key;
 		else
 			path += "/"+key;
-		if(this.cache[path])
-			return this.cache[path];
+		//if(this.cache[path])
+		//	return this.cache[path];
 
 		var schema = null;
 		if(ancestor.schema)
@@ -368,9 +368,11 @@ define(function defineDeepQuery(require)
 		{
 			if(i == "_deep_entry")
 				continue;
-			//if(!obj.hasOwnProperty(i))
-			//	continue;
-			childs.push(this.createEntry(i, entry));
+			if(!obj.hasOwnProperty(i))
+				continue;
+			var ent = this.createEntry(i, entry);
+			if(typeof ent !== 'undefined')
+				childs.push(ent);
 		}
 		return childs;
 	}
@@ -385,12 +387,13 @@ define(function defineDeepQuery(require)
 		var self = this;
 		for(var i in obj)
 		{
-			//if(!obj.hasOwnProperty(i))
-			//	continue;
+			if(!obj.hasOwnProperty(i))
+				continue;
 			if(i == "_deep_entry")
 				continue;
 			var child = self.createEntry(i, entry);
-			childs.push(child);
+			if(typeof child !== "undefined")
+				childs.push(child);
 			if(typeof obj[i] === 'object')
 				childs = childs.concat(self.returnRecursiveProps(child));
 		}
@@ -437,7 +440,9 @@ define(function defineDeepQuery(require)
 				value:"!",
 				handler:function(parent){
 					//console.log("apply direct acces : ", path)
-					return [parent];
+					if(parent)
+						return [parent];
+					return [];
 				}
 			})
 			//console.log("git drect access : ", path, JSON.stringify(parts));
@@ -638,7 +643,6 @@ define(function defineDeepQuery(require)
 					//console.log("do move : ", items)
 					break;
 				case 'selector' : 
-					//console.log("catch selector : items : ", items)
 					var results = [];
 					items.forEach(function (item) {
 						var r =  part.handler(item);
@@ -648,18 +652,18 @@ define(function defineDeepQuery(require)
 					/*results.forEach(function (a) {
 						console.log("do selector results: ", a.path)
 					})*/
+					//console.log("catch selector : items : ", results)
 					
 					items = results;
 					break;
 				case 'rql': 
-				//	console.log("before do rql : ", items)
+					//console.log("before do rql : ", items)
 					/*results.forEach(function (a) {
 						console.log("before do rql ", a.path)
 					})*/
 					
 					items = part.handler(items);
 					break;
-				break;
 			}
 			//console.log("catch results : ", items)
 			start = false;

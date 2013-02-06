@@ -26,6 +26,7 @@ add _brothers  (any brothers)
 
 */ 
 define(function defineJsonQuery(require){
+	RQL_Global = {}
 
 var layer = {};
 var utils = require("deep/utils");
@@ -51,18 +52,20 @@ layer.jsOperatorMap = {
 	"gt" : ">"
 };
 
-function isPresent(path, items){
+var isPresent = RQL_Global.isPresent = function isPresent(path, items){
 	var res = [];
 	//console.log("is present : "+path)
-	items.forEach(function loopIsPresent(e){	
-	//	console.log("got items : test : " + path + " - object "+JSON.stringify(e));
+	items.forEach(function (e){	
+	//	console.log("got items : test : " + path + " - object ",e);
 		if(retrieve(e, path))
 			res.push(e);
 	});
 	return res;
 }
 
-function rewritePath(path){
+
+
+var rewritePath = RQL_Global.rewritePath = function rewritePath(path){
 
 	var parts = path || [];
 	//console.log("rewrite path : " +path, " - prefix ? ",objectPrefix)
@@ -78,7 +81,7 @@ function rewritePath(path){
 /*
 retrieve schema property
 */
-function retrieveSchemaProp(path, schema, parts, obj){
+var retrieveSchemaProp = RQL_Global.retrieveSchemaProp = function retrieveSchemaProp(path, schema, parts, obj){
 	//console.log("retrieveSchemaProp of : ",path, " - prop : ", parts, " - obj : ", schema)
 	if(parts[0] == "_schema")
 		parts.shift();
@@ -114,7 +117,7 @@ function retrieveSchemaProp(path, schema, parts, obj){
 	 return propSchema;
 }
 
-function retrieveParent(obj, parts, count)
+var retrieveParent = RQL_Global.retrieveParent = function retrieveParent(obj, parts, count)
 {
 	var tmp = obj;
 	//console.log("RETREIEVE PARENT : ", tmp.value, count)
@@ -131,7 +134,7 @@ function retrieveParent(obj, parts, count)
 	return tmp;
 }
 var dicoRetrieve = {};
-function getRetrieveFunc(path)
+var getRetrieveFunc = RQL_Global.getRetrieveFunc = function getRetrieveFunc(path)
 {
 	if(dicoRetrieve[path])
 		return dicoRetrieve[path];
@@ -141,9 +144,9 @@ function getRetrieveFunc(path)
 	var parts = rewritePath(path);
 	if(parts.length == 0)
 	{
-		func = "(function applyEvaluatedRetrieve(object){return object;})";
-		//console.log("function evaluation retrieve : ",func);
-		return dicoRetrieve[path] = eval(func);
+		//func = "(function applyEvaluatedRetrieve(object){return object;})";
+	//	console.log("function evaluation retrieve : ",func);
+		return dicoRetrieve[path] = new Function("object", "return object;");
 	}	
 	
 	if(parts[0] == '_parent')
@@ -155,13 +158,13 @@ function getRetrieveFunc(path)
 			parts.shift();
 		}	
 
-		func += "object = retrieveParent(object, null, "+count+"); if(object == null) return null; ";
+		func += "object = RQL_Global.retrieveParent(object, null, "+count+"); if(object == null) return null; ";
 		//console.log("will get parent with : ", func)
 		if(parts.length == 0)
 		{
 			func += "return object;";
 			//console.log("function evaluation (with parent) : ",func);
-			return dicoRetrieve[path] = eval("(function applyEvaluatedRetrieve(object){"+func+"})");
+			return dicoRetrieve[path] = new Function("object",func);
 		}	
 		if(objectPrefix && parts[0] != "_schema")
 			parts.unshift(objectPrefix)
@@ -170,11 +173,11 @@ function getRetrieveFunc(path)
 	{
 		//console.log("RETRIEVE SCHEMA");
 		parts.shift();
-		func += "var res = retrieveSchemaProp(object.path, object.schema, ['"+parts.join("']['")+"'], "+((objectPrefix)?("object['"+objectPrefix+"']"):"object")+"); return res;";
+		func += "var res = RQL_Global.retrieveSchemaProp(object.path, object.schema, ['"+parts.join("']['")+"'], "+((objectPrefix)?("object['"+objectPrefix+"']"):"object")+"); return res;";
 		//func += "console.log('result of retrieve schema prop : ',res);"
-		func  = "(function applyEvaluatedRetrieve(object){"+func+"})";
+		//func  = "(function applyEvaluatedRetrieve(object){"+func+"})";
 		//console.log("function evaluation (with direct schema) : "+func);
-		var evaluated = eval(func);
+		var evaluated = new Function("object", func);
 		dicoRetrieve[path] = evaluated;
 		return evaluated; /*dicoRetrieve[path] = function applyEvaluatedRetrieve(object){
 			evaluated(object, parts);
@@ -188,7 +191,7 @@ function getRetrieveFunc(path)
 	var item = "object";
 	var schemaEnd = false;
 	var escapedJoined = "";
-	for(var i = 0;parts.length > 0; i++)
+	for(var i = 0; parts.length > 0; i++)
 	{
 		part = parts.shift();
 		escaped.push(part);
@@ -198,7 +201,7 @@ function getRetrieveFunc(path)
 		else
 		{
 			func += "if("+item+") object = object['"+ escapedJoined + "']; else return null;" ;
-			func += "return retrieveSchemaProp(fullPath+'."+escaped.join(".")+"', object.schema, ['"+parts.join("']['")+"'], object);";
+			func += "return RQL_Global.retrieveSchemaProp(fullPath+'."+escaped.join(".")+"', object.schema, ['"+parts.join("']['")+"'], object);";
 			schemaEnd = true;
 			break;
 		}
@@ -206,16 +209,17 @@ function getRetrieveFunc(path)
 	if(!schemaEnd)
 		func += "if("+item+") return object['"+ escapedJoined + "']; else return null;";
 	//console.log("function evaluation retrieve : ",func);
-	var evaluated = eval("(function applyEvaluatedRetrieve (object){"+func+"})");
+	var evaluated = new Function("object",func);
 	return dicoRetrieve[path] = evaluated;
 }
-function retrieve(object, path)
+var retrieve = function retrieve(object, path)
 {
 	//console.log("retrieve : path : " ,path , " - ",object);
 	var res = getRetrieveFunc(path)(object);
 	//console.log("retrieve got : ", res)
 	return res;
 }
+RQL_Global.retrieve = retrieve;
 
 layer.instanceOfs = {
 	"Array":{}
@@ -283,13 +287,17 @@ layer.operators = {
 		return ok;
 	}),
 	contains: filter(function rqlContains(array, value){
+		//console.log("rql : contains : ", array, value)
 		if(typeof value == "function"){
-			return array instanceof Array && array.some(function(v){
-				var r = retrieve(value);
-				if(r)
-					return r.call([v]).length;
+			if(array instanceof Array)
+				return array.some(function(v){
+					var r = retrieve(value);
+					if(r)
+						return r.call([v]).length;
+					return false;
+				});
+			else
 				return false;
-			});
 		}
 		else{
 			if(!(array instanceof Array ))
@@ -325,7 +333,7 @@ layer.operators = {
 	or: function rqlOr(){
 		var items = [];
 		//TODO: remove duplicates and use condition property
-		for(var i = 0; i < arguments.length; i++){
+		for(var i = 0; i< arguments.length; ++i){
 			if(typeof arguments[i] == 'function')
 				items = items.concat(arguments[i].call(this));
 			else
@@ -336,9 +344,11 @@ layer.operators = {
 	},
 	and: function rqlAnd(){
 		var items = this;
+	//	console.log("rqlAnd : ", arguments);
 		// TODO: use condition property
-		for(var i = 0; i < arguments.length; i++){
-			///console.log("and call args : "+i+ " - "+arguments[i]);
+		for(var i = 0; i< arguments.length; ++i){
+			//console.log("and call args : "+i+ " - "+arguments[i]);
+		//	console.log("and call args : items : ", items);
 			if(typeof arguments[i] == 'function')
 				items = arguments[i].call(items);
 			else //if(typeof arguments[i] === 'string')
@@ -592,6 +602,7 @@ function evaluateProperty(object, property){
 		return retrieve(object, decodeURIComponent(property));
 	}
 };
+/*
 var conditionEvaluator = layer.conditionEvaluator = function(condition){
 	var jsOperator = layer.jsOperatorMap[term.name];
 	if(jsOperator){
@@ -601,7 +612,7 @@ var conditionEvaluator = layer.conditionEvaluator = function(condition){
 		js += "operators['" + term.name + "']";
 	}
 	return eval(js);
-};
+};*/ 
 layer.executeQuery = function executeQuery(query, options, target){
 	return layer.query(query, options, target);
 }
@@ -613,6 +624,8 @@ var targetCache = null;
 var targetSchema = null;
 var objectPrefix = null;
 var queryCache = {};
+
+
 function query(target, qry, options){
 	var q = qry;
 	//console.log("deep-rql : query : ", q, options, target);
@@ -641,12 +654,15 @@ function query(target, qry, options){
 	function t(){}
 	t.prototype = layer.operators;
 	var operators = new t;
+	var op = function op(name){
+		//console.log("rqlOp: ", name, " - res : " , operators[name] || layer.missingOperator(name))
+		return operators[name] || layer.missingOperator(name);
+	}
+	RQL_Global.op = op;
 	// inherit from layer.operators
 	for(var i in options.operators)
 		operators[i] = options.operators[i];
-	function op(name){
-		return operators[name]||layer.missingOperator(name);
-	}
+
 	var parameters = options.parameters || [];
 	var js = "";
 	function queryToJS(value){
@@ -677,26 +693,56 @@ function query(target, qry, options){
 					var condition = item + jsOperator + queryToJS(target);
 					//console.log("conditions : "+condition)
 					if (typeof Array.prototype.filter === 'function') {
-						return "(function applyNativeArrayFilter(){return this.filter(function(item){var val = retrieve(item,'"+path+"'); return " + condition + "})})";
+						return "(function applyNativeArrayFilter(){return this.filter(function(item){var val = RQL_Global.retrieve(item,'"+path+"'); return " + condition + "})})";
 						//???return "this.filter(function(item){return " + condition + "})";
 					} else {
 						throw "error : array have no filter";
 						//return "(function(){var filtered = []; for(var i = 0, length = this.length; i < length; i++){var item = this[i]; var val = retrieve(item,'"+path+"'); if(" + condition + "){filtered.push(item);}} return filtered;})";
 					}
 				}else{
-				//	console.log("NO JS OPERATOR")
-					return "(function noJSOperatorEvaluator(){return op('" + value.name + "').call(this" +(value && value.args && value.args.length > 0 ? (", " + value.args.map(queryToJS).join(",")) : "") +")})";
+					//console.log("NO JS OPERATOR : value : ", value.name)
+					return "(function(){"
+							//+"console.log('op ? : ', RQL_Global.op);"
+							//+"console.log('this ? : ', this);"
+							+"var opo = RQL_Global.op('" + value.name + "');"
+							//+"console.log('typeof returned opo : ', typeof opo);"
+							//+"return [];"
+							+"return opo"
+							+".call(this" +(value && value.args && value.args.length > 0 ? (", " + value.args.map(queryToJS).join(",")) : "") +")"
+						+"})";
 				}
 			}
 		}
 		else
 			return typeof value === "string" ? stringify(value) : value;
 	}
-	var	evaluationString = "(function evaluator(target){return " + queryToJS(query) + ".call(target);})";
-	var evaluator = eval(evaluationString);
-	queryCache[q] = evaluator;
-	//console.log("EVALUATION STRING \n\n"+evaluationString)
-	return target ? evaluator(target) : evaluator;
+	var evaluationString = "return " + queryToJS(query) + ".call(target);" ;
+	//evaluationString = "(function(){ console.log('grrrrrrrrrrr ') }).call(target); return []";
+	var	toEval = new Function("target", evaluationString);
+	
+
+	//console.log("EVALUATION STRING \n\n",toEval);
+	//var toEval = eval(evaluationString);
+	queryCache[q] = toEval;
+		//console.log("op ? ", op('and'))
+	try{
+	//	console.log("typeof toEval : ", typeof toEval);
+	//	console.log("typeof target : ", typeof target);
+	//	console.log("instance target : ",  target instanceof Array);
+		//return (function (){return op('and').call(this, "backgrounds")}).call(target);
+		//if(q == "backgrounds")
+		//	return target ? op('and').call(target, "backgrounds") : [];
+		//return toEval;
+		if(target)
+			return toEval(target);
+		return toEval;
+	}
+	catch(e)
+	{
+		console.log("WARNING : RQL throw : ",JSON.stringify(e));
+		//console.log("op ? ", op('and'))
+		throw e;
+	}
 }
 return layer;
 });

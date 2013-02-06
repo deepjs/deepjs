@@ -572,9 +572,32 @@ deep : the deep core
 
 # examples
 
-deep({template:"swig::./templates/simple.html"}).deepLoad().run(function(){
-  $("#content-container").html(this.template({ name:"john" }));
-});
+//______
+
+deep("./json/simple.json").logValues("simple.json : ");
+
+//______
+
+deep("swig::./templates/simple.html")
+.run(null, {args:{ names:"john", zip:12 }})
+.log();
+
+//______
+
+deep("swig::./templates/simple.html")
+.done( function( templates ){ 
+	$("#content-container").html( templates[0]( { names:"Deep", zip:1060 } ) ); 
+})
+.log();
+
+//_________
+
+deep({template:"swig::./templates/simple.html"})
+.deepLoad()
+.run(function(){
+  return $("#content-container").html( this.template({ name:"john" } ));
+})
+.log();
 
 //_________
 
@@ -594,7 +617,11 @@ deep({
 //_____
 
 
-var h = deep({}).delay(500).log("first").delay(500).log("second");
+var h = deep({})
+.delay(500)
+.log("first")
+.delay(500)
+.log("second");
 
 deep.when(h).then(function(suc){
 	console.log("success : ",suc);
@@ -605,15 +632,7 @@ function(arg){
 
 h.reject({msg:"test rejection"});
 
-//______
 
-deep("./json/simple.json").logValues("simple.json : ");
-
-//______
-
-deep("swig::./templates/simple.html")
-.run(null, {args:{ names:"john", zip:12 }})
-.done(console.log);
 
 
 # License
