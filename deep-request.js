@@ -337,8 +337,8 @@ define(function(require){
 
 	DeepRequest.parse = function(request)
 	{
-		if(request == "instance::autobahn/stores/remote-rest");
-			console.log("DeepRequest.parse : ", request)
+		//if(request == "instance::autobahn/stores/remote-rest");
+		//	console.log("DeepRequest.parse : ", request)
 		var info = {
 			type:null, // deprecated, use protocole instead
 			request:request,
