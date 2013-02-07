@@ -604,6 +604,9 @@ deep({template:"swig::./templates/simple.html"})
 deep({
     template:"swig::./templates/simple.html", 
     datas:"json::./json/simple.json", 
+    load:function(synchHandler){
+    	return deep(this).query("/[template,datas]").load();
+    },
     render:function(){
         $("#content-container").html(this.template(this));
     },
@@ -611,7 +614,6 @@ deep({
 
 	}
 })
-.query("/[template,datas]")
 .load()
 .root()
 .run("render")

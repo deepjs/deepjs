@@ -1597,7 +1597,7 @@ function(require){
 								}
 							})
 						self.running = false;
-						nextQueueItem.apply(self, [true, null]);
+						nextQueueItem.apply(self, [results, null]);
 					},
 					function (error) {
 						console.error("deep.load errors : ", error);
@@ -1649,30 +1649,29 @@ function(require){
 		interpret:function(context) 
 		{
 			var self = this;
-			function func(){
-				return function(){
-					deep.when(deep.request.retrieve(context)).then(function (context) {
-						var res = [];
-						self._entries.forEach(function (interpretable) 
-						{
-							var r = deep.interpret(interpretable.value, context);
-							res.push(r);
-							if(!interpretable.ancestor)
-								//	throw new Error("You couldn't interpret root !");
-								interpretable.value = r;
-							else
-								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
-						});
-						self.running = false;
-						nextQueueItem.apply(self, [res, null]);
-					}, function (error) {
-						console.error("error : deep.interpret : ", error);
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
+			var func = function(){
+				deep.when(deep.request.retrieve(context)).then(function (context) {
+					var res = [];
+					self._entries.forEach(function (interpretable) 
+					{
+						var r = deep.interpret(interpretable.value, context);
+						res.push(r);
+						if(!interpretable.ancestor)
+							//	throw new Error("You couldn't interpret root !");
+							interpretable.value = r;
+						else
+							interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
 					});
-				}
+					self.running = false;
+					nextQueueItem.apply(self, [res, null]);
+				}, function (error) {
+					console.error("error : deep.interpret : ", error);
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
+				});
 			}
-			addInQueue.apply(this,[func()]);
+			
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 
