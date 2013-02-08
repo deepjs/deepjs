@@ -13,6 +13,110 @@ protocole to add :
 
 data-model::
 fs::
+
+
+
+
+protocoles :
+
+extensions : 
+
+parsers : 
+
+responseParser
+	read reponse.headers.contentType : 
+	
+var jqueryRequest = function(info, options){
+	options = options || {};
+	var headers = options.headers || {};
+	utils.up(this.requestHeaders, headers);
+	var self = this;
+	return promise.when($.ajax({
+		beforeSend :function(req) {
+			writeJQueryHeaders(req, headers);
+		},
+		url:info.uri, 
+		method:"GET", 
+		data:null,
+		datatype:self.options.datatype || "json"
+	})
+	.done(function (  data, msg, jqXHR ) {
+		return self.parse(data, info, options);
+	})
+	.fail(function ( jqXHR ) {
+		return new Error("DeepRequest.load failed : "+JSON.stringify(info));
+	}))
+}
+var setHeaders = function (req) {
+	
+}
+
+var deepAction = {
+	"dom.appendTo" : { // dom.appendTo::#id
+		action:function (info, datas) {
+			// body...
+		}
+	}
+}
+
+var vc = {
+	placeInDOM:deep.action("dom.appendTo::#id")
+}
+var dr = {
+	lexic:{
+		json:{
+			options:{
+				queriable:true,
+				datatype:"json"
+			},
+			requestHeaders:{
+				"accept":"application/json;charset=utf-8"
+			},
+			responseHeaders:{
+				"content-type":"application/json;charset=utf-8"
+			},
+			action:baseRequest,
+			parse:function(response, infos, options) {
+				// body...
+			}
+		},
+		html:{
+			options:{
+				queriable:false,
+				datatype:"html"
+			},
+			requestHeaders:{
+				"accept":"text/html;charset=utf-8"
+			},
+			responseHeaders:{
+				"content-type":"text/html;charset=utf-8"
+			},
+			action:baseRequest,
+			parse:function(response, infos, options) {
+				// body...
+			}
+		}
+	},
+	get:function (info, options) {
+		if(typeof info === 'string')
+			info = this.parse(info);
+		var handler = this.lexic[info.protocole];
+		if(!handler)
+			throw new Error("DeepRequest : no handler found with : ",info); 
+		return handler.action(info, options);
+	}
+	all
+	_______
+
+	json
+	xml
+	rss
+	text
+	html
+
+}
+
+
  */
 
 var fs = null;
@@ -39,10 +143,46 @@ if(typeof process !== 'undefined' && process.versions && process.versions.node)
 */
 
 define(function(require){
+
+var loadInfo = {
+		currentNumberOfLoad:0,
+		paths:{},
+		totalLoaded:0,
+		totalToLoad:0,
+		callCount:0
+	};
+
+	function removeLoadInfo(path){
+	//	console.log("removeLoadInfo", path, loadInfo)
+
+		loadInfo.paths[path]--;
+		loadInfo.currentNumberOfLoad--;
+
+		if(loadInfo.paths[path] == 0)
+			delete loadInfo.paths[path];
+
+		DeepRequest.handlers.loaded(path);
+		if(loadInfo.currentNumberOfLoad == 0)
+			DeepRequest.handlers.complete();
+	}
+
+	function addLoadInfo(path){
+		loadInfo.callCount++;
+		if(typeof loadInfo.paths[path] === 'undefined')
+			loadInfo.paths[path] = 1;
+		else
+			loadInfo.paths[path]++;
+		loadInfo.currentNumberOfLoad++;
+		DeepRequest.handlers.added(path);
+
+	}
+
+
 	var utils = require("deep/utils");
 	var promise = require("deep/promise");
 	var Querier = require("deep/deep-query");
 	var DeepRequest  = {
+
 		lexic: {
 			protocoles:{
 				"json":{
@@ -156,7 +296,20 @@ define(function(require){
 		
 */
 
+	DeepRequest.loadInfo = loadInfo;
+	DeepRequest.handlers = {
+		loaded:function(uri){
+			console.log("DeepRequest.loaded handlers : uri : ", uri);
+		},
+		complete:function(){
+			console.log("DeepRequest.complete handlers");
 
+		},
+		added:function(uri){
+			console.log("DeepRequest.added handler : ", uri);
+
+		}
+	};
 
 	function manageEndOfRetrieve(info, datas)
 	{
@@ -503,7 +656,10 @@ define(function(require){
 			case "instance" : 
 				var cl = require(info.uri);
 				//console.log("DeepRequest.instance : ", cl);
-				return new cl();
+				if(typeof cl === 'function' && cl.prototype)
+					return new cl();
+				console.log("DeepRequest : could not instanciate : "+JSON.stringify(info))
+				throw new Error("DeepRequest : could not instanciate : "+JSON.stringify(info))
 				break;   // use require to load lib
 			case "eval" : 
 				return eval(info.uri);
@@ -916,6 +1072,37 @@ define(function(require){
 		return promise.promise(deferred);
 	}
 
+	DeepRequest.rss = function(url)
+	{
+		var def = promise.Deferred();
+	 	//console.log("requestCrossDomain : ", url);
+	    // Take the provided url, and add it to a YQL query. Make sure you encode it!
+	    //var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from xml where url="' + url + '"') + '&format=xml&callback=?';
+	    var google = (document.location.protocol||"http:") + '//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent(url);
+	    // Request that YSQL string, and run a callback function.
+	    // Pass a defined function to prevent cache-busting.
+	 	 addLoadInfo(url);
+	    $.getJSON(google).then(function(data){
+	    	removeLoadInfo(url);
+	    	var res = null;
+
+			if(data.responseData)
+	      	{
+	      	 	res = data.responseData.feed;
+	        	def.resolve(res);
+	      		return;
+	      	}
+	        def.reject({msg:"deep-request : rss load succcess "+url, arguments:arguments});
+
+	      	//console.log("no responseData : "+url, JSON.stringify(data, null, ' '))
+	    }, function(data, msg, jqXHR){
+	    	console.log("")
+	    	removeLoadInfo(url);
+	    	
+	    	def.reject({msg:"deep-request : rss load failed "+url, arguments:arguments});
+	    });
+		return promise.promise(def);
+	}
 
 
 

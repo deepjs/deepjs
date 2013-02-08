@@ -973,7 +973,7 @@ function(require){
 			var count = 0;
 			var doChilds = function(result)
 			{
-				//console.log("doChilds : ", result)
+				//console.log("deep.flatten : doChilds : ", result)
 				//delete self._root.value._deep_entry;
 				deep.when(self.extendsChilds(result)).then(function () {
 					count--;
@@ -994,26 +994,22 @@ function(require){
 				self._entries.forEach(function (result) 
 				{
 					count++;
-		
-						if(result.value.backgrounds)
-						{
-							deep.when(self.extendsBackgrounds(result)).then(function(stack) {
-							//	console.log("flatten extendsBackgrounds done.")
-								var f = {};
-								stack.forEach(function(s){ f = utils.up(s, f, result.schema); delete s.backgrounds; });
-								utils.bottom(f, result.value, result.schema);
-								delete result.value.backgrounds;
-								doChilds(result);
-							},function (error) {
-								console.error("error : deep.flatten : ", error);
-								throw new Error("error : deep.flatten : "+error);
-							});
+					if(result.value.backgrounds)
+					{
+						deep.when(self.extendsBackgrounds(result)).then(function(stack) {
+						//	console.log("flatten extendsBackgrounds done.")
+							var f = {};
+							stack.forEach(function(s){ f = utils.bottom(s, result.value, result.schema); delete s.backgrounds; });
 							delete result.value.backgrounds;
-						}
-						else
 							doChilds(result);
-				
-					
+						},function (error) {
+							console.error("error : deep.flatten : ", error);
+							throw new Error("error : deep.flatten : "+error);
+						});
+						delete result.value.backgrounds;
+					}
+					else
+						doChilds(result);
 				});
 				if(self._entries.length == 0)
 				{
