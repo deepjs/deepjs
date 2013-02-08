@@ -1082,9 +1082,8 @@ var loadInfo = {
 	    // Request that YSQL string, and run a callback function.
 	    // Pass a defined function to prevent cache-busting.
 	 	 addLoadInfo(url);
-	    $.getJSON(google).then(function(data){
-	    	removeLoadInfo(url);
-	    	var res = null;
+	 	 var succ = function (data) {
+	 	 	var res = null;
 
 			if(data.responseData)
 	      	{
@@ -1092,13 +1091,17 @@ var loadInfo = {
 	        	def.resolve(res);
 	      		return;
 	      	}
-	        def.reject({msg:"deep-request : rss load succcess "+url, arguments:arguments});
-
+	        def.reject({msg:"deep-request : rss load failed "+url, arguments:arguments});
+	 	 }
+	    $.getJSON(google).then(function(data, msg, jqXHR){
+	    	removeLoadInfo(url);
+	    	succ(data)
 	      	//console.log("no responseData : "+url, JSON.stringify(data, null, ' '))
 	    }, function(data, msg, jqXHR){
-	    	console.log("")
+
 	    	removeLoadInfo(url);
-	    	
+	    	if(jqWHR.status <400)
+	    		console.log("WARNING : error but success with jquery/rss google : ", jqXHR)
 	    	def.reject({msg:"deep-request : rss load failed "+url, arguments:arguments});
 	    });
 		return promise.promise(def);

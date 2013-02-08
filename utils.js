@@ -641,5 +641,27 @@ define(function(require){
 	utils.up = up;
 	utils.bottom = bottom;
 
+	function trim_words(theString, numWords, maxChar) {
+	    expString = theString.split(/\s+/,numWords);
+	    if(expString.length == 1)
+	    {
+			maxChar = maxChar || 10;
+	    	if(expString[0].length > maxChar)
+	    		return theString.substring(0,maxChar)
+	    	return expString[0];
+	    }
+	    theNewString=expString.join(" ");
+	    if(theNewString.length < theString.length && theNewString[theNewString.length-1] != ".")
+			theNewString += "...";
+	    return theNewString;
+	}
+
+	utils.trimWords = function(string, numWords, maxChar){
+		var reg=new RegExp("<[^>]*>", "gi" );
+		var desc = string.replace(reg, "");
+		desc = trim_words(desc, numWords, maxChar);
+		return desc;
+	}
+
 	return utils;	
 })

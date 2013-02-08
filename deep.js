@@ -1512,8 +1512,12 @@ function(require){
 						var strings = self.querier.query(e, ".//?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
 						strings.forEach(function (toLoad) {
 							if(!toLoad.ancestor)
-								throw new Error("you couldn't interpret root itself.")
-							promises.push(deep.request.retrieve(toLoad.value, {root:self._root.value, basePath:toLoad.path, acceptQueryThis:true }));
+								throw new Error("you couldn't interpret root itself.");
+							console.log("deep.deepLoad : toLoad : ", toLoad);
+							if(typeof toLoad.value === 'function')
+								promises.push(toLoad.value())
+							else
+								promises.push(deep.request.retrieve(toLoad.value, {root:self._root.value, basePath:toLoad.path, acceptQueryThis:true }));
 							paths.push(toLoad);
 						})
 					})
@@ -2180,7 +2184,7 @@ function(require){
 			catch(e)
 			{
 				var msg = "Internal deep.promise error : ";
-				console.error(msg, JSON.stringify(e));
+				console.error(msg, e);
 				setTimeout(function(){
 					self.running = false;
 					nextPromiseHandler.apply(self, [null, e]);

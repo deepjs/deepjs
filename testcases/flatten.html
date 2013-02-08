@@ -30,7 +30,9 @@
 	//___________________________________________
 
 	var a = {
-	    obj:{},
+	    obj:{
+	    	first:true
+	    },
 	    myFunc:function(){
 	        console.log("base myFunc");
 	        this.obj.a = true;
@@ -39,6 +41,9 @@
 
 	var b = {
 		backgrounds:[a],
+		obj:{
+			second:true
+		},
 		myFunc:deep.compose.after(function()
 		{
 			console.log("myFunc of b : ", this)
@@ -46,22 +51,25 @@
 		})
 	}
 
-	
 	deep({})
 	.bottom(b)
 	.flatten()
 	.run("myFunc")
 	.run(function(){
 	   	deep(this.obj).equal({
+	   		first:true,
+	   		second:true,
 	        a:true,
 	        b:true
 	    }, report);
 	})
-	
 
 	deep({
 	    sub:{
-	        backgrounds:[b]
+	        backgrounds:[b],
+	        obj:{
+	        	third:true
+	        }
 	    }
 	})
 	.flatten()
@@ -69,16 +77,14 @@
 	.run("myFunc")
 	.run(function(){
 	    deep(this.obj).equal({
+	    	first:true,
+	   		second:true,
+	   		third:true,
 	        a:true,
 	        b:true
 	    }, report);
 	})
 
-
-
-return	printReport("chain.flatten", success, failed, count);
-
-
-
+	return	printReport("chain.flatten", success, failed, count);
 })();
 </script>
