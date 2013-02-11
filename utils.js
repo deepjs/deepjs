@@ -15,10 +15,11 @@ define(function(require){
 			return string;
 		var parsed = string.substring(0,count);
 		count++;
-		while(count < string.length)
+		var ln = string.length;
+		while(count < ln)
 		{
 			var toAnalyse = "";
-			while(count < string.length && string[count] != '}')
+			while(count < ln && string[count] != '}')
 			{
 				if(string[count] != ' ')
 					toAnalyse += string[count];
@@ -29,7 +30,7 @@ define(function(require){
 				parsed += utils.retrieveValueByPath(context, toAnalyse, ".");
 				count++;
 			}	
-			while(count < string.length && string[count] != '{')
+			while(count < ln && string[count] != '{')
 				parsed += string[count++];
 			if(string[count] == '{')
 				count++;

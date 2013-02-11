@@ -2185,6 +2185,8 @@ function(require){
 			{
 				var msg = "Internal deep.promise error : ";
 				console.error(msg, e);
+				if(deep.rethrow)
+					throw e;
 				setTimeout(function(){
 					self.running = false;
 					nextPromiseHandler.apply(self, [null, e]);
@@ -2368,7 +2370,7 @@ function(require){
 			$.address.path(path);
 		}		
 	}
-deep.rethrow = true;
+	deep.rethrow = true;
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________
