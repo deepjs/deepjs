@@ -125,7 +125,7 @@ define(function(require, exports, module){
 				throw new Error("Decorator not applied !");
 			var args = Array.prototype.slice.call(arguments);
 			
-			return wrap(function(){}, decorator).apply(this, args)
+			return compose.wrap(function(){}, decorator).apply(this, args)
 		}
 		start.decorator = decorator;
 		start.after = function (argument) {

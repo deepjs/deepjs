@@ -143,6 +143,8 @@ if(typeof process !== 'undefined' && process.versions && process.versions.node)
 */
 
 define(function(require){
+var Plates = require('plates');
+
 
 var loadInfo = {
 		currentNumberOfLoad:0,
@@ -152,19 +154,19 @@ var loadInfo = {
 		callCount:0
 	};
 
-	function removeLoadInfo(path){
-	//	console.log("removeLoadInfo", path, loadInfo)
+function removeLoadInfo(path){
+//	console.log("removeLoadInfo", path, loadInfo)
 
-		loadInfo.paths[path]--;
-		loadInfo.currentNumberOfLoad--;
+	loadInfo.paths[path]--;
+	loadInfo.currentNumberOfLoad--;
 
-		if(loadInfo.paths[path] == 0)
-			delete loadInfo.paths[path];
+	if(loadInfo.paths[path] == 0)
+		delete loadInfo.paths[path];
 
-		DeepRequest.handlers.loaded(path);
-		if(loadInfo.currentNumberOfLoad == 0)
-			DeepRequest.handlers.complete();
-	}
+	DeepRequest.handlers.loaded(path);
+	if(loadInfo.currentNumberOfLoad == 0)
+		DeepRequest.handlers.complete();
+}
 
 	function addLoadInfo(path){
 		loadInfo.callCount++;
@@ -176,13 +178,40 @@ var loadInfo = {
 		DeepRequest.handlers.added(path);
 
 	}
+	var reloadablesUriDico = {};
+	var reloadablesRegExpDico = [];
+	var manageCache = function (response, uri) {
+		if(reloadablesUriDico[uri])
+			return;
+		var ok = false;
+		var count = 0;
+		reg = reloadablesRegExpDico[count];
+		while(reg && !reg.match(uri))
+		{
+			reg = reloadablesRegExpDico[++count];
+		}
+		if(count == reloadablesRegExpDico.length)
+			cache[uri] = response;
+		//console.log("manag cache : ", uri, " - ", response);
+	}
 
+	var cache = {};
 
 	var utils = require("deep/utils");
 	var promise = require("deep/promise");
 	var Querier = require("deep/deep-query");
 	var DeepRequest  = {
-
+		reloadables:function (path) 
+		{
+			if(path instanceof RegExp)
+				reloadablesRegExpDico.push(path);
+			else
+				reloadablesUriDico[path] = true;
+		},
+		clearCache:function () 
+		{
+			cache = {};
+		},
 		lexic: {
 			protocoles:{
 				"json":{
@@ -599,6 +628,10 @@ var loadInfo = {
 			console.log("deep-request", "retrieve : ",info, " -   from : "+uri);
 		if(info.protocole == "queryThis" && !options.acceptQueryThis)
 			throw new Error("you couldn't use queryThis protocole in that case");
+
+		if(cache[uri])
+			return cache[uri];
+
 		switch(info.type)
 		{
 			case "json" : 
@@ -622,20 +655,41 @@ var loadInfo = {
 				DeepRequest.html(info.uri).then(function (data) {
 					//console.log("retrieve swig : html result: ", data);
 					var resi = swig.compile(data, { filename:utils.stripFirstSlash(info.uri) }); 
+					delete cache[info.uri];
+					manageCache(resi, info.request);
 					//console.log("compiled swig : ", resi)
 					defs.resolve(resi);
 				}, function(){
 					var args = Array.prototype.slice.call(arguments);
-					defs.reject({ emiter:"deep-request", msg:"retrieve swig failed for path : "+info.uri, details:args, basePath:uri, caller:othis });
+					defs.reject({ emiter:"deep-request", msg:"retrieve swig failed for path : "+info.uri, details:args, basePath:uri });
 				});
 				return promise.promise(defs) ;
 				break;
+				
+			case "plates" : 
+				var defs = promise.Deferred();
+				DeepRequest.html(info.uri).then(function (html) {
+					var res = function(data, map){
+						return  Plates.bind(html, data, map)
+					}
+					delete cache[info.uri];
+					manageCache(res, info.request);
+					defs.resolve(res);
+				}, function(){
+					var args = Array.prototype.slice.call(arguments);
+					defs.reject({ emiter:"deep-request", msg:"retrieve plates failed for path : "+info.uri, details:args, basePath:uri });
+				});
+				return promise.promise(defs) ;
+				break;
+				
 			case "js" : 
 				if(info.query)
 				{
 					var def = promise.Deferred();
 					promise.when(require(info.uri)).then(function(res){
-						def.resolve(Querier.query(res, info.query, { keepCache:true }))
+						var resi  = Querier.query(res, info.query, { keepCache:false });
+						//manageCache(resi, info.request);
+						def.resolve(resi)
 					}, function(res){
 						def.reject(res);
 					});
@@ -748,14 +802,17 @@ var loadInfo = {
 		})
 		promise.all(arr).then(function(result){
 			var res = [];
+			var count = 0;
 			if(query)
 				result.forEach(function(e){
 					var data = Querier.query(data, query, { keepCache:false });
 					if(data && data.length > 0)
 						res.push(data);
+					manageCache(data, paths[count++]);
 				});
 			else
 				res = result;
+
 			deferred.resolve(res);
 		}, function(error){ deferred.reject(("DeepRequest.jsons faileds : ", error)); })
 		return promise.promise(deferred) ;
@@ -936,6 +993,7 @@ var loadInfo = {
 				if(query)
 					data = Querier.query(data, query,  { keepCache:false });
 				//console.log("json success : ", path, query, data);
+				manageCache(data, path);
 				deferred.resolve(data);
 			}, function(){ 
 				var args = Array.prototype.slice.call(arguments);
@@ -943,6 +1001,7 @@ var loadInfo = {
 			})
 		return promise.promise(deferred) ;
 	}
+
 
 
 	DeepRequest.html = function(path)
@@ -1020,6 +1079,8 @@ var loadInfo = {
 				datatype:"html" 
 			})).then(
 				function(data, msg, jqXHR){
+					manageCache(data, path);
+
 					deferred.resolve(data);
 				}, 
 				function(msg){ 
@@ -1063,7 +1124,9 @@ var loadInfo = {
 			data:body||null,
 			datatype:"xml" 
 		})).then(function(data){
-			deferred.resolve(jQuery.parseXML(data));
+			data = jQuery.parseXML(data);
+			manageCache(data, path);
+			deferred.resolve(data);
 		}, function(jqXHR){
 			var args = Array.prototype.slice.call(arguments);
 			console.log("DeepRequest.xml failed : "+JSON.stringify(args));
@@ -1088,6 +1151,7 @@ var loadInfo = {
 			if(data.responseData)
 	      	{
 	      	 	res = data.responseData.feed;
+				manageCache(res, path);
 	        	def.resolve(res);
 	      		return;
 	      	}
@@ -1197,6 +1261,7 @@ var loadInfo = {
 				if(query)
 					data = Querier.query(data, query,  { keepCache:false });
 				//console.log("json success : ", path, query, data);
+				manageCache(data, path);
 				deferred.resolve(data);
 			}, function(){ 
 				var args = Array.prototype.slice.call(arguments);
@@ -1413,6 +1478,7 @@ var loadInfo = {
 	    			default :
 	        			def.reject({msg:"deep-request : cross domain xml load failed : bad type provided : "+type, arguments:args});
 	    		} 
+					manageCache(res, path);
 	                def.resolve(res);
 	        }else
 	        	def.reject({msg:"deep-request : cross domain xml load failed ", arguments:args});

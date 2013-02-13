@@ -355,7 +355,7 @@ function(require){
 			{
 				var msg = "Internal chain error : ";
 				console.error(msg, e);
-				if(deep.rethrow)
+				if(self.rethrow)
 					throw e;
 				setTimeout(function(){
 					self.running = false;
@@ -430,6 +430,7 @@ function(require){
 	}
 	var DeepHandler = function(options)
 	{
+		this.rethrow = deep.rethrow;
 		this.context = deep.context;
 		options = options || {};
 		this.querier = new Querier();
@@ -450,6 +451,18 @@ function(require){
 		callQueue:null,
 		reports:null,
 		queries:null,
+
+		catchError:function () {
+			var self = this;	
+			var create =  function(s,e)
+			{
+				self.rethrow = false;
+				self.running = false;
+				nextQueueItem.apply(self, [s, e]);
+			};
+			addInQueue.apply(this, [create]);
+			return self;
+		},
 		//_______________________________________________________________  CANCEL AND REJECT
 
 		cancel:function (reason)  // not chainable
@@ -494,7 +507,26 @@ function(require){
 			return self;
 		},
 		//______________________________________________________ PROMISE INTERFACE
-
+		when:function(prom)
+		{
+			var self = this;
+			function func(){
+				return function(s,e){
+					deep.when(prom).then(function (datas) {
+						if(typeof datas === 'undefined')
+							datas = s;
+						self.running = false;
+						nextQueueItem.apply(self, [datas,null]);
+					}, function (e) {
+						console.error("error : deep.chain.when : ", e);
+						self.running = false;
+						nextQueueItem.apply(self, [null,e]);
+					});
+				}
+			}
+			addInQueue.apply(this,[func()]);
+			return this;
+		},
 		done:function  (callBack) 
 		{
 			var self = this;
@@ -1477,26 +1509,7 @@ function(require){
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-		wait:function(prom)
-		{
-			var self = this;
-			function func(){
-				return function(s,e){
-					deep.when(prom).then(function (datas) {
-						if(typeof datas === 'undefined')
-							datas = s;
-						self.running = false;
-						nextQueueItem.apply(self, [datas,null]);
-					}, function (e) {
-						console.error("error : deep.wait : ", e);
-						self.running = false;
-						nextQueueItem.apply(self, [null,e]);
-					});
-				}
-			}
-			addInQueue.apply(this,[func()]);
-			return this;
-		},
+
 		
 		//____________________________________________________________________  LOAD
 
