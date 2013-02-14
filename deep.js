@@ -124,6 +124,7 @@ TODO :
 /*
 ADDITIONAL CHAIN METHODS
 
+reverse
 
 logNodes
 logPaths
@@ -451,7 +452,17 @@ function(require){
 		callQueue:null,
 		reports:null,
 		queries:null,
-
+		reverse:function () {
+			var self = this;	
+			var create =  function(s,e)
+			{
+				self._entries.reverse();
+				self.running = false;
+				nextQueueItem.apply(self, [self._entries, null]);
+			};
+			addInQueue.apply(this, [create]);
+			return self;
+		},
 		catchError:function () {
 			var self = this;	
 			var create =  function(s,e)
