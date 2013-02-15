@@ -8,6 +8,7 @@ define(function(require){
 	var collider = require("deep/deep-collider");
 	var compose = require("deep/deep-compose");
 	var utils = {};
+
 	utils.interpret = function (string, context) 
 	{
 		var count = string.indexOf('{');
@@ -50,6 +51,7 @@ define(function(require){
 
 	utils.cloneFunction = function(fct)
 	{
+		//console.log("cloneFunction : fct.decorator = ", fct.decorator)
 	    var clone = function() {
 	        return fct.apply(this, arguments);
 	    };
@@ -82,7 +84,10 @@ define(function(require){
 		}
 		else if(typeof obj === 'function')
 		{
-			res = utils.cloneFunction(obj);
+			if(obj.decorator instanceof compose.Decorator)
+				res = compose.cloneStart(obj);
+			else
+				res = obj; //utils.cloneFunction(obj);
 		}
 		else
 			res = obj;
@@ -256,7 +261,7 @@ define(function(require){
 				val = a.uri;
 			if(val == null || val == undefined)
 				val = String(a);
-			map[val] = a;
+			map[val] = true;
 		})
 		arr2.forEach(function(a){
 			var val = null;
@@ -266,7 +271,7 @@ define(function(require){
 				val = a.uri;
 			if(val == null || val == undefined)
 				val = String(a);
-			if(!map[val])
+			if(typeof map[val] === 'undefined')
 				arr.push(a);
 		})
 		return arr;
@@ -285,7 +290,7 @@ define(function(require){
 		{	
 			var okCount = 0;
 			what.forEach(function(e){
-				if(test[e])
+				if(typeof test[e] !== 'undefined')
 					okCount++;
 			})
 			if(okCount == what.length)
@@ -467,8 +472,8 @@ define(function(require){
 				parent[key] = target;
 			return target;
 		}	
-		//console.log("deepUp : objects not nulls.")
-		var result= null;
+		// console.log("deepUp : objects not nulls.")
+		var result = null;
 		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
 		//console.log("deepUp : objects types : ", srcType, targetType);
@@ -547,7 +552,7 @@ define(function(require){
 
 	var bottom = function (src, target, schema, parent, key) 
 	{
-		// console.log("utils.bottom : objects ", src, target)
+		 // console.log("utils.bottom : objects ", src, target)
 
 		if(src === null)
 			return target;
@@ -614,7 +619,7 @@ define(function(require){
 				result = deepArrayFusion(src, target, schema);
 				if(parent && key)
 					parent[key] = result;
-				//console.log("array fusion bottom rsult : ", result, parent, key, parent[key])
+				console.log("array fusion bottom rsult : ", result, parent, key, parent[key])
 				return result;
 				break;
 			case 'object' :

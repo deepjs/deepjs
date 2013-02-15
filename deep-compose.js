@@ -6,8 +6,9 @@ if(typeof define !== 'function')
 
 define(function(require, exports, module){
 	var promise = require("deep/promise");
-	var DeepDecorator = function () {
-		this.stack = [];
+	// console.log("Deep-compose init");
+	var DeepDecorator = function (stack) {
+		this.stack = stack || [];
 	}
 	function chain(before, after)
 	{
@@ -117,15 +118,14 @@ define(function(require, exports, module){
 			return this;
 		}
 	}
-	var createStart= function () 
+	var createStart= function (decorator) 
 	{
-		var decorator = new DeepDecorator();
+		var decorator = decorator || new DeepDecorator();
 		var start = function () {
 			if(!decorator.createIfNecessary)
 				throw new Error("Decorator not applied ! (start)");
-			var args = Array.prototype.slice.call(arguments);
-			
-			return compose.wrap(function(){}, decorator).apply(this, args)
+		//	var args = Array.prototype.slice.call(arguments);
+			return compose.wrap(function(){}, decorator).apply(this)
 		}
 		start.decorator = decorator;
 		start.after = function (argument) {
@@ -146,8 +146,23 @@ define(function(require, exports, module){
 		};
 		return start;
 	}
+	var copyArray = function(arr){
+		if(!arr)
+			return [];
+		var res = [];
+		arr.forEach(function(a){
+			res.push(a);
+		})
+		return res;
+	}
 	var compose = {
 		Decorator:DeepDecorator,
+		cloneStart:function (start) {
+			var newStack = copyArray(start.decorator.stack);
+			var nd = new DeepDecorator(newStack);
+			nd.createIfNecessary = start.decorator.createIfNecessary;
+			return createStart(nd);
+		},
 		wrap:function (func, decorator) 
 		{
 			var fin = func;
@@ -206,5 +221,7 @@ define(function(require, exports, module){
 			return createStart().parallele(argument);
 		}
 	}
+	// console.log("Deep-compose initialised");
+
 	return compose;
 })

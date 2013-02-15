@@ -11,6 +11,7 @@ define(function(require){
 		//,"list-controller":true
 		//,"list-item-controller":true
 	};
+	console.log("start app");
 	deep = require("deep/deep");
 	var init = function()
 	{	

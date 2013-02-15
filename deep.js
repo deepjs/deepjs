@@ -154,6 +154,7 @@ define(["require", "deep/ie-hacks","deep/utils", "deep/deep-rql","deep/deep-requ
 function(require){
 
 
+	// console.log("Deep init");
 
 	if(!console.warn)
 		console.warn = console.log;
@@ -241,7 +242,7 @@ function(require){
 			var args = Array.prototype.slice.call(arguments);
 			this.chain._entries.forEach(function (e) {
 				args.forEach(function  (a) {
-					deep.utils.bottom( arguments[i], e.value, e.schema );
+					deep.utils.bottom( a, e.value, e.schema );
 				});
 			})
 			return this;
@@ -2393,6 +2394,9 @@ function(require){
 			$.address.path(path);
 		}		
 	}
+
+	// console.log("Deep initialisaed");
+
 	deep.rethrow = true;
 	return deep;
 
