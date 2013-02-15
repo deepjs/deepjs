@@ -230,7 +230,6 @@ function(require){
 		},
 		up:function () {
 			var args = Array.prototype.slice.call(arguments);
-
 			this.chain._entries.forEach(function (e) {
 				args.forEach(function  (a) {
 					deep.utils.up( a, e.value, e.schema );

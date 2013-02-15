@@ -1,21 +1,98 @@
+<h2>deep core : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep/deep");
+	var utils = require("deep/utils");
+	var deepEqual = utils.deepEqual;
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		count++;
+		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
+		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
+		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+		{
+			//console.log("deep-copy : needed result not matched : "+title+" ("+count+")")
+			failed++;
+		}
+	//	$("#content-container").append("<br/><strong  style=\"color:#"+((ok)?"000000":"FF0000")+"\">test :</strong>", JSON.stringify(ok, null, ' ')+"<br/>");
+	}
+
+
 var a = {
-    load:function(){
-        return deep("json::/json/dummies/contribute-schema.json")
-        .log("a")
-
-    }
-}
-
-var b = {
-    load:deep.compose.after(function(){
-        console.log("b")
-        return deep("json::/json/dummies/contribute-schema.json")
+    func1:function(){
+        console.log("func1");
+        this.res.push("func1");
+    },
+    func2:deep.compose.createIfNecessary().before(function(){
+        console.log("func2");
+        this.res.push("func2");
+    }),
+    func3:deep.compose.createIfNecessary().after(function(){
+        console.log("func3");
+        this.res.push("func3");
     })
 }
 
-deep(a).up(b).load();
+var  b = {
+    res:[],
+    func1:deep.compose.after(function(){
+        console.log("func1_1");
+        this.res.push("func1_1");
+    }),
+    func2:deep.compose.createIfNecessary().after(function(){
+        console.log("func2_2");
+        this.res.push("func2_2");
+    }),
+    func3:deep.compose.after(function(){
+        console.log("func3_3");
+        this.res.push("func3_3");
+    })
+}
+
+var  c = {
+    res:[],
+    func1:deep.compose.after(function(){
+        console.log("func1_1_c");
+        this.res.push("func1_1_c");
+    }),
+    func2:deep.compose.after(function(){
+        console.log("func2_2_c");
+        this.res.push("func2_2_c");
+    }),
+    func3:deep.compose.after(function(){
+        console.log("func3_3_c");
+        this.res.push("func3_3_c");
+    })
+}
 
 
-//verifier si le load de b se fait bien apres le load de a....
+deep(b)
+.bottom(a)
+.query("/(func.*)")
+.run()
+.query("/res")
+.logValues()
+.equal(["func1","func1_1", "func2","func2_2","func3","func3_3"], report);
 
 
+deep(c)
+.bottom(a)
+.query("./(func.*)")
+.run()
+.query("/res")
+.equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"], report);
+
+
+
+return	printReport("chain.query", success, failed, count);
+})();
+</script>

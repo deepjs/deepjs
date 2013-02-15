@@ -122,7 +122,7 @@ define(function(require, exports, module){
 		var decorator = new DeepDecorator();
 		var start = function () {
 			if(!decorator.createIfNecessary)
-				throw new Error("Decorator not applied !");
+				throw new Error("Decorator not applied ! (start)");
 			var args = Array.prototype.slice.call(arguments);
 			
 			return compose.wrap(function(){}, decorator).apply(this, args)
@@ -163,7 +163,7 @@ define(function(require, exports, module){
 			start.decorator.createIfNecessary = true;
 			return start;
 		},
-		collide : function (bottom, up) 
+		up : function (bottom, up) 
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
 				throw new Error("DeepDecorator.collide : you could only apply function together");
@@ -173,6 +173,19 @@ define(function(require, exports, module){
 			{
 				bottom.decorator.stack = bottom.decorator.stack.concat(up.decorator.stack);
 				return bottom;
+			}
+			return compose.wrap(bottom,up.decorator);
+		},
+		bottom : function (bottom, up) 
+		{
+			if(typeof up !== 'function' || typeof bottom !== 'function')
+				throw new Error("DeepDecorator.collide : you could only apply function together");
+			if(!up.decorator || !(up.decorator instanceof DeepDecorator))
+				return up;
+			if(bottom.decorator && bottom.decorator instanceof DeepDecorator)
+			{
+				up.decorator.stack = bottom.decorator.stack.concat(up.decorator.stack);
+				return up;
 			}
 			return compose.wrap(bottom,up.decorator);
 		},

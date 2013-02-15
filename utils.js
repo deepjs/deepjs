@@ -47,6 +47,19 @@ define(function(require){
 		})
 		return res;
 	}
+
+	utils.cloneFunction = function(fct)
+	{
+	    var clone = function() {
+	        return fct.apply(this, arguments);
+	    };
+	    clone.prototype = fct.prototype;
+	    for (property in fct) 
+	        if (fct.hasOwnProperty(property)) 
+	            clone[property] = utils.copy(fct[property]);
+	    return clone;
+	}
+
 	utils.copy = function copy(obj){
 		var res = null;
 		if(obj instanceof Array)
@@ -66,6 +79,10 @@ define(function(require){
 				if(obj.hasOwnProperty(i))
 					res[i] = copy(obj[i]);
 			}
+		}
+		else if(typeof obj === 'function')
+		{
+			res = utils.cloneFunction(obj);
 		}
 		else
 			res = obj;
@@ -216,9 +233,9 @@ define(function(require){
 				val = a.uri;
 			if(val == null || val == undefined)
 				val = String(a);
-			if(map[val] != a)
+			if(typeof map[val] === 'undefined')
 			{
-				map[val] = a;
+				map[val] = true;
 				arr.push(a);
 			}
 		})
@@ -462,7 +479,7 @@ define(function(require){
 				if(src.decorator && src.decorator instanceof compose.Decorator)
 				{
 					//console.log("deepUp: src is decorator : ",src)
-					result = compose.collide(target, src);
+					result = compose.up(target, src);
 				}	
 				else if(src.collider && src.collider instanceof collider.Collider)
 				{
@@ -530,7 +547,7 @@ define(function(require){
 
 	var bottom = function (src, target, schema, parent, key) 
 	{
-		//console.log("utils.bottom : objects ", src, target)
+		// console.log("utils.bottom : objects ", src, target)
 
 		if(src === null)
 			return target;
@@ -545,15 +562,16 @@ define(function(require){
 		var result= null;
 		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
-		//console.log("utils.bottom : objects types : ", srcType, targetType);
+		// console.log("utils.bottom : objects types : ", srcType, targetType);
 		if ( targetType === 'function')
 		{	
 			if ( srcType === 'function')
 			{
 				if(target.decorator && target.decorator instanceof compose.Decorator)
 				{
-					//console.log("utils.bottom: src is decorator : ",src)
-					result = compose.collide(src, target);
+					// console.log("utils.bottom: target is decorator : ",target)
+					result = compose.bottom(src, target); 
+
 				}	
 				else if(target.collider && target.collider instanceof collider.Collider)
 				{
@@ -581,7 +599,7 @@ define(function(require){
 		}
 		if(result)
 		{
-			//console.log("deepUp : objects functions collison gives : ", result);
+			// console.log("deep.bottom : objects functions collison gives : ", result);
 			if(parent && key)
 				parent[key] = result;
 			return result;
@@ -600,6 +618,7 @@ define(function(require){
 				return result;
 				break;
 			case 'object' :
+				// console.log("deep.bottom : apply objects together")
 				var oldProps = {};
 				for(var i in target)
 				{
