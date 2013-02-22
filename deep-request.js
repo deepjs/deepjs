@@ -1319,7 +1319,7 @@ function removeLoadInfo(path){
 			type:"POST",
 			url:info.uri,
 			dataType:"application/json; charset=utf-8;",
-			//contentType:"application/json; charset=utf-8;",
+			contentType:"application/json; charset=utf-8;",
 			data:JSON.stringify(object)
 		}).then(function  (res) {
 			// body...
