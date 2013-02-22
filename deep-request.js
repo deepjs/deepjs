@@ -143,7 +143,7 @@ if(typeof process !== 'undefined' && process.versions && process.versions.node)
 */
 
 define(function(require){
-var Plates = require('plates');
+//var Plates = require('plates');
 
 
 var loadInfo = {
@@ -328,14 +328,14 @@ function removeLoadInfo(path){
 	DeepRequest.loadInfo = loadInfo;
 	DeepRequest.handlers = {
 		loaded:function(uri){
-			console.log("DeepRequest.loaded handlers : uri : ", uri);
+			//console.log("DeepRequest.loaded handlers : uri : ", uri);
 		},
 		complete:function(){
-			console.log("DeepRequest.complete handlers");
+			//console.log("DeepRequest.complete handlers");
 
 		},
 		added:function(uri){
-			console.log("DeepRequest.added handler : ", uri);
+			//console.log("DeepRequest.added handler : ", uri);
 
 		}
 	};
@@ -520,7 +520,7 @@ function removeLoadInfo(path){
 	DeepRequest.parse = function(request)
 	{
 		//if(request == "instance::autobahn/stores/remote-rest");
-		//	console.log("DeepRequest.parse : ", request)
+		//console.log("DeepRequest.parse : ", request)
 		var info = {
 			type:null, // deprecated, use protocole instead
 			request:request,
@@ -665,7 +665,7 @@ function removeLoadInfo(path){
 				});
 				return promise.promise(defs) ;
 				break;
-				
+			/*	
 			case "plates" : 
 				var defs = promise.Deferred();
 				DeepRequest.html(info.uri).then(function (html) {
@@ -681,7 +681,7 @@ function removeLoadInfo(path){
 				});
 				return promise.promise(defs) ;
 				break;
-				
+				*/
 			case "js" : 
 				if(info.query)
 				{
@@ -1151,7 +1151,7 @@ function removeLoadInfo(path){
 			if(data.responseData)
 	      	{
 	      	 	res = data.responseData.feed;
-				manageCache(res, path);
+				manageCache(res, url);
 	        	def.resolve(res);
 	      		return;
 	      	}
