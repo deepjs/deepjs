@@ -546,6 +546,8 @@ define(function(require){
 				return target;
 				break;
 			default : 
+				if(parent && key)
+					parent[key] = src;
 				return src;
 		}
 	}

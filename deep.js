@@ -824,6 +824,7 @@ function(require){
 				{
 					self._entries.forEach(function(result){
 						objects.forEach(function (object) {
+							//console.log("deep.up : entry : ", result, " - to apply : ", object)
 							utils.up(object, result.value, result.schema, result.ancestor?result.ancestor.value:null, result.key);
 						});
 					});
@@ -1537,7 +1538,7 @@ function(require){
 						strings.forEach(function (toLoad) {
 							if(!toLoad.ancestor)
 								throw new Error("you couldn't interpret root itself.");
-							console.log("deep.deepLoad : toLoad : ", toLoad);
+							//console.log("deep.deepLoad : toLoad : ", toLoad);
 							if(typeof toLoad.value === 'function')
 								promises.push(toLoad.value())
 							else
@@ -1558,10 +1559,8 @@ function(require){
 					},
 					function (error) {
 						console.error("error : deep.deepLoad : ", error);
-					
 						self.running = false;
 						nextQueueItem.apply(self, [ null, error ]);
-					
 					});
 				}
 			}
@@ -1866,7 +1865,7 @@ function(require){
 		  // console.log("deep(root) init : ", alls);
 
 		deep.all(alls).then(function (results) {
-			 // console.log("deep(root) : loaded : ",  results instanceof Array)
+			  //console.log("deep(root) : loaded : ",  results)
 			handler.initialised = true;
 			var root = results[0];
 			var schema = results[1];

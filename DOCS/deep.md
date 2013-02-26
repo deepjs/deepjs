@@ -3,37 +3,60 @@ deep : the deep core
 
 # workshop :
 
-	request		(log + read values)
+	presentation + demo : 1h30
+		cadre : 
+		http/rest - json - query - couche
+
+		css/jquery inspired
+
+		demo : show magic
+
+
+	request	(log + read values)   (3 h)
 		load, protocoles, usage, syntax 
 
-	navigation
+	navigation	(3 h)
 		query, root, parents
 
-	modelisation	(utils)
+	modelisation	(utils)   (6 h)
 		up
 		bottom
 		compose
+
+
 		backgrounds
 		flatten
+		closure
 
-	promises 		(run familly)
+	promises 		(run familly)   (6 h)
+		closure
 		when
 		chain
-		cancel
 		reject
+
+		
 		branches
 		recursive promise return
 		errors handling
 
-	tests and (asynch) test cases    (pushTo familly)
+	tests and (asynch) test cases    (+ pushTo familly)   (3 h)
 
-	plugin 	(handler structure)
+	plugin 	(handler structure)				(2 h)
 
-	deep-ui   ((deep)interpretation + deepLoad)
+	//__________________________________________________________
+
+
+
+	deep-ui   ((deep)interpretation + deepLoad)      6 h
 		(re)loadables
 		app-ctrl
 		view-ctrl
 		deep-linking
+		renderables
+		closure
+
+
+
 
 	Schema and CCS
 
@@ -53,7 +76,7 @@ deep : the deep core
 
 	chain
 
-		a chain of functions calls that manage asynch for you
+		a chain of functions calls that manage synch/asynch for you
 
 	select
 
