@@ -151,11 +151,12 @@ Puisque web et qu'on est moderne :) :
 
 	succès d'un beau MVC : réduire le couplage du controller vers Model et View
 	
-	Ici couplage Controller-Model est minimum grace au rest : Keep things simple.
-	
-	Et jquery permet de réduire le couplage vue.
+	Coté vue : 
+	Thin Server : couplage Controller-Model minimum grace au Restful : Keep things simple.
+	jquery/css : permet de réduire le couplage Controller-View.
 
-	View (mVC) ----- MC 
+	D'où :
+	(mVC) ----- MC 
 	Avec le controlleur serveur qui manipule le modele (ressources + relations + droits d'accès) au travers d'un interface Restful/OCM
 
 
@@ -177,17 +178,17 @@ jquery/css : qu'est ce que ca change :
 
 	Layers :
 
-	Double effet kiss cool : 
-		jquery + css :  réduit le couplage d'une deuxième manière : 
-			l'empilement
-				exemple : click : anim en couche
-				réouverture css
+		Double effet kiss cool : 
+			jquery + css :  réduit le couplage d'une deuxième manière : 
+				l'empilement
+					exemple : click : anim en couche
+					réouverture css
 
 Application à la modélisation JS : 
 
-	OO super : encapsulation/responsabilité, héritage.
+	l'OO c'est super : encapsulation/responsabilité, héritage.
 
-	OO classique : rigide parce que pas de localité floue à posteriori : tout est forgé.
+	OO classique : rigide parce que pas de localité à posteriori : tout est forgé à priori.
 	OO classique : rigide parce que pas de couche.
 		ornitorinque
 

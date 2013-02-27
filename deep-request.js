@@ -143,7 +143,7 @@ if(typeof process !== 'undefined' && process.versions && process.versions.node)
 */
 
 define(function(require){
-var Plates = require('plates');
+//var Plates = require('plates');
 
 
 var loadInfo = {
@@ -328,14 +328,14 @@ function removeLoadInfo(path){
 	DeepRequest.loadInfo = loadInfo;
 	DeepRequest.handlers = {
 		loaded:function(uri){
-			console.log("DeepRequest.loaded handlers : uri : ", uri);
+			//console.log("DeepRequest.loaded handlers : uri : ", uri);
 		},
 		complete:function(){
-			console.log("DeepRequest.complete handlers");
+			//console.log("DeepRequest.complete handlers");
 
 		},
 		added:function(uri){
-			console.log("DeepRequest.added handler : ", uri);
+			//console.log("DeepRequest.added handler : ", uri);
 
 		}
 	};
@@ -520,7 +520,7 @@ function removeLoadInfo(path){
 	DeepRequest.parse = function(request)
 	{
 		//if(request == "instance::autobahn/stores/remote-rest");
-		//	console.log("DeepRequest.parse : ", request)
+		//console.log("DeepRequest.parse : ", request)
 		var info = {
 			type:null, // deprecated, use protocole instead
 			request:request,
@@ -665,7 +665,7 @@ function removeLoadInfo(path){
 				});
 				return promise.promise(defs) ;
 				break;
-				
+			/*	
 			case "plates" : 
 				var defs = promise.Deferred();
 				DeepRequest.html(info.uri).then(function (html) {
@@ -681,7 +681,7 @@ function removeLoadInfo(path){
 				});
 				return promise.promise(defs) ;
 				break;
-				
+				*/
 			case "js" : 
 				if(info.query)
 				{
@@ -1151,7 +1151,7 @@ function removeLoadInfo(path){
 			if(data.responseData)
 	      	{
 	      	 	res = data.responseData.feed;
-				manageCache(res, path);
+				manageCache(res, url);
 	        	def.resolve(res);
 	      		return;
 	      	}
@@ -1265,7 +1265,7 @@ function removeLoadInfo(path){
 				deferred.resolve(data);
 			}, function(){ 
 				var args = Array.prototype.slice.call(arguments);
-				deferred.reject({msg:"DeepRequest.get failed : "+path, details:args, uri:path, options:options}); 
+				deferred.reject({msg:"DeepRequest.get  failed : "+path, details:args, uri:path, options:options}); 
 			})
 		return promise.promise(deferred) ;
 	}
@@ -1319,7 +1319,7 @@ function removeLoadInfo(path){
 			type:"POST",
 			url:info.uri,
 			dataType:"application/json; charset=utf-8;",
-			//contentType:"application/json; charset=utf-8;",
+			contentType:"application/json; charset=utf-8;",
 			data:JSON.stringify(object)
 		}).then(function  (res) {
 			// body...
@@ -1344,6 +1344,43 @@ function removeLoadInfo(path){
 		})
 
 
+		return promise.promise(deferred);
+	}
+
+	DeepRequest.patch = function(uri, object)
+	{
+		var info = DeepRequest.parse(uri);
+		var deferred  = promise.Deferred();
+		  $.ajax({
+			beforeSend :function(req) {
+				writeJQueryDefaultHeaders(req);
+				req.setRequestHeader("Accept", "application/json; charset=utf-8;");
+			},
+			type:"PATCH",
+			url:info.uri,
+			dataType:"application/json; charset=utf-8;",
+			contentType:"application/json; charset=utf-8;",
+			data:JSON.stringify(object)
+		}).then(function  (res) {
+			// body...
+			console.log("DeepRequest.patch : success : ", res)
+			deferred.resolve(res);
+		}, function  (jqXHR, textStatus, errorThrown) {
+			var test = $.parseJSON(jqXHR.responseText);
+			if(jqXHR.status < 300)
+			{
+				//console.log("DeepRequest.post : error but status 2xx : ", test, " - status provided : "+jqXHR.status);
+				if(typeof test === 'string')
+					test = $.parseJSON(test);
+				deferred.resolve(test);
+			}
+			else
+			{
+				//console.log("DeepRequest.post : failed (status > 2xx) : ", test, " - status provided : ", jqXHR.status )
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:"DeepRequest.patch failed : "+info.request, status:jqXHR.status, details:args, uri:info.uri})
+			}
+		})
 		return promise.promise(deferred);
 	}
 
