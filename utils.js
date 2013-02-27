@@ -368,34 +368,57 @@ define(function(require){
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function retrieveFullSchemaByPath(schema, path, delimitter)
 	{
 		var parts = path.split(delimitter || ".");
-		// console.log("retrieveSchemaByPath : ", path, schema);
-
+		if(parts[0] == "" || parts[0] == ".")
+			parts.shift();
+		 // console.log("retrieveSchemaByPath : ", parts, schema);
 		var tmp = schema;
 		while(parts.length>1)
 		{
 			var part = parts.shift();
+			if(part.match(/^[0-9]*$/))
+			{
+				if(tmp.type == "array")
+				{
+					tmp = tmp.items || {};
+					continue;
+				}
+			}
 			if(!tmp.properties || !tmp.properties[part])
 				return null;
 			tmp = tmp.properties[part];
 		}
+		// console.log("after test last part -1 : ", tmp);
 
 		var lastPart = parts.shift();
 		var res= [];
-		if(tmp.properties && tmp.properties[lastPart])
-			res.push(tmp.properties[lastPart]);
-		//console.log("after test last part : ", res);
-		if(tmp.patternProperties)
-			for(var i in tmp.patternProperties)
-				if(new RegExp(i).test(lastPart))
-					res.push(tmp.patternProperties[i])
+		if(lastPart.match(/^[0-9]*$/))
+		{
+			if(tmp.type == "array")
+			{
+				tmp = tmp.items || {};
+				res.push(tmp)
+			}
+			// TODO : gestion pattern items
+		}
+		else
+		{
+			if(tmp.properties && tmp.properties[lastPart])
+				res.push(tmp.properties[lastPart]);
+			// console.log("after test last part : ", res);
+			if(tmp.patternProperties)
+				for(var i in tmp.patternProperties)
+					if(new RegExp(i).test(lastPart))
+						res.push(tmp.patternProperties[i])
 
-		// console.log("after test last part pattern props : ", res);
+			 // console.log("after test last part pattern props : ", res);
 
-		if(res.length ==0)
-			if (tmp.additionalProperties == undefined || tmp.additionalProperties == false)
-				return null;
-			else
-				return tmp.additionalProperties;
+			if(res.length ==0)
+				if (tmp.additionalProperties == undefined || tmp.additionalProperties == false)
+					return null;
+				else
+					return tmp.additionalProperties;
+		}
+
 		
 		var finalSchema = {};
 		if(res.length > 1)
@@ -404,6 +427,8 @@ define(function(require){
 			});
 		else if(res.length == 1)
 			finalSchema = res[0];
+		 // console.log("retrieveSchemaByPath : finally : ", path, finalSchema);
+
 		return finalSchema;
 	}
 

@@ -426,6 +426,23 @@
 	}
 	var stringData = JSON.stringify(test, null, ' ')
 	interlude(stringData);
+
+
+ var obj = { email: 'test@test.com',
+  password: 'test54',
+  id: '51013dec530e96b112000001' }
+
+
+  var schema = { properties: 
+   { id: { type: 'string', required: false, minLength: 1 },
+     email: { type: 'string', required: true, minLength: 1 },
+     password: { type: 'string', required: true, private: true } },
+  additionalProperties: false }
+  
+  	var privates = deep.query(obj, "//?_schema.private=true", { resultType:"full", schema:schema });
+	console.log("got privates vars to delete :  ", privates)
+
+
 	$("#content-container").append("Datas : <br/><pre>"+stringData+"</pre><br/>")
 	doAllQueries();
 	printReport("deep-query", success, failed, count);

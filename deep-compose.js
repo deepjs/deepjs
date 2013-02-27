@@ -118,7 +118,7 @@ define(function(require, exports, module){
 			return this;
 		}
 	}
-	var createStart= function (decorator) 
+	var createStart = function (decorator) 
 	{
 		var decorator = decorator || new DeepDecorator();
 		var start = function () {

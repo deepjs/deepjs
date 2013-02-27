@@ -328,9 +328,10 @@ define(function defineDeepQuery(require)
 		//	return this.cache[path];
 
 		var schema = null;
+		//console.log("ancestor.schema : ", ancestor.schema)
 		if(ancestor.schema)
-			schema = retrieveFullSchemaByPath(ancestor.schema, path, "/");
-		//console.log("DQ.createEntry : "+path+" : ancestor : ",ancestor)
+			schema = retrieveFullSchemaByPath(ancestor.schema, key, "/");
+		//console.log("DQ.createEntry : "+path+" : schema : ",schema)
 		return this.cache[path] = {
 			_isDQ_NODE_:true,
 			root:ancestor.root,

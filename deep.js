@@ -765,12 +765,38 @@ function(require){
 			return src;
 		},
 		//_________________________________________________________________    MODELISATION
+		schema : function(schema)
+		{
+			//metaSchema = metaSchema || deep.metaSchema || {};
+			var self = this;
+			var func = function(){
+				deep.when(deep.request.retrieve(schema)).then(function (schema) {
+					//var schema = schemas.shift();
+					//var metaSchema = schemas.shift();
+					var alls = [];
+					self._entries.forEach(function(result){
+						result.schema = schema;
+					});
+					
+					self.running = false;
+					nextQueueItem.apply(self, [schema, null]);
+					
+				})
+				.fail(function (error) {
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
+				});
+			}
+			addInQueue.apply(this,[func]);
+			return this;
+		},
 		schemaUp : function(schema, metaSchema)
 		{
 			metaSchema = metaSchema || deep.metaSchema || {};
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(schema)).then(function (schema) {
+				deep.when(deep.request.retrieve(schema))
+				.done(function (schema) {
 					var alls = [];
 					self._entries.forEach(function(result){
 						if(!result.schema)
@@ -785,6 +811,10 @@ function(require){
 						console.error("error : deep.schemaUp : ",error)
 						throw new Error("error : deep.schemaUp : "+error);
 					});
+				})
+				.fail(function (error) {
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
 				});
 			}
 			addInQueue.apply(this,[func]);
@@ -795,7 +825,8 @@ function(require){
 			metaSchema = metaSchema || deep.metaSchema || {};
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(schema)).then(function (schema) {
+				deep.when(deep.request.retrieve(schema))
+				.done(function (schema) {
 					var alls = [];
 					self._entries.forEach(function(result){
 						if(!result.schema)
@@ -810,6 +841,10 @@ function(require){
 						console.error("error : deep.schemaBottom : ",error)
 						throw new Error("error : deep.schemaBottom : "+error);
 					});
+				})
+				.fail(function (error) {
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
 				});
 			}
 			addInQueue.apply(this,[func]);
@@ -902,7 +937,7 @@ function(require){
 					});
 				});
 				self.running = false;
-				nextQueueItem.apply(self, [self, null]);
+				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			}
 			
 			addInQueue.apply(this,[func]);
@@ -2188,6 +2223,12 @@ function(require){
 			this.failure = failure;
 			this.result = result;
 		}
+
+		if(this.result instanceof Error)
+		{
+			this.failure = result;
+			this.result = null;
+		}
 		if(this.queue.length>0)
 		{
 			try{
@@ -2240,7 +2281,10 @@ function(require){
 		var prom = new DeepPromise();
 		prom.resolved = true;
 		prom.running = false;
-		prom.result = result;
+		if(result instanceof Error)
+			prom.failure = result;
+		else
+			prom.result = result;
 		return prom;
 	}
 
@@ -2264,6 +2308,11 @@ function(require){
 					//console.log("deep.promise of DeepHandler : added then")
 					if(success && success.then)
 						deep.when(success).then(function (success) {
+							if(success instanceof Error)
+							{
+								def.reject(success);
+								return;
+							}
 							def.resolve(success);
 						}, function (error) {
 							def.reject(error);
@@ -2309,6 +2358,12 @@ function(require){
 		arr.forEach(function (a){
 			var i = d +1;
 			deep.when(a).then(function(r){
+				if(r instanceof Error)
+				{
+					def.reject(r);
+					return;
+				}
+
 				res[i] = r;
 				c++;
 				if(c == count)

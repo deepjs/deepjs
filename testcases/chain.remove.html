@@ -19,6 +19,7 @@
 
 	var tests = [];
 
+	//________________________________________________________________________________________
 	var a = {
 		aString : "Hello",
 		anInt : 5,
@@ -42,7 +43,62 @@
 		}
 	}], report);
 
+	//________________________________________________________________________________________
 
+	var obj = { 
+		email: 'test@test.com',
+		password: 'test54',
+	 	id: '51013dec530e96b112000001' 
+	}
+	 var schema = { 
+	 	properties: 
+		{ 
+		  	id: { type: 'string', required: false, minLength: 1 },
+		    email: { type: 'string', required: true, minLength: 1 },
+		    password: { type: 'string', required: true, "private": true } 
+		},
+	 	additionalProperties: false 
+	}
+
+	deep(obj, schema)
+	.pushHandlerTo(tests)
+	.remove(".//?_schema.private=true")
+	.equal({ 
+		email: 'test@test.com',
+	 	id: '51013dec530e96b112000001' 
+	 }, report);
+
+	//________________________________________________________________________________________
+
+	var objs = [{ 
+		email: 'test@test.com',
+		password: 'test54',
+	 	id: '51013dec530e96b112000001' 
+	}]
+	 var schema2 = { 
+	 	type:"array",
+	 	items:{
+	 		properties: 
+			{ 
+			  	id: { type: 'string', required: false, minLength: 1 },
+			    email: { type: 'string', required: true, minLength: 1 },
+			    password: { type: 'string', required: true, "private": true } 
+			},
+		 	additionalProperties: false 
+	 	}
+
+	}
+
+	deep(objs, schema2)
+	//.query("./*")
+	.pushHandlerTo(tests)
+	.remove(".//?_schema.private=true")
+	.equal([{ 
+		email: 'test@test.com',
+	 	id: '51013dec530e96b112000001' 
+	 }], report);
+
+	//________________________________________________________________________________________
 	deep.all(tests).then(function (argument) {
 		printReport("chain.remove : success ", success, tests.length-success, tests.length);
 	}, function (argument) {

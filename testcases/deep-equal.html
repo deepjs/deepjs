@@ -7,7 +7,22 @@
 	var success = 0;
 	var failed = 0;
 	var count = 0;
-
+	function report(result)
+	{
+		count++;
+		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
+		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
+		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+		{
+			//console.log("deep-copy : needed result not matched : "+title+" ("+count+")")
+			failed++;
+		}
+	//	$("#content-container").append("<br/><strong  style=\"color:#"+((ok)?"000000":"FF0000")+"\">test :</strong>", JSON.stringify(ok, null, ' ')+"<br/>");
+	}
 	function doDeepEqualTest(title, a, b, resultNeeded)
 	{
 		count++;
@@ -114,6 +129,10 @@
 	var a = { func:func };
 	var b = { func:func2 };
 	doDeepEqualTest("ref function not equal : ", a,b, false);
+
+
+ 
+
 
 	printReport("deep-equal", success, failed, count);
 })();

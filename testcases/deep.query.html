@@ -240,7 +240,7 @@ deep(datas).query( "//[@.length-1]" ).valuesEqual( [
   }
  ] ,report).log("________________________________________");
 
-deep(datas).query("//length").valuesEqual([5,1]).log("________________________________________");;
+//deep(datas).query("//length").valuesEqual([5,1], report).log("________________________________________");;
 
 
 deep(datas).query("//[::2]").valuesEqual([
@@ -324,7 +324,81 @@ deep(datas).query("//?_schema.type=number").valuesEqual([
 
 deep(datas).query("//?_schema.type=object").fail(console.log).log("__________________")
 //.query("./!?&isbn&quantity=eq=12").fail(console.log).log("__________________")
-.valuesEqual([
+.valuesEqual( [
+  {
+   "store": {
+    "book": [
+     {
+      "category": "reference",
+      "author": "Nigel Rees",
+      "isbn": "0-553-21311-3",
+      "title": "Sayings of the Century",
+      "price": 8.95,
+      "warehouse": {
+       "stock": 12
+      }
+     },
+     {
+      "category": "reference",
+      "author": "Jean Meslier",
+      "isbn": "0-553-21311-3",
+      "title": "Profession curée",
+      "price": 18.95,
+      "warehouse": {
+       "stock": 0
+      }
+     },
+     {
+      "category": "fiction",
+      "author": "Evelyn Waugh",
+      "isbn": "0-553-21311-4",
+      "title": "Sword of Honour",
+      "price": 12.99
+     },
+     {
+      "category": "fiction",
+      "author": "Herman Melville",
+      "title": "Moby Dick",
+      "isbn": "0-553-21311-3",
+      "price": 8.99,
+      "warehouse": {
+       "stock": 12
+      }
+     },
+     {
+      "category": "fiction",
+      "author": "J. R. R. Tolkien",
+      "title": "The Lord of the Rings",
+      "isbn": "0-395-19395-8",
+      "price": 22.99
+     }
+    ],
+    "bicycle": {
+     "category": "ride",
+     "col": "red",
+     "price": 19.95
+    },
+    "helmet": {
+     "category": "ride",
+     "col": "red",
+     "price": 9.95
+    },
+    "gloves": {
+     "category": "ride",
+     "col": "red",
+     "price": 15.95
+    }
+   },
+   "account": {
+    "total": 1234,
+    "sell": [
+     {
+      "isbn": "0-395-19395-8",
+      "quantity": 12
+     }
+    ]
+   }
+  },
   {
    "book": [
     {

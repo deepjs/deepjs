@@ -82,33 +82,37 @@ var rewritePath = RQL_Global.rewritePath = function rewritePath(path){
 retrieve schema property
 */
 var retrieveSchemaProp = RQL_Global.retrieveSchemaProp = function retrieveSchemaProp(path, schema, parts, obj){
-	//console.log("retrieveSchemaProp of : ",path, " - prop : ", parts, " - obj : ", schema)
+	//console.log("retrieveSchemaProp of : ",path, " - parts : ", parts, " - schema : ", schema)
+	//return schema || {};
 	if(parts[0] == "_schema")
 		parts.shift();
-	var tmp = null;
-	if( schema)
-		tmp = retrieveFullSchemaByPath(schema, path);
-	else if(parts.length == 1 && parts[0] == "type")
+	var tmp = schema;
+	if(!schema)
+		//tmp = retrieveFullSchemaByPath(schema, parts.join("."));
+	//else 
 	{
-		//console.log("no schema but need type : produce it : ",typeof obj)
-		parts.shift();
-		return getJSPrimitiveType(obj);
-	}
-	else if(parts.length == 1 && parts[0] == "depth")
-	{
-		//console.log("no schema but need type : produce it : ",typeof obj)
-		parts.shift();
-		return path.split("/").length;
-	}
-	else if(parts.length == 1 && parts[0] == "class")
-	{
-		//console.log("no schema but need type : produce it : ",typeof obj)
-		parts.shift();
-		return utils.getObjectClass(obj);
+		if(parts.length == 1 && parts[0] == "type")
+		{
+			//console.log("no schema but need type : produce it : ",typeof obj)
+			parts.shift();
+			return getJSPrimitiveType(obj);
+		}
+		else if(parts.length == 1 && parts[0] == "depth")
+		{
+			//console.log("no schema but need type : produce it : ",typeof obj)
+			parts.shift();
+			return path.split("/").length;
+		}
+		else if(parts.length == 1 && parts[0] == "class")
+		{
+			//console.log("no schema but need type : produce it : ",typeof obj)
+			parts.shift();
+			return utils.getObjectClass(obj);
+		}
 	}
 	if(parts.length == 0 || !tmp)
 		return tmp || {};
-	var propSchema = utils.retrieveByPath(tmp, parts.join("."));
+	var propSchema = utils.retrieveValueByPath(tmp, parts.join("."));
 	 if(!propSchema && parts.length == 1 && parts[0] == "type")
 	 {
 	 	parts.shift();

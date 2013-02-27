@@ -357,21 +357,13 @@ function(require){
 	Validator.prototype.compileObject = function(schema){
 		return this.compileObject(schema);
 	}*/
+	
 	Validator.prototype.checkRef = function checkRef(value, schema, valuePath, schemaPath, nextValidation)
 	{
 		if(nextValidation == undefined)
 			nextValidation = this.validateProperty;
 		var othis = this;
-		var deferred = promise.Deferred();
-		var doValidation = function(schema){
-			promise.when(nextValidation.apply(othis,[value, schema, valuePath, schemaPath])).then(function resolveCheckRef(){
-				deferred.resolve({});
-			});
-		}
-		//promise.when(this.compileObject(schema, schemaPath)).then(function(schema){
-		doValidation(schema); 
-		//});
-		return promise.promise(deferred);
+		return nextValidation.apply(othis,[value, schema, valuePath, schemaPath]);
 	}
 
 	Validator.prototype.validateSchema = function validateSchema(schema, options)
@@ -385,17 +377,15 @@ function(require){
 			this.options.basePath = "";
 		if(!this.options.baseSchemaPath)
 			this.options.baseSchemaPath = "";
-		this.checkRef(null, schema, null, this.options.basePath, this.validateSchemaProperties).then(function(){
-			var report = {
-				errorsMap:othis.errorsMap,
-				schema:schema,
-				value:null,
-				date:Date.now(),
-				valid:(othis.errors.length == 0)
-			}
-			deferred.resolve(report);
-		});
-		return promise.promise(deferred)
+		this.validateSchemaProperties(null, schema, null, this.options.basePath);
+		var report = {
+			errorsMap:othis.errorsMap,
+			schema:schema,
+			value:null,
+			date:Date.now(),
+			valid:(othis.errors.length == 0)
+		}
+		return report;
 	}
 
 	Validator.prototype.validate = function validate(value, schema, options){
@@ -405,26 +395,20 @@ function(require){
 		this.errors = [];
 		this.errorsMap = {};
 		var othis = this;
-		var deferred = promise.Deferred();
-
 		this.options = options || {};
 		if(!this.options.basePath)
 			this.options.basePath = "";
 		if(!this.options.baseSchemaPath)
 			this.options.baseSchemaPath = "";
-
-		this.checkRef(value, schema, this.options.basePath,this.options.baseSchemaPath).then(function(){
-			//console.log("validation end : "+othis.errors.length)
-			var report = {
-				errorsMap:othis.errorsMap,
-				schema:schema,
-				value:value,
-				date:Date.now(),
-				valid:(othis.errors.length == 0)
-			}
-			deferred.resolve(report);
-		});
-		return promise.promise(deferred)
+		this.validateProperty(value, schema, this.options.basePath, this.options.baseSchemaPath);
+		var report = {
+			errorsMap:othis.errorsMap,
+			schema:schema,
+			value:value,
+			date:Date.now(),
+			valid:(othis.errors.length == 0)
+		}
+		return report;
 	}
 
 	Validator.prototype.partialValidation =  function partialValidation( object, schema, options){
@@ -482,7 +466,6 @@ function(require){
 
 	Validator.prototype.validateSchemaProperties = function validateSchemaProperties(value, schema, valuePath, schemaPath)
 	{
-		var deferred = promise.Deferred();
 		var validations = [];
 		for(var i in schema)
 		{
@@ -506,22 +489,14 @@ function(require){
 					validations.push(this.checkRef(schema[i], this.lexic[i].schema, schemaPath, i+".schema"));
 			}	
 		}
-		promise.all(validations).then(function(validations){
-			deferred.resolve(validations);
-		})
-		return promise.promise(deferred);
+		return validations;
 	}
 
 
 	Validator.prototype.validateProperty = function (value, schema, valuePath, schemaPath)
 	{
 		//if(console.flags.validator) console.log("validator", "validateProperty : ",value, schema)
-		var deferred = promise.Deferred();
 		var validations = [];
-
-		
-
-		
 		var type = this.getType(value);
 
 		if(this.options.forceConversion && schema.type != type)
@@ -683,10 +658,7 @@ function(require){
 						if(console.flags.validator) console.log("validator", "unrecognised schema property : "+i);
 				}
 			}
-		promise.all(validations).then(function propertiesValidationsDone(validations){
-			deferred.resolve(validations);
-		})
-		return promise.promise(deferred);
+		return validations;
 	}
 	
 	Validator.prototype.applyLexic = function applyLexic(lexic){
