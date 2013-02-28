@@ -1,0 +1,54 @@
+<h2>deep.collider : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep/deep");
+	var utils = require("deep/utils");
+	var deepEqual = utils.deepEqual;
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		count++;
+		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
+		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
+		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+		{
+			//console.log("deep-copy : needed result not matched : "+title+" ("+count+")")
+			failed++;
+		}
+	//	$("#content-container").append("<br/><strong  style=\"color:#"+((ok)?"000000":"FF0000")+"\">test :</strong>", JSON.stringify(ok, null, ' ')+"<br/>");
+	}
+
+    var tests = [];
+
+    //__________________________________________________________________________________
+
+    deep({
+        b:[1,2,3]
+    })
+    .pushHandlerTo(tests)
+    .up({
+        b:deep.collider.replace([4,5])
+    })
+    .equal({
+        b:[4,5]
+    }, report)
+
+    //__________________________________________________________________________________
+
+    deep.all(tests).then(function () {
+        printReport("deep.collider : success ", success, tests.length-success, tests.length);
+    }, function (error) {
+        console.log("deep.collider : error : ", error);
+        printReport("deep.collider : errors ", success, tests.length-success, tests.length);
+    });
+
+})();
+</script>

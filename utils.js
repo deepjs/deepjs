@@ -73,6 +73,11 @@ define(function(require){
 		}
 		else if(typeof obj === 'object')
 		{
+			if(obj instanceof RegExp)
+				return obj;
+			if(obj instanceof Date)
+				return new Date(obj.valueOf());
+		
 			res = {};
 			for(var i in obj)
 			{
@@ -511,13 +516,13 @@ define(function(require){
 					//console.log("deepUp: src is decorator : ",src)
 					result = compose.up(target, src);
 				}	
-				else if(src.collider && src.collider instanceof collider.Collider)
+				else if(src._deep_collider)
 				{
 					//console.log("deepUp: src is collider : ",src)
-					if(target.collider && target.collider instanceof collider.Collider)
-						result = collider.wrap(source,target);
+					if(target._deep_collider)
+						result = collider.wrap(src,target);
 					else
-						result = source(target, parent, key);
+						result = src(target, parent, key);
 				}
 				else
 				{
@@ -529,8 +534,8 @@ define(function(require){
 			{
 				if(src.decorator && src.decorator instanceof compose.Decorator)
 					throw new Error("deep.compose need to be applied on function ! ");
-				if(src.collider && src.collider instanceof collider.Collider)
-					result = source(target, parent, key);
+				if(src._deep_collider)
+					result = src(target, parent, key);
 				else
 					result = src;
 			}
@@ -559,10 +564,31 @@ define(function(require){
 				return result;
 				break;
 			case 'object' :
+				if(src instanceof RegExp)
+				{
+					if(parent && key)
+						parent[key] = src;
+					return src;
+				}	
+				if(src instanceof Date)
+				{
+					target = new Date(src.valueOf());
+					if(parent && key)
+						parent[key] = target;
+					return target;
+				}	
+				
 				for(var i in src)
 				{
 					if(i == "_deep_entry")
 						continue;
+
+					if(src[i] && src[i]._deep_colliderRemove)
+					{
+						delete target[i];
+						continue;
+					}
+
 					var sch = {};
 					if(schema)
 						sch = retrieveFullSchemaByPath(schema, i);
@@ -605,11 +631,12 @@ define(function(require){
 					result = compose.bottom(src, target); 
 
 				}	
-				else if(target.collider && target.collider instanceof collider.Collider)
+
+				else if(target._deep_collider)
 				{
 					//console.log("utils.bottom: src is collider : ",src)
-					if(target.collider && target.collider instanceof collider.Collider)
-						result = collider.wrap(target, source);
+					if(src._deep_collider)
+						result = collider.wrap(target, src);
 					else
 						result = target(src, parent, key);
 				}
@@ -623,7 +650,7 @@ define(function(require){
 			{
 				if(target.decorator && target.decorator instanceof compose.Decorator)
 					throw new Error("deep.compose need to be applied on function ! ");
-				if(target.collider && target.collider instanceof collider.Collider)
+				if(target._deep_collider)
 					result = target(src, parent, key);
 				else
 					result = target;
@@ -670,6 +697,11 @@ define(function(require){
 				{
 					if(i == "_deep_entry")
 						continue;
+					if(oldProps[i] && oldProps[i]._deep_colliderRemove)
+					{
+						delete target[i];
+						continue;
+					}
 					var sch = {};
 					if(schema)
 						sch = retrieveFullSchemaByPath(schema, i);

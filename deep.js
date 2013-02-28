@@ -124,6 +124,13 @@ TODO :
 /*
 ADDITIONAL CHAIN METHODS
 
+.enableLog()
+.disableLog()
+
+
+.condition(...)
+.conditionEnd(...)
+
 reverse
 
 logNodes
@@ -151,11 +158,9 @@ if(typeof define !== 'function')
 }
 
 define(["require", "deep/ie-hacks","deep/utils", "deep/deep-rql","deep/deep-request", "deep/deep-schema",  "deep/promise", "deep/deep-query", "deep/deep-compose"],
-function(require){
-
-
+function(require)
+{
 	// console.log("Deep init");
-
 	if(!console.warn)
 		console.warn = console.log;
 	if(!console.error)
@@ -248,8 +253,7 @@ function(require){
 			return this;
 		},
 		log:function () {
-			var args = Array.prototype.slice.call(arguments);
-			this.chain.log.apply(this.chain, args);
+			this.chain.log.apply(this.chain, arguments);
 			return this;
 		},
 		logValues:function (msg) {
@@ -1316,7 +1320,7 @@ function(require){
 		/**
 
 		*/
-		validate:function(callBack, options) 
+		validate:function(options) 
 		{
 			options = options || {};
 			var self = this;
@@ -1330,15 +1334,12 @@ function(require){
 				deep.all( a ).then( function ( reports ) {
 					var freport = {
 						valid:true,
-						errors:[],
 						reports:reports
 					}
-					var errors = []
 					reports.forEach ( function ( report ) {
 						if(report.valid)
 							return;
 						freport.valid = false;
-						freport.errors.push(report);
 					})
 					if(options.callBack)
 					{
@@ -1355,15 +1356,14 @@ function(require){
 					else
 					{
 						self.running = false;
-						nextQueueItem.apply(self, [freport, !freport.valid]);
+						nextQueueItem.apply(self, [null, freport]);
 					}
 				}, function (error) {
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
 			}
-			
-			addInQueue.apply(this,[func()]);
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 
@@ -1398,8 +1398,7 @@ function(require){
 		{
 			var self = this;
 			options = options || {};
-			function func(){
-				return function()
+			var func = function()
 				{
 					console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)")
 					self._entries.forEach(function (e) {
@@ -1417,8 +1416,8 @@ function(require){
 					self.running = false;
 					nextQueueItem.apply(self,[true, null]);
 				}
-			}
-			addInQueue.apply(this,[func()]);
+			
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 		// ________________________________________ READ ENTRIES
@@ -1673,35 +1672,35 @@ function(require){
 		deepInterpret:function(context) 
 		{
 			var self = this;
-			function func(){
-				return function(){
-					deep.when(deep.request.retrieve(context)).then(function (context) 
-					{
-						var res = [];
-						self._entries.forEach(function (e) {
-							var strings = self.querier.query(e, ".//?_schema.type=string", {resultType:"full"});
-							strings.forEach(function (interpretable) {
-								var r = deep.interpret(interpretable.value, context);
-								res.push(r);
-								if(!interpretable.ancestor)
-									//throw new Error("You couldn't interpret root !");
-									interpretable.value = r;
-								else
-									interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
-							})
-						});
-						self.running = false;
-						nextQueueItem.apply(self, [res, null]);
-					}, 
-					function (error) 
-					{
-						console.error("error : deep.deepInterpret : ", error);
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
+			var func = function(){
+				deep.when(deep.request.retrieve(context))
+				.done(function (context) 
+				{
+					var res = [];
+					self._entries.forEach(function (e) {
+						var strings = self.querier.query(e, ".//?_schema.type=string", {resultType:"full"});
+						strings.forEach(function (interpretable) {
+							var r = deep.interpret(interpretable.value, context);
+							res.push(r);
+							if(!interpretable.ancestor)
+								//throw new Error("You couldn't interpret root !");
+								interpretable.value = r;
+							else
+								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
+						})
 					});
-				}
+					self.running = false;
+					nextQueueItem.apply(self, [res, null]);
+				}) 
+				.fail(function (error) 
+				{
+					console.error("error : deep.deepInterpret : ", error);
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
+				});
 			}
-			addInQueue.apply(this,[func()]);
+			
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 		interpret:function(context) 
@@ -1849,6 +1848,7 @@ function(require){
 			addInQueue.apply(this,[func()]);
 			return self;
 		},
+		
 		cancelIf : function(totest)
 		{
 			var self = this;
@@ -1882,11 +1882,7 @@ function(require){
 		newHandler:function (options) {
 			return new DeepHandler(options);
 		}
-
-
 	}
-
-	
 
 	deep = function(broot, schema)
 	{
@@ -2434,20 +2430,6 @@ function(require){
 		return deep.promise(def);
 	}
 
-	deep.linker = {
-		addToPath:function (section) {
-			if(section instanceof DeepHandler)
-				section = section._entries[0].value;
-			console.log(" DEEP.LINKER Add TO PATH : ", section)
-		    var old = $.address.path();
-		    if(old[old.length-1] != "/")
-		    	old += "/";
-		    $.address.path(old+section);
-		},
-		setPath:function (path) {
-			$.address.path(path);
-		}		
-	}
 
 	// console.log("Deep initialisaed");
 

@@ -21,19 +21,24 @@ But you could do it for us...;)
 
 define(function(require)
 {
+	var Collider = function(){
+
+	}
+	Collider.prototype = {}
 	return {
+		Collider:Collider,
 		wrap:function(wrapper, wrapped){
 			var a = function(value, parent, key){
 				return wrapper(wrapped(value, parent, key), parent, key);
 			}	
-			a.__layerComposition = true;
+			a._deep_collider = true;
 			return a;
 		},
 		retrieve:function(){
 			return function(value, parent, name){
 				return newObject;
 			}
-			a.__layerComposition = true;
+			a._deep_collider = true;
 			return a;
 		},
 		copyTo:function(object, path){
@@ -41,18 +46,18 @@ define(function(require)
 				utils.setValueByPath(object, path, value)
 				return value;
 			}
-			a.__layerComposition = true;
+			a._deep_collider = true;
 			return a;	
 		},
 		around:function(handler){
-			handler.__layerComposition = true;
+			handler._deep_collider = true;
 			return handler; 
 		},
 		replace:function(newValue){
 			var a = function(value){
 				return newValue;
 			}
-			a.__layerComposition = true;
+			a._deep_collider = true;
 			return a;
 		},
 		log:function(){
@@ -61,17 +66,17 @@ define(function(require)
 				console.log("LayerTools : log : ",value);
 				return value;
 			}
-			a.__layerComposition = true;
+			a._deep_collider = true;
 			return  a;
 		},
 		validate:function(schema){
 			return function(value){
-				this.__layerComposition = true;
+				this._deep_collider = true;
 				if(!validator.isValid(value, schema))
 					throw new ValidationError(validator.report);
 				return value;
 			}
-			a.__layerComposition = true;
+			a._deep_collider = true;
 			return a;
 		},
 		remove:function(){
@@ -80,7 +85,7 @@ define(function(require)
 				delete parent[key];
 				return undefined;
 			}
-			a.__layerCompositionRemove = true;
+			a._deep_colliderRemove = true;
 			return a;
 		},
 		assert:{
@@ -89,7 +94,7 @@ define(function(require)
 					console.assert(value === true);
 					return value;
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return a;
 			},
 			isFalse:function(){
@@ -97,18 +102,18 @@ define(function(require)
 					console.assert(value === false);
 					return value;
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return a;
 			},
 			equal:function(equalTo){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value == equalTo;
 				}
 			},
 			notEqual:function(notEqualTo){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value != notEqualTo;
 				}
 			},
@@ -119,7 +124,7 @@ define(function(require)
 			},
 			isBoolean:function(){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return Math.abs(value);
 				}
 			},
@@ -164,19 +169,19 @@ define(function(require)
 
 			median:function(by){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			},
 			mean:function(by){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			},
 			reverse:function(){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					if(typeof value.push === 'function')
 						return value.reverse();
 					return value;
@@ -184,24 +189,24 @@ define(function(require)
 			},
 			sort:function(on){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			},
 			filter:function(by){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			},
 			merge:function(newArray, mergeOn){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 				}
 			},
 			remove:function(what){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 				}
 			},
 			push:function(newArray){
@@ -216,14 +221,14 @@ define(function(require)
 			},
 			pushTo:function(object, path){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					utils.setValueByPath(object, path, value)
 					return value;
 				}
 			},
 			unshiftTo:function(object, path){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					utils.setValueByPath(object, path, value)
 					return value;
 				}
@@ -237,13 +242,13 @@ define(function(require)
 			inject:function(what){},
 			injectTo:function(path, object){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			},
 			injectController:function(){
 				return function (value, controller){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			},
@@ -252,13 +257,13 @@ define(function(require)
 			},
 			replace:function(newObject){
 				return function(){
-				this.__layerComposition = true;
+				this._deep_collider = true;
 					return newObject;
 				}
 			},
 			reverse:function(by){
 				return function(value){
-					this.__layerCompositionéds = true;
+					this._deep_collideréds = true;
 
 				}
 			},
@@ -266,19 +271,19 @@ define(function(require)
 				var a =  function(value, parent, key){
 					return what+value+"";
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return a;
 			},
 			append:function(what){
 				var a =  function(value, parent, key){
 					return value+what+"";
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return a;
 			},
 			split:function(by){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 
 				}
 			}
@@ -286,55 +291,55 @@ define(function(require)
 		number:{
 			increment:function(addition){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value + 1;
 				}
 			},
 			decrement:function(addition){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value - 1;
 				}
 			},
 			add:function(addition){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value + addition;
 				}
 			},
 			substract:function(val){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value - val;
 				}
 			},
 			substractedOf:function(val){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return val - value;
 				}
 			},
 			abs:function(){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return Math.abs(value);
 				}
 			},
 			multiply:function(by){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return by*value;
 				}
 			},
 			divid:function(val){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return val/value;
 				}
 			},
 			dividedBy:function(val){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value/val;
 				}
 			},
@@ -347,13 +352,13 @@ define(function(require)
 			},
 			max:function(val){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return Math.max(value, val);
 				}
 			},
 			min:function(val){
 				return function(value){
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return Math.min(value, min);
 				}
 			}
@@ -363,14 +368,14 @@ define(function(require)
 				var a = function(oldObject){
 					return deepCopy(newObject, oldObject, overwrite, schema);
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return  a;
 			},
 			replace:function(newObject){
 				var a = function(){
 					return newObject;
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return  a;
 			},
 			swapProperty:function(prop1,prop2){
@@ -389,7 +394,7 @@ define(function(require)
 					value[propertyName] = propertyValue;
 					return value;
 				}
-				a.__layerComposition = true;
+				a._deep_collider = true;
 				return a;
 			}
 		},
@@ -401,7 +406,7 @@ define(function(require)
 			apply:function(othis, args){
 				return function(value){
 					args = args || null;
-					this.__layerComposition = true;
+					this._deep_collider = true;
 					return value.apply(othis, args);
 				}
 			}
