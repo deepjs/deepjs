@@ -622,17 +622,16 @@ function(require)
 			return this;
 		},
 		//___________________________________________________________________________ NAVIGATION
-		range : function  (start,end) 
+		/*range : function  (start,end) 
 		{
 			var self = this;
 			var func = function(){
-				self._entries = [self._entries[0]];
 				self.running = false;
 				nextQueueItem.apply(self, [self._entries]);
 			}
 			addInQueue.apply(this,[func]);
 			return cloned;
-		},
+		},*/
 		first : function  () 
 		{
 			var self = this;
@@ -1895,7 +1894,7 @@ function(require)
 		}
 	}
 
-	deep = function(broot, schema)
+	var deep = function(broot, schema)
 	{
 		var handler = new DeepHandler({path:"/!"});
 		handler.running = true;
@@ -1958,6 +1957,7 @@ function(require)
 	deep.request = DeepRequest;
 	deep.utils = utils;
 	deep.validate = Validator.validate;
+	deep.partialValidation = Validator.partialValidation;
 	deep.compose = deepCompose;
 	deep.chain = {
 		nextQueueItem:nextQueueItem,
