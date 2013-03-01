@@ -21,6 +21,7 @@ But you could do it for us...;)
 
 define(function(require)
 {
+
 	var Collider = function(){
 
 	}
@@ -205,9 +206,20 @@ define(function(require)
 				}
 			},
 			remove:function(what){
-				return function(value){
-					this._deep_collider = true;
+				var a = function(value, parent, key){
+					if(value && value.forEach)
+						for(var i = 0; i < value.length; i++)
+						{
+							if(value[i] == what)
+							{
+								value = value.slice(i,i+1);
+								break;
+							}
+						}
+					parent[key] = value;
 				}
+				a._deep_collider = true;
+				return a;
 			},
 			push:function(newArray){
 				return function(value){

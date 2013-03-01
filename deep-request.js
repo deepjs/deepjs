@@ -974,20 +974,31 @@ function removeLoadInfo(path){
 				getFacet(path);
 			}
 		}
-		else 
-			promise.when($.ajax({
+		else {
+			$.ajaxSetup({
+			   jsonp: null,
+			   jsonpCallback: null
+			});
+			$.ajax({
 				beforeSend :function(req) {
 					writeJQueryDefaultHeaders(req);
 					req.setRequestHeader("Accept", "application/json; charset=utf-8");
 					//console.log("INFO. JSON = "+ JSON.stringify(path));
 
 				},
-				//contentType: "application/json; charset=utf-8",
+				contentType: "application/json; charset=utf-8",
 				url:path, 
 				method:"GET", 
 				data:body||null,
 				datatype:"json" 
-			})).then(function(data, msg, jqXHR){
+			})
+			.fail( function(){ 
+				var args = Array.prototype.slice.call(arguments);
+				console.log("deep.request.json error : ", arguments)
+				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
+			})
+			.done(function(data, msg, jqXHR){
+				console.log("deep.request.json response : ", data, query)
 				if(typeof data === 'string')
 					data = JSON.parse(data);
 				if(query)
@@ -995,10 +1006,8 @@ function removeLoadInfo(path){
 				//console.log("json success : ", path, query, data);
 				manageCache(data, path);
 				deferred.resolve(data);
-			}, function(){ 
-				var args = Array.prototype.slice.call(arguments);
-				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
 			})
+		}
 		return promise.promise(deferred) ;
 	}
 

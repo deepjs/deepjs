@@ -622,6 +622,17 @@ function(require)
 			return this;
 		},
 		//___________________________________________________________________________ NAVIGATION
+		range : function  (start,end) 
+		{
+			var self = this;
+			var func = function(){
+				self._entries = [self._entries[0]];
+				self.running = false;
+				nextQueueItem.apply(self, [self._entries]);
+			}
+			addInQueue.apply(this,[func]);
+			return cloned;
+		},
 		first : function  () 
 		{
 			var self = this;

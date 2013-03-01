@@ -704,6 +704,13 @@ function(require){
 			"date-time":{
 				test:function(value){ return (/.*/g).test(value) },
 				error:"need to be with date-time format"
+			},
+			"utc-millisec":{
+				test:function(value){ 
+					
+					return (/.*/g).test(value) 
+				},
+				error:"need to be with date-time format"
 			}
 		},
 		type:{
