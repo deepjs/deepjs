@@ -421,7 +421,7 @@ function removeLoadInfo(path){
 				//contentType: "application/json; charset=utf-8",
 				url:info.uri, 
 				method:"GET", 
-				data:info.body||null,
+				//data:info.body||null,
 				datatype:"json" 
 			})).then(function(data, msg, jqXHR){
 				if(parsers["default"])
@@ -989,7 +989,7 @@ function removeLoadInfo(path){
 				contentType: "application/json; charset=utf-8",
 				url:path, 
 				method:"GET", 
-				data:body||null,
+				//data:body||null,
 				datatype:"json" 
 			})
 			.fail( function(){ 
@@ -1084,7 +1084,7 @@ function removeLoadInfo(path){
 				contentType: "text/plain; charset=utf-8",
 				url:path, 
 				method:"get", 
-				data:body||null,
+				//data:body||null,
 				datatype:"html" 
 			})).then(
 				function(data, msg, jqXHR){
@@ -1130,7 +1130,7 @@ function removeLoadInfo(path){
 			contentType: "aplication/xml; charset=utf-8",
 			url:path, 
 			method:"get", 
-			data:body||null,
+			//data:body||null,
 			datatype:"xml" 
 		})).then(function(data){
 			data = jQuery.parseXML(data);
@@ -1262,7 +1262,7 @@ function removeLoadInfo(path){
 				//contentType: "application/json; charset=utf-8",
 				url:path, 
 				method:"GET", 
-				data:body||null,
+			//	data:body||null,
 				datatype:"json" 
 			})).then(function(data, msg, jqXHR){
 				if(typeof data === 'string')
