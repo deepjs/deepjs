@@ -1193,8 +1193,8 @@ function(require)
 		{
 			var self = this;
 			args = args || [];
-
-			var create = function(){
+			var create = function()
+			{
 				deep.when(func.apply({}, args)).then(function (loadeds) 
 				{
 					self.running = false;
@@ -1488,6 +1488,27 @@ function(require)
 			}	
 			else
 				return deep.chain.values(this).shift();
+		},
+		each:function  (callBack) 
+		{
+			var self = this;
+			var func = function()
+			{
+				var alls = [];
+				self._entries.forEach(function(e){
+					alls.push(callBack(e.value));
+				});
+				deep.all(alls).then(function (results) {
+					self.running = false;
+					nextQueueItem.apply(self, [results, null]);
+				}, function (error) {
+					console.error("error : deep.each : ",error);
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
+				});
+			}
+			addInQueue.apply(this,[func]);
+			return this;
 		},
 		values:function  (callBack) 
 		{
@@ -1949,7 +1970,6 @@ function(require)
 			return new DeepHandler(options);
 		}
 	}
-	DeepHandler.prototype.each = DeepHandler.prototype.values;
 
 	var deep = function(broot, schema)
 	{
