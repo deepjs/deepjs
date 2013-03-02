@@ -2021,7 +2021,7 @@ function(require)
 			}
 			// console.log("chain will run next item");
 			handler.running = false;
-			nextQueueItem.apply(handler, [deep.chain.values(handler), null]);
+			nextQueueItem.apply(handler, [handler._entries[0].value, null]);
 		}, function (error) {
 			console.log("deep start chain error : ", error);
 			handler.running = false;
