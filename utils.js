@@ -42,11 +42,7 @@ define(function(require){
 	utils.copyArray = function(arr){
 		if(!arr)
 			return [];
-		var res = [];
-		arr.forEach(function(a){
-			res.push(a);
-		})
-		return res;
+		return arr.concat([]);
 	}
 
 	utils.cloneFunction = function(fct)

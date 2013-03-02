@@ -146,19 +146,11 @@ define(function(require, exports, module){
 		};
 		return start;
 	}
-	var copyArray = function(arr){
-		if(!arr)
-			return [];
-		var res = [];
-		arr.forEach(function(a){
-			res.push(a);
-		})
-		return res;
-	}
+
 	var compose = {
 		Decorator:DeepDecorator,
 		cloneStart:function (start) {
-			var newStack = copyArray(start.decorator.stack);
+			var newStack = start.decorator.stack.concat([]);
 			var nd = new DeepDecorator(newStack);
 			nd.createIfNecessary = start.decorator.createIfNecessary;
 			return createStart(nd);

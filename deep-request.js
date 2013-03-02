@@ -146,7 +146,7 @@ define(function(require){
 //var Plates = require('plates');
 
 
-var loadInfo = {
+	var loadInfo = {
 		currentNumberOfLoad:0,
 		paths:{},
 		totalLoaded:0,
@@ -154,19 +154,19 @@ var loadInfo = {
 		callCount:0
 	};
 
-function removeLoadInfo(path){
-//	console.log("removeLoadInfo", path, loadInfo)
+	function removeLoadInfo(path){
+	//	console.log("removeLoadInfo", path, loadInfo)
 
-	loadInfo.paths[path]--;
-	loadInfo.currentNumberOfLoad--;
+		loadInfo.paths[path]--;
+		loadInfo.currentNumberOfLoad--;
 
-	if(loadInfo.paths[path] == 0)
-		delete loadInfo.paths[path];
+		if(loadInfo.paths[path] == 0)
+			delete loadInfo.paths[path];
 
-	DeepRequest.handlers.loaded(path);
-	if(loadInfo.currentNumberOfLoad == 0)
-		DeepRequest.handlers.complete();
-}
+		DeepRequest.handlers.loaded(path);
+		if(loadInfo.currentNumberOfLoad == 0)
+			DeepRequest.handlers.complete();
+	}
 
 	function addLoadInfo(path){
 		loadInfo.callCount++;
@@ -179,17 +179,14 @@ function removeLoadInfo(path){
 
 	}
 	var reloadablesUriDico = {};
-	var reloadablesRegExpDico = [];
+	var reloadablesRegExpDico = [ /^(json::)|(\.json)$/gi ];
 	var manageCache = function (response, uri) {
 		if(reloadablesUriDico[uri])
 			return;
-		var ok = false;
 		var count = 0;
 		reg = reloadablesRegExpDico[count];
-		while(reg && !reg.match(uri))
-		{
+		while(reg && !uri.match(reg))
 			reg = reloadablesRegExpDico[++count];
-		}
 		if(count == reloadablesRegExpDico.length)
 			cache[uri] = response;
 		//console.log("manag cache : ", uri, " - ", response);
@@ -201,12 +198,38 @@ function removeLoadInfo(path){
 	var promise = require("deep/promise");
 	var Querier = require("deep/deep-query");
 	var DeepRequest  = {
-		reloadables:function (path) 
+		reloadables:function (path, isReloadable /* false or true : true by default*/) 
 		{
-			if(path instanceof RegExp)
-				reloadablesRegExpDico.push(path);
+			if(typeof isReloadable === 'undefined')
+				isReloadable = true;
+			if(isReloadable)
+			{
+				if(path instanceof RegExp)
+					reloadablesRegExpDico.push(path);
+				else
+					reloadablesUriDico[path] = true;
+			}
 			else
-				reloadablesUriDico[path] = true;
+			{
+				if(path instanceof RegExp)
+				{
+					var count = 0, ok = true, ln = reloadablesRegExpDico.length;
+					while(count < ln && ok)
+					{
+						if(path.toString() === reloadablesRegExpDico[count].toString())
+						{
+							if(count == ln-1)
+								reloadablesRegExpDico.pop();
+							else
+								reloadablesRegExpDico[count] = reloadablesRegExpDico.pop();
+							ok = false;
+						}
+						count++;
+					}
+				}
+				else
+					reloadablesUriDico[path] = false;
+			}
 		},
 		clearCache:function () 
 		{
@@ -1187,97 +1210,7 @@ function removeLoadInfo(path){
 		return DeepRequest.get(path, {accept:"text/plain;charset=utf-8;"});
 	}
 
-	DeepRequest.get = function(path, options)
-	{
-		options = options || {};
-		options.charset = options.charset || "utf-8";
-		options.accept = options.accept || "application/json;charset=utf-8;";
-		options.headers = options.headers || {};
-		var body = null;
-		var query = null;
-		if(typeof path === 'object')
-		{
-			var info = path;
-			path = info.uri;
-			query = info.query;
-			body = info.body;
-		}
-		if(body && typeof body !== 'string')
-		{
-			body = JSON.stringify(body);
-		}
-		//console.log("deep-request.json : will get path : ", path)
-		var deferred = promise.Deferred();
-	
-		copyDefaultHeaders(options.headers);
-		options.headers.Accept =  options.headers.Accept || options.accept;
-		if(isNode)
-		{	
-			if(/http(s)?:\/\//.test(path))
-			{
-				HTTPRequest({
-					method:"GET",
-					url:path,
-					//queryString: query,
-					headers:options.headers
-				}).then(function  (response) {
-					// body...
-					createHTTPRequestParser("GET", response).then(function  (data) {
-						// body...
-						console.log("DeepRequest.json : HTTP Request result : ", data)
-						deferred.resolve(data);
-
-					})
-
-				}, function(){
-					var args = Array.prototype.slice.call(arguments);
-					deferred.reject(args);
-
-				} );
-			}
-			else
-			promise.when(fs.readFile(path, options.charset)).then( 
-				function(data){ 
-					data = JSON.parse(data.toString(options.charset));
-					//console.log("deep request node json loadsuccess : ", data)
-					if(query)
-						data = Querier.query(data.toString(), query,  { keepCache:false });
-					//else 
-					//	data = data.toString(); 
-					deferred.resolve(data);
-
-				}, 
-				function(){
-					var args = Array.prototype.slice.call(arguments);
-					console.log("DeepRequest.get failed : "+JSON.stringify(args));
-					deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
-				}
-			);
-		}
-		else 
-			promise.when($.ajax({
-				beforeSend :function(req) {
-					writeJQueryHeaders(req, options.headers);
-				},
-				//contentType: "application/json; charset=utf-8",
-				url:path, 
-				method:"GET", 
-			//	data:body||null,
-				datatype:"json" 
-			})).then(function(data, msg, jqXHR){
-				if(typeof data === 'string')
-					data = JSON.parse(data);
-				if(query)
-					data = Querier.query(data, query,  { keepCache:false });
-				//console.log("json success : ", path, query, data);
-				manageCache(data, path);
-				deferred.resolve(data);
-			}, function(){ 
-				var args = Array.prototype.slice.call(arguments);
-				deferred.reject({msg:"DeepRequest.get  failed : "+path, details:args, uri:path, options:options}); 
-			})
-		return promise.promise(deferred) ;
-	}
+	DeepRequest.get = DeepRequest.retrieve;
 
 	DeepRequest.put = function(uri, object)
 	{
