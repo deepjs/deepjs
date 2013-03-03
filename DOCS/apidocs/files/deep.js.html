@@ -1,22 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>deep.js - deepjs API</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
 
-/**
- * @author Gilles Coomans <gilles.coomans@gmail.com>
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.9.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
+            
+                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: deep.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+
+&#x2F;**
+ * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
 
 	Stable : 
-		deep-query/rql
+		deep-query&#x2F;rql
 		deep
 		utils
 
 
 Cadre : 
 
-Layered/Aspect/OO
+Layered&#x2F;Aspect&#x2F;OO
 	relations, inheritance and relative path
 MVC
 	up-bottom
 	
 Asynch
-Thin Server / Rest
+Thin Server &#x2F; Rest
 JSON
 
 Structure :
@@ -74,10 +166,10 @@ TODO :
 					return handler.cancel();
 				...
 				if(true)
-					return handler.query("./tata");
+					return handler.query(&quot;.&#x2F;tata&quot;);
 				...
 				if(error)
-					return handler.error("what you want")
+					return handler.error(&quot;what you want&quot;)
 
 				handler.branch().mybranch();
 				handler.branch().mybranch();
@@ -105,7 +197,7 @@ TODO :
 
 			d.restart()
 
-			==> implies to modify the nextQueueItem
+			==&gt; implies to modify the nextQueueItem
 				and to keep first reference of the chain.
 
 
@@ -120,8 +212,8 @@ TODO :
 		clean headers
 
 
- */
-/*
+ *&#x2F;
+&#x2F;*
 ADDITIONAL CHAIN METHODS
 
 .enableLog()
@@ -150,17 +242,17 @@ whole new functionality
 	call back context : 
 	in chain : use synch handler as context (no more second arguments)
 	in promises : use simple empty object for the moment (maybe add particular API)
-*/
+*&#x2F;
 
-if(typeof define !== 'function')
+if(typeof define !== &#x27;function&#x27;)
 {
-	var define = require('amdefine')(module);
+	var define = require(&#x27;amdefine&#x27;)(module);
 }
 
-define(["require", "deep/ie-hacks","deep/utils", "deep/deep-rql","deep/deep-request", "deep/deep-schema",  "deep/promise", "deep/deep-query", "deep/deep-compose"],
+define([&quot;require&quot;, &quot;deep&#x2F;ie-hacks&quot;,&quot;deep&#x2F;utils&quot;, &quot;deep&#x2F;deep-rql&quot;,&quot;deep&#x2F;deep-request&quot;, &quot;deep&#x2F;deep-schema&quot;,  &quot;deep&#x2F;promise&quot;, &quot;deep&#x2F;deep-query&quot;, &quot;deep&#x2F;deep-compose&quot;],
 function(require)
 {
-	// console.log("Deep init");
+	&#x2F;&#x2F; console.log(&quot;Deep init&quot;);
 	if(!console.warn)
 		console.warn = console.log;
 	if(!console.error)
@@ -168,20 +260,20 @@ function(require)
 	if(!console.info)
 		console.info = console.log;
 
-	var Validator = require("deep/deep-schema");
-	var DeepRequest = require("deep/deep-request");
-	var utils = require("deep/utils");
-	var promise = require("deep/promise");
-	var Querier = require("deep/deep-query");
-	var deepCompose = require("deep/deep-compose");
+	var Validator = require(&quot;deep&#x2F;deep-schema&quot;);
+	var DeepRequest = require(&quot;deep&#x2F;deep-request&quot;);
+	var utils = require(&quot;deep&#x2F;utils&quot;);
+	var promise = require(&quot;deep&#x2F;promise&quot;);
+	var Querier = require(&quot;deep&#x2F;deep-query&quot;);
+	var deepCompose = require(&quot;deep&#x2F;deep-compose&quot;);
 
-	/**
+	&#x2F;**
 	 * Deep Synch Chain Handler (maybe deprecated)
 	 * @class  SynchHandler
 	 * @constructor
 	 * @param {Object} obj    the object from where start synch chain
-	 * @param {Object} schema the schema associated to it's object
-	 */
+	 * @param {Object} schema the schema associated to it&#x27;s object
+	 *&#x2F;
 	var SynchHandler = function (obj, schema) 
 	{
 		if(obj instanceof DeepHandler)
@@ -198,10 +290,10 @@ function(require)
 			var res = deep.chain.values(this.chain.query(q, options));
 			return res;
 		},
-		/*select:function (q, options) {
+		&#x2F;*select:function (q, options) {
 			this.chain.query(q, options);
 			return this;
-		},*/
+		},*&#x2F;
 		cancelBranches:function (reason) {
 			if(this.branches)
 				this.branches.forEach(function (b) {
@@ -277,16 +369,16 @@ function(require)
 
 	function callFunctionFromValue(entry, functionName, args) 
 	{
-		if(typeof args === 'undefined')
+		if(typeof args === &#x27;undefined&#x27;)
 			args = [];
 		else if(!(args instanceof Array))
 			args = [args];
 
-		if(entry.value && entry.value[functionName])
+		if(entry.value &amp;&amp; entry.value[functionName])
 		{
 			entry.value._deep_entry = entry;
 			var prom = entry.value[functionName].apply(entry.value, args);
-			if(prom && prom.then)
+			if(prom &amp;&amp; prom.then)
 				prom.then(function () {
 					delete entry.value._deep_entry;
 				},
@@ -301,15 +393,15 @@ function(require)
 	}
 	function runFunctionFromValue(entry, func, args) 
 	{
-		//console.log("runFunctionFromValue", entry)
-		if(typeof args === 'undefined')
+		&#x2F;&#x2F;console.log(&quot;runFunctionFromValue&quot;, entry)
+		if(typeof args === &#x27;undefined&#x27;)
 			args = [];
 		else if(!(args instanceof Array))
 			args = [args];
 
 		entry.value._deep_entry = entry;
 		var prom = func.apply(entry.value, args);
-		if(prom && prom.then)
+		if(prom &amp;&amp; prom.then)
 			prom.then(function () {
 				delete entry.value._deep_entry;
 			},
@@ -325,12 +417,12 @@ function(require)
 
 	function nextQueueItem(result, failure )
 	{
-		//console.log("nextQueueItem ", this.running, " - ", this.callQueue, result, failure);
+		&#x2F;&#x2F;console.log(&quot;nextQueueItem &quot;, this.running, &quot; - &quot;, this.callQueue, result, failure);
 		if(this.running || this.rejected)
 			return;
 		this.running = true;
 		var self = this;
-		if((typeof failure === 'undefined' || failure == null) && (typeof result === 'undefined' || result == null))
+		if((typeof failure === &#x27;undefined&#x27; || failure == null) &amp;&amp; (typeof result === &#x27;undefined&#x27; || result == null))
 		{
 			failure = this.reports.failure;
 			result = this.reports.result;
@@ -346,24 +438,24 @@ function(require)
 			this.reports.result = null;
 		}
 
-		if(this.callQueue.length>0)
+		if(this.callQueue.length&gt;0)
 		{
 			var next = this.callQueue.shift();
 			var error = null;
 			try{
 				var previousContext = deep.context;
 				if(previousContext !== this.context){
-					if(previousContext && previousContext.suspend){
+					if(previousContext &amp;&amp; previousContext.suspend){
 						previousContext.suspend();
 					}
 					deep.context = this.context;
-					if(this.context && this.context.resume){
+					if(this.context &amp;&amp; this.context.resume){
 						this.context.resume();
 					}
 				}
 				if(!failure)
 				{
-					if(typeof next === "object")
+					if(typeof next === &quot;object&quot;)
 						next.func(result,failure);
 					else
 						next(result,failure);
@@ -375,7 +467,7 @@ function(require)
 			}
 			catch(e)
 			{
-				var msg = "Internal chain error : ";
+				var msg = &quot;Internal chain error : &quot;;
 				console.error(msg, e);
 				if(self.rethrow)
 					throw e;
@@ -386,10 +478,10 @@ function(require)
 			}
 			finally{
 				if(previousContext !== this.context){
-					if(this.context && this.context.suspend){
+					if(this.context &amp;&amp; this.context.suspend){
 						this.context.suspend();
 					}
-					if(previousContext && previousContext.resume){
+					if(previousContext &amp;&amp; previousContext.resume){
 						previousContext.resume();
 					}
 					deep.context = previousContext;
@@ -399,7 +491,7 @@ function(require)
 		else
 		{
 			this.running = false;
-			if(failure && !this.rejected )
+			if(failure &amp;&amp; !this.rejected )
 			{
 				if(!this.waitingRejection)
 				{
@@ -416,11 +508,11 @@ function(require)
 	}
 	function addInQueue(func)
 	{
-		// console.log("add in queue : ", func);
+		&#x2F;&#x2F; console.log(&quot;add in queue : &quot;, func);
 		var last = this.callQueue[this.callQueue.length-1];
-		if(func._isPUSH_HANDLER_TO_ && !this.initialised)
+		if(func._isPUSH_HANDLER_TO_ &amp;&amp; !this.initialised)
 		{
-			//console.log("addInQueue : _isPUSH_HANDLER_TO_ : running ? ", this.running)
+			&#x2F;&#x2F;console.log(&quot;addInQueue : _isPUSH_HANDLER_TO_ : running ? &quot;, this.running)
 			func();
 		}
 		else
@@ -451,13 +543,13 @@ function(require)
 		return newHandler;
 	}
 
-	/**
+	&#x2F;**
 	 * Deep Chain Handler  : manage asynch and synch in one chain
 	 * @class DeepHandler
 	 * @constructor
 	 * @param {Object} obj    [description]
 	 * @param {Object} schema [description]
-	 */
+	 *&#x2F;
 	var DeepHandler = function(options)
 	{
 		this.rethrow = deep.rethrow;
@@ -505,28 +597,28 @@ function(require)
 			addInQueue.apply(this, [create]);
 			return self;
 		},
-		//_______________________________________________________________  CANCEL AND REJECT
+		&#x2F;&#x2F;_______________________________________________________________  CANCEL AND REJECT
 
-		cancel:function (reason)  // not chainable
+		cancel:function (reason)  &#x2F;&#x2F; not chainable
 		{
 			if(this.rejected)
-				throw  new Error("deep chain could not be canceled : it has already been rejected! ")
+				throw  new Error(&quot;deep chain could not be canceled : it has already been rejected! &quot;)
 			var queue = this.callQueue;
 			this.callQueue = [];
 			this.reports.cancel = reason;
 			this.deferred.cancel(reason);
 		},
-		reject:function (reason)  // not chainable
+		reject:function (reason)  &#x2F;&#x2F; not chainable
 		{
-			console.log("deep chain reject : reason : ", reason)
+			console.log(&quot;deep chain reject : reason : &quot;, reason)
 			if(this.rejected)
-				throw  new Error("deep chain has already been rejected! ")
+				throw  new Error(&quot;deep chain has already been rejected! &quot;)
 			this.reports.failure = reason;
 			this.rejected = true;
 			this.callQueue = [];
 			this.deferred.reject(reason);
 		},
-		//_____________________________________________________________  BRANCHES
+		&#x2F;&#x2F;_____________________________________________________________  BRANCHES
 
 		branches:function ( func ) 
 		{
@@ -540,7 +632,7 @@ function(require)
 				}, 
 				function (error) 
 				{
-					console.error("error : deep.branches : ", error);
+					console.error(&quot;error : deep.branches : &quot;, error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -548,19 +640,19 @@ function(require)
 			addInQueue.apply(this, [create]);
 			return self;
 		},
-		//______________________________________________________ PROMISE INTERFACE
+		&#x2F;&#x2F;______________________________________________________ PROMISE INTERFACE
 		when:function(prom)
 		{
 			var self = this;
 			function func(){
 				return function(s,e){
 					deep.when(prom).then(function (datas) {
-						if(typeof datas === 'undefined')
+						if(typeof datas === &#x27;undefined&#x27;)
 							datas = s;
 						self.running = false;
 						nextQueueItem.apply(self, [datas,null]);
 					}, function (e) {
-						console.error("error : deep.chain.when : ", e);
+						console.error(&quot;error : deep.chain.when : &quot;, e);
 						self.running = false;
 						nextQueueItem.apply(self, [null,e]);
 					});
@@ -574,18 +666,18 @@ function(require)
 			var self = this;
 			var	func = function(s,e)
 			{
-				//console.log("deep.chain.done : ",s,e)
+				&#x2F;&#x2F;console.log(&quot;deep.chain.done : &quot;,s,e)
 				if(e || !callBack)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [s, e]);
 					return;
 				}
-				//console.log("done : self : ", self._entries);
+				&#x2F;&#x2F;console.log(&quot;done : self : &quot;, self._entries);
 
 				deep.when(callBack(s, createSynchHandler(self,s,e))).then(function (argument) {
 					var error = null;
-					if(typeof argument === 'undefined')
+					if(typeof argument === &#x27;undefined&#x27;)
 						argument = s;
 					else if(argument instanceof Error)
 					{
@@ -608,15 +700,15 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				//console.log("deep.chain.fail : ",s,e)
-				if((e == null || typeof e === 'undefined') || !callBack)
+				&#x2F;&#x2F;console.log(&quot;deep.chain.fail : &quot;,s,e)
+				if((e == null || typeof e === &#x27;undefined&#x27;) || !callBack)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [s, e]);
 					return;
 				}
 				deep.when(callBack(e, createSynchHandler(self,s,e))).then(function (argument) {
-					if(typeof argument === 'undefined')
+					if(typeof argument === &#x27;undefined&#x27;)
 					{
 						self.running = false;
 						nextQueueItem.apply(self, [null, e]);
@@ -648,8 +740,8 @@ function(require)
 				this.fail(errorCallBack);
 			return this;
 		},
-		//___________________________________________________________________________ NAVIGATION
-		/*range : function  (start,end) 
+		&#x2F;&#x2F;___________________________________________________________________________ NAVIGATION
+		&#x2F;*range : function  (start,end) 
 		{
 			var self = this;
 			var func = function(){
@@ -658,7 +750,7 @@ function(require)
 			}
 			addInQueue.apply(this,[func]);
 			return cloned;
-		},*/
+		},*&#x2F;
 		position : function  (name) 
 		{
 			var self = this;
@@ -675,7 +767,7 @@ function(require)
 			var self = this;
 			var func = function(s,e){
 				if(!self.positions[name])
-					throw new Error("chain handler error : no positions to go back with name : "+name);
+					throw new Error(&quot;chain handler error : no positions to go back with name : &quot;+name);
 				self._entries = self.positions[name];
 				self.running = false;
 				nextQueueItem.apply(self, [self._entries,null]);
@@ -713,10 +805,10 @@ function(require)
 				self._entries.forEach(function (r) {
 					res.push(r.ancestor);
 				})
-				res = deep.utils.arrayUnique(res, "path");
+				res = deep.utils.arrayUnique(res, &quot;path&quot;);
 				self._entries = res;
-				if(res.length == 0 && errorIfEmpty)
-					throw new Error("deep.parents could not gives empty results")
+				if(res.length == 0 &amp;&amp; errorIfEmpty)
+					throw new Error(&quot;deep.parents could not gives empty results&quot;)
 				self.running = false;
 				nextQueueItem.apply(self, [self._entries, null]);
 			}
@@ -733,9 +825,9 @@ function(require)
 					alls = [DeepRequest.retrieve(root)];
 				if(schema)
 					alls.push(DeepRequest.retrieve(schema));
-				if(alls.length > 0)
+				if(alls.length &gt; 0)
 					deep.all(alls).then(function (results) {
-						// console.log("deep.root : ", results)
+						&#x2F;&#x2F; console.log(&quot;deep.root : &quot;, results)
 						var root = results[0];
 						var schema = results[1];
 						if(root instanceof DeepHandler)
@@ -746,52 +838,52 @@ function(require)
 							if(schema)
 								root._root.schema= schema;
 							if(root.name)
-								self.name = "chained:"+root.name;
+								self.name = &quot;chained:&quot;+root.name;
 							else
-								self.name = "chained:untitled";
+								self.name = &quot;chained:untitled&quot;;
 							self.running = false;
 							nextQueueItem.apply(self, [self._root.value, null]);
 							return;
 						}
-						if(root && root._isDQ_NODE_)
+						if(root &amp;&amp; root._isDQ_NODE_)
 						{
-							//handler._root = root.value;
+							&#x2F;&#x2F;handler._root = root.value;
 							if(schema)
 								root.schema = schema;
 							self._entries = [root];	
 							self.queries = [root.path];
 						}
-						else if(root && root._deep_entry)
+						else if(root &amp;&amp; root._deep_entry)
 						{
-							//handler._root = root._deep_entry._root.value;
+							&#x2F;&#x2F;handler._root = root._deep_entry._root.value;
 							if(schema)
 								root._deep_entry.schema = schema;
 							self._entries = [root._deep_entry];	
 							self.queries = [root._deep_entry.path];
-							//console.log("deep on node with _deep_entry_ : ", root._deep_entry)
+							&#x2F;&#x2F;console.log(&quot;deep on node with _deep_entry_ : &quot;, root._deep_entry)
 						}
 						else
 						{
-							//handler._root = root;
-							self._entries = self.querier.query(root, "/!", {resultType:"full", schema:schema || {}});	
-							self.queries = ["/!"];
-							if(root && root.uri)
+							&#x2F;&#x2F;handler._root = root;
+							self._entries = self.querier.query(root, &quot;&#x2F;!&quot;, {resultType:&quot;full&quot;, schema:schema || {}});	
+							self.queries = [&quot;&#x2F;!&quot;];
+							if(root &amp;&amp; root.uri)
 								self.name = root.uri;
 							else
-								self.name = "untitled";
+								self.name = &quot;untitled&quot;;
 						}
 						self._root = self._entries[0];
 						self.running = false;
 						nextQueueItem.apply(self, [self._root.value, null]);
 					}, function (error) {
-						console.log("deep.root chain error : ", error);
-						throw new Error("deep.root chain error : "+error);
+						console.log(&quot;deep.root chain error : &quot;, error);
+						throw new Error(&quot;deep.root chain error : &quot;+error);
 					});		
 				else
 				{
-					//console.log("deep.root : ", root)
+					&#x2F;&#x2F;console.log(&quot;deep.root : &quot;, root)
 					self._entries = [self._root];	
-					self.queries.push("/!");
+					self.queries.push(&quot;&#x2F;!&quot;);
 					self.running = false;
 					nextQueueItem.apply(self, [self._root.value, null]);
 				}
@@ -806,38 +898,38 @@ function(require)
 			if(!(q instanceof Array))
 				q = [q];
 			var func = function(){
-				//console.log("do query : ", q)
+				&#x2F;&#x2F;console.log(&quot;do query : &quot;, q)
 				var res = [];
-				if(console.flags && console.flags["deep.query.profile"])
-					console.time("query")
+				if(console.flags &amp;&amp; console.flags[&quot;deep.query.profile&quot;])
+					console.time(&quot;query&quot;)
 				src._entries.forEach(function (r) {
-					// console.log("do query : ", q , " - on : ", r)
+					&#x2F;&#x2F; console.log(&quot;do query : &quot;, q , &quot; - on : &quot;, r)
 					q.forEach(function (qu) {
-						res = res.concat(src.querier.query(r, qu , {resultType:"full"}));
+						res = res.concat(src.querier.query(r, qu , {resultType:&quot;full&quot;}));
 					});
-					//console.log("do query : ", q , " - on : ", r, " - results \n", res);
+					&#x2F;&#x2F;console.log(&quot;do query : &quot;, q , &quot; - on : &quot;, r, &quot; - results \n&quot;, res);
 				});
-				if(console.flags && console.flags["deep.query.profile"])
-					console.timeEnd("query");
-				res = deep.utils.arrayUnique(res, "path");
+				if(console.flags &amp;&amp; console.flags[&quot;deep.query.profile&quot;])
+					console.timeEnd(&quot;query&quot;);
+				res = deep.utils.arrayUnique(res, &quot;path&quot;);
 				src._entries = res;
-				if(res.length == 0 && errorIfEmpty)
-					throw new Error("deep.query could not gives empty results")
+				if(res.length == 0 &amp;&amp; errorIfEmpty)
+					throw new Error(&quot;deep.query could not gives empty results&quot;)
 				src.running = false;
 				nextQueueItem.apply(src, [res, null]);
 			}
 			addInQueue.apply(src, [func]);
 			return src;
 		},
-		//_________________________________________________________________    MODELISATION
+		&#x2F;&#x2F;_________________________________________________________________    MODELISATION
 		schema : function(schema)
 		{
-			//metaSchema = metaSchema || deep.metaSchema || {};
+			&#x2F;&#x2F;metaSchema = metaSchema || deep.metaSchema || {};
 			var self = this;
 			var func = function(){
 				deep.when(deep.request.retrieve(schema)).then(function (schema) {
-					//var schema = schemas.shift();
-					//var metaSchema = schemas.shift();
+					&#x2F;&#x2F;var schema = schemas.shift();
+					&#x2F;&#x2F;var metaSchema = schemas.shift();
 					var alls = [];
 					self._entries.forEach(function(result){
 						result.schema = schema;
@@ -873,8 +965,8 @@ function(require)
 						nextQueueItem.apply(self, [self._entries, null]);
 					},
 					function (error) {
-						console.error("error : deep.schemaUp : ",error)
-						throw new Error("error : deep.schemaUp : "+error);
+						console.error(&quot;error : deep.schemaUp : &quot;,error)
+						throw new Error(&quot;error : deep.schemaUp : &quot;+error);
 					});
 				})
 				.fail(function (error) {
@@ -903,8 +995,8 @@ function(require)
 						nextQueueItem.apply(self, [self._entries, null]);
 					},
 					function (error) {
-						console.error("error : deep.schemaBottom : ",error)
-						throw new Error("error : deep.schemaBottom : "+error);
+						console.error(&quot;error : deep.schemaBottom : &quot;,error)
+						throw new Error(&quot;error : deep.schemaBottom : &quot;+error);
 					});
 				})
 				.fail(function (error) {
@@ -924,7 +1016,7 @@ function(require)
 				{
 					self._entries.forEach(function(result){
 						objects.forEach(function (object) {
-							//console.log("deep.up : entry : ", result, " - to apply : ", object)
+							&#x2F;&#x2F;console.log(&quot;deep.up : entry : &quot;, result, &quot; - to apply : &quot;, object)
 							utils.up(object, result.value, result.schema, result.ancestor?result.ancestor.value:null, result.key);
 						});
 					});
@@ -932,8 +1024,8 @@ function(require)
 					nextQueueItem.apply(self, [self._entries, null]);
 				},
 				function (error) {
-					console.error("error : deep.up : ",error);
-					throw new Error("error : deep.up : "+error);
+					console.error(&quot;error : deep.up : &quot;,error);
+					throw new Error(&quot;error : deep.up : &quot;+error);
 				});
 			}
 			addInQueue.apply(this,[func]);
@@ -957,8 +1049,8 @@ function(require)
 					nextQueueItem.apply(self, [self._entries, null]);
 				}, 
 				function (argument) {
-					//console.error("error : deep.bottom : ",error);
-					throw new Error("error : deep.bottom : "+error);
+					&#x2F;&#x2F;console.error(&quot;error : deep.bottom : &quot;,error);
+					throw new Error(&quot;error : deep.bottom : &quot;+error);
 				});
 			}
 			addInQueue.apply(this,[func]);
@@ -971,7 +1063,7 @@ function(require)
 				deep.when(deep.request.retrieve(by, options)).then(function (by) 
 				{
 					self._entries.forEach(function (r) {
-						self.querier.query(r, what, {resultType:"full"}).forEach(function(r){
+						self.querier.query(r, what, {resultType:&quot;full&quot;}).forEach(function(r){
 							if(!r.ancestor)
 								return;
 							r.ancestor.value[r.key] = r.value = by;
@@ -980,8 +1072,8 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [by, null]);
 				}, function (argument) {
-					//console.error("error : deep.replace : ",error);
-					throw new Error("error : deep.replace : "+error);
+					&#x2F;&#x2F;console.error(&quot;error : deep.replace : &quot;,error);
+					throw new Error(&quot;error : deep.replace : &quot;+error);
 				});
 			}
 			addInQueue.apply(this,[func]);
@@ -992,7 +1084,7 @@ function(require)
 			var self = this;
 			var func = function(){
 				self._entries.forEach(function (r) {
-					self.querier.query(r, what, {resultType:"full"}).forEach(function(r)
+					self.querier.query(r, what, {resultType:&quot;full&quot;}).forEach(function(r)
 					{
 						if(!r.ancestor)
 							return;
@@ -1013,19 +1105,19 @@ function(require)
 		{
 			if(!entry)
 				return entry;
-			var toExtends = this.querier.query(entry, "//?backgrounds", {resultType:"full"});
-			//console.log("_____________________ extendsChilds : ", path, " \n\n\n________________", obj);
+			var toExtends = this.querier.query(entry, &quot;&#x2F;&#x2F;?backgrounds&quot;, {resultType:&quot;full&quot;});
+			&#x2F;&#x2F;console.log(&quot;_____________________ extendsChilds : &quot;, path, &quot; \n\n\n________________&quot;, obj);
 			if(toExtends.length == 0)
 				return entry;
 			var deferred = deep.Deferred();
 			var rec = toExtends[0];
 			var handler = deep(rec);
-			//console.log("extendsChilds : handler toExtends ", handler)
+			&#x2F;&#x2F;console.log(&quot;extendsChilds : handler toExtends &quot;, handler)
 
 			handler.flatten().then(function () 
 			{
 				deep.when(handler.extendsChilds(entry)).then(function () {
-				//	console.log("___________________ handler flattened ")
+				&#x2F;&#x2F;	console.log(&quot;___________________ handler flattened &quot;)
 					deferred.resolve(entry);
 				}, function (error) {
 					deferred.reject(error);
@@ -1034,12 +1126,12 @@ function(require)
 			function (error) {
 				deferred.reject(error);
 			});
-			//console.log("_________________Grrrrrrr");
+			&#x2F;&#x2F;console.log(&quot;_________________Grrrrrrr&quot;);
 			return deep.promise(deferred);
 		},
 		extendsBackgrounds:function (entry)
 		{
-			//console.log("extendsBackgrounds : entry : ", entry)
+			&#x2F;&#x2F;console.log(&quot;extendsBackgrounds : entry : &quot;, entry)
 			var self = this;
 			var value = entry;
 			var root = this._root.value;
@@ -1055,11 +1147,11 @@ function(require)
 				var deferred = deep.Deferred();
 				if(!value.backgrounds.push)
 					value.backgrounds = [ value.backgrounds ];
-				//console.log("will retrieve : ", value.backgrounds)
+				&#x2F;&#x2F;console.log(&quot;will retrieve : &quot;, value.backgrounds)
 				deep.when(deep.request.retrieveAll(value.backgrounds, { root:root || entry, acceptQueryThis:true })).then(function extendedsLoaded(extendeds){
 					var recursion = [];
-					//console.log("__________________ extendsBackgrounds : retrieved : ", extendeds)
-					while(extendeds.length > 0)
+					&#x2F;&#x2F;console.log(&quot;__________________ extendsBackgrounds : retrieved : &quot;, extendeds)
+					while(extendeds.length &gt; 0)
 					{
 						var exts = extendeds.shift();
 						if(exts instanceof Array)
@@ -1067,7 +1159,7 @@ function(require)
 							extendeds = exts.concat(extendeds);
 							continue;
 						} 
-						//console.log("will recurse : ", exts)
+						&#x2F;&#x2F;console.log(&quot;will recurse : &quot;, exts)
 						recursion.push(exts);
 						recursion.push(self.extendsBackgrounds(exts));
 					}
@@ -1077,32 +1169,32 @@ function(require)
 							res = res.concat(extended);
 						});
 						delete value.backgrounds;
-						//console.log("___________________ bacgrounds extended ")
+						&#x2F;&#x2F;console.log(&quot;___________________ bacgrounds extended &quot;)
 
 						deferred.resolve(res);
 					},function  (error) {
-						console.error("currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : "+JSON.stringify(extendeds));
+						console.error(&quot;currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : &quot;+JSON.stringify(extendeds));
 						deferred.reject(error);
 					});
 				}, function(res){
-					console.error("currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : "+JSON.stringify(extendeds));
+					console.error(&quot;currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : &quot;+JSON.stringify(extendeds));
 					deferred.reject(res);
 				});
 				return deep.promise(deferred);
 			}	
 			return [];
 		},
-		/*ccs:function (ccs) {
+		&#x2F;*ccs:function (ccs) {
 			
-				//jquery :
-				//$(...).css()
+				&#x2F;&#x2F;jquery :
+				&#x2F;&#x2F;$(...).css()
 			
 			var self = this;
 			var func = function (s,e) {
 				self._entries.forEach(function (e) {
 					if(e.schema)
 					{
-						var toApply = deep.query(e.schema, "//ccs", { resultType:"full"});
+						var toApply = deep.query(e.schema, &quot;&#x2F;&#x2F;ccs&quot;, { resultType:&quot;full&quot;});
 
 					}
 				})
@@ -1110,30 +1202,30 @@ function(require)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		*/
+		*&#x2F;
 		flatten : function()
 		{
 			var self = this;
 			var count = 0;
 			var doChilds = function(result)
 			{
-				//console.log("deep.flatten : doChilds : ", result)
-				//delete self._root.value._deep_entry;
+				&#x2F;&#x2F;console.log(&quot;deep.flatten : doChilds : &quot;, result)
+				&#x2F;&#x2F;delete self._root.value._deep_entry;
 				deep.when(self.extendsChilds(result)).then(function () {
 					count--;
 					if(count == 0)
 					{
-						//console.log("flatten DONE");
+						&#x2F;&#x2F;console.log(&quot;flatten DONE&quot;);
 						self.running = false;
 						nextQueueItem.apply(self, [deep.chain.values(self), null]);
 					}
 				}, function (error) {
-					console.error("error : deep.flatten : ",error);
-					throw new Error("error : deep.flatten : "+error);
+					console.error(&quot;error : deep.flatten : &quot;,error);
+					throw new Error(&quot;error : deep.flatten : &quot;+error);
 				});
 			}
 			var func = function(){
-				//console.log("will flatten : ", self._entries)
+				&#x2F;&#x2F;console.log(&quot;will flatten : &quot;, self._entries)
 				var alls = [];
 				self._entries.forEach(function (result) 
 				{
@@ -1141,14 +1233,14 @@ function(require)
 					if(result.value.backgrounds)
 					{
 						deep.when(self.extendsBackgrounds(result)).then(function(stack) {
-						//	console.log("flatten extendsBackgrounds done.")
+						&#x2F;&#x2F;	console.log(&quot;flatten extendsBackgrounds done.&quot;)
 							var f = {};
 							stack.forEach(function(s){ f = utils.bottom(s, result.value, result.schema); delete s.backgrounds; });
 							delete result.value.backgrounds;
 							doChilds(result);
 						},function (error) {
-							console.error("error : deep.flatten : ", error);
-							throw new Error("error : deep.flatten : "+error);
+							console.error(&quot;error : deep.flatten : &quot;, error);
+							throw new Error(&quot;error : deep.flatten : &quot;+error);
 						});
 						delete result.value.backgrounds;
 					}
@@ -1164,9 +1256,9 @@ function(require)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		//______________________________________________________________  RUNS
-		/**
-		 * run : loop on entries, apply 'func' with 'args' on each entry (entry become 'this' of func)
+		&#x2F;&#x2F;______________________________________________________________  RUNS
+		&#x2F;**
+		 * run : loop on entries, apply &#x27;func&#x27; with &#x27;args&#x27; on each entry (entry become &#x27;this&#x27; of func)
 		 *
 		 * - loop on entries : true
 		 * - chainable : true
@@ -1176,21 +1268,21 @@ function(require)
 		 * - error injected : any error returned (or produced) from a func call
 		 * @method run
 		 * @param  {Function} func any function that need to be apply on each chain entry
-		 * @param  {Array} args the arguments to pass to 'func'
+		 * @param  {Array} args the arguments to pass to &#x27;func&#x27;
 		 * @return {DeepHandler}  the current chain handler (this)
-		 */
+		 *&#x2F;
 		run : function (func, args) 
 		{
 			var self = this;
 			args = args || [];
 			var create = function(s,e){
-				// console.log("deep.run : entries : ", self._entries)
+				&#x2F;&#x2F; console.log(&quot;deep.run : entries : &quot;, self._entries)
 				var alls = [];
 				self._entries.forEach(function(result){
-					// console.log("deep.run : ", func, args, result.value[func])
+					&#x2F;&#x2F; console.log(&quot;deep.run : &quot;, func, args, result.value[func])
 					if(!func)
 					{
-						if(typeof result.value != "function")
+						if(typeof result.value != &quot;function&quot;)
 							return;
 						if(result.ancestor)
 							alls.push(callFunctionFromValue(result.ancestor, result.key, args));
@@ -1198,23 +1290,23 @@ function(require)
 							alls.push(result.value(args || null));
 						return;
 					}
-					if(typeof func === 'function')
+					if(typeof func === &#x27;function&#x27;)
 						alls.push(runFunctionFromValue(result, func, args));
-					else if(typeof func === 'string')
+					else if(typeof func === &#x27;string&#x27;)
 						alls.push(callFunctionFromValue(result, func, args));
 					else
 						alls.push(result);
 				});
-				// console.log("deep.run waits for : ", alls);
+				&#x2F;&#x2F; console.log(&quot;deep.run waits for : &quot;, alls);
 				deep.all(alls).then(function (loadeds) 
 				{
-					//console.log("deep.run results : ", loadeds);
+					&#x2F;&#x2F;console.log(&quot;deep.run results : &quot;, loadeds);
 					self.running = false;
 					nextQueueItem.apply(self, [loadeds, null]);
 				}, 
 				function (error) 
 				{
-					console.error("error : deep.run : ", error);
+					console.error(&quot;error : deep.run : &quot;, error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1222,8 +1314,8 @@ function(require)
 			addInQueue.apply(this,[create]);
 			return this;
 		},
-		/**
-		 * exec :  call 'func' with 'args' (the 'this' of the function isn't modified)
+		&#x2F;**
+		 * exec :  call &#x27;func&#x27; with &#x27;args&#x27; (the &#x27;this&#x27; of the function isn&#x27;t modified)
 		 *
 		 * - loop on entries : false
 		 * - chainable : true
@@ -1234,9 +1326,9 @@ function(require)
 		 *
 		 * @method  exec
 		 * @param  {Function} func any function that need to be apply on each chain entry
-		 * @param  {Array} args the arguments to pass to 'func'
+		 * @param  {Array} args the arguments to pass to &#x27;func&#x27;
 		 * @return {DeepHandler}  the current chain handler (this)
-		 */
+		 *&#x2F;
 		exec : function (func, args) 
 		{
 			var self = this;
@@ -1250,7 +1342,7 @@ function(require)
 				}, 
 				function (error) 
 				{
-					console.error("error : deep.exec : ", error);
+					console.error(&quot;error : deep.exec : &quot;, error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1259,9 +1351,9 @@ function(require)
 			return this;
 		},
 
-		//_______________________________________________________________ TESTS AND VALIDATIONS
+		&#x2F;&#x2F;_______________________________________________________________ TESTS AND VALIDATIONS
 
-		/**
+		&#x2F;**
 		 * valuesEqual : test strict equality between the array of entries values and a provided array of value
 		 *
 		 * - loop on entries : false
@@ -1275,18 +1367,18 @@ function(require)
 		 * @param  {Object} obj      the object to test equality
 		 * @param  {Function} callBack optional : any callBack to manage the report. Could return a promise.
 		 * @return {DeepHandler}     this
-		 */
+		 *&#x2F;
 		valuesEqual : function(obj, callBack)
 		{
 			var self = this;
 			var func = function(){
 				var res = deep.chain.values(self);
 				var o = {equal:utils.deepEqual(res, obj), needed:obj, needLength:obj.length, valuesLength:res.length, value:res}
-				console.info("deep.valuesEqual : "+ JSON.stringify(o, null, ' '));
+				console.info(&quot;deep.valuesEqual : &quot;+ JSON.stringify(o, null, &#x27; &#x27;));
 				if(callBack)
 				{
 					deep.when(callBack(o)).then(function (argument) {
-						if(typeof argument === 'undefined')
+						if(typeof argument === &#x27;undefined&#x27;)
 							argument = o;
 						self.running = false;
 						nextQueueItem.apply(self, [argument, null]);	
@@ -1305,37 +1397,37 @@ function(require)
 			return self;
 		},
 
-		/**
+		&#x2F;**
 		 * equal test strict equality on each entry value against provided object
 		 * @param  {*} obj      the object to test
 		 * @param  {Function} 	optional. callBack a callBack to manage report
 		 * @return {DeepHandler}        this
-		 */
+		 *&#x2F;
 		equal : function(obj, callBack)
 		{
-			// console.log("deep.equal chaining");
+			&#x2F;&#x2F; console.log(&quot;deep.equal chaining&quot;);
 			var self = this;
 			var func = function(){
-				//console.log("will do deep.equal : self : ", self._entries)
+				&#x2F;&#x2F;console.log(&quot;will do deep.equal : self : &quot;, self._entries)
 				var res = [];
 				var errors = [];
 				self._entries.forEach(function(r){
-					//console.log("deep.equal : r : ",r);
+					&#x2F;&#x2F;console.log(&quot;deep.equal : r : &quot;,r);
 					var ok = utils.deepEqual(r.value, obj);
 					var o = {path:r.path, equal:ok, value:r.value, needed:obj}
 					res.push(o);
 					if(!ok)
 						errors.push(o)
-					console.info("deep.equal : "+o.equal+" : ", o);
+					console.info(&quot;deep.equal : &quot;+o.equal+&quot; : &quot;, o);
 				});
 				var report = {
-					equal:(self._entries.length > 0) && (errors.length==0),
+					equal:(self._entries.length &gt; 0) &amp;&amp; (errors.length==0),
 					reports:res
 				}; 
 				if(callBack)
 				{
 					deep.when(callBack(report)).then(function (argument) {
-						if(typeof argument === 'undefined')
+						if(typeof argument === &#x27;undefined&#x27;)
 							argument = report;
 						self.running = false;
 						nextQueueItem.apply(self, [argument, null]);
@@ -1356,19 +1448,19 @@ function(require)
 			return self;
 		},
 
-		/**
+		&#x2F;**
 		 * validate apply validation
 		 * @method  validate
 		 * @param  {Object} options [description]
 		 * @return {DeepHandler}         [description]
-		 */
+		 *&#x2F;
 		validate:function(options) 
 		{
 			options = options || {};
 			var self = this;
 			var func = function(){
 				var  a = [];
-				//console.log("deep.log : ", self._entries)
+				&#x2F;&#x2F;console.log(&quot;deep.log : &quot;, self._entries)
 				self._entries.forEach(function (e) {
 					a.push(Validator.validate(e.value, e.schema));
 				})
@@ -1386,7 +1478,7 @@ function(require)
 					if(options.callBack)
 					{
 						deep.when(options.callBack(freport)).then(function (argument) {
-							if(typeof argument === 'undefined')
+							if(typeof argument === &#x27;undefined&#x27;)
 								argument = freport;
 							self.running = false;
 							nextQueueItem.apply(self, [argument, null]);
@@ -1409,21 +1501,21 @@ function(require)
 			return this;
 		},
 
-		// __________________________________________________ LOG
+		&#x2F;&#x2F; __________________________________________________ LOG
 
 		log:function () 
 		{
 			var self = this;
 	
 			var args = Array.prototype.slice.call(arguments);
-			// if(args.length == 0)
-			 //	args.push("deep.log");
-			 //console.log("deep.log : args : ",JSON.stringify(arguments))
+			&#x2F;&#x2F; if(args.length == 0)
+			 &#x2F;&#x2F;	args.push(&quot;deep.log&quot;);
+			 &#x2F;&#x2F;console.log(&quot;deep.log : args : &quot;,JSON.stringify(arguments))
 			var func = function(s,e)
 			{
 				if(args.length == 0)
 				{
-					args.push("deep.log : last success : ");	
+					args.push(&quot;deep.log : last success : &quot;);	
 					args.push(s);
 				}
 				args.forEach(function (a) {
@@ -1442,7 +1534,7 @@ function(require)
 			options = options || {};
 			var func = function()
 				{
-					console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)")
+					console.log(title||&quot;deep.logValues : &quot;, &quot; (&quot;+self._entries.length+&quot; values)&quot;)
 					self._entries.forEach(function (e) {
 						var val = e;
 						var entry = e.value._deep_entry;
@@ -1450,8 +1542,8 @@ function(require)
 						if(!options.full)
 							val = e.value;
 						if(options.pretty)
-							val = JSON.stringify(val, null, ' ');
-						console.log("\t- entry : ("+e.path+") : ", val);
+							val = JSON.stringify(val, null, &#x27; &#x27;);
+						console.log(&quot;\t- entry : (&quot;+e.path+&quot;) : &quot;, val);
 						if(entry)
 							e._deep_entry = entry;
 					})
@@ -1462,7 +1554,7 @@ function(require)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		// ________________________________________ READ ENTRIES
+		&#x2F;&#x2F; ________________________________________ READ ENTRIES
 
 		val:function  (callBack) 
 		{
@@ -1471,7 +1563,7 @@ function(require)
 			{
 				var  a = self._entries[0]?self._entries[0].value:null;
 				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
+					if(typeof argument === &quot;undefined&quot;)
 						argument = a;
 					self.running = false;
 					if(argument instanceof Error)
@@ -1479,7 +1571,7 @@ function(require)
 					else
 						nextQueueItem.apply(self, [argument, null]);
 				}, function (error) {
-					console.error("error : deep.values : ",error);
+					console.error(&quot;error : deep.values : &quot;,error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1505,7 +1597,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [results, null]);
 				}, function (error) {
-					console.error("error : deep.each : ",error);
+					console.error(&quot;error : deep.each : &quot;,error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1520,7 +1612,7 @@ function(require)
 			{
 				var  a = deep.chain.values(self);
 				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
+					if(typeof argument === &quot;undefined&quot;)
 						argument = a;
 					self.running = false;
 					if(argument instanceof Error)
@@ -1528,7 +1620,7 @@ function(require)
 					else
 						nextQueueItem.apply(self, [argument, null]);
 				}, function (error) {
-					console.error("error : deep.values : ",error);
+					console.error(&quot;error : deep.values : &quot;,error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1549,7 +1641,7 @@ function(require)
 			{
 				var  a = self._entries.concat([]);
 				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
+					if(typeof argument === &quot;undefined&quot;)
 						argument = a;
 					self.running = false;
 					if(argument instanceof Error)
@@ -1557,7 +1649,7 @@ function(require)
 					else
 						nextQueueItem.apply(self, [argument, null]);
 				}, function (error) {
-					console.error("error : deep.nodes : ",error);
+					console.error(&quot;error : deep.nodes : &quot;,error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1577,7 +1669,7 @@ function(require)
 			{
 				var  a = deep.chain.paths(self);
 				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
+					if(typeof argument === &quot;undefined&quot;)
 						argument = a;
 					self.running = false;
 					if(argument instanceof Error)
@@ -1585,7 +1677,7 @@ function(require)
 					else
 						nextQueueItem.apply(self, [argument, null]);
 				}, function (error) {
-					console.error("error : deep.paths : ",error);
+					console.error(&quot;error : deep.paths : &quot;,error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1606,7 +1698,7 @@ function(require)
 			{
 				var  a = deep.chain.schemas(self);
 				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
+					if(typeof argument === &quot;undefined&quot;)
 						argument = a;
 					self.running = false;
 					if(argument instanceof Error)
@@ -1614,7 +1706,7 @@ function(require)
 					else
 						nextQueueItem.apply(self, [argument, null]);
 				}, function (error) {
-					console.error("error : deep.schemas : ",error);
+					console.error(&quot;error : deep.schemas : &quot;,error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1628,16 +1720,16 @@ function(require)
 			else
 				return deep.chain.schemas(this);
 		},
-		//___________________________________________________________ WAIT
+		&#x2F;&#x2F;___________________________________________________________ WAIT
 
 		delay:function (ms) 
 		{
 			var self = this;
 			function func(){
 				return function(s,e){
-					//console.log("deep.delay : ", ms)
+					&#x2F;&#x2F;console.log(&quot;deep.delay : &quot;, ms)
 					setTimeout(function () {
-						console.log("deep.delay.end : ", ms)
+						console.log(&quot;deep.delay.end : &quot;, ms)
 						self.running = false;
 						nextQueueItem.apply(self, [s, null]);
 					}, ms);
@@ -1648,7 +1740,7 @@ function(require)
 		},
 
 		
-		//____________________________________________________________________  LOAD
+		&#x2F;&#x2F;____________________________________________________________________  LOAD
 
 		deepLoad:function() 
 		{
@@ -1657,14 +1749,14 @@ function(require)
 				return function(s,e){
 					var  paths = [];
 					var  promises = [];
-					//console.log("deepLoad : ", self)
+					&#x2F;&#x2F;console.log(&quot;deepLoad : &quot;, self)
 					self._entries.forEach(function (e) {
-						var strings = self.querier.query(e, ".//?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
+						var strings = self.querier.query(e, &quot;.&#x2F;&#x2F;?or(_schema.type=string,_schema.type=function)&quot;, {resultType:&quot;full&quot;});
 						strings.forEach(function (toLoad) {
 							if(!toLoad.ancestor)
-								throw new Error("you couldn't interpret root itself.");
-							//console.log("deep.deepLoad : toLoad : ", toLoad);
-							if(typeof toLoad.value === 'function')
+								throw new Error(&quot;you couldn&#x27;t interpret root itself.&quot;);
+							&#x2F;&#x2F;console.log(&quot;deep.deepLoad : toLoad : &quot;, toLoad);
+							if(typeof toLoad.value === &#x27;function&#x27;)
 								promises.push(toLoad.value())
 							else
 								promises.push(deep.request.retrieve(toLoad.value, {root:self._root.value, basePath:toLoad.path, acceptQueryThis:true }));
@@ -1683,7 +1775,7 @@ function(require)
 						nextQueueItem.apply(self, [ results, null ]);
 					},
 					function (error) {
-						console.error("error : deep.deepLoad : ", error);
+						console.error(&quot;error : deep.deepLoad : &quot;, error);
 						self.running = false;
 						nextQueueItem.apply(self, [ null, error ]);
 					});
@@ -1699,8 +1791,8 @@ function(require)
 				return function(){
 					var  paths = [];
 					var  promises = [];
-					//console.log("deep.load : ", deep.chain.stringify(self))
-					//console.log("deep.load : entries : ", self.entries)
+					&#x2F;&#x2F;console.log(&quot;deep.load : &quot;, deep.chain.stringify(self))
+					&#x2F;&#x2F;console.log(&quot;deep.load : entries : &quot;, self.entries)
 					if(request)
 						promises.push(deep.request.retrieve(request, { callFunctions:true }));
 					else
@@ -1708,8 +1800,8 @@ function(require)
 							if(!e.value)
 								return;
 							if(e.value.load)
-								promises.push(callFunctionFromValue(e, "load"));
-							else if(typeof e.value === 'string')
+								promises.push(callFunctionFromValue(e, &quot;load&quot;));
+							else if(typeof e.value === &#x27;string&#x27;)
 								promises.push(deep.request.retrieve(e.value, { root:self._root.value, basePath:e.path, callFunctions:true, acceptQueryThis:true }));
 							else
 								promises.push(e.value);
@@ -1717,14 +1809,14 @@ function(require)
 						})
 					deep.all(promises).then(
 					function (results) {
-						//console.log("deep.load results : ", results)
+						&#x2F;&#x2F;console.log(&quot;deep.load results : &quot;, results)
 						var count = 0;
 						if(request)
 						{
-							//console.log("deep.load results from request : ", self._entries)
+							&#x2F;&#x2F;console.log(&quot;deep.load results from request : &quot;, self._entries)
 							self._entries.forEach(function (entry) {
 								if(!entry.ancestor)
-									//throw new Error("You couldn't interpret root !");
+									&#x2F;&#x2F;throw new Error(&quot;You couldn&#x27;t interpret root !&quot;);
 										entry.value = results[0];
 									else
 										entry.value = entry.ancestor.value[entry.key] = results[0];
@@ -1732,12 +1824,12 @@ function(require)
 						}
 						else
 							results.forEach(function  (r) {
-								//console.log("deep.load results from inner : ", r)
+								&#x2F;&#x2F;console.log(&quot;deep.load results from inner : &quot;, r)
 								var item = paths[count++];
 								if(!item.value.load)
 								{
 									if(!item.ancestor)
-									//throw new Error("You couldn't interpret root !");
+									&#x2F;&#x2F;throw new Error(&quot;You couldn&#x27;t interpret root !&quot;);
 										item.value = r;
 									else
 										item.value = item.ancestor.value[item.key] = r;
@@ -1747,7 +1839,7 @@ function(require)
 						nextQueueItem.apply(self, [results, null]);
 					},
 					function (error) {
-						console.error("deep.load errors : ", error);
+						console.error(&quot;deep.load errors : &quot;, error);
 						self.running = false;
 						nextQueueItem.apply(self, [null, error]);
 					});
@@ -1757,7 +1849,7 @@ function(require)
 			return this;
 		},
 
-		//________________________________________________________________________ INTERPET STRINGS
+		&#x2F;&#x2F;________________________________________________________________________ INTERPET STRINGS
 
 		deepInterpret:function(context) 
 		{
@@ -1768,12 +1860,12 @@ function(require)
 				{
 					var res = [];
 					self._entries.forEach(function (e) {
-						var strings = self.querier.query(e, ".//?_schema.type=string", {resultType:"full"});
+						var strings = self.querier.query(e, &quot;.&#x2F;&#x2F;?_schema.type=string&quot;, {resultType:&quot;full&quot;});
 						strings.forEach(function (interpretable) {
 							var r = deep.interpret(interpretable.value, context);
 							res.push(r);
 							if(!interpretable.ancestor)
-								//throw new Error("You couldn't interpret root !");
+								&#x2F;&#x2F;throw new Error(&quot;You couldn&#x27;t interpret root !&quot;);
 								interpretable.value = r;
 							else
 								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
@@ -1784,7 +1876,7 @@ function(require)
 				}) 
 				.fail(function (error) 
 				{
-					console.error("error : deep.deepInterpret : ", error);
+					console.error(&quot;error : deep.deepInterpret : &quot;, error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1804,7 +1896,7 @@ function(require)
 						var r = deep.interpret(interpretable.value, context);
 						res.push(r);
 						if(!interpretable.ancestor)
-							//	throw new Error("You couldn't interpret root !");
+							&#x2F;&#x2F;	throw new Error(&quot;You couldn&#x27;t interpret root !&quot;);
 							interpretable.value = r;
 						else
 							interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
@@ -1812,7 +1904,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [res, null]);
 				}, function (error) {
-					console.error("error : deep.interpret : ", error);
+					console.error(&quot;error : deep.interpret : &quot;, error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -1822,7 +1914,7 @@ function(require)
 			return this;
 		},
 
-		//________________________________________________________ PUSH TO
+		&#x2F;&#x2F;________________________________________________________ PUSH TO
 
 		pushHandlerTo:function(array) 
 		{
@@ -1830,7 +1922,7 @@ function(require)
 			function func(){
 				var f = function()
 				{
-					// console.log("pushHandlerTo : init? ", self.initialised)
+					&#x2F;&#x2F; console.log(&quot;pushHandlerTo : init? &quot;, self.initialised)
 					array.push(self);
 					if(self.initialised)
 					{
@@ -1909,14 +2001,14 @@ function(require)
 			return this;
 		},
 
-		//____________________________________________________   IF familly
+		&#x2F;&#x2F;____________________________________________________   IF familly
 
 		rejectIf : function(totest)
 		{
 			var self = this;
 			function func(){
 				return function(){
-					if(typeof totest === 'function')
+					if(typeof totest === &#x27;function&#x27;)
 						deep.when(totest()).then(function (res) {
 							if(res)
 								self.reject(res);
@@ -1944,7 +2036,7 @@ function(require)
 			var self = this;
 			function func(){
 				return function(){
-					if(typeof totest === 'function')
+					if(typeof totest === &#x27;function&#x27;)
 						deep.when(totest()).then(function (res) {
 							if(res)
 								self.cancel(res);
@@ -1967,70 +2059,70 @@ function(require)
 			return self;
 		},
 
-		//__________________________________________________________
+		&#x2F;&#x2F;__________________________________________________________
 
 		newHandler:function (options) {
 			return new DeepHandler(options);
 		}
 	}
-/**
+&#x2F;**
 deep : just say : Powaaaaaa ;)
 
 @module deep
-**/
+**&#x2F;
 	var deep = function(broot, schema)
 	{
-		var handler = new DeepHandler({path:"/!"});
+		var handler = new DeepHandler({path:&quot;&#x2F;!&quot;});
 		handler.running = true;
 		var alls = [DeepRequest.retrieve(broot)];
 
 		if(schema)
 			alls.push(DeepRequest.retrieve(schema));
 
-		  // console.log("deep(root) init : ", alls);
+		  &#x2F;&#x2F; console.log(&quot;deep(root) init : &quot;, alls);
 
 		deep.all(alls).then(function (results) {
-			  //console.log("deep(root) : loaded : ",  results)
+			  &#x2F;&#x2F;console.log(&quot;deep(root) : loaded : &quot;,  results)
 			handler.initialised = true;
 			var root = results[0];
 			var schema = results[1];
-			if(typeof root === 'object' && root._isDQ_NODE_)
+			if(typeof root === &#x27;object&#x27; &amp;&amp; root._isDQ_NODE_)
 			{
-				// console.log("deep(..) with DQNode : ", root)
+				&#x2F;&#x2F; console.log(&quot;deep(..) with DQNode : &quot;, root)
 				handler._root = root.root;
 				handler._entries = [root];	
 				handler.queries = [root.path];
 			}
-			else if(typeof root === 'object' && root._deep_entry)
+			else if(typeof root === &#x27;object&#x27; &amp;&amp; root._deep_entry)
 			{
-				 // console.log("deep(..) with _deep_entry")
+				 &#x2F;&#x2F; console.log(&quot;deep(..) with _deep_entry&quot;)
 				handler._root = root._deep_entry;
 				handler._entries = [root._deep_entry];	
 				handler.queries = [root._deep_entry.path];
 			}
 			else if(broot instanceof DeepHandler)
 			{
-				 // console.log("deep(..) with DeepHandler");
+				 &#x2F;&#x2F; console.log(&quot;deep(..) with DeepHandler&quot;);
 				handler._entries = utils.copyArray(broot._entries)	
 				handler._root = broot._root;
 				handler.queries = utils.copyArray(broot.queries);
 			}
 			else
 			{
-				// console.log("deep(..) simple object")
+				&#x2F;&#x2F; console.log(&quot;deep(..) simple object&quot;)
 				handler._root = Querier.createRootNode(root, schema);
 				handler._entries = [handler._root];	
-				handler.queries = ["/!"];
-				if(typeof root === 'object' && root.uri)
+				handler.queries = [&quot;&#x2F;!&quot;];
+				if(typeof root === &#x27;object&#x27; &amp;&amp; root.uri)
 					handler.name = root.uri;
 				else
-					handler.name = "untitled";
+					handler.name = &quot;untitled&quot;;
 			}
-			// console.log("chain will run next item");
+			&#x2F;&#x2F; console.log(&quot;chain will run next item&quot;);
 			handler.running = false;
 			nextQueueItem.apply(handler, [handler._entries[0].value, null]);
 		}, function (error) {
-			console.log("deep start chain error : ", error);
+			console.log(&quot;deep start chain error : &quot;, error);
 			handler.running = false;
 			nextQueueItem.apply(handler, [null, error]);
 		});		
@@ -2049,12 +2141,12 @@ deep : just say : Powaaaaaa ;)
 		stringify:function (handler, options) 
 		{
 			options = options || {};
-			var res = "";
+			var res = &quot;&quot;;
 			handler._entries.forEach(function (e) {
 				if(options.pretty)
-					res += JSON.stringify(e.value, null, ' ')+"\n";
+					res += JSON.stringify(e.value, null, &#x27; &#x27;)+&quot;\n&quot;;
 				else
-					res += JSON.stringify(e.value)+"\n";
+					res += JSON.stringify(e.value)+&quot;\n&quot;;
 			});
 			return res;
 		},
@@ -2090,22 +2182,22 @@ deep : just say : Powaaaaaa ;)
 
 	function createHandler(arg)
 	{
-		var handler = new DeepHandler({path:"/!"});
-		handler._entries = handler.querier.query(arg, "/!", {resultType:"full", schema:{}});	
-		handler.queries = ["/!"];
-		if(arg && arg.uri)
+		var handler = new DeepHandler({path:&quot;&#x2F;!&quot;});
+		handler._entries = handler.querier.query(arg, &quot;&#x2F;!&quot;, {resultType:&quot;full&quot;, schema:{}});	
+		handler.queries = [&quot;&#x2F;!&quot;];
+		if(arg &amp;&amp; arg.uri)
 			handler.name = arg.uri;
 		else
-			handler.name = "untitled";
+			handler.name = &quot;untitled&quot;;
 		handler._root = handler._entries[0];
-	//	console.log("handler created : root : ", handler._root)
+	&#x2F;&#x2F;	console.log(&quot;handler created : root : &quot;, handler._root)
 		nextQueueItem.apply(handler, [handler._root.value, null]);
 		return handler;
 	}
 
 	var DeepDeferred = function () 
 	{
-		// console.log("new deep deferred")
+		&#x2F;&#x2F; console.log(&quot;new deep deferred&quot;)
 		this.context = deep.context;
 		this.running = true;
 		this.queue = [];
@@ -2122,9 +2214,9 @@ deep : just say : Powaaaaaa ;)
 		failure:null,
 		resolve:function (argument) 
 		{
-			//console.log("DeepDeferred.resolve");
+			&#x2F;&#x2F;console.log(&quot;DeepDeferred.resolve&quot;);
 			if(this.rejected || this.resolved || this.canceled)
-				throw new Error("DeepDeferred (resolve) has already been resolved !");
+				throw new Error(&quot;DeepDeferred (resolve) has already been resolved !&quot;);
 			this.promise.result = this.result =  argument;
 			this.resolved = this.promise.resolved = true;
 			this.promise.running = false;
@@ -2132,9 +2224,9 @@ deep : just say : Powaaaaaa ;)
 		},
 		reject:function (argument) 
 		{
-			//console.log("DeepDeferred.reject");
+			&#x2F;&#x2F;console.log(&quot;DeepDeferred.reject&quot;);
 			if(this.rejected || this.resolved || this.canceled)
-				throw new Error("DeepDeferred (reject) has already been rejected !");
+				throw new Error(&quot;DeepDeferred (reject) has already been rejected !&quot;);
 			this.promise.failure = this.failure = argument;
 			this.rejected = this.promise.rejected = true;
 			this.promise.running = false;
@@ -2142,9 +2234,9 @@ deep : just say : Powaaaaaa ;)
 		},
 		cancel:function (argument) 
 		{
-			// console.log("DeepDeferred.cancel");
+			&#x2F;&#x2F; console.log(&quot;DeepDeferred.cancel&quot;);
 			if(this.rejected || this.resolved || this.canceled)
-				throw new Error("DeepDeferred (cancel) has already been canceled !");
+				throw new Error(&quot;DeepDeferred (cancel) has already been canceled !&quot;);
 			this.canceled = this.promise.canceled = true;
 			this.promise.queue = [];
 		},
@@ -2182,11 +2274,11 @@ deep : just say : Powaaaaaa ;)
 		failure:null,
 		done:function (callBack) 
 		{
-			//console.log("add done in defInterface : ", this.rejected, this.resolved, this.running)
+			&#x2F;&#x2F;console.log(&quot;add done in defInterface : &quot;, this.rejected, this.resolved, this.running)
 			var self = this;
 			var	func = function(s,e)
 			{
-				//console.log("deep.chain.done : ",s,e)
+				&#x2F;&#x2F;console.log(&quot;deep.chain.done : &quot;,s,e)
 				if(e || !callBack)
 				{
 					self.running = false;
@@ -2194,11 +2286,11 @@ deep : just say : Powaaaaaa ;)
 					return;
 				}
 				var r = callBack(s);
-				if(r && (r instanceof DeepHandler || r._isBRANCHES_))
+				if(r &amp;&amp; (r instanceof DeepHandler || r._isBRANCHES_))
 					r = deep.promise(r);
-				if(r && typeof r.then === 'function')
+				if(r &amp;&amp; typeof r.then === &#x27;function&#x27;)
 					r.done(function (argument) {
-						if(typeof argument === 'undefined')
+						if(typeof argument === &#x27;undefined&#x27;)
 							argument = s;
 						self.running = false;
 						nextPromiseHandler.apply(self, [argument, null]);
@@ -2207,7 +2299,7 @@ deep : just say : Powaaaaaa ;)
 						self.running = false;
 						nextPromiseHandler.apply(self, [null, error]);
 					});
-				else if(typeof r === 'undefined')
+				else if(typeof r === &#x27;undefined&#x27;)
 				{
 					self.running = false;
 					nextPromiseHandler.apply(self, [s, e]);
@@ -2224,30 +2316,30 @@ deep : just say : Powaaaaaa ;)
 				}
 			}
 			this.queue.push(func);
-			if((this.resolved || this.rejected) && !this.running)
+			if((this.resolved || this.rejected) &amp;&amp; !this.running)
 				nextPromiseHandler.apply(this);
 			return self;
 		},
 		fail:function (callBack)
 		{
 			var self = this;
-			//console.log("add fail in defInterface")
+			&#x2F;&#x2F;console.log(&quot;add fail in defInterface&quot;)
 			var func = function(s,e)
 			{
-				//console.log("deep.chain.fail : ",s,e)
-				if((e == null || typeof e === 'undefined') || !callBack)
+				&#x2F;&#x2F;console.log(&quot;deep.chain.fail : &quot;,s,e)
+				if((e == null || typeof e === &#x27;undefined&#x27;) || !callBack)
 				{
 					self.running = false;
 					nextPromiseHandler.apply(self, [s, null]);
 					return;
 				}
 				var r = callBack(e);
-				if(r && (r instanceof DeepHandler || r._isBRANCHES_))
+				if(r &amp;&amp; (r instanceof DeepHandler || r._isBRANCHES_))
 					r = deep.when(r);
-				if(r && typeof r.then === 'function')
+				if(r &amp;&amp; typeof r.then === &#x27;function&#x27;)
 					r.done(function (argument) 
 					{
-						if(typeof argument === 'undefined')
+						if(typeof argument === &#x27;undefined&#x27;)
 						{
 							self.running = false;
 							nextPromiseHandler.apply(self, [null, e]);
@@ -2263,7 +2355,7 @@ deep : just say : Powaaaaaa ;)
 						self.running = false;
 						nextPromiseHandler.apply(self, [null, error]);
 					});
-				else if(typeof r === 'undefined')
+				else if(typeof r === &#x27;undefined&#x27;)
 				{
 					self.running = false;
 					nextPromiseHandler.apply(self, [null, e]);
@@ -2280,7 +2372,7 @@ deep : just say : Powaaaaaa ;)
 				}
 			}
 			this.queue.push(func);
-			if((this.resolved || this.rejected) && !this.running)
+			if((this.resolved || this.rejected) &amp;&amp; !this.running)
 				nextPromiseHandler.apply(this);
 			return self;
 		},
@@ -2291,19 +2383,19 @@ deep : just say : Powaaaaaa ;)
 				this.done(successCallBack);
 			if(errorCallBack)
 				this.fail(errorCallBack);
-			if((this.resolved || this.rejected)  && !this.running)
+			if((this.resolved || this.rejected)  &amp;&amp; !this.running)
 				nextPromiseHandler.apply(this);
 			return self;
 		}
 	}
 	function nextPromiseHandler(result, failure )
 	{
-		//console.log("nextPromiseHandler ", this.running, " - ", this.queue, result, failure);
+		&#x2F;&#x2F;console.log(&quot;nextPromiseHandler &quot;, this.running, &quot; - &quot;, this.queue, result, failure);
 		if(this.running)
 			return;
 		this.running = true;
 		var self = this;
-		if((typeof failure === 'undefined' || failure == null) && (typeof result === 'undefined' || result == null))
+		if((typeof failure === &#x27;undefined&#x27; || failure == null) &amp;&amp; (typeof result === &#x27;undefined&#x27; || result == null))
 		{
 			failure = this.failure;
 			result = this.result;
@@ -2319,26 +2411,26 @@ deep : just say : Powaaaaaa ;)
 			this.failure = result;
 			this.result = null;
 		}
-		if(this.queue.length>0)
+		if(this.queue.length&gt;0)
 		{
 			try{
 				var previousContext = deep.context;
 				if(previousContext !== this.context)
 				{
-					if(previousContext && previousContext.suspend)
+					if(previousContext &amp;&amp; previousContext.suspend)
 						previousContext.suspend();
 					deep.context = this.context;
-					if(this.context && this.context.resume)
+					if(this.context &amp;&amp; this.context.resume)
 						this.context.resume();
 				}
 
-				//console.log("newQueueThen . will try next item : ",this.queue, result, failure)
+				&#x2F;&#x2F;console.log(&quot;newQueueThen . will try next item : &quot;,this.queue, result, failure)
 				var next = this.queue.shift();
 				next(result,failure);
 			}
 			catch(e)
 			{
-				var msg = "Internal deep.promise error : ";
+				var msg = &quot;Internal deep.promise error : &quot;;
 				console.error(msg, e);
 				if(deep.rethrow)
 					throw e;
@@ -2349,10 +2441,10 @@ deep : just say : Powaaaaaa ;)
 			}
 			finally{
 				if(previousContext !== this.context){
-					if(this.context && this.context.suspend){
+					if(this.context &amp;&amp; this.context.suspend){
 						this.context.suspend();
 					}
-					if(previousContext && previousContext.resume){
+					if(previousContext &amp;&amp; previousContext.resume){
 						previousContext.resume();
 					}
 					deep.context = previousContext;
@@ -2361,13 +2453,13 @@ deep : just say : Powaaaaaa ;)
 		}
 		else
 		{
-			//console.log("stopping run");
+			&#x2F;&#x2F;console.log(&quot;stopping run&quot;);
 			this.running = false;
 		}	
 	}
 	function createImmediatePromise(result)
 	{
-		//console.log("deep.createImmediatePromise : ", result)
+		&#x2F;&#x2F;console.log(&quot;deep.createImmediatePromise : &quot;, result)
 		var prom = new DeepPromise();
 		prom.resolved = true;
 		prom.running = false;
@@ -2380,23 +2472,23 @@ deep : just say : Powaaaaaa ;)
 
 	deep.promise = function(arg)
 	{
-		//console.log("deep.promise : ", arg)
-		if(typeof arg === "undefined" || arg == null)
+		&#x2F;&#x2F;console.log(&quot;deep.promise : &quot;, arg)
+		if(typeof arg === &quot;undefined&quot; || arg == null)
 			return createImmediatePromise(arg);
-		if(arg._isBRANCHES_)		// chain.branches case
+		if(arg._isBRANCHES_)		&#x2F;&#x2F; chain.branches case
 			return deep.all(arg.branches);
 		if(arg instanceof DeepHandler)
 		{
-			//console.log("DEEP promise with deephandler", arg.running);
+			&#x2F;&#x2F;console.log(&quot;DEEP promise with deephandler&quot;, arg.running);
 			if(arg.rejected)
-				throw new Error("error : deep.promise : DeepHandler has already been rejected.");
+				throw new Error(&quot;error : deep.promise : DeepHandler has already been rejected.&quot;);
 			
-			if(arg.running) // need to wait rejection or success
+			if(arg.running) &#x2F;&#x2F; need to wait rejection or success
 			{
 				var def = deep.Deferred();
-				arg.done(function (success) { // simply chain done handler in deep chain
-					//console.log("deep.promise of DeepHandler : added then")
-					if(success && success.then)
+				arg.done(function (success) { &#x2F;&#x2F; simply chain done handler in deep chain
+					&#x2F;&#x2F;console.log(&quot;deep.promise of DeepHandler : added then&quot;)
+					if(success &amp;&amp; success.then)
 						deep.when(success).then(function (success) {
 							if(success instanceof Error)
 							{
@@ -2410,29 +2502,29 @@ deep : just say : Powaaaaaa ;)
 					else
 						def.resolve(success);
 				})
-				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
-					//console.log("deep.promise of DeepHandler : added error")
+				arg.deferred.fail(function (error) {  &#x2F;&#x2F; register rejection on deep chain deferred.
+					&#x2F;&#x2F;console.log(&quot;deep.promise of DeepHandler : added error&quot;)
 					def.reject(error);
 				})
 				return def.promise;
 			}
-			return arg; // nothing to wait : chain will act as immediate promise
+			return arg; &#x2F;&#x2F; nothing to wait : chain will act as immediate promise
 		}
-		if(typeof arg.promise === "function" )  // jquery deferred case
+		if(typeof arg.promise === &quot;function&quot; )  &#x2F;&#x2F; jquery deferred case
 			return arg.promise();
-		if(arg.promise)			// deep and promised-io deferred case
+		if(arg.promise)			&#x2F;&#x2F; deep and promised-io deferred case
 			return arg.promise;
-		if(typeof arg.then === 'function')		//any promise compliant object
+		if(typeof arg.then === &#x27;function&#x27;)		&#x2F;&#x2F;any promise compliant object
 			return arg;
 		return createImmediatePromise(arg);
 	};
 
 	deep.when = function (arg) 
 	{
-		// console.log("deep.when : ", arg)
+		&#x2F;&#x2F; console.log(&quot;deep.when : &quot;, arg)
 		if(arg instanceof DeepHandler)
 			return deep.promise(arg);
-		if(arg && typeof arg.then === 'function')
+		if(arg &amp;&amp; typeof arg.then === &#x27;function&#x27;)
 			return arg;
 		return deep.promise(arg);
 	};
@@ -2473,10 +2565,10 @@ deep : just say : Powaaaaaa ;)
 		return new DeepDeferred();
 	}
 	deep.metaSchema = {};
-	deep.isNode = (typeof process !== 'undefined' && process.versions && process.versions.node);
-	deep.rql = require("deep/deep-rql");
+	deep.isNode = (typeof process !== &#x27;undefined&#x27; &amp;&amp; process.versions &amp;&amp; process.versions.node);
+	deep.rql = require(&quot;deep&#x2F;deep-rql&quot;);
 	deep.query = Querier.query;
-	deep.collider = require("deep/deep-collider");
+	deep.collider = require(&quot;deep&#x2F;deep-collider&quot;);
 
 	deep.interpret = utils.interpret;
 
@@ -2484,7 +2576,7 @@ deep : just say : Powaaaaaa ;)
 
 	deep.chain.error = function (argument) {
 		var f = function (argument) {
-			// body...
+			&#x2F;&#x2F; body...
 		}
 	}
 
@@ -2498,20 +2590,20 @@ deep : just say : Powaaaaaa ;)
 		var doIt = function (r) {
 			deep.when(r).then(function (r) 
 			{
-				//console.log("deep.sequence : doIt.when : r : ", r)
+				&#x2F;&#x2F;console.log(&quot;deep.sequence : doIt.when : r : &quot;, r)
 				if(funcs.length == 0)
 				{
-					if(typeof r === 'undefined')
+					if(typeof r === &#x27;undefined&#x27;)
 					{
 						r = args;
 						if(args.length == 1)
 							r = args[0];
 					}	
-					//console.log("deep.sequence. resolve because funcs.length == 0 : ", r)
+					&#x2F;&#x2F;console.log(&quot;deep.sequence. resolve because funcs.length == 0 : &quot;, r)
 					def.resolve(r);
 					return r;
 				}
-				if(typeof r === 'undefined')
+				if(typeof r === &#x27;undefined&#x27;)
 					r = args;
 				else
 					r = [r];
@@ -2526,10 +2618,30 @@ deep : just say : Powaaaaaa ;)
 	}
 
 
-	// console.log("Deep initialisaed");
+	&#x2F;&#x2F; console.log(&quot;Deep initialisaed&quot;);
 
 	deep.rethrow = true;
 	return deep;
 
-	//______________________________________________________________________________________________________________________________________
+	&#x2F;&#x2F;______________________________________________________________________________________________________________________________________
 })
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

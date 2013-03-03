@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>deep-schema.js - deepjs API</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.9.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
+            
+                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: deep-schema.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ *	@author gilles.coomans@gmail.com
+ *	JSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions
+ * 	http:&#x2F;&#x2F;tools.ietf.org&#x2F;html&#x2F;draft-zyp-json-schema-03
+ * 
+
+		Ajout par rapport à la v3
+
+
+		type:
+			schema
+			false
+			true
+			function
+			date
+			hash     !!!!!     différent de object ou array == TROISIEME TYPE non simple : hash table d&#x27;items
+
+		notNull
+
+		absoluteMinimum
+		absoluteMaximum
+
+		merge
+		loadable
+		&quot;interpretation-deepness&quot;   ==&gt; have equivalent in draft 4 : template : bad word : template-engine is better or href-interpreter (because it&#x27;s the only interpretable string)
+
+
+		deprecated : 
+		$ref : to be removed : incoherent with backgrounds
+
+
+		semantic misuse :
+		id has to became uri
+
+
+		v3 &#x2F; V4
+		pattern remplace format ?
+		divisibleBy -&gt; mod
+		max&#x2F;minProperties
+
+		required : fuzzy concept now : need 
+		dependencies : always fuzzy : need example to be clear
+
+		I propose : 
+
+		{
+			myConstraintProperty:{
+				required:Boolean,   &#x2F;&#x2F; means that&#x27;s, in any case, this property is needed
+				require:{
+					&#x2F;&#x2F; is the schema that the whole object (from root) need to satisfy
+					path:{
+						to:{
+							requiredProperty:{
+								&#x2F;&#x2F; schema that requiredProperty need to satisfy
+							}
+						}
+					}
+				}
+			}
+		}
+
+		Fuzzy : format&#x2F;pattern&#x2F;value :    value is more clear : 
+		I propose : 
+			when object.value is a leaf of the object instance (no array, nor object):
+			if(schema.value is RegExp)
+				object.value must match schema.value (equivalent of pattern)
+			else
+				object.value must be equal to schema.value
+				
+		that permit to be a mecanisme for true or false constraint value (no more &quot;true&quot; or &quot;false&quot; type)
+		that also permit to be a constraint on the object.value for any dependencies :
+
+		so : 
+		taxerate:{
+			required:true,
+			dependencies:[
+				{ 
+					constraint:{
+						&#x2F;&#x2F; the schema that need to be matched on the dependant value
+						pattern:&quot;tva-pattern-uk&quot;
+					}, 
+					instance:{
+						&#x2F;&#x2F; the schemas that pointed properties (from root) need to satisfy to evaluate 
+						path:{
+							to:{
+								country:{
+									pattern:&quot;UK&quot;
+								}
+							}
+						}
+					}
+				},
+				{ 
+					constraint:{
+						&#x2F;&#x2F; the schema that need to be matched on the dependant value
+						pattern:&quot;tva-pattern-eu&quot;
+					}, 
+					instance:{
+						&#x2F;&#x2F; the schema that pointed properties (from root) need to satisfy to evaluate 
+						properties:{
+							pathTo:{
+								properties:{
+									country:{
+										enum:[&quot;SE&quot;,&quot;FR&quot;,&quot;ES&quot;]
+									}
+								}
+							}
+						}
+					}
+				}
+			]
+		}
+
+
+		With json-pointer :
+		taxerate:{
+			required:true,
+			dependencies:[
+				{ 
+					constraint:{  &#x2F;&#x2F; the schema that need to be matched on the dependant value. Optional : empty schema by default
+						pattern:&quot;tva-pattern-uk&quot;
+					}, 
+					test:{
+						&#x2F;&#x2F; the schemas that pointed property (from root - in object instance) need to be satisfied to evaluate constraint above
+						&quot;#&#x2F;address&#x2F;country&quot;:{
+							pattern:&quot;UK&quot;
+						}
+					}
+				},
+				{ 
+					constraint:{
+						&#x2F;&#x2F; the schema that need to be matched on the dependant value
+						pattern:&quot;tva-pattern-eu&quot;
+					}, 
+					test:{
+						&#x2F;&#x2F; the schema that whole object (from root) needs to be satisfied to evaluate constraint above
+						&quot;#&#x2F;address&#x2F;country&quot;:{ 
+							enum:[&quot;FR&quot;, &quot;ES&quot;]
+						}
+					}
+				}
+			]
+		}
+
+		the order of evaluation is done up-bottom, and the first dependecy that match the test will test his constraint on the value.
+		Only the first is interpreted.
+
+		if there is 
+
+
+		Donc : SI l&#x27;instance satisfait tels schema : ALORS la valeur dépendante doit satisfaire tels contraintes
+
+		manque mécanisme de référence interne : 
+
+		genre : 
+
+		mySchema:{
+			obj:{
+				obj2:{
+					&quot;$ref&quot;: &quot;&#x2F;&quot;
+				}
+			}
+		}
+
+		==&gt; utiliser backgrounds + json-pointer
+
+		{
+			properties:{
+				myNestedChilds:{
+					patternProperties:{
+						&#x2F;.* &#x2F;g:{
+							backgrounds:[&quot;#&#x2F;&quot;],   &#x2F;&#x2F; TOdo faire attention dans l&#x27;backgrounds d&#x27;un ancêtre : cycle possible : faut que l&#x27;extension ne cycle pas mais que la structure soit bien nesté à l&#x27;infini : solution faire l&#x27;backgrounds le plus tard possible : ne pas extender toute la structure dés le début
+							properties:{ 
+								parent:{ type:&quot;any&quot; } 
+							} 
+						}
+					}
+							
+				}
+			}
+		}
+
+		sinon : addionnal items n&#x27;a de sens que si items est une array.
+
+
+
+		REFACTORING EXTENDS
+		backgrounds dans deep-schema : faire un mix : 
+		précompilation du schéma : dés qu&#x27;on voit qu&#x27;on doit choper un ancetre pour un backgrounds (dans le schema) : on laisse l&#x27;backgrounds  (on remplace dans l&#x27;array backgrounds tout ce qui peut etre compilé par sa compilation (par groupe en laissant l&#x27;ordre et les référence vers anc^etres tel quel - tout ce qui est en dessous de la première référence à un parent peut déjà être appliqué))
+		lorsqu&#x27;on a une instance : lors du parsing&#x2F;compilation (au deep-copy par exemple, lorsqu&#x27;on voit passer tous les champs) : 
+			on chope le schema associé à la propriété courante
+				si backgrounds encore présent dans schema : copier ancetre dans vide, (sans backgrounds), coller schema prop courante dessus (sans backgrounds) : retourner le tout
+
+		si backgrounds vers ancetres dans instance : throw : error : cycle present ! structure infinie
+
+
+
+		backgrounds et foregrounds : 
+			ne pas les mettre dans l&#x27;instance : ca devient difficile à gérer : les mettre dans le schema : la c&#x27;est cohérent
+ 
+ 		au final : comme un schema chope de plus en plus de propriétés d&#x27;un deep-factory : il faudrait que le schema soit un deep-factory 
+ 		dont son propre schema soit le meta schema du schema
+
+ *&#x2F;
+
+&#x2F;**
+ * TODO : 
+ * json-pointer dereferencement							OK
+ * add relative reference to json-pointer					OK
+ * dependencies : clarify, and&#x2F;or implement if(constraint.match(root)) constraint(value)
+ * links dereferencer  : template-engine + instance injection + DeepRequest.retrieve
+ * référencement interne : backgrounds ou $ref with json-pointer					OK
+
+
+
+Patterns :
+	- name patterns + data : regExp, enum, direct       (could be external)
+	- query pattern : if query then pattern match
+
+	properties:{
+		christophil:{
+			dependenciesQueries:
+			{
+				matchEurope:{     &#x2F;&#x2F; it&#x27;s the relation&#x2F;dependency name
+					query:&quot;&quot;,
+					required:true,   &#x2F;&#x2F; mean that the query MUST give something : so the dependency MUST be valid
+					patternProperties:{
+						&quot;$ref&quot;:[ &quot;json::&#x2F;Pathologies&#x2F;?type=perenial&amp;zone=europe&amp;$result=hash&quot; ]  &#x2F;&#x2F; exemple of external patterns definitions
+					}
+				},
+				matchUK:{
+					query:&quot;&quot;;
+					required:false,  &#x2F;&#x2F; optional dependency
+					properties:{
+	
+					}
+				}
+			}
+		}
+	}
+
+
+property name + data pattern : could be an external link to a service that provides a list of acceptable values.
+Imagine you would define a pathologie list for plants. Each plant could be sensible to a subset of those pathologies, and could have different kinds of sensibility...
+The service could provids the list of known pathologies, and the subset have to match 
+
+
+ *&#x2F;
+
+
+ &#x2F;**
+ * console.flags : {
+	validationError,
+	validator
+ }
+ *&#x2F;
+
+if(typeof define !== &#x27;function&#x27;)
+{
+	var define = require(&#x27;amdefine&#x27;)(module);
+	var swig = require(&quot;swig&quot;);
+}	
+define([&quot;require&quot;, &quot;deep&#x2F;utils&quot;, &quot;deep&#x2F;promise&quot;],
+function(require){
+
+	var utils = require(&quot;deep&#x2F;utils&quot;);
+	var promise = require(&quot;deep&#x2F;promise&quot;);
+	function findPatternProperties(name, patterns)
+	{
+		var res = [];
+		for(var i in patterns)
+		{
+			if(!patterns.hasOwnProperty(i))
+				continue;
+			if(new RegExp(i).test(name))
+				res.push(patterns[i])
+		}
+		return res;
+	}
+
+	var Validator = function(){};
+
+	var getType = Validator.prototype.getType = function (value){
+		for(var i in this.lexic.type)
+			if(this.lexic.type.hasOwnProperty(i) &amp;&amp; i != &quot;any&quot; &amp;&amp; i != &quot;object&quot; &amp;&amp; i != &quot;schema&quot; &amp;&amp; this.lexic.type[i].test.apply(this, [value]))
+				return i;
+		if(this.lexic.type.object.test.apply(this, [value]))
+			return &#x27;object&#x27;;
+		return null;
+	}
+
+	Validator.prototype.convertStringTo = function (value, type){
+
+		switch(type)
+		{
+			case &quot;number&quot; : 
+				value = parseFloat(value); break;
+			case &quot;float&quot; : 
+				value = parseFloat(value); break;
+			case &quot;integer&quot; : 
+				value = parseInt(value); break;
+			case &quot;boolean&quot; : 
+				value =  (value == &quot;true&quot; || value == &quot;1&quot;)?true:false; break;
+			default : &#x2F;&#x2F; string
+				value;
+		}
+		&#x2F;&#x2F;console.log(&quot;convertStringTo : &quot;, value,   &quot; - &quot;, type)
+		return value;
+	}
+
+	Validator.prototype.errors = null;
+	Validator.prototype.errorsMap = null;
+
+	Validator.prototype.doTest = function doTest(entry, value, type, schema, valuePath, schemaPath, schemaProperty)
+	{
+		&#x2F;&#x2F;console.log(&quot;do test &quot;+entry.test.apply(this, [value, type, schema, valuePath, schemaPath, schemaProperty]))
+		if(entry.test &amp;&amp; !entry.test.apply(this, [value, type, schema, valuePath, schemaPath, schemaProperty]))
+			this.createError(entry.error, value, type, schema, valuePath, schemaPath, schemaProperty);
+	}
+
+	Validator.prototype.createError = function createError(message, value, type, schema, valuePath, schemaPath, schemaProperty){
+		if(!schemaProperty)
+			schemaProperty = &quot;&quot;
+		var detail = swig.compile(message)({ value:value, type:type, path:valuePath, schema:schema, schemaPath:schemaPath, __this:this });
+		var error = {
+			detail:detail,
+			value:value,
+			type:type,
+			schema:schema,
+			path:valuePath,
+			schemaPath:schemaPath,
+			schemaProperty:schemaProperty
+		}
+		if(!this.errorsMap)
+			this.errorsMap = {};
+		if(!this.errorsMap[valuePath])
+			this.errorsMap[valuePath] = {};
+		if(!this.errorsMap[valuePath].errors)
+			this.errorsMap[valuePath].errors = [];
+		this.errorsMap[valuePath].errors.push(error);
+		if(console.flags.validationError) console.log(&quot;validator&quot;, &quot;create error : &quot;, JSON.stringify(error));
+		this.errors.push(error);
+		return error;
+	}
+
+	&#x2F;*Validator.prototype.extendsObject = function extendsObject(schema, path)
+	{
+		return this.extendsObject(schema, path);
+	}
+
+	Validator.prototype.dereferenceObject = function dereferenceObject(schema, path)
+	{
+		&#x2F;&#x2F;console.log(&quot;dereference : &quot;+path, &quot; - schema : &quot;, schema);
+		return this.dereferenceObject(schema, path);
+	}
+
+	Validator.prototype.compileObject = function(schema){
+		return this.compileObject(schema);
+	}*&#x2F;
+	
+	Validator.prototype.checkRef = function checkRef(value, schema, valuePath, schemaPath, nextValidation)
+	{
+		if(nextValidation == undefined)
+			nextValidation = this.validateProperty;
+		var othis = this;
+		return nextValidation.apply(othis,[value, schema, valuePath, schemaPath]);
+	}
+
+	Validator.prototype.validateSchema = function validateSchema(schema, options)
+	{
+		this.errorsMap = {};
+		this.errors = [];
+		var othis = this;
+		var deferred = promise.Deferred();
+		this.options = options | {};
+		if(!this.options.basePath)
+			this.options.basePath = &quot;&quot;;
+		if(!this.options.baseSchemaPath)
+			this.options.baseSchemaPath = &quot;&quot;;
+		this.validateSchemaProperties(null, schema, null, this.options.basePath);
+		var report = {
+			errorsMap:othis.errorsMap,
+			schema:schema,
+			value:null,
+			date:Date.now(),
+			valid:(othis.errors.length == 0)
+		}
+		return report;
+	}
+
+	Validator.prototype.validate = function validate(value, schema, options){
+		&#x2F;&#x2F;console.log(&quot;validate ___________________&quot;)
+
+		this.rootValue = value;
+		this.errors = [];
+		this.errorsMap = {};
+		var othis = this;
+		this.options = options || {};
+		if(!this.options.basePath)
+			this.options.basePath = &quot;&quot;;
+		if(!this.options.baseSchemaPath)
+			this.options.baseSchemaPath = &quot;&quot;;
+		this.validateProperty(value, schema, this.options.basePath, this.options.baseSchemaPath);
+		var report = {
+			errorsMap:othis.errorsMap,
+			schema:schema,
+			value:value,
+			date:Date.now(),
+			valid:(othis.errors.length == 0)
+		}
+		return report;
+	}
+
+	Validator.prototype.partialValidation =  function partialValidation( object, schema, options){
+		this.errors = [];
+		this.errorsMap = {};
+		this.options = options || {};
+
+		var fieldsToCheck = options.fieldsToCheck || [];
+		var parts = [];
+		var promises = [];
+		var schemaPaths = [];
+		var deferred = promise.Deferred();
+		var othis = this;
+		&#x2F;&#x2F;console.log(&quot;Validator&quot;, &quot;partialValidation : fieldsToCheck = &quot; + fieldsToCheck);
+	
+		fieldsToCheck.forEach(function  (required) {
+			&#x2F;&#x2F;console.log(&quot;Validator&quot;, &quot;partialValidation : forEach : field = &quot; + required);
+
+			var schem = utils.retrieveFullSchemaByPath(schema, required);
+			if(!schem)
+				return;
+			&#x2F;&#x2F;console.log(&quot;partial schema : &quot;, schem)
+			var obj = utils.retrieveValueByPath(object, required);
+			if(obj != &quot;&quot; &amp;&amp; !obj &amp;&amp; schem.required)
+			{
+				&#x2F;&#x2F;console.log(&quot;partial : missing prop : (required)&quot;);
+				othis.createError(othis.lexic[othis.lexic.__requiredEquivalent].error ,obj, &quot;undefined&quot;,  schem, required );
+				return;
+			}
+			promises.push(othis.validate(obj, schem, { basePath:required, baseSchemaPath:null }));
+		})
+		
+	
+		promise.all(promises).then(function partialValidationDone(results){
+			var valid = true;
+			
+			results.forEach(function partialValidationDoneLoopResult(report){
+			&#x2F;&#x2F;console.log(&quot;validator&quot;, &quot;________________ partialValidation : report : &quot;+JSON.stringify(report));
+				if(!report.valid)
+				{
+					valid = false;
+					for(var i in report.errorsMap)
+					{
+						if(!othis.errorsMap[i])
+							othis.errorsMap[i] = { errors:[] };
+						othis.errorsMap[i].errors = report.errorsMap[i].errors;
+					}
+				}	
+			})
+			&#x2F;&#x2F;console.log(&quot;validator&quot;, &quot;________________ partialValidation : final errorsMap : &quot;+JSON.stringify(errorsMap));
+			deferred.resolve({ schema:schema, value:object, errorsMap:othis.errorsMap, valid:valid,  date:Date.now(), partial:true })
+		})
+		return promise.promise(deferred);
+	}
+
+	Validator.prototype.validateSchemaProperties = function validateSchemaProperties(value, schema, valuePath, schemaPath)
+	{
+		var validations = [];
+		for(var i in schema)
+		{
+			if(!schema.hasOwnProperty(i))
+				continue;
+			var type = getType.apply(this, [schema[i]]);
+			switch(i){
+				case &quot;type&quot;: 
+					if(typeof schema.type !== &#x27;string&#x27; || !this.lexic.type[schema.type])
+						this.createError(this.lexic.__additionalErrors.unknownSchemaType, schema.type, this.getType(schema.type), null, null, schemaPath, &quot;type&quot;);
+				 	break;
+				case &quot;format&quot;: 
+					if(typeof schema.format !== &#x27;string&#x27; || !this.lexic.__defaultPattern[schema.format])
+						this.createError(this.lexic.__additionalErrors.unknownFormatType, schema.format, this.getType(schema.format), null, null, schemaPath, &quot;format&quot;);
+				 	break;
+				 case &quot;pattern&quot;: 
+					if(typeof schema.pattern !== &#x27;string&#x27; || !this.lexic.__defaultPattern[schema.pattern])
+						this.createError(this.lexic.__additionalErrors.unknownFormatType, schema.pattern, this.getType(schema.pattern), null, null, schemaPath, &quot;pattern&quot;);
+				 	break;
+				default : 
+					validations.push(this.checkRef(schema[i], this.lexic[i].schema, schemaPath, i+&quot;.schema&quot;));
+			}	
+		}
+		return validations;
+	}
+
+
+	Validator.prototype.validateProperty = function (value, schema, valuePath, schemaPath)
+	{
+		&#x2F;&#x2F;if(console.flags.validator) console.log(&quot;validator&quot;, &quot;validateProperty : &quot;,value, schema)
+		var validations = [];
+		var type = this.getType(value);
+
+		if(this.options.forceConversion &amp;&amp; schema.type != type)
+		switch(schema.type)
+			{
+			&#x2F;*	case &quot;array&quot; : 
+				if(value )
+					if(field.lastNodeRef[field.lastPathPart] == null)
+						field.lastNodeRef[field.lastPathPart] = new Array();
+					break;*&#x2F;
+				case &quot;number&quot; : value = parseFloat(value); break;	
+				case &quot;float&quot; : value = parseFloat(value); break;	
+				case &quot;integer&quot; : value = parseInt(value); break;
+				case &quot;boolean&quot; :
+					&#x2F;&#x2F;console.log(&quot;VERIFY A BOOLEAN VALUE - value = &quot;, val )
+					value = (value == &#x27;true&#x27; || value == &quot;1&quot; || value == true)?true:false;
+					break;	
+				default : ;
+			}
+
+
+		var othis = this;
+		if(type == null)
+			type = typeof value;
+		if(!schema.type)
+			schema.type = &quot;object&quot;;
+
+		var types = schema.type;
+		if(!types.push)
+			types = [types];
+
+		&#x2F;&#x2F;console.log(&quot;will test type in types : &quot; , type, types)
+
+		var ok = false;
+		for(var i = 0; i &lt; types.length; ++i)
+		{
+
+
+
+			if(types[i] == &quot;schema&quot;)
+			{
+				if(type != &quot;object&quot;)
+					this.createError(this.lexic.__additionalErrors.schemaIsNotObject, value, type, schema, valuePath, schemaPath, schemaPath+&quot;.type&quot;);
+				else
+					validations.push(this.validateSchemaProperties(null, value, null, valuePath));
+				return;
+			}
+			if(!this.lexic.type[types[i]])
+			{
+				this.createError(this.lexic.__additionalErrors.unknownSchemaType, value, type, schema, valuePath, schemaPath, schemaPath+&quot;.type&quot;);
+				continue;
+			}
+			if(type == types[i] || types[i] == &quot;any&quot;)
+			{
+				ok = true;
+				break;
+			}
+		}
+		if(!ok)
+			this.createError(this.lexic.__additionalErrors.badType, value, type, schema, valuePath, schemaPath, schemaPath+&quot;.type&quot;);
+			&#x2F;&#x2F;console.log(&quot;test _______________&quot;)
+		
+		var dependenciesMatch = false;
+		if(schema.dependencies &amp;&amp; schema.dependencies.length &gt; 0)
+		{
+
+			schema.dependencies.forEach(function  (dep) {
+				var res = Querier.query(value, dep.query);
+				&#x2F;&#x2F;console.log(&quot;test dependancy query: &quot;, res, &quot; - constraints : &quot;, dep.constraints)
+				if(res.length &gt; 0)
+				{
+					dependenciesMatch = true;
+					var rep = othis.validateProperty(value, dep.constraints, valuePath, schemaPath);
+					&#x2F;&#x2F;&#x2F;console.log(&quot;dependency validation ? &quot;, rep.valid)
+					ok = ok &amp;&amp; rep.valid;
+				}
+			})
+		}
+
+
+		if(!dependenciesMatch &amp;&amp; schema.items &amp;&amp; type == &quot;array&quot;)
+		{
+	 		if(schema.items.push)
+	 		{	
+	 			var i = 0;
+	 			for(; i &lt; schema.items.length; ++i)
+	 				validations.push(this.checkRef(value[i], schema.items[i], valuePath+&quot;.&quot;+i, schemaPath+&quot;.items[&quot;+i+&quot;]&quot;));
+	 			if(i &lt; value.length &amp;&amp; (schema.additionalItems == undefined || schema.additionalItems !== false) )
+	 				for(; i &lt; value.length; ++i)
+	 					validations.push(this.checkRef(value[i], schema.additionalItems || {}, valuePath+&quot;[&quot;+i+&quot;]&quot;, schemaPath+&quot;.additionalItems&quot;));
+	 			else if(schema.additionalItems === false)
+					this.createError(this.lexic.additionalItems.error, value, type, schema, valuePath+&quot;[&quot;+i+&quot;]&quot;,  schemaPath+&quot;.items&quot; );
+	 		}
+	 		else
+	 			for(var i = 0; i &lt; value.length; ++i)
+	 				validations.push(this.checkRef(value[i], schema.items, valuePath+&quot;.&quot;+i, schemaPath+&quot;.items&quot;));
+		}
+
+		if(!dependenciesMatch &amp;&amp; type == &quot;object&quot;)
+		{
+			&#x2F;&#x2F; check all properties of object
+			for(var i in value)
+			{
+				if(!value.hasOwnProperty(i))
+					continue;
+				var schemas = [];
+				&#x2F;&#x2F; get schema pattern properties that match property name
+				if(schema.patternProperties)
+					schemas = findPatternProperties(i, schema.patternProperties);
+				&#x2F;&#x2F; get regular property
+				if(schema.properties &amp;&amp; schema.properties[i])
+					schemas.push(schema.properties[i]);
+				if(schemas.length == 0) &#x2F;&#x2F; no pattern nor regular schema find for this property
+				{ 
+					if(schema.additionalProperties == undefined || schema.additionalProperties !== false)  &#x2F;&#x2F; try additionalProperties schema
+		 				validations.push(this.checkRef(value[i], schema.additionalProperties || { type:&quot;any&quot; }, valuePath+&quot;.&quot;+i, schemaPath+&quot;.additionalProperties&quot;));
+					else if(schema.additionalProperties === false)
+						this.createError(this.lexic.additionalProperties.error, value[i], getType.apply(this, [value[i]]),  schema, valuePath+&quot;.&quot;+i,  schemaPath+&quot;.properties.&quot;+i );
+				}
+				else{	&#x2F;&#x2F; merge array of schema found for this property (patterns and&#x2F;or regular schema properties)
+					var res = {};
+					schemas.forEach(function deepCopySchema(e){   &#x2F;&#x2F; merge : patterns in backgrounds, regular on top
+						utils.deepCopy(e, res);
+					})
+			 		validations.push(this.checkRef(value[i], res, valuePath+&quot;.&quot;+i,  schemaPath+&quot;.(merged)properties.&quot;+i));
+				}
+			}
+			&#x2F;&#x2F;console.log(&quot;required ? &quot;+this.lexic[this.lexic.__requiredEquivalent].schema.type)
+			&#x2F;&#x2F; check required that&#x27;s missing
+			if(this.lexic[this.lexic.__requiredEquivalent].schema.type == &quot;boolean&quot;) &#x2F;&#x2F; handling v2 and v3 behaviour. Ommited for v4.
+			{	
+			&#x2F;&#x2F;	console.log(&quot;handle required as boolean&quot;)
+				for(var i in schema.properties)
+					if(schema.properties[i][this.lexic.__requiredEquivalent] &amp;&amp; typeof value[i] === &#x27;undefined&#x27;)
+						this.createError(this.lexic[this.lexic.__requiredEquivalent].error , value[i], &quot;undefined&quot;,  schema, valuePath+&quot;.&quot;+i,  schemaPath+&quot;.properties.&quot;+i );
+			}
+		}
+		&#x2F;&#x2F;	console.log(&quot;test _______________&quot;)
+		if(!dependenciesMatch)
+			for(var i in schema)
+			{
+				if(!schema.hasOwnProperty(i))
+					continue;
+				&#x2F;&#x2F;console.log(&quot;simple schema prop test : &quot;+i + &quot; - schema : &quot;+JSON.stringify(schema))
+				switch(i)
+				{
+					case &quot;type&quot;: break;
+					case &quot;properties&quot;: break;
+					case &quot;dependencies&quot;: break;
+					case &quot;patternProperties&quot;: break;
+					case &quot;items&quot;: break;
+					case &quot;additionalItems&quot;: break;
+					case &quot;additionalProperties&quot;: break;
+					default:
+					&#x2F;&#x2F;console.log(&quot;Validator.lexic[i] &quot;,i)
+					if(this.lexic[i])
+						this.doTest( this.lexic[i], value, type, schema, valuePath, schemaPath );
+					else
+						if(console.flags.validator) console.log(&quot;validator&quot;, &quot;unrecognised schema property : &quot;+i);
+				}
+			}
+		return validations;
+	}
+	
+	Validator.prototype.applyLexic = function applyLexic(lexic){
+		utils.up(lexic, this.lexic);
+	}
+	Validator.prototype.lexic = {
+		__additionalErrors:{
+			schemaIsNotObject:&quot;{{ path }}, trying to validate a schema (type:&#x27;schema&#x27;) but the value isn&#x27;t an object : Value provided : {{ value }}&quot;,
+			badType:&quot;{{ path }}, type not allowed. Allowed type :  {{ schema.type }}&quot;,
+			unknownSchemaType:&quot;type from schema is unknown : {{ schema.type }}&quot;
+		},
+		__requiredEquivalent:&quot;required&quot;,
+		__defaultPattern:{
+			uri:{
+				test: function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with uri format&quot;
+			},
+			date:{
+				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with date format&quot;
+			},
+			phone:{
+				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with phone format&quot;
+			},
+			email:{
+				&#x2F;&#x2F;test:function(value){ return (&#x2F;^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$&#x2F;).test(value) },
+				test:function(value){ return (&#x2F;^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$&#x2F;gi).test(value) },
+				error:&quot;need to be with email format&quot;
+			},
+			zip:{
+				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with zip format&quot;
+			},
+			ipv4:{
+				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with ipv4 format&quot;
+			},
+			ipv6:{
+				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with ipv6 format&quot;
+			},
+			&quot;date-time&quot;:{
+				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				error:&quot;need to be with date-time format&quot;
+			},
+			&quot;utc-millisec&quot;:{
+				test:function(value){ 
+					
+					return (&#x2F;.*&#x2F;g).test(value) 
+				},
+				error:&quot;need to be with date-time format&quot;
+			}
+		},
+		type:{
+			any:{
+				test:function(value){ return true; }
+			},
+			object:{
+				test:function(value){ return typeof value === &#x27;object&#x27;; },
+				error:&quot;{{ path }} need to be float. Value provided : {{ value }}&quot;
+			},
+			&quot;boolean&quot;:{
+				test:function(value){ return value === true || value === false; },
+				error:&quot;{{ path }} need to be float. Value provided : {{ value }}&quot;
+			},
+			number:{
+				test:function(value){
+			&#x2F;&#x2F;	console.log(&quot;DEEP-SCHEMA : test number type of : &quot;, value, typeof value);
+				 return typeof value === &#x27;number&#x27; &amp;&amp; !isNaN(value); 
+				},
+				error:&quot;{{ path }} need to be float. Value provided : {{ value }}&quot;
+			},
+			integer:{
+				test:function(value){	return typeof value === &#x27;number&#x27; &amp;&amp; parseInt(String(value)) != NaN; },
+				error:&quot;{{ path }} need to be integer. Value provided : {{ value }}&quot;
+			},
+			&quot;null&quot;:{
+				test:function(value){	return value === null; },
+				error:&quot;{{ path }} need to be null. Value provided : {{ value }}&quot;
+			},
+			string:{
+				test:function(value){ return typeof value === &#x27;string&#x27;; },
+				error:&quot;{{ path }} need to be string. Value provided : {{ value }}&quot;
+			},
+			array:{
+				test:function(value){ return value instanceof Array; },
+				error:&quot;{{ path }} need to be array. Value provided : {{ value }}&quot;
+			},
+			schema:{
+				test:function(value){ return typeof value === &#x27;object&#x27;; },
+				error:&quot;{{ path }} need to be true. Value provided : {{ value }}&quot;
+			}
+		},
+		dependencies:{
+			schema:{ 
+				type:&quot;array&quot;,
+				items:{
+					properties:{
+						query:{ type:&quot;string&quot;, required:true },
+						constraints:{
+							type:&quot;schema&quot;
+						}
+					}
+				}
+			},
+			test:function(value, type, schema, valuePath, schemaPath){ 
+				var othis = this;
+				var ok = true;
+				&#x2F;&#x2F;console.log(&quot;DEEP-SCHEMA : test dependencies : &quot;, schema.dependencies);
+				if(schema.dependencies &amp;&amp; schema.dependencies.length &gt; 0)
+					schema.dependencies.forEach(function  (dep) {
+
+						var res = Querier.query(value, dep.query);
+						&#x2F;&#x2F;console.log(&quot;test dependancy query: &quot;, res)
+						if(res.length &gt; 0)
+						{
+							var schemaCopied = {}
+							for(var i in schema)
+							{
+								if(!schema.hasOwnProperty(i) || i == &quot;dependencies&quot;)
+									continue;
+								schemaCopied[i] = utils.deepCopy(schema[i], {});
+							}
+							schemaCopied = utils.deepCopy(dep.constraints, schemaCopied);
+							var rep = othis.validateProperty(value, schemaCopied, valuePath, schemaPath);
+							&#x2F;&#x2F;&#x2F;console.log(&quot;dependency validation ? &quot;, rep.valid)
+							ok = ok &amp;&amp; rep.valid;
+						}
+					})
+				return true;
+			},
+			error:&quot;{{ path }} unmatched dependency {{ schema.dependencies }}. Value provided : {{ value|json }}&quot;
+		},
+		format:{
+			schema:{ type:&quot;string&quot; },
+			test:function(value, type, schema, valuePath, schemaPath){ 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type == &quot;array&quot; || type == &quot;object&quot;) return true; 
+				&#x2F;&#x2F;console.log(&quot;try interpret reg exp for format : &quot;+this.lexic.__defaultPattern[schema.format].test)
+
+				if(this.lexic.__defaultPattern[schema.format])
+					return this.lexic.__defaultPattern[schema.format].test.apply(this, [value, type, schema, valuePath, schemaPath, schemaPath+&quot;.format&quot;]);	
+				&#x2F;&#x2F;console.log(&quot;try interpret direct reg exp for format : &quot;+schema.format)
+				return new RegExp(schema.format).test(String(value)); 
+			},
+			error:&quot;{{ path }} unmatched format {{ schema.format }}. Value provided : {{ value }}&quot;
+		},
+		pattern:{
+			schema:{ type:&quot;string&quot; },
+			test:function(value, type, schema, valuePath, schemaPath){ 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type == &quot;array&quot; || type == &quot;object&quot;) return true; 
+				if(this.lexic.__defaultPattern[schema.pattern])
+					return this.doTest(this.lexic.__defaultPattern[schema.pattern], value, type, schema, valuePath, schemaPath, schemaPath+&quot;.pattern&quot;);	
+				return new RegExp(schema.pattern).searchInterpretable(String(value)); 
+			},
+			error:&quot;{{ path }} unmatched pattern {{ schema.pattern }}. Value provided : {{ value }}&quot;
+		},
+		minLength:{
+			schema:{ type:&quot;integer&quot; },
+			test:function(value, type, schema){ 
+				&#x2F;&#x2F;console.log(&quot;min length &quot;+value.length+ &quot; - type : &quot;+type + &quot; - have to be : &quot;+schema.minLength)
+				if(type != &quot;array&quot; &amp;&amp; type != &quot;string&quot; &amp;&amp; type != &quot;integer&quot;) return true; 
+				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
+					return true;
+				return value.length &gt;= schema.minLength; 
+			},
+			error:&quot;{{ path }} need to be at least {{ schema.minLength }} length. Value provided : {{ value }}&quot;
+		},
+		maxLength:{
+			schema:{ type:&quot;integer&quot; },
+			test:function(value, type, schema){ 
+				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;array&quot; &amp;&amp; type != &quot;string&quot; &amp;&amp; type != &quot;integer&quot;) return true;
+				return value.length &lt;= schema.maxLength; 
+			},
+			error:&quot;{{ path }} need to be at max {{ schema.minLength }} length. Value provided : {{ value }}&quot;
+		},
+		minimum:{
+			schema:{ type:&quot;number&quot; },
+			test:function(value, type, schema){ 
+				if(type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true; 
+				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
+					return true;
+				if(schema.exclusiveMinimum) return value &gt; schema.minimum; 
+				return value &gt;= schema.minimum;  
+			},
+			error:&quot;{{ path }} need to be at least {{ schema.exclusiveMinimum }}. Value provided : {{ value }}&quot;
+		},
+		maximum:{
+			schema:{ type:&quot;number&quot; },
+			test:function(value, type, schema){ 
+				if(type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true; 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(schema.exclusiveMaximum) return value &lt; schema.maximum; 
+				return value &lt;= schema.maximum;  
+			},
+			error:&quot;{{ path }} need to be max {{ schema.exclusiveMaximum }}. Value provided : {{ value }}&quot;
+		},
+		minItems:{
+			schema:{ type:&quot;integer&quot; },
+			test:function(value, type, schema){
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;array&quot; ) return true;
+				return value.length &gt;= schema.minItems;  
+			},
+			error:&quot;{{ path }} need to be at least {{ schema.minItems }} long. Value provided : {{ value|json }}&quot;
+		},
+		maxItems:{
+			schema:{ type:&quot;integer&quot; },
+			test:function(value, type, schema){ 
+				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;array&quot;) return true;
+				return value.length &lt;= schema.maxItems; 
+			 },
+			error:&quot;{{ path }} need to be at max {{ schema.maxItems }} long. Value provided : {{ value|json }}&quot;
+		},
+		required:{      &#x2F;&#x2F;&#x2F; draft v3
+			schema:{ type:&quot;boolean&quot; },
+			test:function(value, type, schema){ 
+				&#x2F;&#x2F;console.log(&quot;Validator : check required : &quot;, typeof value !== &#x27;undefined&#x27; )
+				return typeof value !== &#x27;undefined&#x27;;  
+			},
+			error:&quot;{{ path }} is required and is missing.&quot;
+		},
+		&quot;enum&quot;:{
+			schema:{ type:&quot;array&quot;, items:{ type:&quot;string&quot; } },
+			test:function(value, type, schema){
+				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;string&quot; &amp;&amp; type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true;
+				var ok = false;
+				for(var i = 0; i &lt; schema[&quot;enum&quot;].length; ++i)
+					if(value == schema[&#x27;enum&#x27;][i])
+					{
+						ok = true;
+						break;
+					}
+				return ok;  
+			},
+			error:&quot;{{ path }} need to be equal to one of those values {{ schema.enum|join_coma }}. Value provided : {{ value }}&quot;
+		},
+		disallow:{
+			schema:{
+				type:[&quot;array&quot;, &quot;string&quot;],
+				&#x27;enum&#x27;:[&quot;string&quot;, &quot;array&quot;, &quot;number&quot;, &quot;integer&quot;, &quot;date&quot;, &quot;function&quot;, &quot;null&quot;, &quot;object&quot;],
+				items:{ type:&quot;string&quot;, &#x27;enum&#x27;:[&quot;string&quot;, &quot;array&quot;, &quot;number&quot;, &quot;integer&quot;, &quot;date&quot;, &quot;function&quot;, &quot;null&quot;, &quot;object&quot;]}
+			},
+			test:function(value, type, schema){
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(typeof disallow.push !== &#x27;function&#x27;)
+					return schema.disallow !== type;
+				for(var i in schema.disallow)
+					if(schema.disallow[i] == type)
+						return false;
+				return true;
+			},
+			error:&quot;{{ path }} need to be of different type than {{ schema.disallow|join_coma }}. type provided : {{ type }}&quot;
+		},
+		divisibleBy:{
+			schema:{ type:&quot;integer&quot;, minimum:1, absoluteMinimum:true },
+			test:function(value, type, schema){
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true;
+				return value % schema.divisibleBy == 0;
+			},
+			error:&quot;{{ path }} ( value : {{ value }}) need to be divisible by {{ schema.divisibleBy }}.&quot;
+		},
+		uniqueItems:{
+			schema:{ type:&quot;boolean&quot; },
+			test:function(value, type, schema){ 
+				if(type != &quot;array&quot;) return true;
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(!schema.uniqueItems)
+					return true;
+				var uniques =  utils.arrayFusion(value, value); 
+				return uniques.length == value.length;
+			},
+			error:&quot;each item need to be unique&quot;
+		},
+		
+		&#x2F;* ______________________________________   *&#x2F;
+
+
+		exclusiveMinimum:{
+			schema:{ type:&quot;boolean&quot; }
+		},
+		exclusiveMaximum:{
+			schema:{ type:&quot;boolean&quot; }
+		},
+	&#x2F;*	dependencies:{
+		},*&#x2F;
+		&quot;default&quot;:{
+			schema:{ type:&quot;any&quot; }
+		},
+		title:{
+			schema:{ type:&quot;string&quot; }
+		},
+		description:{
+			schema:{ type:&quot;string&quot; }
+		},
+		id:{
+			schema:{ type:&quot;string&quot; }
+		},
+		readOnly:{
+			schema:{ type:&quot;boolean&quot; }
+		},
+	&#x2F;*
+		EXTERNAL REFERENCES
+	*&#x2F;
+		&quot;backgrounds&quot;:{
+			schema:{ type:[&quot;string&quot;, &quot;array&quot;], items:{ type:&quot;string&quot; }, loadable:&quot;direct&quot;}
+		},
+		&quot;$schema&quot;:{
+			schema:{ type:&quot;string&quot;, items:{ type:&quot;string&quot; }},
+			test:function(value, type, schema){
+				console&amp;&amp;console.log(&quot;$schema isn&#x27;t implemented in this validator and will not be implemented (due to his self definition method)&quot;);
+				return true;
+			}
+		},
+		&quot;$ref&quot;:{
+			schema:{ type:&quot;string&quot; }
+		},
+		links:{
+			schema:{ 
+				type:&quot;array&quot;, 
+				items:{
+				 	type:&quot;object&quot;,
+				 	properties:{
+						rel:{ type:&quot;string&quot;, required:true },
+						href:{ type:&quot;string&quot;, required:true },
+						template:{ type:&quot;string&quot; },  &#x2F;&#x2F; replace template
+						targetSchema:{ type:&quot;string&quot; },
+						method:{ type:&quot;string&quot;, &quot;enum&quot;:[&quot;GET&quot;, &quot;PUT&quot;, &quot;POST&quot;, &quot;DELETE&quot;] },
+						enctype:{
+							type:&quot;string&quot;,
+							&quot;default&quot;:&quot;application&#x2F;json&quot; 
+						},
+						schema:{ type:&quot;schema&quot; }
+				 	}
+				}
+			}
+		},
+		additionalProperties:{
+			schema:{ type:[&quot;false&quot;, &quot;schema&quot;] },
+			error:&quot;no additional properties are allowed&quot;
+		},
+		patternProperties:{
+			schema:{ type:&quot;object&quot;, patternProperties:{ &quot;&#x2F;.*&#x2F;g&quot;:{ type:&quot;schema&quot; } } }
+		},
+		properties:{
+			schema:{ type:&quot;object&quot;, patternProperties:{ &quot;&#x2F;.*&#x2F;g&quot;:{ type:&quot;schema&quot; } } }
+		},
+		contentEncoding:{
+			schema:{ type:&quot;string&quot; }
+		},
+		mediaType:{
+			schema:{ type:&quot;string&quot; }
+		},
+		additionalItems:{
+			schema:{ type:[&quot;false&quot;, &quot;schema&quot;] },
+			error:&quot;no additional items are allowed&quot;
+		},
+		items:{
+			schema:{ type:[&quot;array&quot;, &quot;schema&quot;], items:{ type:&quot;schema&quot; } }
+		}
+	}
+
+
+	var draftv4 = {
+		divisibleBy:{
+			&quot;$ommit&quot;:true
+		},
+		&#x2F;*format:{
+			&quot;$ommit&quot;:true
+		},*&#x2F;
+		mod:{
+			schema:{ type:&quot;integer&quot;, minimum:1, absoluteMinimum:true },
+			test:function(value, type, schema){
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true;
+				return value % schema.mod == 0;
+			},
+			error:&quot;need to be divisible by {{ schema.divisibleBy }}&quot;
+		},
+		&#x2F;*required:{      &#x2F;&#x2F; draft v4
+			schema:{ type:&quot;array&quot;, items:{ type:&quot;string&quot; } },
+			test:function(value, type, schema){ 
+				if(type == &quot;object&quot;)
+					schema.required.forEach(function(e){
+						if(!value[i])
+							return false;
+					})
+				return true;
+			},
+			error:&quot;is required and is missing.&quot;
+		},*&#x2F;
+		maxProperties:{
+			schema:{
+				type:&quot;integer&quot;,
+				minimum:0
+			},
+			test:function(value, type, schema)
+			{
+				var count = 0;
+				for(var i in value)
+				{
+					if(!value.hasOwnProperties(i))
+						continue;
+					count++;
+				}
+				return count &lt;= schema.maxProperties;
+			},
+			error:&quot;need to have maximum {{ schema.maxProperties }} properties&quot;
+		},
+		minProperties:{
+			schema:{
+				type:&quot;integer&quot;,
+				minimum:0
+			},
+			test:function(value, type, schema)
+			{
+				var count = 0;
+				for(var i in value)
+				{
+					if(!value.hasOwnProperties(i))
+						continue;
+					count++;
+				}
+				return count &gt;= schema.minProperties;
+			},
+			error:&quot;need to have minimum {{ schema.maxProperties }} properties&quot;
+		}
+	}
+
+	var leafSpecific = {
+		
+		__defaultPattern:{
+			retrievable:{
+				test: function(value){ 
+					if((!value) &amp;&amp; !schema.required)
+					return true;
+					return DeepRequest.isRetrievable(value).type != null; 
+				},
+				error:&quot;need to be in &#x27;retrievable&#x27; format. (see deep&#x2F;deep-request&#x2F;isRetrievable())&quot;
+			}
+		},
+		merge:{
+			schema:{ type:[&quot;string&quot;, &quot;boolean&quot;] }
+		},
+		loadable:{
+			schema:{ type:&quot;string&quot;, &quot;enum&quot;:[&quot;deep&quot;, &quot;direct&quot;, &quot;none&quot;] }
+		},
+		preload:{
+			schema:{ type:&quot;boolean&quot;, required:false, &quot;default&quot;:true }
+		},
+		reloadable:{
+			schema:{ type:&quot;boolean&quot; }
+		},
+		&quot;interpretation-deepness&quot;:{
+			schema:{ type:&quot;string&quot;, &quot;enum&quot;:[&quot;deep&quot;, &quot;direct&quot;, &quot;none&quot;] }
+		}
+	}
+
+	var newSpec = {
+		type:{
+			&#x2F;*
+			&quot;hash&quot;:{
+				test:function(value, type, schema){ 
+					if(typeof value !== &#x27;object&#x27;)
+						return false;
+					if(schema.items)
+					{
+						var ok = true;
+						for(var i in value)
+						{
+							if(!value.hasOwnProperty(i))
+							{
+								ok = ok &amp;&amp; validateProperty(value[i], items);
+							}
+						} 
+						return ok;
+					}
+					return true;
+				},
+				error:&quot;need to be a object (hash)&quot;
+			}*&#x2F;
+		},
+		notNull:{
+			schema:{ type:&quot;boolean&quot; },
+			test:function(value, type, schema){ 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(schema.notNull) return value !== null; 
+				return true;
+			},
+			error:&quot;need to be not null&quot;
+		},
+		absoluteMaximum:{
+			schema:{ type:&quot;boolean&quot; }
+		},
+		absoluteMinimum:{
+			schema:{ type:&quot;boolean&quot; }
+		},
+		minimum:{
+			test:function(value, type, schema){ 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true; 
+				if(schema.absoluteMinimum) value = Math.abs(value);
+				if(schema.exclusiveMinimum) return value &gt; schema.minimum; 
+				return value &gt;= schema.minimum;  
+			}
+		},
+		maximum:{
+			test:function(value, type, schema){ 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				if(type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true; 
+				if(schema.absoluteMaximum) value = Math.abs(value);
+				if(schema.exclusiveMaximum) return value &lt; schema.maximum; 
+				return value &lt;= schema.maximum;  
+			}
+		},
+		needMatchingOn:{
+			schema:{ type:&quot;string&quot; },
+			test:function(value, type, schema){ 
+				if((!value) &amp;&amp; !schema.required)
+					return true;
+				var q = schema.needMatchingOn;
+				if(q[0]==&quot;#&quot;)
+					q = q.substring(1);
+				var res = Querier.query(this.rootValue, q)
+				return res.length &gt; 0 &amp;&amp; res[0] == value;
+			},
+			error:&quot;this field need to match {{ schema.needMatchingOn }}&quot;
+		}
+	}
+
+	var jsonExt = {
+		type:{
+			&quot;function&quot;:{
+				test:function(value){ return typeof value === &#x27;function&#x27;; },
+				error:&quot;need to be a function&quot;
+			},
+			&quot;false&quot;:{
+				test:function(value){ return value === false; },
+				error:&quot;need to be false&quot;
+			},
+			&quot;true&quot;:{
+				test:function(value){ return value === true; },
+				error:&quot;need to be true&quot;
+			},
+			&quot;date&quot;:{
+				test:function(value){ if(!value) return false; return typeof value.toUTCString === &#x27;function&#x27;; },
+				error:&quot;need to be a date object&quot;
+			}
+		}
+	}
+
+
+	var se_spec = {
+		__defaultPattern:{
+			&quot;coordination-number&quot;:{
+				test: function(value, type, schema){ 
+					if(type != &quot;string&quot;)
+						return true;
+					if(!schema.required &amp;&amp; !value)
+						return true;
+					if(!value)
+						return false;
+					var tmp = value + &quot;&quot;;
+					if(tmp.length != 10)
+						return false;
+					var tmp = value.substring(4,5);
+					tmp = parseInt(tmp);
+					if(tmp &lt; 60 || tmp &gt; 91)
+						return false;
+					return true; 
+				},
+				error:&quot;need to be in coordination-number format&quot;
+			},
+			&quot;personal-number&quot;:{
+				test: function(value, type, schema){ 
+					if(type != &quot;string&quot;)
+						return true;
+					if(!schema.required &amp;&amp; !value)
+						return true;
+					if(!value)
+						return false;
+					var tmp = value + &quot;&quot;;
+					if(tmp.length != 10)
+						return false;
+					var tmp = value.substring(4,5);
+					tmp = parseInt(tmp);
+					if(tmp &lt; 60 || tmp &gt; 91)
+						return false;
+					return true; 
+				},
+				error:&quot;need to be in personal-number format&quot;
+			}
+		}
+	}
+	
+	utils.deepCopy(draftv4, Validator.prototype.lexic);
+	utils.deepCopy(jsonExt, Validator.prototype.lexic);
+	utils.deepCopy(newSpec, Validator.prototype.lexic);
+	utils.deepCopy(se_spec, Validator.prototype.lexic);
+&#x2F;&#x2F;	utils.deepCopy(leafSpecific, Validator.prototype.lexic);
+
+
+	var valider = new Validator();
+	
+	Validator.convertStringTo = function(obj, type){
+		return valider.convertStringTo(obj, type);
+	}
+	Validator.validate = function(obj, schema, options){
+		return valider.validate(obj, schema, options);
+	}
+	Validator.getType = function(value){
+		return valider.getType(value);
+	}
+	Validator.partialValidation = function(obj, schema, options){
+		return valider.partialValidation(obj, schema, options);
+	}
+	return Validator;
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

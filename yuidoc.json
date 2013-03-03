@@ -1,0 +1,9 @@
+{
+    "name": "deepjs API",
+    "description": "The deepjs API: where tree, branch, layer, landscape, colliders, (mutable) chaines and promises merge. For better programming...",
+    "version": "0.9.1",
+    "url": "http://www.deepjs.net",
+    "options": {
+        "outdir": "./DOCS/apidocs"
+    }
+}

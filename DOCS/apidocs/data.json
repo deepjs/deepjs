@@ -1,0 +1,419 @@
+{
+    "project": {
+        "name": "deepjs API",
+        "description": "The deepjs API: where tree, branch, layer, landscape, colliders, (mutable) chaines and promises merge. For better programming...",
+        "version": "0.9.1",
+        "url": "http://www.deepjs.net"
+    },
+    "files": {
+        "testcases/app.js": {
+            "name": "testcases/app.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep-collider.js": {
+            "name": "deep-collider.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep-compose.js": {
+            "name": "deep-compose.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep-query.js": {
+            "name": "deep-query.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep-request.js": {
+            "name": "deep-request.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep-rql.js": {
+            "name": "deep-rql.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep-schema.js": {
+            "name": "deep-schema.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "deep.js": {
+            "name": "deep.js",
+            "modules": {
+                "deep": 1
+            },
+            "classes": {
+                "SynchHandler": 1,
+                "DeepHandler": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "promise.js": {
+            "name": "promise.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "utils.js": {
+            "name": "utils.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "deep": {
+            "name": "deep",
+            "submodules": {},
+            "classes": {
+                "SynchHandler": 1,
+                "DeepHandler": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "deep.js",
+            "line": 454,
+            "description": "deep : just say : Powaaaaaa ;)"
+        }
+    },
+    "classes": {
+        "SynchHandler": {
+            "name": "SynchHandler",
+            "shortname": "SynchHandler",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "deep",
+            "file": "deep.js",
+            "line": 178,
+            "description": "Deep Synch Chain Handler (maybe deprecated)",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "the object from where start synch chain",
+                    "type": "Object"
+                },
+                {
+                    "name": "schema",
+                    "description": "the schema associated to it's object",
+                    "type": "Object"
+                }
+            ]
+        },
+        "DeepHandler": {
+            "name": "DeepHandler",
+            "shortname": "DeepHandler",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "deep",
+            "file": "deep.js",
+            "line": 454,
+            "description": "Deep Chain Handler  : manage asynch and synch in one chain",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "[description]",
+                    "type": "Object"
+                },
+                {
+                    "name": "schema",
+                    "description": "[description]",
+                    "type": "Object"
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "testcases/app.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-collider.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-compose.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-query.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>\n\nsee Docs/deep-query.md   for full documentations\n\nA other proposal for (json/object)-query which (as differences from official proposal):\nuse simple slash delimitted syntax, \ncould handle regular expression for step selection, \ncould handle rql (for filtering) on each step selection,\ncould be relative to where the query are placed in a object/json\nso could handle a step toward any ancestor\ncould handle json-schema in rql filtering\ncould handle ancestor in rql filtering\n\nqueries: \n/?foo=2&bar/myArray.*?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&_parent.taxerate=lt=0.12&_schema.type=string\n../foo/bar?zoo.name//price?=in=(12,55)\n/foo/bar/\n//(p.+)gi/../../foo//bar?=3\n\nEach move could be composed of \n\n[''|'.'|'..'|'...'] ['/'|'//']\n\nAny selector could be :\n!\t\t\t\tcurrent\nempty | *\t\tany childs  (obviously not in ../../ (there is no selectors between : just up moves))\nstring (precise)\tparticular child\n(regExp without /)[gi]\treg exp matching\n[array of selectors]   (will give the union of all selectors)\n\nAny filter could be a (deep)RQL query",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-request.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>\nDeepRequest : a set of useful function to retreieve ressources",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-request.js",
+            "line": 5,
+            "description": "TODO : DeepRequest.late.post(...) : return function which will do post later\n\ncrossDomainXML : add options with proxy or YQL\n\nmaintain cache for each reload seqquence : if in the same load bunch there is sam paths : use cache in place of retreieve multiple time the same file\n\nprotocole to add : \n\ndata-model::\nfs::\n\n\n\n\nprotocoles :\n\nextensions : \n\nparsers : \n\nresponseParser\n\tread reponse.headers.contentType : \n\t\nvar jqueryRequest = function(info, options){\n\toptions = options || {};\n\tvar headers = options.headers || {};\n\tutils.up(this.requestHeaders, headers);\n\tvar self = this;\n\treturn promise.when($.ajax({\n\t\tbeforeSend :function(req) {\n\t\t\twriteJQueryHeaders(req, headers);\n\t\t},\n\t\turl:info.uri, \n\t\tmethod:\"GET\", \n\t\tdata:null,\n\t\tdatatype:self.options.datatype || \"json\"\n\t})\n\t.done(function (  data, msg, jqXHR ) {\n\t\treturn self.parse(data, info, options);\n\t})\n\t.fail(function ( jqXHR ) {\n\t\treturn new Error(\"DeepRequest.load failed : \"+JSON.stringify(info));\n\t}))\n}\nvar setHeaders = function (req) {\n\t\n}\n\nvar deepAction = {\n\t\"dom.appendTo\" : { // dom.appendTo::#id\n\t\taction:function (info, datas) {\n\t\t\t// body...\n\t\t}\n\t}\n}\n\nvar vc = {\n\tplaceInDOM:deep.action(\"dom.appendTo::#id\")\n}\nvar dr = {\n\tlexic:{\n\t\tjson:{\n\t\t\toptions:{\n\t\t\t\tqueriable:true,\n\t\t\t\tdatatype:\"json\"\n\t\t\t},\n\t\t\trequestHeaders:{\n\t\t\t\t\"accept\":\"application/json;charset=utf-8\"\n\t\t\t},\n\t\t\tresponseHeaders:{\n\t\t\t\t\"content-type\":\"application/json;charset=utf-8\"\n\t\t\t},\n\t\t\taction:baseRequest,\n\t\t\tparse:function(response, infos, options) {\n\t\t\t\t// body...\n\t\t\t}\n\t\t},\n\t\thtml:{\n\t\t\toptions:{\n\t\t\t\tqueriable:false,\n\t\t\t\tdatatype:\"html\"\n\t\t\t},\n\t\t\trequestHeaders:{\n\t\t\t\t\"accept\":\"text/html;charset=utf-8\"\n\t\t\t},\n\t\t\tresponseHeaders:{\n\t\t\t\t\"content-type\":\"text/html;charset=utf-8\"\n\t\t\t},\n\t\t\taction:baseRequest,\n\t\t\tparse:function(response, infos, options) {\n\t\t\t\t// body...\n\t\t\t}\n\t\t}\n\t},\n\tget:function (info, options) {\n\t\tif(typeof info === 'string')\n\t\t\tinfo = this.parse(info);\n\t\tvar handler = this.lexic[info.protocole];\n\t\tif(!handler)\n\t\t\tthrow new Error(\"DeepRequest : no handler found with : \",info); \n\t\treturn handler.action(info, options);\n\t}\n\tall\n\t_______\n\n\tjson\n\txml\n\trss\n\ttext\n\thtml\n\n}",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-rql.js",
+            "line": 14,
+            "description": "TODO : \nadd distinct(testPropertyPath)\nadd merge()\nadd backgrounds()  :  do object extension with deep-extender + schema\n\n\n\nadd _ancestor (any ancestor)\nadd _brothers  (any brothers)\n\n! TEST ALL operations !",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-schema.js",
+            "line": 1,
+            "author": "gilles.coomans@gmail.com\nJSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions\n \thttp://tools.ietf.org/html/draft-zyp-json-schema-03\n \n\n\tAjout par rapport à la v3\n\n\n\ttype:\n\t\tschema\n\t\tfalse\n\t\ttrue\n\t\tfunction\n\t\tdate\n\t\thash     !!!!!     différent de object ou array == TROISIEME TYPE non simple : hash table d'items\n\n\tnotNull\n\n\tabsoluteMinimum\n\tabsoluteMaximum\n\n\tmerge\n\tloadable\n\t\"interpretation-deepness\"   ==> have equivalent in draft 4 : template : bad word : template-engine is better or href-interpreter (because it's the only interpretable string)\n\n\n\tdeprecated : \n\t$ref : to be removed : incoherent with backgrounds\n\n\n\tsemantic misuse :\n\tid has to became uri\n\n\n\tv3 / V4\n\tpattern remplace format ?\n\tdivisibleBy -> mod\n\tmax/minProperties\n\n\trequired : fuzzy concept now : need \n\tdependencies : always fuzzy : need example to be clear\n\n\tI propose : \n\n\t{\n\t\tmyConstraintProperty:{\n\t\t\trequired:Boolean,   // means that's, in any case, this property is needed\n\t\t\trequire:{\n\t\t\t\t// is the schema that the whole object (from root) need to satisfy\n\t\t\t\tpath:{\n\t\t\t\t\tto:{\n\t\t\t\t\t\trequiredProperty:{\n\t\t\t\t\t\t\t// schema that requiredProperty need to satisfy\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\tFuzzy : format/pattern/value :    value is more clear : \n\tI propose : \n\t\twhen object.value is a leaf of the object instance (no array, nor object):\n\t\tif(schema.value is RegExp)\n\t\t\tobject.value must match schema.value (equivalent of pattern)\n\t\telse\n\t\t\tobject.value must be equal to schema.value\n\t\t\t\n\tthat permit to be a mecanisme for true or false constraint value (no more \"true\" or \"false\" type)\n\tthat also permit to be a constraint on the object.value for any dependencies :\n\n\tso : \n\ttaxerate:{\n\t\trequired:true,\n\t\tdependencies:[\n\t\t\t{ \n\t\t\t\tconstraint:{\n\t\t\t\t\t// the schema that need to be matched on the dependant value\n\t\t\t\t\tpattern:\"tva-pattern-uk\"\n\t\t\t\t}, \n\t\t\t\tinstance:{\n\t\t\t\t\t// the schemas that pointed properties (from root) need to satisfy to evaluate \n\t\t\t\t\tpath:{\n\t\t\t\t\t\tto:{\n\t\t\t\t\t\t\tcountry:{\n\t\t\t\t\t\t\t\tpattern:\"UK\"\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t{ \n\t\t\t\tconstraint:{\n\t\t\t\t\t// the schema that need to be matched on the dependant value\n\t\t\t\t\tpattern:\"tva-pattern-eu\"\n\t\t\t\t}, \n\t\t\t\tinstance:{\n\t\t\t\t\t// the schema that pointed properties (from root) need to satisfy to evaluate \n\t\t\t\t\tproperties:{\n\t\t\t\t\t\tpathTo:{\n\t\t\t\t\t\t\tproperties:{\n\t\t\t\t\t\t\t\tcountry:{\n\t\t\t\t\t\t\t\t\tenum:[\"SE\",\"FR\",\"ES\"]\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t]\n\t}\n\n\n\tWith json-pointer :\n\ttaxerate:{\n\t\trequired:true,\n\t\tdependencies:[\n\t\t\t{ \n\t\t\t\tconstraint:{  // the schema that need to be matched on the dependant value. Optional : empty schema by default\n\t\t\t\t\tpattern:\"tva-pattern-uk\"\n\t\t\t\t}, \n\t\t\t\ttest:{\n\t\t\t\t\t// the schemas that pointed property (from root - in object instance) need to be satisfied to evaluate constraint above\n\t\t\t\t\t\"#/address/country\":{\n\t\t\t\t\t\tpattern:\"UK\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t{ \n\t\t\t\tconstraint:{\n\t\t\t\t\t// the schema that need to be matched on the dependant value\n\t\t\t\t\tpattern:\"tva-pattern-eu\"\n\t\t\t\t}, \n\t\t\t\ttest:{\n\t\t\t\t\t// the schema that whole object (from root) needs to be satisfied to evaluate constraint above\n\t\t\t\t\t\"#/address/country\":{ \n\t\t\t\t\t\tenum:[\"FR\", \"ES\"]\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t]\n\t}\n\n\tthe order of evaluation is done up-bottom, and the first dependecy that match the test will test his constraint on the value.\n\tOnly the first is interpreted.\n\n\tif there is \n\n\n\tDonc : SI l'instance satisfait tels schema : ALORS la valeur dépendante doit satisfaire tels contraintes\n\n\tmanque mécanisme de référence interne : \n\n\tgenre : \n\n\tmySchema:{\n\t\tobj:{\n\t\t\tobj2:{\n\t\t\t\t\"$ref\": \"/\"\n\t\t\t}\n\t\t}\n\t}\n\n\t==> utiliser backgrounds + json-pointer\n\n\t{\n\t\tproperties:{\n\t\t\tmyNestedChilds:{\n\t\t\t\tpatternProperties:{\n\t\t\t\t\t/.* /g:{\n\t\t\t\t\t\tbackgrounds:[\"#/\"],   // TOdo faire attention dans l'backgrounds d'un ancêtre : cycle possible : faut que l'extension ne cycle pas mais que la structure soit bien nesté à l'infini : solution faire l'backgrounds le plus tard possible : ne pas extender toute la structure dés le début\n\t\t\t\t\t\tproperties:{ \n\t\t\t\t\t\t\tparent:{ type:\"any\" } \n\t\t\t\t\t\t} \n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t\t\t\n\t\t\t}\n\t\t}\n\t}\n\n\tsinon : addionnal items n'a de sens que si items est une array.\n\n\n\n\tREFACTORING EXTENDS\n\tbackgrounds dans deep-schema : faire un mix : \n\tprécompilation du schéma : dés qu'on voit qu'on doit choper un ancetre pour un backgrounds (dans le schema) : on laisse l'backgrounds  (on remplace dans l'array backgrounds tout ce qui peut etre compilé par sa compilation (par groupe en laissant l'ordre et les référence vers anc^etres tel quel - tout ce qui est en dessous de la première référence à un parent peut déjà être appliqué))\n\tlorsqu'on a une instance : lors du parsing/compilation (au deep-copy par exemple, lorsqu'on voit passer tous les champs) : \n\t\ton chope le schema associé à la propriété courante\n\t\t\tsi backgrounds encore présent dans schema : copier ancetre dans vide, (sans backgrounds), coller schema prop courante dessus (sans backgrounds) : retourner le tout\n\n\tsi backgrounds vers ancetres dans instance : throw : error : cycle present ! structure infinie\n\n\n\n\tbackgrounds et foregrounds : \n\t\tne pas les mettre dans l'instance : ca devient difficile à gérer : les mettre dans le schema : la c'est cohérent\n \n \t\tau final : comme un schema chope de plus en plus de propriétés d'un deep-factory : il faudrait que le schema soit un deep-factory \n \t\tdont son propre schema soit le meta schema du schema",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-schema.js",
+            "line": 206,
+            "description": "TODO : \njson-pointer dereferencement\t\t\t\t\t\t\tOK\nadd relative reference to json-pointer\t\t\t\t\tOK\ndependencies : clarify, and/or implement if(constraint.match(root)) constraint(value)\nlinks dereferencer  : template-engine + instance injection + DeepRequest.retrieve\nréférencement interne : backgrounds ou $ref with json-pointer\t\t\t\t\tOK\n\n\n\nPatterns :\n\t- name patterns + data : regExp, enum, direct       (could be external)\n\t- query pattern : if query then pattern match\n\n\tproperties:{\n\t\tchristophil:{\n\t\t\tdependenciesQueries:\n\t\t\t{\n\t\t\t\tmatchEurope:{     // it's the relation/dependency name\n\t\t\t\t\tquery:\"\",\n\t\t\t\t\trequired:true,   // mean that the query MUST give something : so the dependency MUST be valid\n\t\t\t\t\tpatternProperties:{\n\t\t\t\t\t\t\"$ref\":[ \"json::/Pathologies/?type=perenial&zone=europe&$result=hash\" ]  // exemple of external patterns definitions\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tmatchUK:{\n\t\t\t\t\tquery:\"\";\n\t\t\t\t\trequired:false,  // optional dependency\n\t\t\t\t\tproperties:{\n\t\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\nproperty name + data pattern : could be an external link to a service that provides a list of acceptable values.\nImagine you would define a pathologie list for plants. Each plant could be sensible to a subset of those pathologies, and could have different kinds of sensibility...\nThe service could provids the list of known pathologies, and the subset have to match",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep-schema.js",
+            "line": 251,
+            "description": "console.flags : {\n\tvalidationError,\n\tvalidator\n}",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep.js",
+            "line": 2,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>\n\n\tStable : \n\t\tdeep-query/rql\n\t\tdeep\n\t\tutils\n\n\nCadre : \n\nLayered/Aspect/OO\n\trelations, inheritance and relative path\nMVC\n\tup-bottom\n\t\nAsynch\nThin Server / Rest\nJSON\n\nStructure :\n\tutils \t\t\t\t\t\tok\n\t\tlogs, pushTo, ...\n\n\tgestion asynch \t\t\t\tok\n\t\tpromises\n\t\tchain\n\t\tbranches\n\t\trejection\n\t\t\n\n\t\tcancel \t\t\t\t\tneed more \n\t\n\n\tmodelisation objet \t\t\tok\n\t\tup, bottom, etc\n\n\tnavigation \t\t\t\t\tstable\n       query\n\n\n\tCCS\n\tclass composition\n\n\tcolliders \n\n\nTODO : \n\tdeep\n\t\t.query just execute query (on each current entries) and inject the concatenation of results in the chain\n\t\t.move change current entries\n\n\tdeep-compose : manage classes\n\tdeep-collider : write more\n\tdeep-schema and CCS :\n\t\tCCS model and algorithm\n\n\tdeep-request : complete refactoring\n\t\n\tdeep-plugin : \n\t\tHandler pattern\n\t\thandler base objects\n\n\tpromise pattern : \n\t\tthe first and only argument must give light weight (and secured - in a small dedicated object) API to access the chain handler itself SYNCHRONOUSLY \n\t\tAnd : for asynch management : it must give access for branches creator and will act as promise when returned (only for branches therefor all other function of the handler are synchro)\n\n\t\texample : \n\t\t\tdeep(...).done(function(success, handler){\n\t\t\t\tvar values = handler.values();\n\t\t\t\t...\n\t\t\t\tif(true)\n\t\t\t\t\treturn handler.cancel();\n\t\t\t\t...\n\t\t\t\tif(true)\n\t\t\t\t\treturn handler.query(\"./tata\");\n\t\t\t\t...\n\t\t\t\tif(error)\n\t\t\t\t\treturn handler.error(\"what you want\")\n\n\t\t\t\thandler.branch().mybranch();\n\t\t\t\thandler.branch().mybranch();\n\t\t\t\thandler.branch().mybranch();\n\n\t\t\t\treturn handler;\n\t\t\t})\n\n\n\ttest cases pattern : \n\t\tassertEqual\n\t\tassertValuesEqual\n\t\tassertTrue\n\t\tassertFalse\n\t\tvalidate\n\n\t\tmaybe pattern to keep (clone) whole trunc to be execute in general test caser on demand (later)\n\t\t\texample :\n\n\t\t\tto store and execute multiple time the cloned chain (or any chain) for tests purposes : we need something like :\n\n\t\t\tvar d = deep(...).pushTo(tests).keepQueue().mychain()\n\n\t\t\tand\n\n\t\t\td.restart()\n\n\t\t\t==> implies to modify the nextQueueItem\n\t\t\t\tand to keep first reference of the chain.\n\n\n\t\tput condition on tests and validation family : \n\t\t\tgood pattern : keep a global with flags that will be used as condition\n\t\t\t\texample : \n\t\t\t\t\tdeep(...).mychain().assertEqual({}, { condition:console.flags.bazar, callBack:Reporter.report })\n\t\t\t\tso you could debug live by playing with flags\n\tautobahn : \n\t\tsecured chain\n\t\tjsgi stack\n\t\tclean headers",
+            "class": "SynchHandler"
+        },
+        {
+            "file": "deep.js",
+            "line": 1168,
+            "description": "run : loop on entries, apply 'func' with 'args' on each entry (entry become 'this' of func)\n\n- loop on entries : true\n- chainable : true\n- transparent : false\n- promised management : true\n- success injected : the array of results of each call on func\n- error injected : any error returned (or produced) from a func call",
+            "itemtype": "method",
+            "name": "run",
+            "params": [
+                {
+                    "name": "func",
+                    "description": "any function that need to be apply on each chain entry",
+                    "type": "Function"
+                },
+                {
+                    "name": "args",
+                    "description": "the arguments to pass to 'func'",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "the current chain handler (this)",
+                "type": "DeepHandler"
+            },
+            "class": "DeepHandler"
+        },
+        {
+            "file": "deep.js",
+            "line": 1225,
+            "description": "exec :  call 'func' with 'args' (the 'this' of the function isn't modified)\n\n- loop on entries : false\n- chainable : true\n- transparent : false\n- promised management : true\n- success injected : the result of the call on func\n- error injected : any error returned (or produced) from func call",
+            "itemtype": "method",
+            "name": "exec",
+            "params": [
+                {
+                    "name": "func",
+                    "description": "any function that need to be apply on each chain entry",
+                    "type": "Function"
+                },
+                {
+                    "name": "args",
+                    "description": "the arguments to pass to 'func'",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "the current chain handler (this)",
+                "type": "DeepHandler"
+            },
+            "class": "DeepHandler"
+        },
+        {
+            "file": "deep.js",
+            "line": 1264,
+            "description": "valuesEqual : test strict equality between the array of entries values and a provided array of value\n\n- loop on entries : false\n- chainable : true\n- transparent : false\n- promised management : true (on callBack)\n- success injected : the result of the callBack or the report if callback returned nothing\n- error injected : the report or any error returned (or produced) from callBack",
+            "itemtype": "method",
+            "name": "valuesEqual",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "the object to test equality",
+                    "type": "Object"
+                },
+                {
+                    "name": "callBack",
+                    "description": "optional : any callBack to manage the report. Could return a promise.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "this",
+                "type": "DeepHandler"
+            },
+            "class": "DeepHandler"
+        },
+        {
+            "file": "deep.js",
+            "line": 1308,
+            "description": "equal test strict equality on each entry value against provided object",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "the object to test",
+                    "type": "*"
+                },
+                {
+                    "name": "optional.",
+                    "description": "callBack a callBack to manage report",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "this",
+                "type": "DeepHandler"
+            },
+            "class": "DeepHandler"
+        },
+        {
+            "file": "deep.js",
+            "line": 1359,
+            "description": "validate apply validation",
+            "itemtype": "method",
+            "name": "validate",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "[description]",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "[description]",
+                "type": "DeepHandler"
+            },
+            "class": "DeepHandler"
+        },
+        {
+            "file": "promise.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+            "class": "",
+            "module": "deep"
+        },
+        {
+            "file": "promise.js",
+            "line": 4,
+            "description": "Wrapper of promises : jquery promise for browser side,  and promised-io on ssjs (tested on nodejs).",
+            "class": "",
+            "module": "deep"
+        },
+        {
+            "file": "utils.js",
+            "line": 1,
+            "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+            "class": "",
+            "module": "deep"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type",
+            "line": " testcases/app.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " deep-collider.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " deep-compose.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " deep-query.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " deep-request.js:1"
+        },
+        {
+            "message": "Missing item type\nTODO : DeepRequest.late.post(...) : return function which will do post later\n\ncrossDomainXML : add options with proxy or YQL\n\nmaintain cache for each reload seqquence : if in the same load bunch there is sam paths : use cache in place of retreieve multiple time the same file\n\nprotocole to add : \n\ndata-model::\nfs::\n\n\n\n\nprotocoles :\n\nextensions : \n\nparsers : \n\nresponseParser\n\tread reponse.headers.contentType : \n\t\nvar jqueryRequest = function(info, options){\n\toptions = options || {};\n\tvar headers = options.headers || {};\n\tutils.up(this.requestHeaders, headers);\n\tvar self = this;\n\treturn promise.when($.ajax({\n\t\tbeforeSend :function(req) {\n\t\t\twriteJQueryHeaders(req, headers);\n\t\t},\n\t\turl:info.uri, \n\t\tmethod:\"GET\", \n\t\tdata:null,\n\t\tdatatype:self.options.datatype || \"json\"\n\t})\n\t.done(function (  data, msg, jqXHR ) {\n\t\treturn self.parse(data, info, options);\n\t})\n\t.fail(function ( jqXHR ) {\n\t\treturn new Error(\"DeepRequest.load failed : \"+JSON.stringify(info));\n\t}))\n}\nvar setHeaders = function (req) {\n\t\n}\n\nvar deepAction = {\n\t\"dom.appendTo\" : { // dom.appendTo::#id\n\t\taction:function (info, datas) {\n\t\t\t// body...\n\t\t}\n\t}\n}\n\nvar vc = {\n\tplaceInDOM:deep.action(\"dom.appendTo::#id\")\n}\nvar dr = {\n\tlexic:{\n\t\tjson:{\n\t\t\toptions:{\n\t\t\t\tqueriable:true,\n\t\t\t\tdatatype:\"json\"\n\t\t\t},\n\t\t\trequestHeaders:{\n\t\t\t\t\"accept\":\"application/json;charset=utf-8\"\n\t\t\t},\n\t\t\tresponseHeaders:{\n\t\t\t\t\"content-type\":\"application/json;charset=utf-8\"\n\t\t\t},\n\t\t\taction:baseRequest,\n\t\t\tparse:function(response, infos, options) {\n\t\t\t\t// body...\n\t\t\t}\n\t\t},\n\t\thtml:{\n\t\t\toptions:{\n\t\t\t\tqueriable:false,\n\t\t\t\tdatatype:\"html\"\n\t\t\t},\n\t\t\trequestHeaders:{\n\t\t\t\t\"accept\":\"text/html;charset=utf-8\"\n\t\t\t},\n\t\t\tresponseHeaders:{\n\t\t\t\t\"content-type\":\"text/html;charset=utf-8\"\n\t\t\t},\n\t\t\taction:baseRequest,\n\t\t\tparse:function(response, infos, options) {\n\t\t\t\t// body...\n\t\t\t}\n\t\t}\n\t},\n\tget:function (info, options) {\n\t\tif(typeof info === 'string')\n\t\t\tinfo = this.parse(info);\n\t\tvar handler = this.lexic[info.protocole];\n\t\tif(!handler)\n\t\t\tthrow new Error(\"DeepRequest : no handler found with : \",info); \n\t\treturn handler.action(info, options);\n\t}\n\tall\n\t_______\n\n\tjson\n\txml\n\trss\n\ttext\n\thtml\n\n}",
+            "line": " deep-request.js:5"
+        },
+        {
+            "message": "Missing item type\nTODO : \nadd distinct(testPropertyPath)\nadd merge()\nadd backgrounds()  :  do object extension with deep-extender + schema\n\n\n\nadd _ancestor (any ancestor)\nadd _brothers  (any brothers)\n\n! TEST ALL operations !",
+            "line": " deep-rql.js:14"
+        },
+        {
+            "message": "Missing item type",
+            "line": " deep-schema.js:1"
+        },
+        {
+            "message": "Missing item type\nTODO : \njson-pointer dereferencement\t\t\t\t\t\t\tOK\nadd relative reference to json-pointer\t\t\t\t\tOK\ndependencies : clarify, and/or implement if(constraint.match(root)) constraint(value)\nlinks dereferencer  : template-engine + instance injection + DeepRequest.retrieve\nréférencement interne : backgrounds ou $ref with json-pointer\t\t\t\t\tOK\n\n\n\nPatterns :\n\t- name patterns + data : regExp, enum, direct       (could be external)\n\t- query pattern : if query then pattern match\n\n\tproperties:{\n\t\tchristophil:{\n\t\t\tdependenciesQueries:\n\t\t\t{\n\t\t\t\tmatchEurope:{     // it's the relation/dependency name\n\t\t\t\t\tquery:\"\",\n\t\t\t\t\trequired:true,   // mean that the query MUST give something : so the dependency MUST be valid\n\t\t\t\t\tpatternProperties:{\n\t\t\t\t\t\t\"$ref\":[ \"json::/Pathologies/?type=perenial&zone=europe&$result=hash\" ]  // exemple of external patterns definitions\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tmatchUK:{\n\t\t\t\t\tquery:\"\";\n\t\t\t\t\trequired:false,  // optional dependency\n\t\t\t\t\tproperties:{\n\t\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\nproperty name + data pattern : could be an external link to a service that provides a list of acceptable values.\nImagine you would define a pathologie list for plants. Each plant could be sensible to a subset of those pathologies, and could have different kinds of sensibility...\nThe service could provids the list of known pathologies, and the subset have to match",
+            "line": " deep-schema.js:206"
+        },
+        {
+            "message": "Missing item type\nconsole.flags : {\n\tvalidationError,\n\tvalidator\n}",
+            "line": " deep-schema.js:251"
+        },
+        {
+            "message": "Missing item type",
+            "line": " deep.js:2"
+        },
+        {
+            "message": "Missing item type\nequal test strict equality on each entry value against provided object",
+            "line": " deep.js:1308"
+        },
+        {
+            "message": "Missing item type",
+            "line": " promise.js:1"
+        },
+        {
+            "message": "Missing item type\nWrapper of promises : jquery promise for browser side,  and promised-io on ssjs (tested on nodejs).",
+            "line": " promise.js:4"
+        },
+        {
+            "message": "Missing item type",
+            "line": " utils.js:1"
+        }
+    ]
+}

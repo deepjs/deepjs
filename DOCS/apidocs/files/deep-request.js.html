@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>deep-request.js - deepjs API</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.9.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
+            
+                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: deep-request.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
+ * DeepRequest : a set of useful function to retreieve ressources
+ *&#x2F;
+&#x2F;**
+ * TODO : DeepRequest.late.post(...) : return function which will do post later
+
+crossDomainXML : add options with proxy or YQL
+
+maintain cache for each reload seqquence : if in the same load bunch there is sam paths : use cache in place of retreieve multiple time the same file
+
+protocole to add : 
+
+data-model::
+fs::
+
+
+
+
+protocoles :
+
+extensions : 
+
+parsers : 
+
+responseParser
+	read reponse.headers.contentType : 
+	
+var jqueryRequest = function(info, options){
+	options = options || {};
+	var headers = options.headers || {};
+	utils.up(this.requestHeaders, headers);
+	var self = this;
+	return promise.when($.ajax({
+		beforeSend :function(req) {
+			writeJQueryHeaders(req, headers);
+		},
+		url:info.uri, 
+		method:&quot;GET&quot;, 
+		data:null,
+		datatype:self.options.datatype || &quot;json&quot;
+	})
+	.done(function (  data, msg, jqXHR ) {
+		return self.parse(data, info, options);
+	})
+	.fail(function ( jqXHR ) {
+		return new Error(&quot;DeepRequest.load failed : &quot;+JSON.stringify(info));
+	}))
+}
+var setHeaders = function (req) {
+	
+}
+
+var deepAction = {
+	&quot;dom.appendTo&quot; : { &#x2F;&#x2F; dom.appendTo::#id
+		action:function (info, datas) {
+			&#x2F;&#x2F; body...
+		}
+	}
+}
+
+var vc = {
+	placeInDOM:deep.action(&quot;dom.appendTo::#id&quot;)
+}
+var dr = {
+	lexic:{
+		json:{
+			options:{
+				queriable:true,
+				datatype:&quot;json&quot;
+			},
+			requestHeaders:{
+				&quot;accept&quot;:&quot;application&#x2F;json;charset=utf-8&quot;
+			},
+			responseHeaders:{
+				&quot;content-type&quot;:&quot;application&#x2F;json;charset=utf-8&quot;
+			},
+			action:baseRequest,
+			parse:function(response, infos, options) {
+				&#x2F;&#x2F; body...
+			}
+		},
+		html:{
+			options:{
+				queriable:false,
+				datatype:&quot;html&quot;
+			},
+			requestHeaders:{
+				&quot;accept&quot;:&quot;text&#x2F;html;charset=utf-8&quot;
+			},
+			responseHeaders:{
+				&quot;content-type&quot;:&quot;text&#x2F;html;charset=utf-8&quot;
+			},
+			action:baseRequest,
+			parse:function(response, infos, options) {
+				&#x2F;&#x2F; body...
+			}
+		}
+	},
+	get:function (info, options) {
+		if(typeof info === &#x27;string&#x27;)
+			info = this.parse(info);
+		var handler = this.lexic[info.protocole];
+		if(!handler)
+			throw new Error(&quot;DeepRequest : no handler found with : &quot;,info); 
+		return handler.action(info, options);
+	}
+	all
+	_______
+
+	json
+	xml
+	rss
+	text
+	html
+
+}
+
+
+ *&#x2F;
+
+var fs = null;
+var HTTPRequest = null;
+if(typeof define !== &#x27;function&#x27;)
+{
+	var define = require(&#x27;amdefine&#x27;)(module);
+	fs = require(&quot;promised-io&#x2F;fs&quot;);
+	HTTPRequest = require(&quot;promised-io&#x2F;http-client&quot;).request;
+	var swig = require(&quot;swig&quot;);
+	
+}
+var isNode = false;
+if(typeof process !== &#x27;undefined&#x27; &amp;&amp; process.versions &amp;&amp; process.versions.node)
+	isNode = true;
+
+&#x2F;*
+	- ecrire la layer
+	  	- backgrounds, etc
+	- copier la layer dans l&#x27;objet final
+	- appliquer le load sur l&#x27;objet final
+	- appliquer le render et donc les protocles associés
+	- appliquer le placeInDOM et donc les protocoles associés
+*&#x2F;
+
+define(function(require){
+&#x2F;&#x2F;var Plates = require(&#x27;plates&#x27;);
+
+
+	var loadInfo = {
+		currentNumberOfLoad:0,
+		paths:{},
+		totalLoaded:0,
+		totalToLoad:0,
+		callCount:0
+	};
+
+	function removeLoadInfo(path){
+	&#x2F;&#x2F;	console.log(&quot;removeLoadInfo&quot;, path, loadInfo)
+
+		loadInfo.paths[path]--;
+		loadInfo.currentNumberOfLoad--;
+
+		if(loadInfo.paths[path] == 0)
+			delete loadInfo.paths[path];
+
+		DeepRequest.handlers.loaded(path);
+		if(loadInfo.currentNumberOfLoad == 0)
+			DeepRequest.handlers.complete();
+	}
+
+	function addLoadInfo(path){
+		loadInfo.callCount++;
+		if(typeof loadInfo.paths[path] === &#x27;undefined&#x27;)
+			loadInfo.paths[path] = 1;
+		else
+			loadInfo.paths[path]++;
+		loadInfo.currentNumberOfLoad++;
+		DeepRequest.handlers.added(path);
+
+	}
+	var reloadablesUriDico = {};
+	var reloadablesRegExpDico = [ &#x2F;^(json::)|(\.json)$&#x2F;gi ];
+	var manageCache = function (response, uri) {
+		if(reloadablesUriDico[uri])
+			return;
+		var count = 0;
+		reg = reloadablesRegExpDico[count];
+		while(reg &amp;&amp; !uri.match(reg))
+			reg = reloadablesRegExpDico[++count];
+		if(count == reloadablesRegExpDico.length)
+			cache[uri] = response;
+		&#x2F;&#x2F;console.log(&quot;manag cache : &quot;, uri, &quot; - &quot;, response);
+	}
+
+	var cache = {};
+
+	var utils = require(&quot;deep&#x2F;utils&quot;);
+	var promise = require(&quot;deep&#x2F;promise&quot;);
+	var Querier = require(&quot;deep&#x2F;deep-query&quot;);
+	var DeepRequest  = {
+		reloadables:function (path, isReloadable &#x2F;* false or true : true by default*&#x2F;) 
+		{
+			if(typeof isReloadable === &#x27;undefined&#x27;)
+				isReloadable = true;
+			if(isReloadable)
+			{
+				if(path instanceof RegExp)
+					reloadablesRegExpDico.push(path);
+				else
+					reloadablesUriDico[path] = true;
+			}
+			else
+			{
+				if(path instanceof RegExp)
+				{
+					var count = 0, ok = true, ln = reloadablesRegExpDico.length;
+					while(count &lt; ln &amp;&amp; ok)
+					{
+						if(path.toString() === reloadablesRegExpDico[count].toString())
+						{
+							if(count == ln-1)
+								reloadablesRegExpDico.pop();
+							else
+								reloadablesRegExpDico[count] = reloadablesRegExpDico.pop();
+							ok = false;
+						}
+						count++;
+					}
+				}
+				else
+					reloadablesUriDico[path] = false;
+			}
+		},
+		clearCache:function () 
+		{
+			cache = {};
+		},
+		lexic: {
+			protocoles:{
+				&quot;json&quot;:{
+					headers:{
+						Accept:&quot;application&#x2F;json; charset=utf-8;&quot;
+					},
+					options:{
+						queriable:true,
+						callable:false
+					},
+					extensions:[&quot;json&quot;],
+					parsers:{
+						nodeHttpRequest:function(resolved)
+						{
+							if(typeof resolved === &quot;string&quot;)
+								{
+									if(parser)
+									{
+										resolved = parser(resolved);
+									}
+									&#x2F;&#x2F;console.log(&quot;result is string : try parse&quot;)
+									else
+									{
+										var p = null;
+										try{
+											p = JSON.parse(resolved);
+										}catch(e){
+											p = null;
+										}
+										if(p)
+											resolved = p; 
+									}
+								&#x2F;&#x2F;	console.log(&quot;createHTTPRequestParser : &quot;+method+&quot; -  after parsing&#x2F;resolving : body ? &quot;, resolved)
+								}
+							return resolved;
+						},
+						&quot;default&quot;:function(data){
+							if(typeof data === &#x27;string&#x27;)
+								data = JSON.parse(data);
+							return data;
+						},
+						nodeFS:function(value, charset){
+							charset = charset || &quot;utf-8&quot;;
+							return JSON.parse(value.toString(charset));
+						}
+					}
+				},
+				&quot;json.range&quot;:{
+					&quot;backgrounds&quot;:[&quot;#..&#x2F;json&quot;],
+					get:function(requestInfo, callerInfo){
+						return DeepRequest.getRange();
+					}
+				},
+				&quot;swig&quot;:{
+					extensions:[&quot;html&quot;, &quot;swig&quot;, &quot;htm&quot;, &quot;xhtml&quot;],
+					get:function(requestInfo, callerInfo){
+						return DeepRequest.html(requestInfo);
+					}
+				},
+				&quot;swig.macros&quot;:{
+					parser:function(info, data){
+						
+					}
+				},
+				&quot;jquery.htmlOf&quot;:{
+					get:function(info, data){
+						return function(value){
+							$(data).empty();
+							return $(value).appendTo(data);	
+						}
+					}
+				},
+				&quot;jquery.appendTo&quot;:{
+					get:function(info, data){
+						return function(value){
+							return $(value).appendTo(data);	
+						}
+					}
+				},
+				&quot;jquery.prependTo&quot;:{
+					get:function(info, data){
+						return function(value){
+							return $(value).prependTo(data);	
+						}
+					}
+				}
+			}
+		}
+	}
+
+&#x2F;*
+	json : 
+		si uri : le choper, le parser + query: donne datas
+		si pas uri :prendre query sur caller : donne datas (les parser si string)
+
+	json.range 
+		si uri : choper résultats par range : les parser si besoin + appliquer query sur chacun
+		si pas uri : prendre query sur caller : donne datas (les parser si string), nchoper le range
+
+	xml : 
+		si uri : le choper, le parser + query (si un jour on a une query sur xml) : donne datas
+		si pas uri : prendre query sur caller : donne datas, les parser en xml
+
+	swig : 
+		si uri : le choper, le parser (si un jour on a une query sur xml) : donne datas      PAS DE QUERY ICI
+		si pas uri : prendre query sur caller : donne datas, les parser en swig si string, donne DATAS = function
+
+	swig.macros
+		si uri : choper son URL (immédiat),en faire un &quot;include marcos string&quot;, faire fonction qui print macro sur input
+		si pas uri : choper son UR
+		
+*&#x2F;
+
+	DeepRequest.loadInfo = loadInfo;
+	DeepRequest.handlers = {
+		loaded:function(uri){
+			&#x2F;&#x2F;console.log(&quot;DeepRequest.loaded handlers : uri : &quot;, uri);
+		},
+		complete:function(){
+			&#x2F;&#x2F;console.log(&quot;DeepRequest.complete handlers&quot;);
+
+		},
+		added:function(uri){
+			&#x2F;&#x2F;console.log(&quot;DeepRequest.added handler : &quot;, uri);
+
+		}
+	};
+
+	function manageEndOfRetrieve(info, datas)
+	{
+		&#x2F;&#x2F; execute query if any
+		&#x2F;&#x2F; execute info.toCall and pass body
+
+		&#x2F;&#x2F; 
+		return datas;
+	}
+
+	DeepRequest.get2 = function(info, callerInfo, headers)
+	{
+		var deferred = promise.Deferred();
+		headers = headers || {};
+		if(typeof info === &#x27;string&#x27;)
+			info = DeepRequest.parse(info);
+		if(!info.protocole)
+			info.protocole = &quot;json&quot;;
+		var protocole = DeepRequest.lexic.protocoles[info.protocole] || {};
+		var parsers = protocole.parsers || {};
+		if(!info.uri &amp;&amp; info.query)
+		{
+			data = Querier.query(callerInfo.callerRoot, info.query, callerInfo.callerPath );
+			if(parsers[&quot;default&quot;])
+				data = parsers[&quot;default&quot;](data);
+			else
+				data = DeepRequest.lexic.protocoles.json.parsers[&quot;default&quot;](data);
+			return manageEndOfRetrieve(info, data);
+		}
+		
+		if(info.body &amp;&amp; typeof info.body !== &#x27;string&#x27;)
+			info.body = JSON.stringify(info.body);
+		&#x2F;&#x2F;console.log(&quot;deep-request.json : will get path : &quot;, path)
+		deepCopy(protocole[info.protocole].headers || {}, headers, false);
+		copyDefaultHeaders(headers);
+		headers.Accept = headers.Accept || &quot;application&#x2F;json;charset=utf-8&quot;;
+
+		if(isNode)
+		{	
+			if(&#x2F;http(s)?:\&#x2F;\&#x2F;&#x2F;.test(path))
+			{
+				HTTPRequest({
+					method:&quot;GET&quot;,
+					url:info.uri,
+					&#x2F;&#x2F;queryString: query,
+					headers:options.headers
+				}).then(function  (response) {
+					createHTTPRequestParser(&quot;GET&quot;, response, parsers.nodeHttpRequest).then(function  (data) {
+						&#x2F;&#x2F;console.log(&quot;DeepRequest.json : HTTP Request result : &quot;, data)
+						deferred.resolve(data);
+					})
+				}, function(){
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
+				} );
+			}
+			else
+			promise.when(fs.readFile(info.uri, options.charset)).then( 
+				function(data){ 
+					if(parsers.nodeFS)
+						data = parsers.nodeFS(data);
+					else
+						data = JSON.parse(data.toString(options.charset));
+					if(query)
+						data = Querier.query(data, query,  { keepCache:false });
+					deferred.resolve(data);
+				}, 
+				function(){
+					var args = Array.prototype.slice.call(arguments);
+					console.log(&quot;DeepRequest.json failed : &quot;+JSON.stringify(args));
+					deferred.reject({msg:&quot;DeepRequest.json failed : &quot;+path, details:args, uri:path, options:options}); 
+				}
+			);
+		}
+		else 
+			promise.when($.ajax({
+				beforeSend :function(req) {
+					writeJQueryHeaders(req, headers);
+				},
+				&#x2F;&#x2F;contentType: &quot;application&#x2F;json; charset=utf-8&quot;,
+				url:info.uri, 
+				method:&quot;GET&quot;, 
+				&#x2F;&#x2F;data:info.body||null,
+				datatype:&quot;json&quot; 
+			})).then(function(data, msg, jqXHR){
+				if(parsers[&quot;default&quot;])
+					data = parsers[&quot;default&quot;](data);
+				else if(typeof data === &#x27;string&#x27;)
+					data = JSON.parse(data);
+				if(query)
+					data = Querier.query(data, query,  { keepCache:false });
+				&#x2F;&#x2F;console.log(&quot;json success : &quot;, path, query, data);
+				deferred.resolve(data);
+			}, function(){ 
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:&quot;DeepRequest.get failed : &quot;+path, details:args, uri:path, options:options}); 
+			})
+		return promise.promise(deferred) ;
+	}
+	&#x2F;*
+	$.ajax({
+			beforeSend :function(req) {
+			req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;json&quot;);
+			},
+			contentType: &quot;application&#x2F;json; charset=utf-8&quot;,
+			url:this.context[i], 
+			method:&quot;get&quot;, 
+			data:{},
+			datatype:&quot;json&quot; 
+		})
+	*&#x2F;
+	DeepRequest.setDefaultHeaders = function(headers)
+	{
+		&#x2F;&#x2F;Json object that store the default headers
+		this.defaultHeaders = headers;
+	}
+	var writeJQueryDefaultHeaders = function(req)
+	{
+		&#x2F;&#x2F;Json object that store the default headers
+		if(DeepRequest.defaultHeaders)
+		{
+			for(var header in DeepRequest.defaultHeaders){
+				&#x2F;&#x2F;console.log(&quot;DeepRequest Writing default headers : name = &quot;, header, &quot; value =&quot;, this.defaultHeaders[header]);
+	            req.setRequestHeader(header, DeepRequest.defaultHeaders[header]);		
+	        }
+		}
+	}
+
+	var writeJQueryHeaders = function(req, headers)
+	{
+		&#x2F;&#x2F;Json object that store the default headers
+		if(headers)
+		{
+			for(var header in headers){
+				&#x2F;&#x2F;console.log(&quot;DeepRequest Writing default headers : name = &quot;, header, &quot; value =&quot;, this.defaultHeaders[header]);
+	            req.setRequestHeader(header, headers[header]);		
+	        }
+		}
+	}
+	var copyDefaultHeaders = function(headers)
+	{
+		&#x2F;&#x2F;Json object that store the default headers
+		if(DeepRequest.defaultHeaders)
+		{
+			deepCopy(DeepRequest.defaultHeaders, headers, false);
+		}
+	}
+
+	DeepRequest.exec = function(request, callerInfo, headers)
+	{
+		var info = request;
+		if(typeof info === &#x27;string&#x27;)
+			info = DeepRequest.parse(info);
+
+		
+		if(!info.uri &amp;&amp;  info.query)
+			var data = Querier.query(callerInfo.callerRoot, info.query, callerInfo.callerPath );
+			
+		
+		var protocole = DeepRequest.lexic.protocole[request.protocole];
+		if(!protocole)
+			return request;
+		var def = promise.Deferred();
+		if(protocole.get)
+			promise.when(protocole.get(info, headers)).then(function(result){
+
+			}, function(error){
+				def.reject(error);
+			})
+		else
+			promise.when(DeepRequest.get2(info, headers)).then(function(result){
+
+			}, function(error){
+				def.reject(error);
+			});
+		return promise.promise(def);
+	}
+
+	DeepRequest.parse = function(request)
+	{
+		&#x2F;&#x2F;if(request == &quot;instance::autobahn&#x2F;stores&#x2F;remote-rest&quot;);
+		&#x2F;&#x2F;console.log(&quot;DeepRequest.parse : &quot;, request)
+		var info = {
+			type:null, &#x2F;&#x2F; deprecated, use protocole instead
+			request:request,
+			uri:null,
+			protocole:null,
+			protocoleArguments:null,
+			query:null,
+			body:null,
+			toCall:null,
+			extension:null
+		};
+		if(typeof request === &#x27;undefined&#x27;) 
+		{
+			info.protocole = info.type = &quot;function&quot;;
+			info.uri = request;
+			return info;
+		}
+		if(typeof request !== &#x27;string&#x27;)
+		{
+			info.uri = request;
+			return info;
+		}	
+		var rest = request;
+		var index = rest.indexOf(&quot;::&quot;);
+		if(index &gt; -1)
+		{
+			var protoc = rest.substring(0, index);
+			rest = request.substring(index+2);
+			var matched = protoc.match(&#x2F;([-a-z0-9_\.]+)|(\([^\)]+\))&#x2F;gi);
+			&#x2F;&#x2F;console.log(&quot;matching handlers on protocole : &quot;, matched)
+			info.protocole = info.type = matched.shift();
+			if(matched.length&gt;0)
+			{
+				info.protocoleArguments = [];
+				var args = matched.shift();
+				args = args.substring(1,args.length-1);
+				args = args.split(&quot;,&quot;);
+				&#x2F;&#x2F;console.log(&quot;got protocole handler args : &quot;, args)
+				args.forEach(function(arg){
+					if(arg[0] == &quot;&#x27;&quot; || arg[0] == &#x27;&quot;&#x27;)
+						arg = arg.substring(1,arg.length-1);
+					else
+						arg = parseFloat(arg);
+					info.protocoleArguments.push(arg);
+				});
+			}
+		}
+		info.uri = null;
+		var matched = rest.match(&#x2F;([^#@§]+)|(§.+)|(@[^§]+)|(#[^@§]+)&#x2F;gi);
+		&#x2F;&#x2F;console.log(&quot;protocole parsed : matched rest : &quot;, matched);
+		matched.forEach(function(m){
+			switch(m[0])
+			{
+				case &quot;#&quot; : info.query = m.substring(1); break;
+				case &quot;@&quot; : info.toCall = m.substring(1); break;
+				case &quot;§&quot; : info.body = m.substring(1); break;
+				default:
+					info.uri = m;
+					var ext = m.substring(m.length-Math.min(6, m.length));
+					var indexOfPoint = ext.indexOf(&quot;.&quot;);
+					if(indexOfPoint &gt; -1)
+						info.extension = ext.substring(indexOfPoint+1);
+					if(info.extension &amp;&amp; !info.protocole)
+						info.protocole = info.type = info.extension;
+			}
+		})
+		switch(info.protocole)
+		{
+			case &quot;first&quot; : 
+				info.subquery = &quot;first&quot;;
+				break;
+			case &quot;last&quot; : 
+				info.subquery = &quot;last&quot;;
+				break;
+			case &quot;index&quot; : 
+				info.subquery = &quot;index&quot;;
+			break;
+		}
+	&#x2F;&#x2F;	console.log(&quot;got info : &quot;, info);
+		if(info.query &amp;&amp; !info.uri)
+			info.type = info.protocole = &quot;queryThis&quot;;
+		return info;
+	}
+
+	DeepRequest.retrieveAll = function(uris, options)
+	{
+		if(typeof uris.push != &quot;function&quot;)
+			return null;
+		var loads = [];
+		uris.forEach(function(e){
+			loads.push(DeepRequest.retrieve(e, options));
+		})
+		return promise.all(loads);
+	}
+
+	DeepRequest.retrieve = function(uri, options)
+	{
+		options = options || {};
+
+		var queryBasePath = options.basePath || null;
+		var othis = options.root || function(){};
+
+		var info = DeepRequest.parse(uri);
+		if(console.flags[&quot;deep-request&quot;]) 
+			console.log(&quot;deep-request&quot;, &quot;retrieve : &quot;,info, &quot; -   from : &quot;+uri);
+		if(info.protocole == &quot;queryThis&quot; &amp;&amp; !options.acceptQueryThis)
+			throw new Error(&quot;you couldn&#x27;t use queryThis protocole in that case&quot;);
+
+		if(cache[uri])
+			return cache[uri];
+
+		switch(info.type)
+		{
+			case &quot;json&quot; : 
+				if(!info.range)
+					return DeepRequest.json(info.uri, info.query, othis);
+				else
+					return DeepRequest.retrieveRange(info);
+				break;
+			case &quot;xml&quot; : 
+				return DeepRequest.xml(info.uri);
+				break;
+
+			case &quot;text&quot; : 
+				return DeepRequest.text(info);
+				break;
+			case &quot;html&quot; : 
+				return DeepRequest.html(info);
+				break;
+			case &quot;swig&quot; : 
+				var defs = promise.Deferred();
+				DeepRequest.html(info.uri).then(function (data) {
+					&#x2F;&#x2F;console.log(&quot;retrieve swig : html result: &quot;, data);
+					var resi = swig.compile(data, { filename:utils.stripFirstSlash(info.uri) }); 
+					delete cache[info.uri];
+					manageCache(resi, info.request);
+					&#x2F;&#x2F;console.log(&quot;compiled swig : &quot;, resi)
+					defs.resolve(resi);
+				}, function(){
+					var args = Array.prototype.slice.call(arguments);
+					defs.reject({ emiter:&quot;deep-request&quot;, msg:&quot;retrieve swig failed for path : &quot;+info.uri, details:args, basePath:uri });
+				});
+				return promise.promise(defs) ;
+				break;
+			&#x2F;*	
+			case &quot;plates&quot; : 
+				var defs = promise.Deferred();
+				DeepRequest.html(info.uri).then(function (html) {
+					var res = function(data, map){
+						return  Plates.bind(html, data, map)
+					}
+					delete cache[info.uri];
+					manageCache(res, info.request);
+					defs.resolve(res);
+				}, function(){
+					var args = Array.prototype.slice.call(arguments);
+					defs.reject({ emiter:&quot;deep-request&quot;, msg:&quot;retrieve plates failed for path : &quot;+info.uri, details:args, basePath:uri });
+				});
+				return promise.promise(defs) ;
+				break;
+				*&#x2F;
+			case &quot;js&quot; : 
+				if(info.query)
+				{
+					var def = promise.Deferred();
+					promise.when(require(info.uri)).then(function(res){
+						var resi  = Querier.query(res, info.query, { keepCache:false });
+						&#x2F;&#x2F;manageCache(resi, info.request);
+						def.resolve(resi)
+					}, function(res){
+						def.reject(res);
+					});
+					return promise.promise(def);
+				}
+				else
+					return promise.when(require(info.uri));
+				break;   &#x2F;&#x2F; use require to load lib
+			case &quot;aspect&quot; : 
+				var def = promise.Deferred();
+				promise.when(require(info.uri)).then(function(res){
+					def.resolve(res.aspect)
+				}, function(res){
+					def.reject(res);
+				});
+				return promise.promise(def);
+				break;   &#x2F;&#x2F; use require to load lib
+			case &quot;instance&quot; : 
+				var cl = require(info.uri);
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.instance : &quot;, cl);
+				if(typeof cl === &#x27;function&#x27; &amp;&amp; cl.prototype)
+					return new cl();
+				console.log(&quot;DeepRequest : could not instanciate : &quot;+JSON.stringify(info))
+				throw new Error(&quot;DeepRequest : could not instanciate : &quot;+JSON.stringify(info))
+				break;   &#x2F;&#x2F; use require to load lib
+			case &quot;eval&quot; : 
+				return eval(info.uri);
+				break;   &#x2F;&#x2F; use require to load lib
+			case &quot;func&quot; : 
+				return new Function(info.uri); 
+				break;   &#x2F;&#x2F; use require to load lib
+			case &quot;function&quot;:
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.retrieve:function : &quot;, options.dontCallFunctions, info.uri);
+				if(options.callFunctions)
+					return info.uri();
+				return info.uri;
+				break;
+			case &quot;dummies&quot; : 
+				return DeepRequest.json(info.uri, info.query, othis);
+				break;
+
+			case &quot;queryThis&quot; : 
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.queryThis : &quot;, othis, info.query)
+				&#x2F;&#x2F;queryBasePath += othis.path || &#x27;&#x27;;
+				var res = null;
+				if(othis._isDQ_NODE_)
+				{
+					res = Querier.query(othis, info.query, { keepCache:false });
+				}
+				else
+				{
+					queryBasePath = queryBasePath || &#x27;&#x27;;
+					var q = info.query;
+					res = Querier.query(othis, info.query, { keepCache:false });
+				}
+				
+				if(res)
+					switch(info.subquery)
+					{
+						case &quot;first&quot; : 
+							res = res[0] || null;
+							break;
+						case &quot;last&quot; : 
+							res = res[res.length-1] || null;
+							break;
+						case &quot;index&quot; :
+							if(info.protocoleArguments)
+								res = res[+info.protocoleArguments[0]] || null;
+							break;
+						default : ;
+					}
+				&#x2F;&#x2F;if(queryBasePath != &#x27;&#x27; &amp;&amp; q.substring(0,3) == &quot;..&#x2F;&quot;)
+				&#x2F;&#x2F;	q = ((queryBasePath[queryBasePath.length-1] != &quot;&#x2F;&quot;)?(queryBasePath+&quot;&#x2F;&quot;):queryBasePath)+info.query;
+			&#x2F;&#x2F;	console.log(&quot;QUERY THIS : &quot;+q + &quot; - base path : &quot;+queryBasePath, &quot; - results : &quot;, JSON.stringify(res, null, &#x27; &#x27;))
+				return res;
+			default:
+				if(!info.protocole &amp;&amp; !info.uri &amp;&amp; info.query)
+				{
+					&#x2F;&#x2F;console.log(&quot;DeepRequest.queryThis but no protocole : &quot;, othis, info.query)
+					if(!options.acceptQueryThis)
+						throw new Error(&quot;you couldn&#x27;t use queryThis protocole in that case&quot;);
+					&#x2F;&#x2F;console.log(&quot;DeepRequest.queryThis : &quot;, othis, info.query)
+					var res = null;
+					if(othis._isDQ_NODE_)
+					{
+						res = Querier.query(othis, info.query, { keepCache:false });
+					}
+					else
+					{
+						queryBasePath = queryBasePath || &#x27;&#x27;;
+						var q = info.query;
+						res = Querier.query(othis, info.query, { keepCache:false });
+					}
+				&#x2F;&#x2F;	console.log(&quot;QUERY THIS : &quot;+q + &quot; - base path : &quot;+queryBasePath, &quot; - results : &quot;, JSON.stringify(res, null, &#x27; &#x27;))
+					return res;
+				}
+				&#x2F;&#x2F;console.log(&quot;unretrievable object : return it : &quot;, uri)
+				return uri;
+			&#x2F;&#x2F;	console.log(&quot;unrecognised extension in ContextLoader.load()&quot;);
+		}
+		return null;
+	}
+
+	DeepRequest.jsons = function(paths, query, othis)
+	{
+		var deferred = promise.Deferred();
+		var arr = new Array();
+		paths.forEach(function(path){
+			arr.push(DeepRequest.json(path));
+		})
+		promise.all(arr).then(function(result){
+			var res = [];
+			var count = 0;
+			if(query)
+				result.forEach(function(e){
+					var data = Querier.query(data, query, { keepCache:false });
+					if(data &amp;&amp; data.length &gt; 0)
+						res.push(data);
+					manageCache(data, paths[count++]);
+				});
+			else
+				res = result;
+
+			deferred.resolve(res);
+		}, function(error){ deferred.reject((&quot;DeepRequest.jsons faileds : &quot;, error)); })
+		return promise.promise(deferred) ;
+	}
+
+	
+	function createHTTPRequestParser(method, response, parser)
+	{
+		&#x2F;&#x2F;console.log(&quot;createHTTPRequestParser: &quot;+method+&quot; - direct response from remote  : &quot;, response.status, &quot; body : &quot;, response.body)
+		var r = {
+			status:response.status,
+			body:&quot;&quot;,
+			__isRemoteResponse__:true
+		}
+		var def = promise.Deferred();
+		promise.when(response.body.join(&#x27;&#x27;)).then(function(resolved){
+			&#x2F;&#x2F;console.log(&quot;createHTTPRequestParser : body.join resolved: &quot;, resolved)
+			if(typeof resolved === &quot;string&quot;)
+			{
+				if(parser)
+				{
+					resolved = parser(resolved);
+				}
+				&#x2F;&#x2F;console.log(&quot;result is string : try parse&quot;)
+				else
+				{
+					var p = null;
+					try{
+						p = JSON.parse(resolved);
+					}catch(e){
+						p = null;
+					}
+					if(p)
+						resolved = p; 
+				}
+				
+			&#x2F;&#x2F;	console.log(&quot;createHTTPRequestParser : &quot;+method+&quot; -  after parsing&#x2F;resolving : body ? &quot;, resolved)
+			}
+			r.body = resolved;
+			def.resolve(r.body);
+		}, function(r){
+			console.log(&quot;createHTTPRequestParser : body.join error : &quot;, resolved)
+			def.reject(r);
+		});
+		return promise.promise(def);
+	}
+
+	DeepRequest.json = function(path, othis, options)
+	{
+		var body = null;
+		var query = null;
+		if(typeof path === &#x27;object&#x27;)
+		{
+			var info = path;
+			path = info.uri;
+			query = info.query;
+			body = info.body;
+		}
+		if(typeof body !== &#x27;string&#x27;)
+		{
+			body = JSON.stringify(body);
+		}
+		&#x2F;&#x2F;console.log(&quot;deep-request.json : will get path : &quot;, path)
+		var deferred = promise.Deferred();
+		if(isNode)
+		{	
+			if(&#x2F;http(s)?:\&#x2F;\&#x2F;&#x2F;.test(path))
+			{
+				HTTPRequest({
+					method:&quot;GET&quot;,
+					url:path,
+					&#x2F;&#x2F;queryString: query,
+					headers: {
+						Accept:&quot;application&#x2F;json;charset=utf-8;&quot;
+
+					}
+				}).then(function  (response) {
+					&#x2F;&#x2F; body...
+					createHTTPRequestParser(&quot;GET&quot;, response).then(function  (data) {
+						&#x2F;&#x2F; body...
+						console.log(&quot;DeepRequest.json : HTTP Request result : &quot;, data)
+						deferred.resolve(data);
+
+					})
+
+				}, function(){
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
+
+				} );
+			}
+			else
+			{
+				function getFacet(path){
+					&#x2F;&#x2F;console.log(&quot;getFacet : &quot;, path)
+					if(DeepRequest.autobahn)
+					{
+						&#x2F;&#x2F;console.log(&quot;deep-request have autobahn link&quot;)
+						var role = DeepRequest.autobahn.compileRoles([&quot;public&quot;]);
+						promise.when(role).then(function (role) {
+						&#x2F;&#x2F;	console.log(&quot;getFacet in deep-request.json : &quot;, role)
+							var splitted = path.split(&#x27;&#x2F;&#x27;);
+							var serviceName = splitted[1];
+							var id = splitted[2]
+							if(role.facets[serviceName])
+							{
+								&#x2F;&#x2F;console.log(&quot;got service with this name : &quot;, serviceName, &quot; - id ? &quot;, id)
+								var method = &quot;get&quot;;
+								if(!id || id == &quot;&quot;)
+									method = &quot;query&quot;;
+								promise.when(role.facets[serviceName][method](id)).then(function (data) {
+									&#x2F;&#x2F;console.log(&quot;results from service : &quot;, data)
+									if(query)
+										data = Querier.query(data.toString(), query,  { keepCache:false });
+									deferred.resolve(data);
+								}, function  (error) {
+									var args = Array.prototype.slice.call(arguments);
+									deferred.reject({msg:&quot;DeepRequest.json failed : &quot;+path, details:args, uri:path}); 
+								});
+							}
+							else
+							{
+								&#x2F;&#x2F;console.log(&quot;don&#x27;t found service &quot;, serviceName, &quot; - try from fs : &quot;, path)
+								DeepRequest.autobahn.getFile(path, &quot;json&quot;).then(function (data) {
+									if(typeof data === &#x27;string&#x27;)
+										data = JSON.parse(data.toString(&quot;utf-8&quot;));
+									&#x2F;&#x2F;console.log(&quot;deep request node json loadsuccess from autobahn : &quot;, data)
+									if(query)
+										data = Querier.query(data.toString(), query,  { keepCache:false });
+									&#x2F;&#x2F;else 
+									&#x2F;&#x2F;	data = data.toString(); 
+									deferred.resolve(data);
+								}, 
+								function(){
+									var args = Array.prototype.slice.call(arguments);
+									console.log(&quot;DeepRequest.json failed : &quot;+JSON.stringify(args));
+									deferred.reject({msg:&quot;DeepRequest.json failed : &quot;+path, details:args, uri:path}); 
+								});
+							}
+						});
+					}
+					else
+						DeepRequest.autobahn.getFile(path, &quot;json&quot;).then(function (data) {
+							if(typeof data === &#x27;string&#x27;)
+								data = JSON.parse(data.toString(&quot;utf-8&quot;));
+							&#x2F;&#x2F;console.log(&quot;deep request node json loadsuccess from autobahn : &quot;, data)
+							if(query)
+								data = Querier.query(data.toString(), query,  { keepCache:false });
+							&#x2F;&#x2F;else 
+							&#x2F;&#x2F;	data = data.toString(); 
+							deferred.resolve(data);
+						}, 
+						function(){
+							var args = Array.prototype.slice.call(arguments);
+							console.log(&quot;DeepRequest.json failed : &quot;+JSON.stringify(args));
+							deferred.reject({msg:&quot;DeepRequest.json failed : &quot;+path, details:args, uri:path}); 
+						});
+				}
+				getFacet(path);
+			}
+		}
+		else {
+			$.ajaxSetup({
+			   jsonp: null,
+			   jsonpCallback: null
+			});
+			$.ajax({
+				beforeSend :function(req) {
+					writeJQueryDefaultHeaders(req);
+					req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;json; charset=utf-8&quot;);
+					&#x2F;&#x2F;console.log(&quot;INFO. JSON = &quot;+ JSON.stringify(path));
+
+				},
+				contentType: &quot;application&#x2F;json; charset=utf-8&quot;,
+				url:path, 
+				method:&quot;GET&quot;, 
+				&#x2F;&#x2F;data:body||null,
+				datatype:&quot;json&quot; 
+			})
+			.fail( function(){ 
+				var args = Array.prototype.slice.call(arguments);
+				console.log(&quot;deep.request.json error : &quot;, arguments)
+				deferred.reject({msg:&quot;DeepRequest.json failed : &quot;+path, details:args, uri:path, options:options}); 
+			})
+			.done(function(data, msg, jqXHR){
+				console.log(&quot;deep.request.json response : &quot;, data, query)
+				if(typeof data === &#x27;string&#x27;)
+					data = JSON.parse(data);
+				if(query)
+					data = Querier.query(data, query,  { keepCache:false });
+				&#x2F;&#x2F;console.log(&quot;json success : &quot;, path, query, data);
+				manageCache(data, path);
+				deferred.resolve(data);
+			})
+		}
+		return promise.promise(deferred) ;
+	}
+
+
+
+	DeepRequest.html = function(path)
+	{
+		var body = null;
+		var query = null;
+		if(typeof path === &#x27;object&#x27;)
+		{
+			var info = path;
+			path = info.uri;
+			query = info.query;
+			body = info.body;
+		}
+		var deferred = promise.Deferred();
+
+		if(isNode)
+		{
+			if(&#x2F;http(s)?:\&#x2F;\&#x2F;&#x2F;.test(path))
+			{
+				HTTPRequest({
+					method:&quot;GET&quot;,
+					url:path,
+					&#x2F;&#x2F;queryString: query,
+					headers: {
+						Accept:&quot;application&#x2F;json;charset=utf-8;&quot;
+
+					}
+				}).then(function  (response) {
+					&#x2F;&#x2F; body...
+					createHTTPRequestParser(&quot;GET&quot;, response).then(function  (data) {
+						&#x2F;&#x2F; body...
+						&#x2F;&#x2F;console.log(&quot;DeepRequest.json : HTTP Request result : &quot;, data)
+						deferred.resolve(data);
+
+					})
+
+				}, function(){
+					var args = Array.prototype.slice.call(arguments);
+					deferred.reject(args);
+				} );
+			}
+			else
+			{
+				DeepRequest.autobahn.getFile(path, &quot;html&quot;).then(function (data) {
+					&#x2F;&#x2F;data = JSON.parse(data.toString(&quot;utf-8&quot;));
+					&#x2F;&#x2F;else 
+					&#x2F;&#x2F;	data = data.toString(); 
+					deferred.resolve(data);
+				}, 
+				function(){
+					var args = Array.prototype.slice.call(arguments);
+					console.log(&quot;DeepRequest.html failed : &quot;+JSON.stringify(args));
+					deferred.reject({msg:&quot;DeepRequest.json failed : &quot;+path, details:args, uri:path}); 
+				});
+			&#x2F;*	promise.when(fs.readFile(path, &quot;utf-8&quot;)).then( 
+					function(data){ 
+						deferred.resolve(data.toString()); 
+					}, 
+					function(msg){
+						deferred.reject((&quot;DeepRequest.html failed : &quot;+JSON.stringify(msg)));
+					}
+				);*&#x2F;
+			}
+		}
+			
+		else
+			$.when($.ajax({
+				beforeSend :function(req) {
+					req.setRequestHeader(&quot;Accept&quot;, &quot;text&#x2F;plain; charset=utf-8&quot;);
+				},
+				contentType: &quot;text&#x2F;plain; charset=utf-8&quot;,
+				url:path, 
+				method:&quot;get&quot;, 
+				&#x2F;&#x2F;data:body||null,
+				datatype:&quot;html&quot; 
+			})).then(
+				function(data, msg, jqXHR){
+					manageCache(data, path);
+
+					deferred.resolve(data);
+				}, 
+				function(msg){ 
+					deferred.reject((&quot;DeepRequest.html failed : &quot;+JSON.stringify(msg)));
+				}
+			)
+		return promise.promise(deferred) ;
+	}
+	DeepRequest.xml = function(path)
+	{
+		var body = null;
+		var query = null;
+		if(typeof path === &#x27;object&#x27;)
+		{
+			var info = path;
+			path = info.uri;
+			query = info.query;
+			body = info.body;
+		}
+		var deferred = promise.Deferred();
+		if(isNode)
+			promise.when(fs.readFile(path, &quot;utf-8&quot;)).then( 
+				function(data){ 
+					deferred.resolve( data.toString() ); 
+				}, 
+				function(msg){
+					var args = Array.prototype.slice.call(arguments);
+					console.log(&quot;DeepRequest.xml failed : &quot;+JSON.stringify(args));
+					deferred.reject({msg:&quot;deep-request : xml load failed &quot;, arguments:args});
+					
+				}
+			);
+		else
+		 promise.when($.ajax({
+			beforeSend :function(req) {
+			req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;xml&quot;);
+			},
+			contentType: &quot;aplication&#x2F;xml; charset=utf-8&quot;,
+			url:path, 
+			method:&quot;get&quot;, 
+			&#x2F;&#x2F;data:body||null,
+			datatype:&quot;xml&quot; 
+		})).then(function(data){
+			data = jQuery.parseXML(data);
+			manageCache(data, path);
+			deferred.resolve(data);
+		}, function(jqXHR){
+			var args = Array.prototype.slice.call(arguments);
+			console.log(&quot;DeepRequest.xml failed : &quot;+JSON.stringify(args));
+			deferred.reject({msg:&quot;deep-request : xml load failed &quot;, arguments:args});
+		});
+		return promise.promise(deferred);
+	}
+
+	DeepRequest.rss = function(url)
+	{
+		var def = promise.Deferred();
+	 	&#x2F;&#x2F;console.log(&quot;requestCrossDomain : &quot;, url);
+	    &#x2F;&#x2F; Take the provided url, and add it to a YQL query. Make sure you encode it!
+	    &#x2F;&#x2F;var yql = &#x27;http:&#x2F;&#x2F;query.yahooapis.com&#x2F;v1&#x2F;public&#x2F;yql?q=&#x27; + encodeURIComponent(&#x27;select * from xml where url=&quot;&#x27; + url + &#x27;&quot;&#x27;) + &#x27;&amp;format=xml&amp;callback=?&#x27;;
+	    var google = (document.location.protocol||&quot;http:&quot;) + &#x27;&#x2F;&#x2F;ajax.googleapis.com&#x2F;ajax&#x2F;services&#x2F;feed&#x2F;load?v=1.0&amp;num=10&amp;callback=?&amp;q=&#x27; + encodeURIComponent(url);
+	    &#x2F;&#x2F; Request that YSQL string, and run a callback function.
+	    &#x2F;&#x2F; Pass a defined function to prevent cache-busting.
+	 	 addLoadInfo(url);
+	 	 var succ = function (data) {
+	 	 	var res = null;
+
+			if(data.responseData)
+	      	{
+	      	 	res = data.responseData.feed;
+				manageCache(res, url);
+	        	def.resolve(res);
+	      		return;
+	      	}
+	        def.reject({msg:&quot;deep-request : rss load failed &quot;+url, arguments:arguments});
+	 	 }
+	    $.getJSON(google).then(function(data, msg, jqXHR){
+	    	removeLoadInfo(url);
+	    	succ(data)
+	      	&#x2F;&#x2F;console.log(&quot;no responseData : &quot;+url, JSON.stringify(data, null, &#x27; &#x27;))
+	    }, function(data, msg, jqXHR){
+
+	    	removeLoadInfo(url);
+	    	if(jqWHR.status &lt;400)
+	    		console.log(&quot;WARNING : error but success with jquery&#x2F;rss google : &quot;, jqXHR)
+	    	def.reject({msg:&quot;deep-request : rss load failed &quot;+url, arguments:arguments});
+	    });
+		return promise.promise(def);
+	}
+
+
+
+	DeepRequest.text = function(path)
+	{
+		return DeepRequest.get(path, {accept:&quot;text&#x2F;plain;charset=utf-8;&quot;});
+	}
+
+	DeepRequest.get = DeepRequest.retrieve;
+
+	DeepRequest.put = function(uri, object)
+	{
+		var info = DeepRequest.parse(uri);
+		var deferred = promise.Deferred();
+		return $.ajax({
+			type:&quot;PUT&quot;,
+			beforeSend :function(req) {
+				writeJQueryDefaultHeaders(req);
+				req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;json; charset=utf-8&quot;);
+			},
+			url:info.uri,
+			dataType:&quot;application&#x2F;json&quot;,
+			contentType:&quot;application&#x2F;json; charset=utf-8&quot;,
+			data:JSON.stringify(object)
+		}).then(function  (res) {
+			&#x2F;&#x2F; body...
+			console.log(&quot;DeepRequest.put : success : &quot;, res)
+			deferred.resolve(res);
+		}, function  (jqXHR, textStatus, errorThrown) {
+			var test = $.parseJSON(jqXHR.responseText);
+			if(jqXHR.status &lt; 300)
+			{
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.put : error but status 2xx : &quot;, test, &quot; - status provided : &quot;+jqXHR.status);
+				if(typeof test === &#x27;string&#x27;)
+					test = $.parseJSON(test);
+				deferred.resolve(test);
+			}
+			else
+			{
+				var args = Array.prototype.slice.call(arguments);
+				console.log(&quot;DeepRequest.put : failed (status &gt; 2xx) : &quot;, test, &quot; - status provided : &quot;, jqXHR.status )
+				deferred.reject({msg:&quot;DeepRequest.put failed : &quot;+info.request, status:jqXHR.status, details:args, uri:info.uri})
+			}
+			&#x2F;&#x2F; body...
+		})
+	}
+
+	DeepRequest.post = function(uri, object)
+	{
+		var info = DeepRequest.parse(uri);
+		var deferred  = promise.Deferred();
+		  $.ajax({
+			beforeSend :function(req) {
+				writeJQueryDefaultHeaders(req);
+				req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;json; charset=utf-8;&quot;);
+			},
+			type:&quot;POST&quot;,
+			url:info.uri,
+			dataType:&quot;application&#x2F;json; charset=utf-8;&quot;,
+			contentType:&quot;application&#x2F;json; charset=utf-8;&quot;,
+			data:JSON.stringify(object)
+		}).then(function  (res) {
+			&#x2F;&#x2F; body...
+			console.log(&quot;DeepRequest.post : success : &quot;, res)
+			deferred.resolve(res);
+		}, function  (jqXHR, textStatus, errorThrown) {
+			var test = $.parseJSON(jqXHR.responseText);
+			if(jqXHR.status &lt; 300)
+			{
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.post : error but status 2xx : &quot;, test, &quot; - status provided : &quot;+jqXHR.status);
+				if(typeof test === &#x27;string&#x27;)
+					test = $.parseJSON(test);
+				deferred.resolve(test);
+			}
+			else
+			{
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.post : failed (status &gt; 2xx) : &quot;, test, &quot; - status provided : &quot;, jqXHR.status )
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:&quot;DeepRequest.post failed : &quot;+info.request, status:jqXHR.status, details:args, uri:info.uri})
+			}
+			&#x2F;&#x2F; body...
+		})
+
+
+		return promise.promise(deferred);
+	}
+
+	DeepRequest.patch = function(uri, object)
+	{
+		var info = DeepRequest.parse(uri);
+		var deferred  = promise.Deferred();
+		  $.ajax({
+			beforeSend :function(req) {
+				writeJQueryDefaultHeaders(req);
+				req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;json; charset=utf-8;&quot;);
+			},
+			type:&quot;PATCH&quot;,
+			url:info.uri,
+			dataType:&quot;application&#x2F;json; charset=utf-8;&quot;,
+			contentType:&quot;application&#x2F;json; charset=utf-8;&quot;,
+			data:JSON.stringify(object)
+		}).then(function  (res) {
+			&#x2F;&#x2F; body...
+			console.log(&quot;DeepRequest.patch : success : &quot;, res)
+			deferred.resolve(res);
+		}, function  (jqXHR, textStatus, errorThrown) {
+			var test = $.parseJSON(jqXHR.responseText);
+			if(jqXHR.status &lt; 300)
+			{
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.post : error but status 2xx : &quot;, test, &quot; - status provided : &quot;+jqXHR.status);
+				if(typeof test === &#x27;string&#x27;)
+					test = $.parseJSON(test);
+				deferred.resolve(test);
+			}
+			else
+			{
+				&#x2F;&#x2F;console.log(&quot;DeepRequest.post : failed (status &gt; 2xx) : &quot;, test, &quot; - status provided : &quot;, jqXHR.status )
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:&quot;DeepRequest.patch failed : &quot;+info.request, status:jqXHR.status, details:args, uri:info.uri})
+			}
+		})
+		return promise.promise(deferred);
+	}
+
+	DeepRequest.deleteItems = function(uri, ids)
+	{
+		var info = DeepRequest.parse(uri);
+
+		if(typeof rql === &#x27;undefined&#x27;)
+			rql = &quot;&quot;;
+		return $.ajax({
+			type:&quot;POST&quot;,
+			url:info.uri,
+			dataType:&quot;message&#x2F;json&quot;,
+			contentType:&quot;application&#x2F;json; charset=utf-8&quot;
+			&#x2F;&#x2F;data:JSON.stringify(object)
+		})
+	}
+
+	DeepRequest.retrieveRange = function(info){
+		&#x2F;&#x2F;console.log(&quot;__________________retrieve range : &quot;, uri, &quot; - &quot;, range)
+		var type = info;&#x2F;&#x2F;DeepRequest.isRetrievable(uri);
+		var deferred = promise.Deferred();
+		function success(jqXHR, data){
+			&#x2F;&#x2F;console.log(&quot;argyuments : &quot;, arguments)
+			var rangePart = [];
+			var rangeResult = {};
+
+			var resultsArray = [];
+
+			if(type.type == &quot;dummies&quot;)
+			{
+				var range = info.range;
+				&#x2F;&#x2F;console.log(&quot;getRange success dummies&quot;);
+				if(!data.push){
+					data = [data];
+				}
+				rangeResult.totalCount = data.length;
+				&#x2F;&#x2F;verif si le range ne dépasse pas le max
+				if(range.end &lt;= data.length)
+				{
+					rangeResult.range = range.start + &quot;-&quot; + range.end ;
+					for (var i = 0; i &lt; data.length; i++) {
+						if(i &gt;= range.start &amp;&amp;  i &lt;= range.end)
+							resultsArray.push( data[i] );
+					};
+				} else {
+					&#x2F;&#x2F;le range dépasse , on renvoi toutes les datas par defaut + un log
+					resultsArray = data;
+					console.log(&quot;ERROR deep-request.retrieveRange range is higher then dummies array - giving all Array by default !! &quot;);
+				}
+				
+			} else {
+				
+				var headers = jqXHR.getResponseHeader(&quot;content-range&quot;);
+				headers = headers.substring(6);
+				&#x2F;&#x2F;console.log(&quot;browse ajax rrsult : headers &quot; + JSON.stringify(headers))
+				
+				if(headers)
+					rangePart = headers.split(&#x27;&#x2F;&#x27;);
+
+				if(headers &amp;&amp; rangePart &amp;&amp; rangePart.length &gt; 0) 
+				{
+					rangeResult.range = rangePart[0];
+					if(rangeResult.range == &quot;0--1&quot;)
+					{
+						rangeResult.totalCount = 0;
+						rangeResult.start = 0;
+						rangeResult.end = 0;
+					}
+					else
+					{
+						rangeResult.totalCount = parseInt(rangePart[1]);
+						var spl = rangePart[0].split(&quot;-&quot;);
+						rangeResult.start = parseInt(spl[0]);
+						rangeResult.end = parseInt(spl[1]);
+					}
+				} else {
+					console.log(&quot;ERROR deep-request.retrieveRange range header missing !! &quot;);
+				}
+				resultsArray = data;
+				&#x2F;&#x2F;console.log(&quot;getRange success not dummies : &quot;, rangeResult, resultsArray.length);
+			}
+			deferred.resolve({
+					results : resultsArray,
+					range : rangeResult
+			});
+		}
+		$.ajax({
+			beforeSend :function(req) {
+				req.setRequestHeader(&quot;Accept&quot;, &quot;application&#x2F;json; charset=utf-8&quot;);
+				req.setRequestHeader(&quot;range&quot;, &quot;items=&quot; + info.range.start+&quot;-&quot;+info.range.end);	
+			},
+			type:&quot;GET&quot;,
+			url:info.uri,
+			dataType:&quot;application&#x2F;json&quot;,
+			contentType:&quot;application&#x2F;json; charset=utf-8&quot;
+
+		}).then(function(data, text, jqXHR) {
+			success(jqXHR, data);
+		}, function  (jqXHR, statusText, errorThrown) {
+			&#x2F;&#x2F;console.log(&quot;get range failed : &quot;, jqXHR)
+			var args = Array.prototype.slice.call(arguments);
+			if(jqXHR.status == 200 || jqXHR.status == 206)
+				success(jqXHR, JSON.parse(jqXHR.responseText));
+			else
+				deferred.reject(args);
+		});
+		return promise.promise(deferred);
+	}
+
+	DeepRequest.crossDomainXML= function(url, type)
+	{
+		var def = promise.Deferred();
+	 	&#x2F;&#x2F;console.log(&quot;requestCrossDomain : &quot;, url);
+	    &#x2F;&#x2F; Take the provided url, and add it to a YQL query. Make sure you encode it!
+	    var yql = &#x27;http:&#x2F;&#x2F;query.yahooapis.com&#x2F;v1&#x2F;public&#x2F;yql?q=&#x27; + encodeURIComponent(&#x27;select * from xml where url=&quot;&#x27; + url + &#x27;&quot;&#x27;) + &#x27;&amp;format=xml&amp;callback=?&#x27;;
+	    &#x2F;&#x2F; Request that YSQL string, and run a callback function.
+	    &#x2F;&#x2F; Pass a defined function to prevent cache-busting.
+	    $.getJSON(yql).then(function(data){
+			var args = Array.prototype.slice.call(arguments);
+	    	if (data.results[0])
+	    	{
+	    		var res = null;
+	    		switch(type)
+	    		{
+	    			case &quot;xml&quot; : 
+	    			res = $.parseXML(data.results);
+	    			break;
+	    			case &quot;rss&quot; : 
+	    			res = new JFeed($.parseXML(data.results));
+	    			break;
+	    			default :
+	        			def.reject({msg:&quot;deep-request : cross domain xml load failed : bad type provided : &quot;+type, arguments:args});
+	    		} 
+					manageCache(res, path);
+	                def.resolve(res);
+	        }else
+	        	def.reject({msg:&quot;deep-request : cross domain xml load failed &quot;, arguments:args});
+	    }, function(){
+			var args = Array.prototype.slice.call(arguments);
+	    	def.reject({msg:&quot;deep-request : cross domain xml load failed &quot;, arguments:args});
+	    });
+		return promise.promise(def);
+	}
+
+	return DeepRequest;
+})
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>
