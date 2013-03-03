@@ -106,6 +106,7 @@ define(function defineDeepQuery(require)
 		//console.log("analyse")
 		var paths = [];
 		var rest = path;
+		this.asked = path;
 		while(rest.length > 0)
 		{
 			var rest = this.analyseMoves(rest, paths);
@@ -531,6 +532,8 @@ define(function defineDeepQuery(require)
 		
 		//return "";
 		var last = steps[steps.length-1];
+		if(!last)
+			throw new QueryError("deepQuery : missformed query : "+this.asked);
 		if(last[0] == ".")
 			a -= last.length;
 			
