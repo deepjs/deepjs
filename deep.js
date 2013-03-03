@@ -1563,7 +1563,7 @@ function(require)
 				return this;
 			}
 			else
-				return deep.chain.values(this);
+				return deep.chain.nodes(this);
 		},
 		paths:function  (callBack) 
 		{
