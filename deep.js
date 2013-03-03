@@ -649,16 +649,17 @@ function(require)
 			return this;
 		},
 		//___________________________________________________________________________ NAVIGATION
-		/*range : function  (start,end) 
+		range : function  (start,end) 
 		{
 			var self = this;
-			var func = function(){
+			var func = function(s,e){
+				self._entries = self.entries.slice(start, Math.min(end+1,self.entries.length))
 				self.running = false;
-				nextQueueItem.apply(self, [self._entries]);
+				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			}
 			addInQueue.apply(this,[func]);
-			return cloned;
-		},*/
+			return this;
+		},
 		position : function  (name) 
 		{
 			var self = this;
