@@ -1021,7 +1021,7 @@ define(function(require){
 				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
 			})
 			.done(function(data, msg, jqXHR){
-				console.log("deep.request.json response : ", data, query)
+				//console.log("deep.request.json response : ", data, query)
 				if(typeof data === 'string')
 					data = JSON.parse(data);
 				if(query)

@@ -1414,11 +1414,7 @@ function(require)
 		log:function () 
 		{
 			var self = this;
-	
 			var args = Array.prototype.slice.call(arguments);
-			// if(args.length == 0)
-			 //	args.push("deep.log");
-			 //console.log("deep.log : args : ",JSON.stringify(arguments))
 			var func = function(s,e)
 			{
 				if(args.length == 0)
@@ -1432,7 +1428,6 @@ function(require)
 				self.running = false;
 				nextQueueItem.apply(self,[s, null]);
 			}
-			
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -1441,23 +1436,23 @@ function(require)
 			var self = this;
 			options = options || {};
 			var func = function()
-				{
-					console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)")
-					self._entries.forEach(function (e) {
-						var val = e;
-						var entry = e.value._deep_entry;
-						delete e.value._deep_entry;
-						if(!options.full)
-							val = e.value;
-						if(options.pretty)
-							val = JSON.stringify(val, null, ' ');
-						console.log("\t- entry : ("+e.path+") : ", val);
-						if(entry)
-							e._deep_entry = entry;
-					})
-					self.running = false;
-					nextQueueItem.apply(self,[true, null]);
-				}
+			{
+				console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)")
+				self._entries.forEach(function (e) {
+					var val = e;
+					var entry = e.value._deep_entry;
+					delete e.value._deep_entry;
+					if(!options.full)
+						val = e.value;
+					if(options.pretty)
+						val = JSON.stringify(val, null, ' ');
+					console.log("\t- entry : ("+e.path+") : ", val);
+					if(entry)
+						e._deep_entry = entry;
+				})
+				self.running = false;
+				nextQueueItem.apply(self,[true, null]);
+			}
 			
 			addInQueue.apply(this,[func]);
 			return this;
