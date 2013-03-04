@@ -1002,7 +1002,7 @@ define(function(require){
 			   jsonp: null,
 			   jsonpCallback: null
 			});
-			$.ajax({
+			promise.when($.ajax({
 				beforeSend :function(req) {
 					writeJQueryDefaultHeaders(req);
 					req.setRequestHeader("Accept", "application/json; charset=utf-8");
@@ -1014,8 +1014,7 @@ define(function(require){
 				method:"GET", 
 				//data:body||null,
 				datatype:"json" 
-			})
-			
+			}))
 			.done(function(data, msg, jqXHR){
 			//	console.log("deep.request.json response : ", data)
 				if(typeof data === 'string')
@@ -1029,7 +1028,7 @@ define(function(require){
 			.fail( function(){ 
 				var args = Array.prototype.slice.call(arguments);
 				console.log("deep.request.json error : ", arguments)
-				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
+				deferred.reject(new Error("DeepRequest.json failed : "+path+" - \n\n"+JSON.stringify(args))); 
 			})
 		}
 		return promise.promise(deferred) ;
@@ -1251,9 +1250,9 @@ define(function(require){
 		return promise.promise(deferred);
 		
 	}
-	DeepRequest.rpc = function(uri, id, method, params)
+	DeepRequest.rpc = function(uri, method, params)
 	{
-		
+		var callId = "call"+new Date().valueOf();
 		var deferred  = promise.Deferred();
 		  $.ajax({
 			beforeSend :function(req) {
@@ -1265,7 +1264,7 @@ define(function(require){
 			dataType:"application/json-rpc; charset=utf-8;",
 			contentType:"application/json-rpc; charset=utf-8;",
 			data:JSON.stringify({
-				id:id,
+				id:callId,
 				method:method,
 				params:params||[]
 			})
