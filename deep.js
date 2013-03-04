@@ -653,7 +653,7 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				self._entries = self.entries.slice(start, Math.min(end+1,self._entries.length))
+				self._entries = self._entries.slice(start, Math.min(end+1,self._entries.length))
 				self.running = false;
 				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			}
