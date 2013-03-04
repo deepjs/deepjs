@@ -1216,7 +1216,7 @@ define(function(require){
 	{
 		var info = DeepRequest.parse(uri);
 		var deferred = promise.Deferred();
-		return $.ajax({
+		 $.ajax({
 			type:"PUT",
 			beforeSend :function(req) {
 				writeJQueryDefaultHeaders(req);
@@ -1234,7 +1234,7 @@ define(function(require){
 			var test = $.parseJSON(jqXHR.responseText);
 			if(jqXHR.status < 300)
 			{
-				//console.log("DeepRequest.put : error but status 2xx : ", test, " - status provided : "+jqXHR.status);
+				console.log("DeepRequest.put : error but status 2xx : ", test, " - status provided : "+jqXHR.status);
 				if(typeof test === 'string')
 					test = $.parseJSON(test);
 				deferred.resolve(test);
@@ -1247,6 +1247,8 @@ define(function(require){
 			}
 			// body...
 		})
+		return promise.promise(deferred);
+		
 	}
 
 	DeepRequest.post = function(uri, object)
