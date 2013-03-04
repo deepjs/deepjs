@@ -1266,7 +1266,7 @@ define(function(require){
 			contentType:"application/json-rpc; charset=utf-8;",
 			data:JSON.stringify({
 				id:id,
-				method:"follow",
+				method:method,
 				params:params||[]
 			})
 		}).then(function  (res) {
