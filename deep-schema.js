@@ -894,7 +894,7 @@ function(require){
 		"enum":{
 			schema:{ type:"array", items:{ type:"string" } },
 			test:function(value, type, schema){
-				if((!value || value == "") && !schema.required)
+				if((typeof value === 'undefined' || value == "") && !schema.required)
 					return true;
 				if(type != "string" && type != "number" && type != "integer") return true;
 				var ok = false;

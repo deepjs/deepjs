@@ -1251,6 +1251,48 @@ define(function(require){
 		return promise.promise(deferred);
 		
 	}
+	DeepRequest.rpc = function(uri, id, method, params)
+	{
+		
+		var deferred  = promise.Deferred();
+		  $.ajax({
+			beforeSend :function(req) {
+				writeJQueryDefaultHeaders(req);
+				req.setRequestHeader("Accept", "application/json; charset=utf-8;");
+			},
+			type:"POST",
+			url:uri,
+			dataType:"application/json-rpc; charset=utf-8;",
+			contentType:"application/json-rpc; charset=utf-8;",
+			data:JSON.stringify({
+				id:id,
+				method:"follow",
+				params:params||[]
+			})
+		}).then(function  (res) {
+			console.log("DeepRequest.rpc : success : ", res)
+			deferred.resolve(res);
+		}, function  (jqXHR, textStatus, errorThrown) {
+			var test = $.parseJSON(jqXHR.responseText);
+			if(jqXHR.status < 300)
+			{
+				//console.log("DeepRequest.post : error but status 2xx : ", test, " - status provided : "+jqXHR.status);
+				if(typeof test === 'string')
+					test = $.parseJSON(test);
+				deferred.resolve(test);
+			}
+			else
+			{
+				//console.log("DeepRequest.post : failed (status > 2xx) : ", test, " - status provided : ", jqXHR.status )
+				var args = Array.prototype.slice.call(arguments);
+				deferred.reject({msg:"DeepRequest.post failed : "+uri, status:jqXHR.status, details:args, uri:uri})
+			}
+			// body...
+		})
+
+
+		return promise.promise(deferred);
+	}
 
 	DeepRequest.post = function(uri, object)
 	{
