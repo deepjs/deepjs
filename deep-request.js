@@ -1015,13 +1015,9 @@ define(function(require){
 				//data:body||null,
 				datatype:"json" 
 			})
-			.fail( function(){ 
-				var args = Array.prototype.slice.call(arguments);
-				console.log("deep.request.json error : ", arguments)
-				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
-			})
+			
 			.done(function(data, msg, jqXHR){
-				//console.log("deep.request.json response : ", data, query)
+			//	console.log("deep.request.json response : ", data)
 				if(typeof data === 'string')
 					data = JSON.parse(data);
 				if(query)
@@ -1029,6 +1025,11 @@ define(function(require){
 				//console.log("json success : ", path, query, data);
 				manageCache(data, path);
 				deferred.resolve(data);
+			})
+			.fail( function(){ 
+				var args = Array.prototype.slice.call(arguments);
+				console.log("deep.request.json error : ", arguments)
+				deferred.reject({msg:"DeepRequest.json failed : "+path, details:args, uri:path, options:options}); 
 			})
 		}
 		return promise.promise(deferred) ;

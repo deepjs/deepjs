@@ -2024,7 +2024,7 @@ deep : just say : Powaaaaaa ;)
 			}
 			// console.log("chain will run next item");
 			handler.running = false;
-			nextQueueItem.apply(handler, [handler._entries[0].value, null]);
+			nextQueueItem.apply(handler, [deep.chain.val(handler), null]);
 		}, function (error) {
 			console.log("deep start chain error : ", error);
 			handler.running = false;
@@ -2053,6 +2053,9 @@ deep : just say : Powaaaaaa ;)
 					res += JSON.stringify(e.value)+"\n";
 			});
 			return res;
+		},
+		val:function (handler) {
+			return handler._entries[0].value;
 		},
 		values:function (handler) {
 			var res = [];
