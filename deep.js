@@ -509,6 +509,7 @@ function(require)
 
 		cancel:function (reason)  // not chainable
 		{
+			console.log("_________________________________________ CHAIN CANCELATION")
 			if(this.rejected)
 				throw  new Error("deep chain could not be canceled : it has already been rejected! ")
 			var queue = this.callQueue;
@@ -2387,32 +2388,40 @@ deep : just say : Powaaaaaa ;)
 		if(arg instanceof DeepHandler)
 		{
 			//console.log("DEEP promise with deephandler", arg.running);
-			if(arg.rejected)
-				throw new Error("error : deep.promise : DeepHandler has already been rejected.");
+			//if(arg.rejected)
+				//throw new Error("error : deep.promise : DeepHandler has already been rejected.");
 			
 			if(arg.running) // need to wait rejection or success
 			{
 				var def = deep.Deferred();
-				arg.done(function (success) { // simply chain done handler in deep chain
-					//console.log("deep.promise of DeepHandler : added then")
-					if(success && success.then)
-						deep.when(success).then(function (success) {
-							if(success instanceof Error)
-							{
-								def.reject(success);
-								return;
-							}
-							def.resolve(success);
-						}, function (error) {
-							def.reject(error);
-						})
-					else
-						def.resolve(success);
-				})
 				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
 					//console.log("deep.promise of DeepHandler : added error")
 					def.reject(error);
 				})
+				arg.done(function (success) { // simply chain done handler in deep chain
+					//console.log("deep.promise of DeepHandler : added then")
+					if(success && success.then)
+						deep.when(success)
+						.fail(function (error) {
+							if(!def.rejected && !def.resolved && !def.canceled)
+								def.reject(error);
+						})
+						.done(function (success) {
+							if(success instanceof Error)
+							{
+								if(!def.rejected && !def.resolved && !def.canceled)
+									def.reject(success);
+								return;
+							}
+							if(!def.rejected && !def.resolved && !def.canceled)
+								def.resolve(success);
+						})
+						
+					else
+						if(!def.rejected && !def.resolved && !def.canceled)
+							def.resolve(success);
+				})
+				
 				return def.promise;
 			}
 			return arg; // nothing to wait : chain will act as immediate promise
@@ -2449,7 +2458,8 @@ deep : just say : Powaaaaaa ;)
 			deep.when(a).then(function(r){
 				if(r instanceof Error)
 				{
-					def.reject(r);
+					if(!def.rejected && !def.resolved && !def.canceled)
+						def.reject(r);
 					return;
 				}
 
@@ -2458,7 +2468,8 @@ deep : just say : Powaaaaaa ;)
 				if(c == count)
 					def.resolve(res);
 			}, function (error){
-				def.reject(error);
+				if(!def.rejected && !def.resolved && !def.canceled)
+					def.reject(error);
 			})
 			d++;
 		})
@@ -2517,7 +2528,8 @@ deep : just say : Powaaaaaa ;)
 				current = funcs.shift();
 				doIt(current.apply(context, r));
 			}, function (error) {
-				def.reject(error);
+				if(!def.rejected && !def.resolved && !def.canceled)
+					def.reject(error);
 			});
 		}
 		doIt(current.apply(context, args));
