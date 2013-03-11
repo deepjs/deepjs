@@ -501,11 +501,13 @@ function(require)
 		/**
 		* catch any throwned error while chain running
 		*/
-		catchError:function () {
+		catchError:function (catchIt) {
 			var self = this;	
+			if(typeof catchIt === 'undefined')
+				catchIt = true;
 			var create =  function(s,e)
 			{
-				self.rethrow = false;
+				self.rethrow = catchIt;
 				self.running = false;
 				nextQueueItem.apply(self, [s, e]);
 			};
