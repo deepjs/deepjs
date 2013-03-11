@@ -5,8 +5,8 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 define(function(require){
-	var collider = require("deep/deep-collider");
-	var compose = require("deep/deep-compose");
+	var collider = require("./deep-collider");
+	var compose = require("./deep-compose");
 	var utils = {};
 
 	utils.interpret = function (string, context) 

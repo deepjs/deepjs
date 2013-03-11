@@ -1,0 +1,28 @@
+{
+  "name": "deep",
+  "version": "0.9.1",
+  "author": "Gilles Coomans",
+  "description": "just say : powaaaa ! ;)",
+  "licenses": [
+     {
+         "type": "AFLv2.1",
+         "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L43"
+     },
+     {
+         "type": "BSD",
+         "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
+     }
+  ],
+  "repository": {
+    "type":"git",
+    "url":"http://bitbucket.com/nomocas/deep"
+  },
+  "dependencies": {
+    "rql": "0.3.1"
+  },
+
+  "main": "./deep",
+  "mappings":{
+    "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"
+  }
+}

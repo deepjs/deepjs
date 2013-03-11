@@ -5,7 +5,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 define(function(require, exports, module){
-	var promise = require("deep/promise");
+	var promise = require("./promise");
 	// console.log("Deep-compose init");
 	var DeepDecorator = function (stack) {
 		this.stack = stack || [];
@@ -76,7 +76,7 @@ define(function(require, exports, module){
 		}
 	}
 	DeepDecorator.prototype = {
-		around : function (argument, options) 
+		around : function (argument) 
 		{
 			var wrapper = function (previous) 
 			{
@@ -85,7 +85,7 @@ define(function(require, exports, module){
 			this.stack.push(wrapper);
 			return this;
 		},
-		after : function (argument, options) 
+		after : function (argument) 
 		{
 			var wrapper = function (previous) 
 			{
@@ -94,7 +94,29 @@ define(function(require, exports, module){
 			this.stack.push(wrapper);
 			return this;
 		},
-		before : function (argument, options) 
+		fail : function (fn) 
+		{
+			var wrapper = function (previous) 
+			{
+				return function()
+				{
+					var self = this;
+					var args = Array.prototype.slice.call(arguments);
+					return promise.when(previous.apply(this, args))
+					.done(function (res) {
+						if(res instanceof Error)
+							return fn.apply(self, args);
+						return res;
+					})
+					.fail(function (argument) {
+						return fn.apply(self, args);
+					});
+				}
+			}
+			this.stack.push(wrapper);
+			return this;
+		},
+		before : function (argument) 
 		{
 			var wrapper = function (previous) 
 			{
@@ -103,7 +125,7 @@ define(function(require, exports, module){
 			this.stack.push(wrapper);
 			return this;
 		},
-		parallele : function (argument, options) 
+		parallele : function (argument) 
 		{
 			var wrapper = function (previous) 
 			{
@@ -134,6 +156,10 @@ define(function(require, exports, module){
 		};
 		start.before = function (argument) {
 			decorator.before(argument);
+			return start;
+		};
+		start.fail = function (argument) {
+			decorator.fail(argument);
 			return start;
 		};
 		start.around = function (argument) {
@@ -207,6 +233,10 @@ define(function(require, exports, module){
 		before : function (argument) 
 		{
 			return createStart().before(argument);
+		},
+		fail : function (argument) 
+		{
+			return createStart().fail(argument);
 		},
 		parallele : function (argument) 
 		{

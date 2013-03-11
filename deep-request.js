@@ -194,9 +194,9 @@ define(function(require){
 
 	var cache = {};
 
-	var utils = require("deep/utils");
-	var promise = require("deep/promise");
-	var Querier = require("deep/deep-query");
+	var utils = require("./utils");
+	var promise = require("./promise");
+	var Querier = require("./deep-query");
 	var DeepRequest  = {
 		reloadables:function (path, isReloadable /* false or true : true by default*/) 
 		{

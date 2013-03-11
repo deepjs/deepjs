@@ -29,7 +29,7 @@ define(function defineJsonQuery(require){
 	RQL_Global = {}
 
 var layer = {};
-var utils = require("deep/utils");
+var utils = require("./utils");
 var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
 var parser = require("rql/parser");
 var parseQuery = parser.parseQuery;

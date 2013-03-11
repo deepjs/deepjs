@@ -54,8 +54,8 @@ if(typeof define !== 'function'){
 }
 define(function defineDeepQuery(require)
 {
-	var rqlQuery = require("deep/deep-rql").query;
-	var utils = require("deep/utils");
+	var rqlQuery = require("./deep-rql").query;
+	var utils = require("./utils");
 	var QueryError = Error;
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
 

@@ -260,11 +260,11 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 	var swig = require("swig");
 }	
-define(["require", "deep/utils", "deep/promise"],
+define(["require", "./utils", "./promise"],
 function(require){
 
-	var utils = require("deep/utils");
-	var promise = require("deep/promise");
+	var utils = require("./utils");
+	var promise = require("./promise");
 	function findPatternProperties(name, patterns)
 	{
 		var res = [];
