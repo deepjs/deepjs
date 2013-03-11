@@ -179,7 +179,7 @@ define(function(require){
 
 	}
 	var reloadablesUriDico = {};
-	var reloadablesRegExpDico = [ /^(json::)|(\.json)$/gi ];
+	var reloadablesRegExpDico = [ /^(json::)/gi ,/* /(\.json)$/gi */ ];
 	var manageCache = function (response, uri) {
 		if(reloadablesUriDico[uri])
 			return;
