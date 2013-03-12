@@ -422,7 +422,7 @@ function(require){
 		var schemaPaths = [];
 		var deferred = promise.Deferred();
 		var othis = this;
-		//console.log("Validator", "partialValidation : fieldsToCheck = " + fieldsToCheck);
+		console.log("Validator", "partialValidation : fieldsToCheck = " + fieldsToCheck);
 	
 		fieldsToCheck.forEach(function  (required) {
 			//console.log("Validator", "partialValidation : forEach : field = " + required);

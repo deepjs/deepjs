@@ -281,7 +281,7 @@ define(function(require){
 	utils.inArray = function inArray(what, inArr)
 	{
 		//console.log("inArray : what : "+JSON.stringify(what) + " - in : "+JSON.stringify(inArr));
-		if(!inArr)
+		if(!inArr || !inArr instanceof Array)
 			return false;
 		var test = {};
 		inArr.forEach(function(e){
