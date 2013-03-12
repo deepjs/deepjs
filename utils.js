@@ -67,7 +67,7 @@ define(function(require){
 				res.push(copy(e));
 			})
 		}
-		else if(typeof obj === 'object')
+		else if(obj && typeof obj === 'object')
 		{
 			if(obj instanceof RegExp)
 				return obj;
@@ -579,6 +579,13 @@ define(function(require){
 					if(i == "_deep_entry")
 						continue;
 
+					if(src[i] == null)
+					{
+
+						target[i] = null;
+						continue;
+					}
+
 					if(src[i] && src[i]._deep_colliderRemove)
 					{
 						delete target[i];
@@ -693,6 +700,11 @@ define(function(require){
 				{
 					if(i == "_deep_entry")
 						continue;
+					if(oldProps[i] == null)
+					{
+						target[i] = null;
+						continue;
+					}
 					if(oldProps[i] && oldProps[i]._deep_colliderRemove)
 					{
 						delete target[i];
