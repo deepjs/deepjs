@@ -368,14 +368,20 @@ function(require)
 					else
 						next(result,failure);
 				}
-				else if(next._isTHEN_)
+				else if(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_)
+				{
+					console.log("failure : next isThen")
 					next(result,failure);
+				}	
 				else if(!this.rejected)
+				{
+					console.log("failure : no more Then : reject")
 					this.reject(failure);
+				}	
 			}
 			catch(e)
 			{
-				var msg = "Internal chain error : ";
+				var msg = "Internal chain error : rethorw ? "+ self.rethrow;
 				console.error(msg, e);
 				if(self.rethrow)
 					throw e;
@@ -507,10 +513,11 @@ function(require)
 				catchIt = true;
 			var create =  function(s,e)
 			{
-				self.rethrow = catchIt;
+				self.rethrow = !catchIt;
 				self.running = false;
 				nextQueueItem.apply(self, [s, e]);
 			};
+			create._isTRANSPARENT_ = true;
 			addInQueue.apply(this, [create]);
 			return self;
 		},
@@ -1430,15 +1437,25 @@ function(require)
 			{
 				if(args.length == 0)
 				{
-					args.push("deep.log : last success : ");	
-					args.push(s);
+					args.push("deep.log : ");	
+					if(e)
+					{
+						args.push("ERROR State : ");
+						args.push(e);
+					}
+					else
+					{
+						args.push("SUCCESS State : ");
+						args.push(s);
+					}
 				}
 				args.forEach(function (a) {
 					console.log(a);
 				});
 				self.running = false;
-				nextQueueItem.apply(self,[s, null]);
+				nextQueueItem.apply(self,[s, e]);
 			}
+			func._isTRANSPARENT_ = true;
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -1446,7 +1463,7 @@ function(require)
 		{
 			var self = this;
 			options = options || {};
-			var func = function()
+			var func = function(success, error)
 			{
 				console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)")
 				self._entries.forEach(function (e) {
@@ -1462,9 +1479,10 @@ function(require)
 						e._deep_entry = entry;
 				})
 				self.running = false;
-				nextQueueItem.apply(self,[true, null]);
+				nextQueueItem.apply(self,[success, error]);
 			}
 			
+			func._isTRANSPARENT_ = true;
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -1630,10 +1648,11 @@ function(require)
 					setTimeout(function () {
 						console.log("deep.delay.end : ", ms)
 						self.running = false;
-						nextQueueItem.apply(self, [s, null]);
+						nextQueueItem.apply(self, [s, e]);
 					}, ms);
 				}
 			}
+			func._isTRANSPARENT_ = true;
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
@@ -1829,14 +1848,14 @@ function(require)
 		{
 			var self = this;
 			function func(){
-				var f = function()
+				var f = function(s,e)
 				{
 					// console.log("pushHandlerTo : init? ", self.initialised)
 					array.push(self);
 					if(self.initialised)
 					{
 						self.running = false;
-						nextQueueItem.apply(self, [self, null]);
+						nextQueueItem.apply(self, [s, e]);
 					}
 				}
 				f._isPUSH_HANDLER_TO_ = true;
@@ -1849,14 +1868,14 @@ function(require)
 		{
 			var self = this;
 			function func(){
-				return function(){
+				return function(success, error){
 					var res = [];
 					self._entries.forEach(function (e) {
 						array.push(e);
 						res.push(e);
 					})
 					self.running = false;
-					nextQueueItem.apply(self, [res, null]);
+					nextQueueItem.apply(self, [success, error]);
 				}
 			}
 			addInQueue.apply(this,[func()]);
@@ -1866,14 +1885,14 @@ function(require)
 		{
 			var self = this;
 			function func(){
-				return function(){
+				return function(success, error){
 					var res = [];
 					self._entries.forEach(function (e) {
 						array.push(e.value);
 						res.push(e.value);
 					})
 					self.running = false;
-					nextQueueItem.apply(self, [res, null]);
+					nextQueueItem.apply(self, [success, error]);
 				}
 			}
 			addInQueue.apply(this,[func()]);
@@ -1882,14 +1901,14 @@ function(require)
 		pushPathsTo:function(array) 
 		{
 			var self = this;
-			var func =function(){
+			var func =function(success, error){
 				var res = [];
 				self._entries.forEach(function (e) {
 					array.push(e.path);
 					res.push(e.path);
 				})
 				self.running = false;
-				nextQueueItem.apply(self, [res, null]);
+				nextQueueItem.apply(self, [success, error]);
 			}
 			addInQueue.apply(this,[func]);
 			return this;
@@ -1897,14 +1916,14 @@ function(require)
 		pushSchemasTo:function(array) 
 		{
 			var self = this;
-			var func = function(){
+			var func = function(success, error){
 				var res = [];
 				self._entries.forEach(function (e) {
 					array.push(e.schema);
 					res.push(e.schema);
 				})
 				self.running = false;
-				nextQueueItem.apply(self, [res, null]);
+				nextQueueItem.apply(self, [success, error]);
 			}
 			addInQueue.apply(this,[func]);
 			return this;
