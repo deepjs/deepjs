@@ -38,7 +38,7 @@ var stringify = JSON.stringify || function(str){
 };
 
 function getJSPrimitiveType(obj){
-	if(obj instanceof Array || obj.push)
+	if(obj && obj instanceof Array || obj.push)
 		return "array"
 	return typeof obj;
 }
