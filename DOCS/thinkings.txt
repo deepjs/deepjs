@@ -210,3 +210,51 @@ Implémentation :
 et donc asynch puisque thin-server
 
 	donc la chaine : linéarisation au lieu de récursion
+
+
+
+
+______________________________
+
+
+identité et position : groupe associatif non commutatif dont le neutre est la couche vide
+
+pour conserver l'identité dans la position sans devoir cloner : 
+	: conserver dans classes:[] les selecteurs d'identité
+
+	: écrire couche inverse de chaque identité
+	: donc pour défaire une composition de fonctions : conserver la référence de la fonction wrappé dans la couche inverse
+
+	couche inverse up : 
+	{
+		classes:deep.collider.remove("identity-class"),
+		functionRef:oldRef or deep.collider.remove(),
+		data: copy of old or deep.collider.remove()
+	}
+
+	couche inverse bottom : 
+	{
+		classes:deep.collider.remove("identity-class"),
+		functionRef:oldRef or nothing,
+		data: copy of old or nothing
+	}
+
+
+	donc lors changement identité : 
+		dans position : stocker :
+			couche inverse ?
+			puisque api de base est gros et que changement identitaire sont limités :
+				oui : conserver couche inverse : = plus légé
+
+			==> puisque le changement identitaire est initié depuis l'identité elle même : (il n'est pas encore possible de cumuler les identité dynamiquement)
+			
+			==> le changement doit etre fait avec connaissance complete de l'API d'arrivé
+			==> c'est au programmeur de l'identité du handler qui revient de maitriser API de départ et celui d'arrivé
+
+		pour un changement dynamique des identités : 
+			stocker toutes les couches inverses + identité de départ
+			stocker juste les classes et recompiler la total
+		le problème c'est qu'il faut connaitre l'api complet pour la définition du comportement
+
+	avec couche inverse : 
+		les couches + deep.up + couche inverse : = groupe associatif non commutatif  dont le neutre est la couche vide
