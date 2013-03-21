@@ -234,7 +234,7 @@ function(require)
 		_isBRANCHES_:true,
 		replace:function (what, by) {
 			this.chain.replace(what,by);
-			return thiss;
+			return this;
 		},
 		remove:function (what) {
 			this.chain.remove(what);
@@ -330,6 +330,12 @@ function(require)
 			return;
 		this.running = true;
 		var self = this;
+		if(result instanceof Error)
+		{
+			console.log("nextChainHandler : result is error : ",result)
+			this.reports.failure = failure = result;
+			this.reports.result = result = null;
+		}
 		if((typeof failure === 'undefined' || failure == null) && (typeof result === 'undefined' || result == null))
 		{
 			failure = this.reports.failure;
@@ -340,11 +346,7 @@ function(require)
 			this.reports.failure = failure;
 			this.reports.result = result;
 		}
-		if(result instanceof Error)
-		{
-			this.reports.failure = failure = result;
-			this.reports.result = result = null;
-		}
+
 
 		if(this.callQueue.length>0)
 		{
@@ -494,7 +496,7 @@ function(require)
 		* reverse entries order
 		*/
 		reverse:function () {
-			var self = this;	
+			var self = this;
 			var create =  function(s,e)
 			{
 				self._entries.reverse();
@@ -508,7 +510,7 @@ function(require)
 		* catch any throwned error while chain running
 		*/
 		catchError:function (catchIt) {
-			var self = this;	
+			var self = this;
 			if(typeof catchIt === 'undefined')
 				catchIt = true;
 			var create =  function(s,e)
@@ -547,7 +549,7 @@ function(require)
 
 		branches:function ( func ) 
 		{
-			var self = this;	
+			var self = this;
 			var create =  function(s,e)
 			{
 				deep.when(func(createSynchHandler(self,s,e))).then(function (success) 
@@ -581,18 +583,18 @@ function(require)
 						self.running = false;
 						nextQueueItem.apply(self, [null,e]);
 					});
-				}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-		done:function  (callBack) 
+		done : function(callBack)
 		{
 			var self = this;
 			var	func = function(s,e)
 			{
 				//console.log("deep.chain.done : ",s,e)
-				if(e || !callBack)
+				if(e || !callBack || s instanceof Error)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [s, e]);
@@ -625,13 +627,13 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				//console.log("deep.chain.fail : ",s,e)
 				if((e == null || typeof e === 'undefined') || !callBack)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [s, e]);
 					return;
 				}
+
 				deep.when(callBack(e, createSynchHandler(self,s,e))).then(function (argument) {
 					if(typeof argument === 'undefined')
 					{
@@ -933,7 +935,30 @@ function(require)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		up : function(retrievables)
+		setByPath : function(path, obj)
+		{
+			var self = this;
+			var func = function(){
+				deep.when(deep.request.retrieve(obj)).then(function (obj) 
+				{
+					var res = [];
+					self._entries.forEach(function(result){
+						res.push(utils.setValueByPath(result.value, path, obj, '/'));
+					});
+					self.running = false;
+					nextQueueItem.apply(self, [res, null]);
+				},
+				function (error) {
+					console.error("error : deep.setByPath : ",error);
+					if(error instanceof Error)
+						throw error;
+					throw new Error("error : deep.setByPath : "+String(error));
+				});
+			}
+			addInQueue.apply(this,[func]);
+			return this;
+		},
+		up : function()
 		{
 			var args = Array.prototype.slice.call(arguments);
 			var self = this;
@@ -957,7 +982,7 @@ function(require)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		bottom : function(retrievables)
+		bottom : function()
 		{
 			var args = Array.prototype.slice.call(arguments);
 			
@@ -988,15 +1013,17 @@ function(require)
 			var func = function(){
 				deep.when(deep.request.retrieve(by, options)).then(function (by) 
 				{
+					var replaced = [];
 					self._entries.forEach(function (r) {
 						self.querier.query(r, what, {resultType:"full"}).forEach(function(r){
 							if(!r.ancestor)
 								return;
 							r.ancestor.value[r.key] = r.value = by;
+							replaced.push(r);
 						});
 					});
 					self.running = false;
-					nextQueueItem.apply(self, [by, null]);
+					nextQueueItem.apply(self, [replaced, null]);
 				}, function (argument) {
 					//console.error("error : deep.replace : ",error);
 					throw new Error("error : deep.replace : "+error);
@@ -1009,21 +1036,24 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
+				var removed = [];
 				self._entries.forEach(function (r) {
 					self.querier.query(r, what, {resultType:"full"}).forEach(function(r)
 					{
 						if(!r.ancestor)
 							return;
+						removed.push(r);
 						if(r.ancestor.value instanceof Array)
 							r.ancestor.value.splice(r.key,1);
 						else
+						{
 							delete r.ancestor.value[r.key];
+						}
 					});
 				});
 				self.running = false;
-				nextQueueItem.apply(self, [deep.chain.values(self), null]);
+				nextQueueItem.apply(self, [removed, null]);
 			}
-			
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -2185,9 +2215,17 @@ deep : just say : Powaaaaaa ;)
 			if(this.rejected || this.resolved || this.canceled)
 				throw new Error("DeepDeferred (resolve) has already been resolved !");
 			this.promise.result = this.result =  argument;
-			this.resolved = this.promise.resolved = true;
 			this.promise.running = false;
-			nextPromiseHandler.apply(this.promise, [argument, null]);
+			if(argument instanceof Error)
+			{
+				this.rejected = this.promise.rejected = true;
+				nextPromiseHandler.apply(this.promise, [null, argument]);
+			}	
+			else{
+				this.resolved = this.promise.resolved = true;
+				nextPromiseHandler.apply(this.promise, [argument, null]);
+			}
+			
 		},
 		reject:function (argument) 
 		{
@@ -2245,9 +2283,10 @@ deep : just say : Powaaaaaa ;)
 			var self = this;
 			var	func = function(s,e)
 			{
-				//console.log("deep.chain.done : ",s,e)
-				if(e || !callBack)
+				//console.log("deep.promise.done : ",s,e)
+				if(e || !callBack || s instanceof Error)
 				{
+					//console.log("deep.promise.done : but error : ",e)
 					self.running = false;
 					nextPromiseHandler.apply(self, [s, e]);
 					return;
@@ -2260,7 +2299,7 @@ deep : just say : Powaaaaaa ;)
 						if(typeof argument === 'undefined')
 							argument = s;
 						self.running = false;
-						nextPromiseHandler.apply(self, [argument, null]);
+						nextPromiseHandler.apply(self, [(argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null]);
 					})
 					.fail(function (error) {
 						self.running = false;
@@ -2293,7 +2332,7 @@ deep : just say : Powaaaaaa ;)
 			//console.log("add fail in defInterface")
 			var func = function(s,e)
 			{
-				//console.log("deep.chain.fail : ",s,e)
+				//console.log("deep.promise.fail : ",s,e)
 				if((e == null || typeof e === 'undefined') || !callBack)
 				{
 					self.running = false;
@@ -2306,17 +2345,13 @@ deep : just say : Powaaaaaa ;)
 				if(r && typeof r.then === 'function')
 					r.done(function (argument) 
 					{
+						self.running = false;
 						if(typeof argument === 'undefined')
-						{
-							self.running = false;
 							nextPromiseHandler.apply(self, [null, e]);
-						}
+						else if(argument instanceof Error)
+							nextPromiseHandler.apply(self, [null, argument]);
 						else
-						{
-							self.running = false;
 							nextPromiseHandler.apply(self, [argument, null]);
-						}
-						
 					})
 					.fail(function (error) {
 						self.running = false;
@@ -2375,6 +2410,7 @@ deep : just say : Powaaaaaa ;)
 
 		if(result instanceof Error)
 		{
+			//console.log("nextPromiseHandler : result is error : ",result)
 			this.failure = failure = result;
 			this.result = result = null;
 		}
@@ -2426,14 +2462,18 @@ deep : just say : Powaaaaaa ;)
 	}
 	function createImmediatePromise(result)
 	{
-		//console.log("deep.createImmediatePromise : ", result)
+		//console.log("deep.createImmediatePromise : ", result instanceof Error)
 		var prom = new DeepPromise();
-		prom.resolved = true;
 		prom.running = false;
 		if(result instanceof Error)
+		{
+			prom.rejected = true
 			prom.failure = result;
+		}
 		else
+		{	prom.resolved = true;
 			prom.result = result;
+		}
 		return prom;
 	}
 
@@ -2450,40 +2490,29 @@ deep : just say : Powaaaaaa ;)
 			//if(arg.rejected)
 				//throw new Error("error : deep.promise : DeepHandler has already been rejected.");
 			
-			if(arg.running) // need to wait rejection or success
-			{
+			//if(arg.running) // need to wait rejection or success
+			//{
 				var def = deep.Deferred();
 				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
 					//console.log("deep.promise of DeepHandler : added error")
 					def.reject(error);
 				})
 				arg.done(function (success) { // simply chain done handler in deep chain
-					//console.log("deep.promise of DeepHandler : added then")
 					if(success && success.then)
 						deep.when(success)
 						.fail(function (error) {
-							if(!def.rejected && !def.resolved && !def.canceled)
-								def.reject(error);
+							def.reject(error);
 						})
 						.done(function (success) {
-							if(success instanceof Error)
-							{
-								if(!def.rejected && !def.resolved && !def.canceled)
-									def.reject(success);
-								return;
-							}
-							if(!def.rejected && !def.resolved && !def.canceled)
-								def.resolve(success);
-						})
-						
-					else
-						if(!def.rejected && !def.resolved && !def.canceled)
+							console.log("deep.promise of DeepHandler : done : error ?", success instanceof Error )
 							def.resolve(success);
-				})
-				
+						});
+					else
+						def.resolve(success);
+				});
 				return def.promise;
-			}
-			return arg; // nothing to wait : chain will act as immediate promise
+			//}
+			//return arg; // nothing to wait : chain will act as immediate promise
 		}
 		if(typeof arg.promise === "function" )  // jquery deferred case
 			return arg.promise();
@@ -2496,6 +2525,8 @@ deep : just say : Powaaaaaa ;)
 
 	deep.when = function (arg) 
 	{
+		//console.log("deep.when : ", arg instanceof Error)
+
 		// console.log("deep.when : ", arg)
 		if(arg instanceof DeepHandler)
 			return deep.promise(arg);
