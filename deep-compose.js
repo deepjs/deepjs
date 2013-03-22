@@ -7,15 +7,16 @@ if(typeof define !== 'function')
 define(function(require, exports, module){
 	var promise = require("./promise");
 	// console.log("Deep-compose init");
+
 	var DeepDecorator = function (stack) {
 		this.stack = stack || [];
-	}
+	};
+
 	function chain(before, after)
 	{
 		return function () {
 			var self = this;
 			var args = Array.prototype.slice.call(arguments);
-			
 			var def = promise.Deferred();
 			var r = before.apply(this, args);
 			//console.log("chain.first : result == ", r)
@@ -29,11 +30,12 @@ define(function(require, exports, module){
 					return r;
 				if(!r.then)
 					return r;
-				promise.when(r).then(function (suc) {
+				promise.when(r)
+				.then(function (suc) {
 					def.resolve(suc);
 				}, function (error) {
 					def.reject(error);
-				})
+				});
 			}
 			else if(!r.then)
 			{
@@ -47,7 +49,7 @@ define(function(require, exports, module){
 					def.resolve(suc);
 				}, function (error) {
 					def.reject(error);
-				})
+				});
 			}
 			else
 			{
@@ -70,33 +72,33 @@ define(function(require, exports, module){
 					});
 				}, function (error) {
 					def.reject(error);
-				})
+				});
 			}
 			return promise.promise(def);
-		}
+		};
 	}
 	DeepDecorator.prototype = {
-		around : function (argument) 
+		around : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
 				return argument(previous);
-			}
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		after : function (argument) 
+		after : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
 				return chain(previous, argument);
-			}
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		fail : function (fn) 
+		fail : function (fn)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
 				return function()
 				{
@@ -111,44 +113,52 @@ define(function(require, exports, module){
 					.fail(function (argument) {
 						return fn.apply(self, args);
 					});
-				}
-			}
+				};
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		before : function (argument) 
+		before : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
 				return chain(argument, previous);
-			}
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		parallele : function (argument) 
+		replace : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
-				return function () 
+				return argument;
+			};
+			this.stack.push(wrapper);
+			return this;
+		},
+		parallele : function (argument)
+		{
+			var wrapper = function (previous)
+			{
+				return function ()
 				{
-					var args = Array.prototype.slice.call(arguments);	
+					var args = Array.prototype.slice.call(arguments);
 					var promises = [argument.apply(this, args), previous.apply(this,args)];
 					return promise.all(promises);
-				}
-			}
+				};
+			};
 			this.stack.push(wrapper);
 			return this;
 		}
-	}
-	var createStart = function (decorator) 
+	};
+	var createStart = function (decorator)
 	{
-		var decorator = decorator || new DeepDecorator();
+		decorator = decorator || new DeepDecorator();
 		var start = function () {
 			if(!decorator.createIfNecessary)
 				throw new Error("Decorator not applied ! (start)");
-		//	var args = Array.prototype.slice.call(arguments);
-			return compose.wrap(function(){}, decorator).apply(this)
-		}
+			return compose.wrap(function(){}, decorator).apply(this, arguments);
+		};
 		start.decorator = decorator;
 		start.after = function (argument) {
 			decorator.after(argument);
@@ -170,33 +180,61 @@ define(function(require, exports, module){
 			decorator.parallele(argument);
 			return start;
 		};
+		start.replace = function (argument) {
+			decorator.replace(argument);
+			return start;
+		};
+		start.createIfNecessary = function (arg) {
+			start.decorator.createIfNecessary = (typeof arg === 'undefined')?true:arg;
+			return start;
+		};
+		start.ifExists = function (arg) {
+			start.decorator.ifExists = (typeof arg === 'undefined')?true:arg;
+			return start;
+		};
+		start.condition = function (arg) {
+			start.condition = arg;
+			return start;
+		};
 		return start;
-	}
+	};
 
 	var compose = {
 		Decorator:DeepDecorator,
 		cloneStart:function (start) {
 			var newStack = start.decorator.stack.concat([]);
 			var nd = new DeepDecorator(newStack);
+			nd.ifExists = start.decorator.ifExists;
 			nd.createIfNecessary = start.decorator.createIfNecessary;
 			return createStart(nd);
 		},
-		wrap:function (func, decorator) 
+		wrap:function (func, decorator)
 		{
 			var fin = func;
-			decorator.stack.forEach(function (wrapper) 
+			decorator.stack.forEach(function (wrapper)
 			{
 				fin = wrapper(fin);
-			})
+			});
 			return fin;
 		},
-		createIfNecessary : function () 
+		createIfNecessary : function ()
 		{
 			var start = createStart();
 			start.decorator.createIfNecessary = true;
 			return start;
 		},
-		up : function (bottom, up) 
+		ifExists : function ()
+		{
+			var start = createStart();
+			start.decorator.ifExists = true;
+			return start;
+		},
+		condition:function (argument) {
+			var start = createStart();
+			start.decorator.condition = argument;
+			return start;
+		},
+		up : function (bottom, up)
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
 				throw new Error("DeepDecorator.collide : you could only apply function together");
@@ -209,7 +247,7 @@ define(function(require, exports, module){
 			}
 			return compose.wrap(bottom,up.decorator);
 		},
-		bottom : function (bottom, up) 
+		bottom : function (bottom, up)
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
 				throw new Error("DeepDecorator.collide : you could only apply function together");
@@ -222,28 +260,32 @@ define(function(require, exports, module){
 			}
 			return compose.wrap(bottom,up.decorator);
 		},
-		around : function (argument) 
+		around : function (argument)
 		{
 			return createStart().around(argument);
 		},
-		after : function (argument) 
+		after : function (argument)
 		{
 			return createStart().after(argument);
 		},
-		before : function (argument) 
+		before : function (argument)
 		{
 			return createStart().before(argument);
 		},
-		fail : function (argument) 
+		fail : function (argument)
 		{
 			return createStart().fail(argument);
 		},
-		parallele : function (argument) 
+		parallele : function (argument)
 		{
 			return createStart().parallele(argument);
+		},
+		replace : function (argument)
+		{
+			return createStart().replace(argument);
 		}
-	}
+	};
 	// console.log("Deep-compose initialised");
 
 	return compose;
-})
+});

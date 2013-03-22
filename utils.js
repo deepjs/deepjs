@@ -489,15 +489,16 @@ define(function(require){
 
 	var up = function (src, target, schema, parent, key) 
 	{
+		if( typeof src === 'undefined' )
+			return target;
 		if(src === null)
-			return target;
-		if(typeof target === 'undefined' || target === null)
 		{
-			target = utils.copy(src);
 			if(parent && key)
-				parent[key] = target;
-			return target;
-		}	
+				parent[key] = null;
+			return null;
+		}
+
+		
 		// console.log("deepUp : objects not nulls.")
 		var result = null;
 		var srcType = utils.getJSPrimitiveType(src);
@@ -509,6 +510,8 @@ define(function(require){
 			{
 				if(src.decorator && src.decorator instanceof compose.Decorator)
 				{
+					if(src.decorator.condition && typeof src.decorator.condition === 'function' && !src.decorator.condition())
+						return target;
 					//console.log("deepUp: src is decorator : ",src)
 					result = compose.up(target, src);
 				}	
@@ -529,8 +532,22 @@ define(function(require){
 			else
 			{
 				if(src.decorator && src.decorator instanceof compose.Decorator)
-					throw new Error("deep.compose need to be applied on function ! ");
-				if(src._deep_collider)
+				{
+					if(typeof target === 'undefined')
+					{
+						if(src.decorator.ifExists)
+						{
+							return target;
+						}	
+						else{
+							//src.decorator.createIfNecessary = true;
+							result = src;
+						}
+					}
+					else
+						throw new Error("deep.compose need to be applied on function ! ");
+				}	
+				else if(src._deep_collider)
 					result = src(target, parent, key);
 				else
 					result = src;
@@ -543,6 +560,13 @@ define(function(require){
 				parent[key] = result;
 			return result;
 		}
+		if(typeof target === 'undefined' || target === null)
+		{
+			target = utils.copy(src);
+			if(parent && key)
+				parent[key] = target;
+			return target;
+		}	
 		if(srcType !== targetType)
 		{
 			target = utils.copy(src);
@@ -610,9 +634,11 @@ define(function(require){
 	{
 		 // console.log("utils.bottom : objects ", src, target)
 
-		if(src === null)
+		if(src === null || typeof src === "undefined")
 			return target;
-		if(typeof target === 'undefined' || target === null)
+		if(target == null)
+			return target;
+		if(typeof target === 'undefined')
 		{
 			target = utils.copy(src);
 			if(parent && key)

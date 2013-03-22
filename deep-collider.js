@@ -31,33 +31,26 @@ define(function(require)
 		wrap:function(wrapper, wrapped){
 			var a = function(value, parent, key){
 				return wrapper(wrapped(value, parent, key), parent, key);
-			}	
-			a._deep_collider = true;
-			return a;
-		},
-		retrieve:function(){
-			return function(value, parent, name){
-				return newObject;
-			}
+			};
 			a._deep_collider = true;
 			return a;
 		},
 		copyTo:function(object, path){
 			var a = function(value, parent, key){
-				utils.setValueByPath(object, path, value)
+				utils.setValueByPath(object, path, value);
 				return value;
-			}
+			};
 			a._deep_collider = true;
-			return a;	
+			return a;
 		},
 		around:function(handler){
 			handler._deep_collider = true;
-			return handler; 
+			return handler;
 		},
 		replace:function(newValue){
 			var a = function(value){
 				return newValue;
-			}
+			};
 			a._deep_collider = true;
 			return a;
 		},
@@ -66,7 +59,7 @@ define(function(require)
 			var a =function(value){
 				console.log("LayerTools : log : ",value);
 				return value;
-			}
+			};
 			a._deep_collider = true;
 			return  a;
 		},

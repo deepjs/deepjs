@@ -258,3 +258,704 @@ pour conserver l'identité dans la position sans devoir cloner :
 
 	avec couche inverse : 
 		les couches + deep.up + couche inverse : = groupe associatif non commutatif  dont le neutre est la couche vide
+
+
+	
+
+deep
+	.store("json::/Discipline/")
+	.query("/brol")
+	.render(...)
+	.bind(...)
+	
+	ViewController.prototype.preload
+
+binding type : 
+	data-path
+	html_to_json
+	data-item
+*/
+
+deep.store = function (name, definer, options) 
+{
+	options = options || {};
+	if(!definer)
+	{
+		if(!deep.stores[name])
+			throw new Error("deep.store(name) : no store found with : ", name);
+		return deep.stores[name];
+	}
+	if(definer instanceof Array)
+		return new deep.store.ArrayStore(definer, options);
+	if(definer instanceof DeepStore)
+	{
+
+	}
+	if(typeof definer.get === 'function')
+	{
+
+	}
+	// body...
+}
+
+deep.store.DeepStore = function () {
+	// body...
+}
+deep.store.DeepStore.prototype = {}
+
+deep.store.ArrayStore = function (arr, options) {
+	var store = new deep.store.DeepStore();
+	options = options || {};
+
+	deep.utils.up({
+		get:function (id) {
+			if(id[0] == "." || id[0] == "/")
+				deep(arr).query(id).values();
+			return deep(arr).query("./*?id="+id).val();
+		},
+		put:function (id, object) {
+			id = id || object.id;
+			if(options.schema)
+				deep(object)
+				.validate(options.schema)
+				.fail(function (error) {
+					object = error;
+				})
+				.root(arr)
+				.replace("./*?id="+id, object);
+			else
+				deep(arr)
+				.replace("./*?id="+id, object);
+			return object;
+		},
+		post:function (id, object) {
+			id = id || object.id;
+			if(!id)
+				object.id = id = BSON.ObjectID.createPk().toJSON(); // mongo styled id
+			if(options.schema)
+				deep(object)
+				.validate(options.schema)
+				.done(function (report) {
+					arr.push(object);
+				})
+				.fail(function (error) {
+					object = error;
+				});
+			return object;
+		},
+		del:function (id) {
+			deep(arr).remove("./*?id="+id);
+			return true;
+		},
+		patch:function (id, object) {
+			return deep(arr).query("./*?id="+id).up(object).val();
+		}
+	}, store);
+	return store;
+};
+
+deep.store.ObjectStore = function (obj, options) {
+	var store = new deep.store.DeepStore();
+	options = options || {};
+	deep.utils.up({
+		get:function (id) {
+			if(id[0] == "." || id[0] == "/")
+				deep(obj).query(id).values();
+			return deep(obj).query("./"+id).val();
+		},
+		put:function (query, object) {
+			deep(obj)
+			.replace(query, object)
+			.done(function (replaced) {
+				if(replaced.length === 0)
+					object = replaced.shift();
+				else
+					object = replaced;
+			});
+			return object;
+		},
+		post:function (path, object) {
+			if(options.schema)
+				deep(object)
+				.validate(options.schema)
+				.fail(function (error) {
+					object = error;
+				})
+				.root(obj)
+				.setByPath(path, object);
+			else
+				deep(obj)
+				.setByPath(path, object);
+			return object;
+		},
+		del:function (id) {
+			var res = [];
+			if(id[0] == "." || id[0] == "/")
+				deep(obj).remove(id)
+				.done(function (removed) {
+					res = removed;
+				});
+			else
+				deep(obj).remove("./"+id)
+				.done(function (removed) {
+					res = removed;
+				});
+			return res.length !== 0;
+		},
+		patch:function (id, object) {
+			if(id[0] == "." || id[0] == "/")
+				return deep(arr).query(id).up(object).values();
+			return deep(arr).query("./"+id).up(object).val();
+		}
+	}, store);
+	return store;
+};
+
+deep.store.CookieStore = function (options) {
+	var store = deep.store.ObjectStore({}, options);
+	deep.utils.up({
+		get:function (id) {
+			/*
+				faut analyser l'id/query : choper la premiere partie : doit etre l'entrée dans les cookies : toute variable chopée est assumée json like.
+				executer la query résiduelle sur objet chopée (if any)
+
+				idem pour chaque accessor
+			*/
+			$.cookie(id)
+		}
+	},store);
+};
+
+
+
+deep.stores.json = function (options) {
+	var store = deep.store.ObjectStore({}, options);
+	return deep.utils.up({
+		get:function (id) {
+			/*
+				faut analyser l'id/query : choper la premiere partie : doit etre l'entrée dans les cookies : toute variable chopée est assumée json like.
+				executer la query résiduelle sur objet chopée (if any)
+
+				idem pour chaque accessor
+			*/
+			$.cookie(id);
+		}
+	},store);
+};
+deep.protocoles.json = {
+	store:deep.stores.json,
+	extensions:["json"]	
+}
+
+deep.stores.swig = function (options) {
+	var store = deep.store.ObjectStore({}, options);
+
+	return deep.utils.up({
+		get:function (id) {
+			/*
+				faut analyser l'id/query : choper la premiere partie : doit etre l'entrée dans les cookies : toute variable chopée est assumée json like.
+				executer la query résiduelle sur objet chopée (if any)
+
+				idem pour chaque accessor
+			*/
+			$.cookie(id);
+		}
+	},store);
+};
+
+
+/*
+	créer meta store de base : json, storage...
+	créer store de base : swig, cookie, 
+
+	créer un store = 
+		instancier un DeepStore
+		en closure gerer cache éventuelle
+		gerer range dans collections
+
+		ajouter dans le dico des protocoles de base: 
+			swig::
+			cookie::
+			json::
+			storage::
+			...
+
+		pour store custom :
+			ajouter store::name
+			et base_protocole::uri/query/id
+
+*/
+
+/*
+	Node : store could be local (json, sql, files,...) 
+	and remote : ws, jsonp, etc.
+
+	Browser : remote : ws, ajax (json, xml, ...), 
+	local : cookies, localStorage
+
+	store could be collections or object
+
+	deep("cookie::/autobahn-session")		// browser : jquery-cookie, node : node-cookie 
+	deep("json::uri")			// browser :  ajax, node : autobahn-statics
+	deep("html::uri")			//    same
+	deep("swig::uri")			//    same
+	deep("xml::uri")			//    same
+	
+	deep("storage::/brol/*")		// browser : jstorage, node : memory-store?
+
+	deep("json::/campaign/") 	// browser : json/ajax+uri,   node : autobahn-facets
+
+	deep("campaign::12344")		// browser : json : node : mongo
+	deep("campaign::/12344")
+	deep("campaign::/*?userId=134")
+	deep("campaign::?userId=134")
+
+	deep.store("campaign").get("gdgeh54").then().is().a().chain().back().get();
+	deep.store("campaign").post({...}).then().is().a().chain()
+	deep.store("campaign").put({...}, 12).then().is().a().chain()
+	deep.store("campaign").del("gdgeh54").then().is().a().chain()
+	deep.store("campaign").patch(...).then().is().a().chain()
+	deep.store("campaign").rpc(...).then().is().a().chain()
+	deep.store("campaign").range(...).then().is().a().chain().post().back();
+
+	deep.requestAll(["protocole::","..."]);
+
+	on node :  it's uri analyse that gives the difference between :  deep("json::uri") on statics or on facets
+		
+	on autobahn :
+
+	deep("fs::/templates/file.html").done("")
+	autobahn().store("fs").get("")
+	autobahn(sessionObject).statics("/campaign/")
+	autobahn("public").route("/campaign/1234543/informations")
+	autobahn("admin","user").store("hello")
+	autobahn("admin","user").request("/campaign/", "post", body, header)
+	autobahn(nodeRequest)
+	
+	deep("mongo::/push/campaign").put({...})
+	deep.store("campaign").put({...})
+
+*/
+
+
+
+/*
+
+deep.store("json", {
+	environement:"browser",
+	header:{},
+	get:function (request) {
+		if(typeof request === 'string')
+			request = deep.request.parse(request);
+		return deep.when($.ajax({
+			...
+		}))
+	},
+	put:function (uri, object) {
+		// body...
+	},
+	post: function (uri, object) {
+		// body...
+	},
+	del:function  (uri) {
+		if(!uri)
+		{
+			
+		}
+	},
+
+	rpc:function (uri, id, method, args) {
+		// body...
+	},
+	create:function (name, uri) {
+		return deep.store(name, deep({
+			get:deep.compose.before(function (request) {
+				return [uri, request]
+			}),
+			del:deep.compose.before(function (id) {
+				if(id)
+				{
+					id = this.val();
+				}
+				return [uri]
+			}),
+			put:deep.compose.before(function (object) {
+				return [uri, object]
+			}),
+			post:deep.compose.before(function (object) {
+				return [uri, object]
+			}),
+			rpc:deep.compose.before(function (id, method, args) {
+				return [uri, id, method, args];
+			})
+		})
+		.bottom(this));
+	}
+})
+
+
+
+deep.store("local-storage", {
+	get:function (request) {
+		// body...
+	},
+	put:function (request) {
+		// body...
+	},
+	post: function (request) {
+		// body...
+	},
+	del:function  (request) {
+		// body...
+	}
+})
+
+deep.store("cookies", {
+	get:function (request) {
+		// body...
+	},
+	put:function (request) {
+		// body...
+	},
+	post: function (request) {
+		// body...
+	},
+	del:function  (request) {
+		// body...
+	}
+})
+
+var myVar = deep("cookies::/!")
+
+deep
+.store("cookies") // marque la position
+.get("myVar") // try get it through store handler
+.put() // without argument : try post what chain hold : maybe nothing : if nothing : inject error, else inject putted result and hold it
+.post({ ... }) // inject posted result and hold it (if any and no error)
+.render(...)
+.back("cookies")
+...
+
+deep.store("json").create( "discipline", [] || {} || "/discipline/", {
+	schema:null,
+	reloadable:true,
+	errors:{
+		405:function function_name (argument) {
+			// body...
+		}
+	}
+});
+==> create store : simple REST API + rpc  
+==> dico protocole : json::/discipline/ AND store::discipline
+
+deep("store::discipline")
+.get(12)
+
+deep("json::/discipline/")
+
+
+deep(...)
+...
+.store("discipline") // keep current entries but save position as discipline. chain become store chain
+.post(...)
+
+
+deep(...)
+.replace("...",1)
+.post("json::/discipline/" || deep.store("discipline")) // not previously defined as store chain : post need argument
+// post on uri or on store, inject and hold success, inject any error
+// will create store if necessary : chain become store chain
+
+deep(...)
+.query("...")
+.range(1,4) // s'applique tjrs à la dernier position connue : si pas : crée la position
+...
+.store("campaign") // keep current entries but save position as discipline. chain become store chain. if no disicpline store exist : create it with current entries.
+.range(12,23) // s'applique tjrs à la dernier position connue : si pas : crée la position
+.position("camp_range")
+.query("/comments") 
+.range(1,5) // as the last position is different from current path
+.done(function (comments, clone) {
+
+	var total = clone.count();
+	var range = clone.range(); // no arguments will give current range object containing total/start/end/step/width
+	//...
+})
+.back("camp_range")
+.query("/competences")
+.range(1,6)
+.back("campaign")
+.range(24,36)
+...
+.range({
+	step:1,
+	width:5 // default
+}) // do the setup of the range and go to that point if possible or give last possible range
+...
+.nextRange(function (items, clone) {
+	// body...
+})
+...
+.previousRange(function (items, clone) {
+	// body...
+})
+
+.position(....)
+.range(12,34)
+.done(function (items, clone) {
+	var total = clone.count();
+	var range = clone.range();
+	//...
+})
+...
+.back()
+.range(35,46)
+.done(function (items, clone) {
+	var total = clone.count();
+	var range = clone.range();
+	//...
+})
+.back()
+.range(..,..)
+.done(function (items, clone) {
+	var total = clone.count();
+	var range = clone.range();
+	//...
+})
+
+
+// most usual case
+deep("store::campaign")
+.range({
+	step:3, // step could be float
+	width:5
+}) // inject campaigns in chain and hold them
+.done(function (rangeObject, handler) {
+
+})
+
+et .back() sans arguments devrait revenir à la derniere position (pop) 
+
+
+//_______________
+
+each time clone need to be done in "_then_ familly"
+: in place of clone : hold current queue in temp array
+and give handler reference with empty queue
+add a done when return (if return value is the handler ref or any promise)
+that rinject previous queue in handler (this.queue) to continue
+: results is that queue could grow from the interior
+
+.done(function (success, handler) {
+	if(success.myVar)
+		return handler.branches(function (creator) {
+			// ...
+		});
+	else
+		return handler.query("...").val();
+})
+.fail(function (error, handler) {
+	if(error.status == 404)
+		return handler.branches(function (branch) {
+			branch().query("...").load().run("refresh");
+			branch().query("...").load().run("refresh");
+			return branch;
+		})
+		.delay(5000)
+		.logout()
+		.query("...").run("refresh");
+	else
+		return handler.query("...").run("refresh");
+})
+
+//__________________________________________________________
+
+deep.request.setProtocole("stock", {} || []);
+
+deep("stock::/your/query?a=1")
+....
+
+deep("stock::/!")
+.replace("/your/query?a=1", value)
+....
+
+
+// case  :you have a bunch of item, identicaly renderable and bindable
+
+	deep(...)
+	.query("...")
+	.render({
+		what:"...",
+		how:"",
+		where:"",
+		bind:{
+			type:"data-path",		// default
+			schema:"json::....",
+			fail:function ($node, injected, binder) {
+				// manage entry error
+			},
+			done:function  ($node, injected, binder) {
+				// add custom behaviour on $node
+			}
+		},
+		done:function ($node, injected, binder) {
+			// 'this' here mean the context from where the rendering is done (by default the same as injected in how)
+			// add overall custom behaviour on $node
+		}
+	})
+	.done:function ($nodes) {
+		// $nodes is all the rendered/placed dom nodes, and injected in chain by .render()
+		// add submit behaviour : return promise of submition : so the post (next chaining) will be fired on submition
+	}
+	.post("...") // will post all the queries results that was binded with .render(). .post() is a _done_ familly and will only be fired if submition success 
+	.fail(function (postError) { // error could be from .render()
+		// body...
+	})
+	.canceled(function (reason) { // cancelation could be fired before or after .post() and will be managed here
+		// body...
+	})
+	.done(function (postSuccess) { 
+		// body...
+	});
+
+//_______________________________________________________
+
+case : you have an already constructed form (or bunch of inputs) somewhere in DOM, and you want to bind it without rendering (it's already done)
+
+	deep({ name:"ced" })
+	.bind("#form-contact", {
+		type:"data-path",		// default
+		errorHandler:function ($nodes, binder) {
+			// manage errors
+		},
+		done:function ($nodes, ) {
+			// add behaviour
+		}
+	})
+	.done(function (binder) {
+		var def = deep.Deferred();
+		var self = this;
+		nodes.find("...").click(function (argument) {
+			var report = binder.validate();
+			if(report.valid)
+				def.resolve(report.value);
+		});
+		return deep.promise(def);
+	})
+	.post(...)
+
+
+	dans _deep_entry : stocker le binder
+	
+
+//_______________________________________
+
+
+protocole : app::
+
+si on a plusieurs app : on peut seter un truc genre :
+
+deep.request.protocole("app2", {
+	parse:function (request) {
+		// body...
+	},
+	get:function (argument) {
+		// body...
+	}
+})
+
+ou
+
+deep.request.protocole.app("app2", monApp)
+
+//________________________________________________
+
+
+d'ailleurs : 
+deep(deep.request).up({
+	protocoles:{
+		json:{
+			parse:function (protocoleInfos, request) {
+				return deep.request.parser(request).uri(false).deeprql(false)
+			},
+			get:function (parsed) {
+				return $.ajax(...)
+			}
+		},
+		"json.range":{
+			parse:function (protocoleInfos, request) {
+				return deep.request.parser(request).uri(false).deeprql(false)
+			},
+			get:function (parsed) {
+				return $.ajax(...)
+			}
+		}
+	}
+})
+
+deep.request.protocole(["app2"], {
+	parse:function (protocoleInfos, request) {
+		return deep.request.parser.rql(request)
+	},
+	get:function (parsed) {
+		
+	}
+});
+
+deep.request.protocole(["app","rss"], {
+	parse:function (protocoleInfos, request) {
+		return deep.request.parser.rql(request)
+	},
+	get:function (parsed) {
+		
+	}
+
+});
+
+//____________________
+
+pas de deep.request(...)
+puisque :
+deep(...).chain
+
+et deep.request.all().chain
+deep.request.json()
+deep.request.range() ...
+
+
+
+
+
+//____________________________________
+
+
+
+deep.store("json::/campaign/").query("...").up(...).put()
+
+deep
+.store("json::/campaign/")
+.query("...", { range:... })
+.ui()
+.render(...)
+.bind(...)
+...
+
+
+// set dummies or custom store : 
+deep.store("json::/campaign/", [...])
+
+
+deep.store("json::/campaign/")
+.range(...)
+.done(function (range) {
+	 // e.g. set pager
+}) 
+.render(...)
+.bind(...)
+.done(function (nodes) {
+	
+})
+
+...
+
+deep.ui("...").render().bind()
