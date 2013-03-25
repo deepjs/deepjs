@@ -3068,6 +3068,8 @@ deep : just say : Powaaaaaa ;)
 		var infos = deep.parseRequest(request);
 		if(!infos.store)
 			return request;
+		if(infos.queryThis)
+			return infos.store.get(infos, options);
 		return infos.store.get(infos.uri, options);
 	};
 	deep.getAll = function  (requests, options) {
@@ -3089,6 +3091,7 @@ deep : just say : Powaaaaaa ;)
 
 	deep.stores.queryThis = {
 		get:function (request, options) {
+			//console.log("deep.stores.queryThis : ", request)
 			options = options || {};
 			var root = options.root;
 			var basePath = options.basePath;
@@ -3115,7 +3118,8 @@ deep : just say : Powaaaaaa ;)
 						res = res[res.length-1] || null;
 						break;
 				}
-			console.log("QUERY THIS : "+request + " - base path : "+basePath, " - results : ", JSON.stringify(res, null, ' '));
+			//if(infos.protocole == "first")
+			//	console.log("QUERY THIS : "+request + " - base path : "+basePath)//, " - results : ", JSON.stringify(res, null, ' '));
 			return res;
 		}
 	};
@@ -3245,6 +3249,34 @@ deep : just say : Powaaaaaa ;)
 	//_________________________________________________________________________________________
 	deep.DeepPromise = DeepPromise;
 	deep.rethrow = true;
+
+
+deep.stores.instance = {
+	get:function (id, options) {
+		var cl = require(id);
+		//console.log("DeepRequest.instance : ", cl);
+		if(typeof cl === 'function' && cl.prototype)
+			return deep(new cl());
+		console.log("DeepRequest : could not instanciate : "+JSON.stringify(info));
+		throw new Error("DeepRequest : could not instanciate : "+JSON.stringify(info));
+	}
+}
+deep.stores.aspect = {
+	get:function (id, options) {
+		return deep(require(id)).then(function(res){
+			return res.aspect;
+		}, function(res){
+			return res;
+		});
+	}
+}
+
+deep.stores.js = {
+	get:function (id, options) {
+		return deep(require(id));
+	}
+}
+
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________
