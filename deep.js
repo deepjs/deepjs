@@ -2082,6 +2082,8 @@ function(require)
 			{
 				var map = {};
 				what.forEach(function (w) {
+					if(w === null)
+						return;
 					var val = w[foreignKey];
 					if(typeof map[val] !== 'undefined')
 					{
@@ -2242,6 +2244,8 @@ deep : just say : Powaaaaaa ;)
 			return res;
 		},
 		val:function (handler) {
+			if(handler._entries.length == 0)
+				return undefined;
 			return handler._entries[0].value;
 		},
 		values:function (handler) {
@@ -3098,6 +3102,8 @@ deep : just say : Powaaaaaa ;)
 			var infos = request;
 			if(typeof infos === 'string')
 				infos = deep.parseRequest(infos);
+			if(infos.uri[0] == '#')
+				infos.uri = infos.uri.substring(1);
 			var res = null;
 			if(root._isDQ_NODE_)
 				res = Querier.query(root, request, { keepCache:false });
@@ -3136,7 +3142,7 @@ deep : just say : Powaaaaaa ;)
 		}
 		//console.log("parseRequest : protoc : ", protoc, " - uri : ", uri);
 		var queryThis = false;
-		if(uri[0] == '#' || protoc == "first" || protoc == "last" || protoc == "this")
+		if(request[0] == '#' || protoc == "first" || protoc == "last" || protoc == "this")
 		{
 			store = deep.stores.queryThis;
 			queryThis = true;
@@ -3164,14 +3170,15 @@ deep : just say : Powaaaaaa ;)
 		}
 		else
 			store = deep.stores[protoc];
-		if(uri[0] == '#')
-			uri = uri.substring(1);
-		return {
+		var res = {
+			request:request,
 			queryThis:queryThis,
 			store:store,
 			protocole:protoc,
 			uri:uri
 		};
+		//console.log("deep.parseRequest : results : ", res);
+		return res;
 	};
 	//_______________________________________________________________________________________
 
@@ -3184,6 +3191,7 @@ deep : just say : Powaaaaaa ;)
 			return false;
 		if (typeof this.condition === "function" && !this.condition.apply(this))
 			return false;
+		//console.log("deep.applyTtreatment : ", this, context);
 		context = context || this;
 		var self = this;
 		var objs = [];
@@ -3223,7 +3231,7 @@ deep : just say : Powaaaaaa ;)
 			var r = "";
 			var nodes = self.nodes || null;
 			try {
-				r = how(what);
+				r = how.apply({}, [what]);
 				if (where) nodes = where(r, nodes);
 			} catch (e) {
 				console.log("Error while treating : ", e);
@@ -3260,7 +3268,7 @@ deep.stores.instance = {
 		console.log("DeepRequest : could not instanciate : "+JSON.stringify(info));
 		throw new Error("DeepRequest : could not instanciate : "+JSON.stringify(info));
 	}
-}
+};
 deep.stores.aspect = {
 	get:function (id, options) {
 		return deep(require(id)).then(function(res){
@@ -3269,13 +3277,12 @@ deep.stores.aspect = {
 			return res;
 		});
 	}
-}
-
+};
 deep.stores.js = {
 	get:function (id, options) {
 		return deep(require(id));
 	}
-}
+};
 
 	return deep;
 

@@ -609,6 +609,8 @@ define(function defineDeepQuery(require)
 			this.cache = {};
 		var items = null;
 
+		if(q[0] === '#')
+			q = q.substring(1);
 		var parts = this.analyse(q);
 		if(parts.length == 0 || parts[0].type != "move")
 			throw new QueryError("query need to start with move : "+q);
