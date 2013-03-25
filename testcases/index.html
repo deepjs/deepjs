@@ -33,15 +33,16 @@
 	 			$("#content-container").html(e);
 	 		})
 	 	}
+	 	var testAll = function () {
+	 		$("#menu-container").find("a").click();
+	 	}
 	 </script>
 </head>
 <body>
 	<h1>Deep test cases</h1>
 	<ul id="menu-container">
-		<li><a href="#" onclick="show('deep.html');">deep/deep</a></li>
 		<li><a href="#" onclick="show('deep.interpret.html');">deep/deep.interpret</a></li>
-		<li><a href="#" onclick="show('deep.deepload.html');">deep/deep.deepload</a></li>
-		<li><a href="#" onclick="show('deep.load.html');">deep/deep.load</a></li>
+
 		<li><a href="#" onclick="show('deep.query.html');">deep/deep.query</a></li>
 		<li><a href="#" onclick="show('chain.remove.html');">deep/chain.remove</a></li>
 		<li><a href="#" onclick="show('chain.replace.html');">deep/chain.replace</a></li>
@@ -49,10 +50,11 @@
 		<li><a href="#" onclick="show('deep.collider.html');">deep/deep.collider</a></li>
 		<li><a href="#" onclick="show('flatten.html');">deep/flatten</a></li>
 		<li><a href="#" onclick="show('deep.compose.html');">deep/compose</a></li>
-
-		<br/>
-		<li><a href="#" onclick="show('deep.pilou.html');">deep/deep.pilou</a></li>
+		<li><a href="#" onclick="show('chain.range.html');">deep/deep.range</a></li>
+		<li><a href="#" onclick="show('chain.mapOn.html');">deep/deep.mapOn</a></li>
 	</ul>
+		<li><a href="#" onclick="testAll();">All</a></li>
+
 	<div id="full-reports-container">
 		<strong>Final report : </strong>
 		<div class="success" style="color:#00AA00"></div>

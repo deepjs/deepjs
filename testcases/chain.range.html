@@ -1,0 +1,46 @@
+<h2>deep chain.range : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep");
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		count++;
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+			failed++;
+	}
+
+	var tests = [];
+
+	//________________________________________________________________________________________
+	deep([0,1,2,3,4,5])
+	.pushHandlerTo(tests)
+	.query("./*")
+	.range(1,4)
+	.valuesEqual([1,2,3,4], report);
+
+	deep([0,1,2,3,4,5])
+	.pushHandlerTo(tests)
+	.query("./*")
+	.range({step:1,width:3})
+	.valuesEqual([3,4,5], report);
+
+	//________________________________________________________________________________________
+	deep.all(tests).then(function (argument) {
+		printReport("chain.range : success ", success, tests.length-success, tests.length);
+	}, function (argument) {
+		printReport("chain.range : errors ", success, tests.length-success, tests.length);
+	});
+
+
+
+
+})();
+</script>

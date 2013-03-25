@@ -19,27 +19,6 @@ Asynch
 Thin Server / Rest
 JSON
 
-Structure :
-	utils 						ok
-		logs, pushTo, ...
-
-	gestion asynch 				ok
-		promises
-		chain
-		branches
-		rejection
-		
-
-		cancel 					need more 
-	
-
-	modelisation objet 			ok
-		up, bottom, etc
-
-	navigation 					stable
-        query
-
-
 	CCS
 	class composition
 
@@ -182,15 +161,15 @@ function(require)
 	 * @param {Object} obj    the object from where start synch chain
 	 * @param {Object} schema the schema associated to it's object
 	 */
-	var SynchHandler = function (obj, schema) 
+	var SynchHandler = function (obj, schema)
 	{
 		if(obj instanceof DeepHandler)
 		{
 			this.chain = obj;
-		}	
-		else 
+		}
+		else
 			this.chain = deep(obj, schema);
-	}
+	};
 	SynchHandler.prototype = {
 		chain:null,
 		branches:null,
@@ -206,7 +185,7 @@ function(require)
 			if(this.branches)
 				this.branches.forEach(function (b) {
 					b.cancel();
-				})
+				});
 			return this;
 		},
 		values:function () {
@@ -245,8 +224,8 @@ function(require)
 			this.chain._entries.forEach(function (e) {
 				args.forEach(function  (a) {
 					deep.utils.up( a, e.value, e.schema );
-				})	
-			})
+				});
+			});
 			return this;
 		},
 		bottom:function () {
@@ -255,7 +234,7 @@ function(require)
 				args.forEach(function  (a) {
 					deep.utils.bottom( a, e.value, e.schema );
 				});
-			})
+			});
 			return this;
 		},
 		log:function () {
@@ -271,21 +250,21 @@ function(require)
 			er.values = deep.chain.values(this.chain);
 			return er;
 		}
-	}
+	};
 
 
 
-	function callFunctionFromValue(entry, functionName, args) 
+	function callFunctionFromValue(entry, functionName, args)
 	{
 		if(typeof args === 'undefined')
 			args = [];
 		else if(!(args instanceof Array))
 			args = [args];
-
+		var prom;
 		if(entry.value && entry.value[functionName])
 		{
 			entry.value._deep_entry = entry;
-			var prom = entry.value[functionName].apply(entry.value, args);
+			prom = entry.value[functionName].apply(entry.value, args);
 			if(prom && prom.then)
 				prom.then(function () {
 					delete entry.value._deep_entry;
@@ -296,10 +275,10 @@ function(require)
 			else
 				delete entry.value._deep_entry;
 			return prom;
-		}	
+		}
 		return prom;
 	}
-	function runFunctionFromValue(entry, func, args) 
+	function runFunctionFromValue(entry, func, args)
 	{
 		//console.log("runFunctionFromValue", entry)
 		if(typeof args === 'undefined')
@@ -332,11 +311,11 @@ function(require)
 		var self = this;
 		if(result instanceof Error)
 		{
-			console.log("nextChainHandler : result is error : ",result)
+			//console.log("nextChainHandler : result is error : ",result);
 			this.reports.failure = failure = result;
 			this.reports.result = result = null;
 		}
-		if((typeof failure === 'undefined' || failure == null) && (typeof result === 'undefined' || result == null))
+		if((typeof failure === 'undefined' || failure === null) && (typeof result === 'undefined' || result === null))
 		{
 			failure = this.reports.failure;
 			result = this.reports.result;
@@ -352,8 +331,8 @@ function(require)
 		{
 			var next = this.callQueue.shift();
 			var error = null;
+			var previousContext = deep.context;
 			try{
-				var previousContext = deep.context;
 				if(previousContext !== this.context){
 					if(previousContext && previousContext.suspend){
 						previousContext.suspend();
@@ -372,14 +351,14 @@ function(require)
 				}
 				else if(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_)
 				{
-					console.log("failure : next isThen")
+					//console.log("failure : next isThen");
 					next(result,failure);
-				}	
+				}
 				else if(!this.rejected)
 				{
-					console.log("failure : no more Then : reject")
+					//console.log("failure : no more Then : reject");
 					this.reject(failure);
-				}	
+				}
 			}
 			catch(e)
 			{
@@ -419,8 +398,14 @@ function(require)
 				}
 				else
 					this.reject(failure);
-			}	
-		}	
+			}
+		}
+	}
+	function forceNextQueueItem(handler, s, e)
+	{
+		//console.log("forceNextQueue Item : ", s,e)
+		handler.running = false;
+		nextQueueItem.apply(handler, [s, e]);
 	}
 	function addInQueue(func)
 	{
@@ -537,7 +522,7 @@ function(require)
 		},
 		reject:function (reason)  // not chainable
 		{
-			console.log("deep chain reject : reason : ", reason);
+			//console.log("deep chain reject : reason : ", reason);
 			if(this.rejected)
 				throw  new Error("deep chain has already been rejected! ");
 			this.reports.failure = reason;
@@ -559,7 +544,7 @@ function(require)
 				},
 				function (error)
 				{
-					console.error("error : deep.branches : ", error);
+					//console.error("error : deep.branches : ", error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -579,7 +564,7 @@ function(require)
 						self.running = false;
 						nextQueueItem.apply(self, [datas,null]);
 					}, function (e) {
-						console.error("error : deep.chain.when : ", e);
+						//console.error("error : deep.chain.when : ", e);
 						self.running = false;
 						nextQueueItem.apply(self, [null,e]);
 					});
@@ -672,9 +657,14 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				self._entries = self._entries.slice(start, Math.min(end+1,self._entries.length));
-				self.running = false;
-				nextQueueItem.apply(self, [deep.chain.values(self), null]);
+				var rangeObject = null;
+				if(typeof start === 'object')
+					rangeObject = utils.createStepWidthRangeObject(start.step, start.width, self._entries.length);
+				else
+					rangeObject = utils.createStartEndRangeObject(start, end, self._entries.length);
+				self._entries = self._entries.slice(rangeObject.start, rangeObject.end+1);
+				rangeObject.results = deep.chain.values(self);
+				forceNextQueueItem(self, rangeObject, null);
 			};
 			addInQueue.apply(this,[func]);
 			return this;
@@ -720,7 +710,7 @@ function(require)
 					self.callQueue = position.queue;
 				self.running = false;
 				nextQueueItem.apply(self, [self._entries,null]);
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -771,9 +761,9 @@ function(require)
 			{
 				var alls = [];
 				if(root)
-					alls = [DeepRequest.retrieve(root)];
+					alls = [deep.get(root)];
 				if(schema)
-					alls.push(DeepRequest.retrieve(schema));
+					alls.push(deep.get(schema));
 				if(alls.length > 0)
 					deep.all(alls).then(function (results) {
 						// console.log("deep.root : ", results)
@@ -814,7 +804,7 @@ function(require)
 						else
 						{
 							//handler._root = root;
-							self._entries = self.querier.query(root, "/!", {resultType:"full", schema:schema || {}});	
+							self._entries = self.querier.query(root, "/!", {resultType:"full", schema:schema || {}});
 							self.queries = ["/!"];
 							if(root && root.uri)
 								self.name = root.uri;
@@ -827,16 +817,16 @@ function(require)
 					}, function (error) {
 						console.log("deep.root chain error : ", error);
 						throw new Error("deep.root chain error : "+error);
-					});		
+					});
 				else
 				{
 					//console.log("deep.root : ", root)
-					self._entries = [self._root];	
+					self._entries = [self._root];
 					self.queries.push("/!");
 					self.running = false;
 					nextQueueItem.apply(self, [self._root.value, null]);
 				}
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -846,11 +836,12 @@ function(require)
 			src.queries.push(q);
 			if(!(q instanceof Array))
 				q = [q];
-			var func = function(){
+			var func = function()
+			{
 				//console.log("do query : ", q)
 				var res = [];
 				if(console.flags && console.flags["deep.query.profile"])
-					console.time("query")
+					console.time("query");
 				src._entries.forEach(function (r) {
 					// console.log("do query : ", q , " - on : ", r)
 					q.forEach(function (qu) {
@@ -862,11 +853,11 @@ function(require)
 					console.timeEnd("query");
 				res = deep.utils.arrayUnique(res, "path");
 				src._entries = res;
-				if(res.length == 0 && errorIfEmpty)
-					throw new Error("deep.query could not gives empty results")
+				if(res.length === 0 && errorIfEmpty)
+					throw new Error("deep.query could not gives empty results");
 				src.running = false;
-				nextQueueItem.apply(src, [res, null]);
-			}
+				nextQueueItem.apply(src, [deep.chain.values(src), null]);
+			};
 			addInQueue.apply(src, [func]);
 			return src;
 		},
@@ -876,23 +867,21 @@ function(require)
 			//metaSchema = metaSchema || deep.metaSchema || {};
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(schema)).then(function (schema) {
+				deep.when(deep.get(schema)).then(function (schema) {
 					//var schema = schemas.shift();
 					//var metaSchema = schemas.shift();
 					var alls = [];
 					self._entries.forEach(function(result){
 						result.schema = schema;
 					});
-					
 					self.running = false;
 					nextQueueItem.apply(self, [schema, null]);
-					
 				})
 				.fail(function (error) {
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -901,7 +890,7 @@ function(require)
 			metaSchema = metaSchema || deep.metaSchema || {};
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(schema))
+				deep.when(deep.get(schema))
 				.done(function (schema) {
 					var alls = [];
 					self._entries.forEach(function(result){
@@ -914,7 +903,7 @@ function(require)
 						nextQueueItem.apply(self, [self._entries, null]);
 					},
 					function (error) {
-						console.error("error : deep.schemaUp : ",error)
+						console.error("error : deep.schemaUp : ",error);
 						throw new Error("error : deep.schemaUp : "+error);
 					});
 				})
@@ -922,7 +911,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -931,7 +920,7 @@ function(require)
 			metaSchema = metaSchema || deep.metaSchema || {};
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(schema))
+				deep.when(deep.get(schema))
 				.done(function (schema) {
 					var alls = [];
 					self._entries.forEach(function(result){
@@ -944,7 +933,7 @@ function(require)
 						nextQueueItem.apply(self, [self._entries, null]);
 					},
 					function (error) {
-						console.error("error : deep.schemaBottom : ",error)
+						console.error("error : deep.schemaBottom : ",error);
 						throw new Error("error : deep.schemaBottom : "+error);
 					});
 				})
@@ -952,7 +941,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -960,7 +949,7 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(obj)).then(function (obj) 
+				deep.when(deep.get(obj)).then(function (obj)
 				{
 					var res = [];
 					self._entries.forEach(function(result){
@@ -975,7 +964,7 @@ function(require)
 						throw error;
 					throw new Error("error : deep.setByPath : "+String(error));
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -984,7 +973,7 @@ function(require)
 			var args = Array.prototype.slice.call(arguments);
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieveAll(args)).then(function (objects) 
+				deep.when(deep.getAll(args)).then(function (objects)
 				{
 					self._entries.forEach(function(result){
 						objects.forEach(function (object) {
@@ -999,18 +988,17 @@ function(require)
 					console.error("error : deep.up : ",error);
 					throw new Error("error : deep.up : "+error);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
 		bottom : function()
 		{
 			var args = Array.prototype.slice.call(arguments);
-			
 			args.reverse();
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieveAll(args)).then(function (objects) 
+				deep.when(deep.getAll(args)).then(function (objects)
 				{
 					self._entries.forEach(function(result){
 						objects.forEach(function (object) {
@@ -1019,20 +1007,20 @@ function(require)
 					});
 					self.running = false;
 					nextQueueItem.apply(self, [self._entries, null]);
-				}, 
+				},
 				function (argument) {
 					//console.error("error : deep.bottom : ",error);
 					throw new Error("error : deep.bottom : "+error);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		replace : function (what, by, options) 
+		replace : function (what, by, options)
 		{
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(by, options)).then(function (by) 
+				deep.when(deep.get(by, options)).then(function (by)
 				{
 					var replaced = [];
 					self._entries.forEach(function (r) {
@@ -1049,11 +1037,11 @@ function(require)
 					//console.error("error : deep.replace : ",error);
 					throw new Error("error : deep.replace : "+error);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		remove : function (what) 
+		remove : function (what)
 		{
 			var self = this;
 			var func = function(){
@@ -1074,7 +1062,7 @@ function(require)
 				});
 				self.running = false;
 				nextQueueItem.apply(self, [removed, null]);
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -1084,14 +1072,14 @@ function(require)
 				return entry;
 			var toExtends = this.querier.query(entry, "//?backgrounds", {resultType:"full"});
 			//console.log("_____________________ extendsChilds : ", path, " \n\n\n________________", obj);
-			if(toExtends.length == 0)
+			if(toExtends.length === 0)
 				return entry;
 			var deferred = deep.Deferred();
 			var rec = toExtends[0];
 			var handler = deep(rec);
 			//console.log("extendsChilds : handler toExtends ", handler)
 
-			handler.flatten().then(function () 
+			handler.flatten().then(function ()
 			{
 				deep.when(handler.extendsChilds(entry)).then(function () {
 				//	console.log("___________________ handler flattened ")
@@ -1125,7 +1113,7 @@ function(require)
 				if(!value.backgrounds.push)
 					value.backgrounds = [ value.backgrounds ];
 				//console.log("will retrieve : ", value.backgrounds)
-				deep.when(deep.request.retrieveAll(value.backgrounds, { root:root || entry, acceptQueryThis:true })).then(function extendedsLoaded(extendeds){
+				deep.when(deep.getAll(value.backgrounds, { root:root || entry })).then(function extendedsLoaded(extendeds){
 					var recursion = [];
 					//console.log("__________________ extendsBackgrounds : retrieved : ", extendeds)
 					while(extendeds.length > 0)
@@ -1135,7 +1123,7 @@ function(require)
 						{
 							extendeds = exts.concat(extendeds);
 							continue;
-						} 
+						}
 						//console.log("will recurse : ", exts)
 						recursion.push(exts);
 						recursion.push(self.extendsBackgrounds(exts));
@@ -1158,7 +1146,7 @@ function(require)
 					deferred.reject(res);
 				});
 				return deep.promise(deferred);
-			}	
+			}
 			return [];
 		},
 		/*ccs:function (ccs) {
@@ -1190,7 +1178,7 @@ function(require)
 				//delete self._root.value._deep_entry;
 				deep.when(self.extendsChilds(result)).then(function () {
 					count--;
-					if(count == 0)
+					if(count === 0)
 					{
 						//console.log("flatten DONE");
 						self.running = false;
@@ -1200,11 +1188,11 @@ function(require)
 					console.error("error : deep.flatten : ",error);
 					throw new Error("error : deep.flatten : "+error);
 				});
-			}
+			};
 			var func = function(){
 				//console.log("will flatten : ", self._entries)
 				var alls = [];
-				self._entries.forEach(function (result) 
+				self._entries.forEach(function (result)
 				{
 					count++;
 					if(result.value.backgrounds)
@@ -1224,12 +1212,12 @@ function(require)
 					else
 						doChilds(result);
 				});
-				if(self._entries.length == 0)
+				if(self._entries.length === 0)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [deep.chain.values(self), null]);
 				}
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -1248,7 +1236,7 @@ function(require)
 		 * @param  {Array} args the arguments to pass to 'func'
 		 * @return {DeepHandler}  the current chain handler (this)
 		 */
-		run : function (func, args) 
+		run : function (func, args)
 		{
 			var self = this;
 			args = args || [];
@@ -1275,19 +1263,19 @@ function(require)
 						alls.push(result);
 				});
 				// console.log("deep.run waits for : ", alls);
-				deep.all(alls).then(function (loadeds) 
+				deep.all(alls).then(function (loadeds)
 				{
 					//console.log("deep.run results : ", loadeds);
 					self.running = false;
 					nextQueueItem.apply(self, [loadeds, null]);
-				}, 
-				function (error) 
+				},
+				function (error)
 				{
 					console.error("error : deep.run : ", error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[create]);
 			return this;
 		},
@@ -1306,24 +1294,24 @@ function(require)
 		 * @param  {Array} args the arguments to pass to 'func'
 		 * @return {DeepHandler}  the current chain handler (this)
 		 */
-		exec : function (func, args) 
+		exec : function (func, args)
 		{
 			var self = this;
 			args = args || [];
 			var create = function()
 			{
-				deep.when(func.apply({}, args)).then(function (loadeds) 
+				deep.when(func.apply({}, args)).then(function (loadeds)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [loadeds, null]);
-				}, 
-				function (error) 
+				},
+				function (error)
 				{
 					console.error("error : deep.exec : ", error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[create]);
 			return this;
 		},
@@ -1350,18 +1338,22 @@ function(require)
 			var self = this;
 			var func = function(){
 				var res = deep.chain.values(self);
-				var o = {equal:utils.deepEqual(res, obj), needed:obj, needLength:obj.length, valuesLength:res.length, value:res}
-				console.info("deep.valuesEqual : "+ JSON.stringify(o, null, ' '));
+				var o = {equal:utils.deepEqual(res, obj), needed:obj, needLength:obj.length, valuesLength:res.length, value:res};
+				if(o.equal)
+					console.info("deep.valuesEqual : "+ JSON.stringify(o, null, ' '));
+				else
+					console.error("deep.valuesEqual : "+ JSON.stringify(o, null, ' '));
+
 				if(callBack)
 				{
 					deep.when(callBack(o)).then(function (argument) {
 						if(typeof argument === 'undefined')
 							argument = o;
 						self.running = false;
-						nextQueueItem.apply(self, [argument, null]);	
+						nextQueueItem.apply(self, [argument, null]);
 					}, function (error) {
 						self.running = false;
-						nextQueueItem.apply(self, [o, error]);							
+						nextQueueItem.apply(self, [o, error]);
 					});
 				}
 				else
@@ -1369,7 +1361,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [o, !o.equal]);
 				}
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return self;
 		},
@@ -1377,7 +1369,7 @@ function(require)
 		/**
 		 * equal test strict equality on each entry value against provided object
 		 * @param  {*} obj      the object to test
-		 * @param  {Function} 	optional. callBack a callBack to manage report
+		 * @param  {Function}	optional. callBack a callBack to manage report
 		 * @return {DeepHandler}        this
 		 */
 		equal : function(obj, callBack)
@@ -1391,16 +1383,19 @@ function(require)
 				self._entries.forEach(function(r){
 					//console.log("deep.equal : r : ",r);
 					var ok = utils.deepEqual(r.value, obj);
-					var o = {path:r.path, equal:ok, value:r.value, needed:obj}
+					var o = {path:r.path, equal:ok, value:r.value, needed:obj};
 					res.push(o);
 					if(!ok)
-						errors.push(o)
-					console.info("deep.equal : "+o.equal+" : ", o);
+						errors.push(o);
+					if(o.equal)
+						console.info("deep.equal : "+o.equal+" : ", o);
+					else
+						console.error("deep.equal : "+o.equal+" : ", o);
 				});
 				var report = {
-					equal:(self._entries.length > 0) && (errors.length==0),
+					equal:(self._entries.length > 0) && (errors.length===0),
 					reports:res
-				}; 
+				};
 				if(callBack)
 				{
 					deep.when(callBack(report)).then(function (argument) {
@@ -1411,16 +1406,16 @@ function(require)
 					}, function (error) {
 						self.running = false;
 						nextQueueItem.apply(self, [null, error]);
-					})
-				}	
+					});
+				}
 				else
 				{
-					if(errors.length == 0)
+					if(errors.length === 0)
 						errors = null;
 					self.running = false;
 					nextQueueItem.apply(self, [report, errors]);
-				}	
-			}
+				}
+			};
 			addInQueue.apply(this,[func]);
 			return self;
 		},
@@ -1431,7 +1426,7 @@ function(require)
 		 * @param  {Object} options [description]
 		 * @return {DeepHandler}         [description]
 		 */
-		validate:function(options) 
+		validate:function(options)
 		{
 			options = options || {};
 			var self = this;
@@ -1440,18 +1435,17 @@ function(require)
 				//console.log("deep.log : ", self._entries)
 				self._entries.forEach(function (e) {
 					a.push(Validator.validate(e.value, e.schema));
-				})
-				
+				});
 				deep.all( a ).then( function ( reports ) {
 					var freport = {
 						valid:true,
 						reports:reports
-					}
+					};
 					reports.forEach ( function ( report ) {
 						if(report.valid)
 							return;
 						freport.valid = false;
-					})
+					});
 					if(options.callBack)
 					{
 						deep.when(options.callBack(freport)).then(function (argument) {
@@ -1473,22 +1467,22 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
 
 		// __________________________________________________ LOG
 
-		log:function () 
+		log:function ()
 		{
 			var self = this;
 			var args = Array.prototype.slice.call(arguments);
 			var func = function(s,e)
 			{
-				if(args.length == 0)
+				if(args.length === 0)
 				{
-					args.push("deep.log : ");	
+					args.push("deep.log : ");
 					if(e)
 					{
 						args.push("ERROR State : ");
@@ -1505,18 +1499,18 @@ function(require)
 				});
 				self.running = false;
 				nextQueueItem.apply(self,[s, e]);
-			}
+			};
 			func._isTRANSPARENT_ = true;
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		logValues:function (title, options) 
+		logValues:function (title, options)
 		{
 			var self = this;
 			options = options || {};
 			var func = function(success, error)
 			{
-				console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)")
+				console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)");
 				self._entries.forEach(function (e) {
 					var val = e;
 					var entry = e.value._deep_entry;
@@ -1528,18 +1522,17 @@ function(require)
 					console.log("\t- entry : ("+e.path+") : ", val);
 					if(entry)
 						e._deep_entry = entry;
-				})
+				});
 				self.running = false;
 				nextQueueItem.apply(self,[success, error]);
-			}
-			
+			};
 			func._isTRANSPARENT_ = true;
 			addInQueue.apply(this,[func]);
 			return this;
 		},
 		// ________________________________________ READ ENTRIES
 
-		val:function  (callBack) 
+		val:function  (callBack)
 		{
 			var self = this;
 			var func = function()
@@ -1555,16 +1548,16 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			if(callBack)
 			{
 				addInQueue.apply(this,[func]);
 				return this;
-			}	
+			}
 			else
 				return deep.chain.values(this).shift();
 		},
-		each:function  (callBack) 
+		each:function  (callBack)
 		{
 			var self = this;
 			var func = function()
@@ -1581,11 +1574,11 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		values:function  (callBack) 
+		values:function  (callBack)
 		{
 			var self = this;
 			var func = function()
@@ -1601,8 +1594,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
-			
+			};
 			if(callBack)
 			{
 				addInQueue.apply(this,[func]);
@@ -1611,7 +1603,7 @@ function(require)
 			else
 				return deep.chain.values(this);
 		},
-		nodes:function  (callBack) 
+		nodes:function  (callBack)
 		{
 			var self = this;
 			var func = function()
@@ -1627,7 +1619,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
+			};
 			if(callBack)
 			{
 				addInQueue.apply(this,[func]);
@@ -1636,7 +1628,7 @@ function(require)
 			else
 				return deep.chain.nodes(this);
 		},
-		paths:function  (callBack) 
+		paths:function  (callBack)
 		{
 			var self = this;
 			var func = function()
@@ -1652,8 +1644,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
-			
+			};
 			if(callBack)
 			{
 				addInQueue.apply(this,[func]);
@@ -1662,7 +1653,7 @@ function(require)
 			else
 				return deep.chain.paths(this);
 		},
-		schemas:function  (callBack) 
+		schemas:function  (callBack)
 		{
 			var self = this;
 			var func = function()
@@ -1678,8 +1669,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
-			
+			};
 			if(callBack)
 			{
 				addInQueue.apply(this,[func]);
@@ -1690,28 +1680,26 @@ function(require)
 		},
 		//___________________________________________________________ WAIT
 
-		delay:function (ms) 
+		delay:function (ms)
 		{
 			var self = this;
 			function func(){
 				return function(s,e){
 					//console.log("deep.delay : ", ms)
 					setTimeout(function () {
-						console.log("deep.delay.end : ", ms)
+						console.log("deep.delay.end : ", ms);
 						self.running = false;
 						nextQueueItem.apply(self, [s, e]);
 					}, ms);
-				}
+				};
 			}
 			func._isTRANSPARENT_ = true;
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-
-		
 		//____________________________________________________________________  LOAD
 
-		deepLoad:function(context) 
+		deepLoad:function(context)
 		{
 			var self = this;
 			function func(){
@@ -1722,16 +1710,22 @@ function(require)
 					self._entries.forEach(function (e) {
 						var strings = self.querier.query(e, ".//?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
 						strings.forEach(function (toLoad) {
-							if(context)
-								toLoad = deep.interpret(toLoad, context);
+
+							if(typeof toLoad.value === 'string')
+							{
+								var val = toLoad.value;
+								if(context)
+									val = deep.interpret(toLoad.value, context);
+								promises.push(deep.get(toLoad.value, {root:self._root.value, basePath:toLoad.path }));
+							}
 							//console.log("deep.deepLoad : toLoad : ", toLoad);
-							if(typeof toLoad.value === 'function')
-								promises.push(toLoad.value())
+							else if(typeof toLoad.value === 'function')
+								promises.push(toLoad.value());
 							else
-								promises.push(deep.request.retrieve(toLoad.value, {root:self._root.value, basePath:toLoad.path, acceptQueryThis:true }));
+								promises.push(toLoad.value);
 							paths.push(toLoad);
-						})
-					})
+						});
+					});
 					deep.all(promises)
 					.done(function (results) {
 						var count = 0;
@@ -1739,7 +1733,7 @@ function(require)
 							var e = paths[count++];
 							if(e.ancestor)
 								e.ancestor.value[e.key] = e.value = r;
-						})
+						});
 						self.running = false;
 						nextQueueItem.apply(self, [ results, null ]);
 					})
@@ -1748,12 +1742,12 @@ function(require)
 						self.running = false;
 						nextQueueItem.apply(self, [ null, error ]);
 					});
-				}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-		load:function (request, context) 
+		load:function (request, context)
 		{
 			var self = this;
 			function func(){
@@ -1765,10 +1759,17 @@ function(require)
 
 					if(request)
 					{
-						if(context && typeof request === "string")
+						if(typeof request === "string")
+						{
+							if(context)
 								request = deep.interpret(request, context);
-						promises.push(deep.request.retrieve(request, { callFunctions:true }));
-					}	
+							promises.push(deep.get(request));
+						}
+						if(typeof request === 'function')
+							promises.push(request());
+						else
+							promises.push(request);
+					}
 					else
 						self._entries.forEach(function (e) {
 							if(!e.value)
@@ -1780,12 +1781,12 @@ function(require)
 								var toLoad = e.value;
 								if(context)
 									toLoad = deep.interpret(toLoad, context);
-								promises.push(deep.request.retrieve(toLoad, { root:self._root.value, basePath:e.path, callFunctions:true, acceptQueryThis:true }));
-							}	
+								promises.push(deep.get(toLoad, { root:self._root.value, basePath:e.path }));
+							}
 							else
 								promises.push(e.value);
 							paths.push(e);
-						})
+						});
 					deep.all(promises).then(
 					function (results) {
 						//console.log("deep.load results : ", results)
@@ -1799,7 +1800,7 @@ function(require)
 										entry.value = results[0];
 									else
 										entry.value = entry.ancestor.value[entry.key] = results[0];
-							})
+							});
 						}
 						else
 							results.forEach(function  (r) {
@@ -1813,7 +1814,7 @@ function(require)
 									else
 										item.value = item.ancestor.value[item.key] = r;
 								}
-							})
+							});
 						self.running = false;
 						nextQueueItem.apply(self, [results, null]);
 					},
@@ -1822,7 +1823,7 @@ function(require)
 						self.running = false;
 						nextQueueItem.apply(self, [null, error]);
 					});
-				}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return this;
@@ -1830,12 +1831,13 @@ function(require)
 
 		//________________________________________________________________________ INTERPET STRINGS
 
-		deepInterpret:function(context) 
+		deepInterpret:function(context)
 		{
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(context))
-				.done(function (context) 
+				context = (typeof context === 'string')?deep.get(context):context;
+				deep(context)
+				.done(function (context)
 				{
 					var res = [];
 					self._entries.forEach(function (e) {
@@ -1848,37 +1850,44 @@ function(require)
 								interpretable.value = r;
 							else
 								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
-						})
+						});
 					});
 					self.running = false;
 					nextQueueItem.apply(self, [res, null]);
-				}) 
-				.fail(function (error) 
+				})
+				.fail(function (error)
 				{
 					console.error("error : deep.deepInterpret : ", error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
-			
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		interpret:function(context) 
+		interpret:function(context)
 		{
 			var self = this;
 			var func = function(){
-				deep.when(deep.request.retrieve(context)).then(function (context) {
+				console.log("deep.chain.interpret : context : ",context);
+				context = (typeof context === 'string')?deep.get(context):context;
+				deep(context).then(function (context) {
 					var res = [];
-					self._entries.forEach(function (interpretable) 
+					self._entries.forEach(function (interpretable)
 					{
-						var r = deep.interpret(interpretable.value, context);
-						res.push(r);
-						if(!interpretable.ancestor)
-							//	throw new Error("You couldn't interpret root !");
-							interpretable.value = r;
+						if(typeof interpretable.value === 'string')
+						{
+							var r = deep.interpret(interpretable.value, context);
+							res.push(r);
+							if(!interpretable.ancestor)
+								//	throw new Error("You couldn't interpret root !");
+								interpretable.value = r;
+							else
+								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
+							console.log("deep.chain.interpret : res : ", r);
+						}
 						else
-							interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
+							res.push(interpretable.value);
 					});
 					self.running = false;
 					nextQueueItem.apply(self, [res, null]);
@@ -1887,15 +1896,14 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
-			}
-			
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
 
 		//________________________________________________________ PUSH TO
 
-		pushHandlerTo:function(array) 
+		pushHandlerTo : function(array)
 		{
 			var self = this;
 			function func(){
@@ -1908,14 +1916,14 @@ function(require)
 						self.running = false;
 						nextQueueItem.apply(self, [s, e]);
 					}
-				}
+				};
 				f._isPUSH_HANDLER_TO_ = true;
 				return f;
 			}
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-		pushNodesTo:function(array) 
+		pushNodesTo:function(array)
 		{
 			var self = this;
 			function func(){
@@ -1924,15 +1932,15 @@ function(require)
 					self._entries.forEach(function (e) {
 						array.push(e);
 						res.push(e);
-					})
+					});
 					self.running = false;
 					nextQueueItem.apply(self, [success, error]);
-				}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-		pushValuesTo:function(array) 
+		pushValuesTo:function(array)
 		{
 			var self = this;
 			function func(){
@@ -1941,15 +1949,15 @@ function(require)
 					self._entries.forEach(function (e) {
 						array.push(e.value);
 						res.push(e.value);
-					})
+					});
 					self.running = false;
 					nextQueueItem.apply(self, [success, error]);
-				}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
-		pushPathsTo:function(array) 
+		pushPathsTo:function(array)
 		{
 			var self = this;
 			var func =function(success, error){
@@ -1957,14 +1965,14 @@ function(require)
 				self._entries.forEach(function (e) {
 					array.push(e.path);
 					res.push(e.path);
-				})
+				});
 				self.running = false;
 				nextQueueItem.apply(self, [success, error]);
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
-		pushSchemasTo:function(array) 
+		pushSchemasTo:function(array)
 		{
 			var self = this;
 			var func = function(success, error){
@@ -1972,10 +1980,10 @@ function(require)
 				self._entries.forEach(function (e) {
 					array.push(e.schema);
 					res.push(e.schema);
-				})
+				});
 				self.running = false;
 				nextQueueItem.apply(self, [success, error]);
-			}
+			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
@@ -1996,20 +2004,19 @@ function(require)
 								self.running = false;
 								nextQueueItem.apply(self, [res, null]);
 							}
-						})
+						});
 					else if(totest)
 						self.reject(totest);
 					else
 					{
 						self.running = false;
 						nextQueueItem.apply(self, [totest, null]);
-					}	
-				}
+					}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return self;
 		},
-		
 		cancelIf : function(totest)
 		{
 			var self = this;
@@ -2024,15 +2031,15 @@ function(require)
 								self.running = false;
 								nextQueueItem.apply(self, [res, null]);
 							}
-						})
+						});
 					else if(totest)
 						self.cancel(totest);
 					else
 					{
 						self.running = false;
 						nextQueueItem.apply(self, [totest, null]);
-					}	
-				}
+					}
+				};
 			}
 			addInQueue.apply(this,[func()]);
 			return self;
@@ -2042,8 +2049,77 @@ function(require)
 
 		newHandler:function (options) {
 			return new DeepHandler(options);
+		},
+		treat: function(treatment) {
+			var self = this;
+			var func = function(s, e)
+			{
+				var alls = [];
+				if (treatment) {
+					self._entries.forEach(function(entry) {
+						alls.push(deep.applyTreatment.apply(treatment, [entry.value]));
+					});
+				} else {
+					self._entries.forEach(function(entry) {
+						if (typeof entry.value.treat === 'function')
+							alls.push(entry.value.treat(treatment));
+						else alls.push(entry.value);
+					});
+				}
+				deep.all(alls)
+					.done(function(results) {
+					self.running = false;
+					deep.chain.nextQueueItem.apply(self, [results, null]);
+				});
+			};
+			deep.chain.addInQueue.apply(this, [func]);
+			return this;
+		},
+		mapOn: function(what, localKey, foreignKey, whereToStore)
+		{
+			var self = this;
+			var doMap = function (what, localKey, foreignKey, whereToStore)
+			{
+				var map = {};
+				what.forEach(function (w) {
+					var val = w[foreignKey];
+					if(typeof map[val] !== 'undefined')
+					{
+						if(map[val] instanceof Array)
+							map[val].push(w);
+						else
+							map[val] = [map[val] ,w];
+					}
+					else
+						map[val] = w;
+				});
+				self._entries.forEach(function(entry) {
+					if(map[entry.value[localKey]])
+						entry.value[whereToStore || localKey] = map[entry.value[localKey]];
+				});
+				forceNextQueueItem(self, deep.chain.values(self), null);
+			};
+			var func = function(s, e) {
+				if(typeof what === 'string')
+				{
+					var parsed = deep.parseRequest(what);
+					if(parsed.store !== null)
+					{
+						deep(parsed.store.get(parsed.uri)).done(function (results) {
+							results = [].concat(results);
+							doMap(results, localKey, foreignKey, whereToStore);
+						});
+					}
+					else
+						forceNextQueueItem(self, null, new Error("deep.mapOn need array as 'what' : provided : "+ JSON.stringify(what)));
+				}
+				else
+					doMap(what, localKey, foreignKey, whereToStore);
+			};
+			deep.chain.addInQueue.apply(this, [func]);
+			return this;
 		}
-	}
+	};
 /**
 deep : just say : Powaaaaaa ;)
 
@@ -2089,15 +2165,15 @@ deep : just say : Powaaaaaa ;)
 	{
 		var handler = new DeepHandler({path:"/!"});
 		handler.running = true;
-		var alls = [DeepRequest.retrieve(broot)];
 
+		var alls = [deep.get(broot)];
 		if(schema)
-			alls.push(DeepRequest.retrieve(schema));
+			alls.push(deep.get(schema));
 
-		  // console.log("deep(root) init : ", alls);
+		// console.log("deep(root) init : ", alls);
 
 		deep.all(alls).then(function (results) {
-			  //console.log("deep(root) : loaded : ",  results)
+			//console.log("deep(root) : loaded : ",  results)
 			handler.initialised = true;
 			var root = results[0];
 			var schema = results[1];
@@ -2105,19 +2181,19 @@ deep : just say : Powaaaaaa ;)
 			{
 				// console.log("deep(..) with DQNode : ", root)
 				handler._root = root.root;
-				handler._entries = [root];	
+				handler._entries = [root];
 				handler.queries = [root.path];
 			}
 			else if(typeof root === 'object' && root._deep_entry)
 			{
-				 // console.log("deep(..) with _deep_entry")
+				// console.log("deep(..) with _deep_entry")
 				handler._root = root._deep_entry;
-				handler._entries = [root._deep_entry];	
+				handler._entries = [root._deep_entry];
 				handler.queries = [root._deep_entry.path];
 			}
 			else if(broot instanceof DeepHandler)
 			{
-				 // console.log("deep(..) with DeepHandler");
+				// console.log("deep(..) with DeepHandler");
 				handler._entries = broot._entries.concat([]);
 				handler._root = broot._root;
 				handler.queries = utils.copyArray(broot.queries);
@@ -2126,7 +2202,7 @@ deep : just say : Powaaaaaa ;)
 			{
 				// console.log("deep(..) simple object")
 				handler._root = Querier.createRootNode(root, schema);
-				handler._entries = [handler._root];	
+				handler._entries = [handler._root];
 				handler.queries = ["/!"];
 				if(typeof root === 'object' && root.uri)
 					handler.name = root.uri;
@@ -2137,12 +2213,12 @@ deep : just say : Powaaaaaa ;)
 			handler.running = false;
 			nextQueueItem.apply(handler, [deep.chain.val(handler), null]);
 		}, function (error) {
-			console.log("deep start chain error : ", error);
+			//console.log("deep start chain error : ", error);
 			handler.running = false;
 			nextQueueItem.apply(handler, [null, error]);
-		});		
+		});
 		return handler;
-	}
+	};
 	deep.Handler = DeepHandler;
 	deep.metaSchema = {};
 	deep.request = DeepRequest;
@@ -2153,7 +2229,7 @@ deep : just say : Powaaaaaa ;)
 	deep.chain = {
 		nextQueueItem:nextQueueItem,
 		addInQueue:addInQueue,
-		stringify:function (handler, options) 
+		stringify:function (handler, options)
 		{
 			options = options || {};
 			var res = "";
@@ -2196,12 +2272,12 @@ deep : just say : Powaaaaaa ;)
 			});
 			return res;
 		}
-	}
+	};
 
 	function createHandler(arg)
 	{
 		var handler = new DeepHandler({path:"/!"});
-		handler._entries = handler.querier.query(arg, "/!", {resultType:"full", schema:{}});	
+		handler._entries = handler.querier.query(arg, "/!", {resultType:"full", schema:{}});
 		handler.queries = ["/!"];
 		if(arg && arg.uri)
 			handler.name = arg.uri;
@@ -2213,14 +2289,14 @@ deep : just say : Powaaaaaa ;)
 		return handler;
 	}
 
-	var DeepDeferred = function () 
+	var DeepDeferred = function ()
 	{
 		// console.log("new deep deferred")
 		this.context = deep.context;
 		this.running = true;
 		this.queue = [];
 		this.promise = new DeepPromise(this);
-	}
+	};
 
 	DeepDeferred.prototype = {
 		context:null,
@@ -2230,24 +2306,24 @@ deep : just say : Powaaaaaa ;)
 		canceled:false,
 		result:null,
 		failure:null,
-		resolve:function (argument) 
+		resolve:function (argument)
 		{
 			//console.log("DeepDeferred.resolve");
 			if(this.rejected || this.resolved || this.canceled)
 				throw new Error("DeepDeferred (resolve) has already been resolved !");
-			this.promise.result = this.result =  argument;
+			this.promise.result = this.result = argument;
 			this.promise.running = false;
 			if(argument instanceof Error)
 			{
 				this.rejected = this.promise.rejected = true;
 				nextPromiseHandler.apply(this.promise, [null, argument]);
-			}	
+			}
 			else{
 				this.resolved = this.promise.resolved = true;
 				nextPromiseHandler.apply(this.promise, [argument, null]);
 			}
 		},
-		reject:function (argument) 
+		reject:function (argument)
 		{
 			//console.log("DeepDeferred.reject");
 			if(this.rejected || this.resolved || this.canceled)
@@ -2257,7 +2333,7 @@ deep : just say : Powaaaaaa ;)
 			this.promise.running = false;
 			nextPromiseHandler.apply(this.promise, [null, argument]);
 		},
-		cancel:function (argument) 
+		cancel:function (argument)
 		{
 			// console.log("DeepDeferred.cancel");
 			if(this.rejected || this.resolved || this.canceled)
@@ -2274,22 +2350,21 @@ deep : just say : Powaaaaaa ;)
 		fail:function (argument) {
 			this.promise.fail(argument);
 		}
-	}
-	var DeepPromise = function (deferred) 
+	};
+	var DeepPromise = function (deferred)
 	{
 		this.running = true;
 		if(deferred)
 		{
 			this.context = deferred.context;
 			this.queue = deferred.queue;
-		}	
+		}
 		else
 		{
 			this.context = deep.context;
 			this.queue = [];
 		}
-			
-	}
+	};
 	DeepPromise.prototype = {
 		rejected:false,
 		resolved:false,
@@ -2297,7 +2372,7 @@ deep : just say : Powaaaaaa ;)
 		synch:false,
 		result:null,
 		failure:null,
-		done:function (callBack) 
+		done:function (callBack)
 		{
 			//console.log("add done in defInterface : ", this.rejected, this.resolved, this.running)
 			var self = this;
@@ -2340,7 +2415,7 @@ deep : just say : Powaaaaaa ;)
 					self.running = false;
 					nextPromiseHandler.apply(self, [r, null]);
 				}
-			}
+			};
 			this.queue.push(func);
 			if((this.resolved || this.rejected) && !this.running)
 				nextPromiseHandler.apply(this);
@@ -2353,7 +2428,7 @@ deep : just say : Powaaaaaa ;)
 			var func = function(s,e)
 			{
 				//console.log("deep.promise.fail : ",s,e)
-				if((e == null || typeof e === 'undefined') || !callBack)
+				if((e === null || typeof e === 'undefined') || !callBack)
 				{
 					self.running = false;
 					nextPromiseHandler.apply(self, [s, null]);
@@ -2363,7 +2438,7 @@ deep : just say : Powaaaaaa ;)
 				if(r && (r instanceof DeepHandler || r._isBRANCHES_))
 					r = deep.when(r);
 				if(r && typeof r.then === 'function')
-					r.done(function (argument) 
+					r.done(function (argument)
 					{
 						self.running = false;
 						if(typeof argument === 'undefined')
@@ -2392,13 +2467,13 @@ deep : just say : Powaaaaaa ;)
 					self.running = false;
 					nextPromiseHandler.apply(self, [r, null]);
 				}
-			}
+			};
 			this.queue.push(func);
 			if((this.resolved || this.rejected) && !this.running)
 				nextPromiseHandler.apply(this);
 			return self;
 		},
-		then:function (successCallBack, errorCallBack) 
+		then:function (successCallBack, errorCallBack)
 		{
 			var self = this;
 			if(successCallBack)
@@ -2409,7 +2484,7 @@ deep : just say : Powaaaaaa ;)
 				nextPromiseHandler.apply(this);
 			return self;
 		}
-	}
+	};
 	function nextPromiseHandler(result, failure )
 	{
 		//console.log("nextPromiseHandler ", this.running, " - ", this.queue, result, failure);
@@ -2417,7 +2492,7 @@ deep : just say : Powaaaaaa ;)
 			return;
 		this.running = true;
 		var self = this;
-		if((typeof failure === 'undefined' || failure == null) && (typeof result === 'undefined' || result == null))
+		if((typeof failure === 'undefined' || failure === null) && (typeof result === 'undefined' || result === null))
 		{
 			failure = this.failure;
 			result = this.result;
@@ -2436,8 +2511,8 @@ deep : just say : Powaaaaaa ;)
 		}
 		if(this.queue.length>0)
 		{
+			var previousContext = deep.context;
 			try{
-				var previousContext = deep.context;
 				if(previousContext !== this.context)
 				{
 					if(previousContext && previousContext.suspend)
@@ -2478,7 +2553,7 @@ deep : just say : Powaaaaaa ;)
 		{
 			//console.log("stopping run");
 			this.running = false;
-		}	
+		}
 	}
 	function createImmediatePromise(result)
 	{
@@ -2487,7 +2562,7 @@ deep : just say : Powaaaaaa ;)
 		prom.running = false;
 		if(result instanceof Error)
 		{
-			prom.rejected = true
+			prom.rejected = true;
 			prom.failure = result;
 		}
 		else
@@ -2500,7 +2575,7 @@ deep : just say : Powaaaaaa ;)
 	deep.promise = function(arg)
 	{
 		//console.log("deep.promise : ", arg)
-		if(typeof arg === "undefined" || arg == null)
+		if(typeof arg === "undefined" || arg === null)
 			return createImmediatePromise(arg);
 		if(arg._isBRANCHES_)		// chain.branches case
 			return deep.all(arg.branches);
@@ -2509,14 +2584,13 @@ deep : just say : Powaaaaaa ;)
 			//console.log("DEEP promise with deephandler", arg.running);
 			//if(arg.rejected)
 				//throw new Error("error : deep.promise : DeepHandler has already been rejected.");
-			
 			//if(arg.running) // need to wait rejection or success
 			//{
 				var def = deep.Deferred();
 				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
 					//console.log("deep.promise of DeepHandler : added error")
 					def.reject(error);
-				})
+				});
 				arg.done(function (success) { // simply chain done handler in deep chain
 					if(success && success.then)
 						deep.when(success)
@@ -2524,7 +2598,7 @@ deep : just say : Powaaaaaa ;)
 							def.reject(error);
 						})
 						.done(function (success) {
-							console.log("deep.promise of DeepHandler : done : error ?", success instanceof Error )
+							console.log("deep.promise of DeepHandler : done : error ?", success instanceof Error );
 							def.resolve(success);
 						});
 					else
@@ -2543,11 +2617,8 @@ deep : just say : Powaaaaaa ;)
 		return createImmediatePromise(arg);
 	};
 
-	deep.when = function (arg) 
+	deep.when = function (arg)
 	{
-		//console.log("deep.when : ", arg instanceof Error)
-
-		// console.log("deep.when : ", arg)
 		if(arg instanceof DeepHandler)
 			return deep.promise(arg);
 		if(arg && typeof arg.then === 'function')
@@ -2555,9 +2626,12 @@ deep : just say : Powaaaaaa ;)
 		return deep.promise(arg);
 	};
 
-	deep.all = function(arr)
+	deep.all = function()
 	{
-		if(arr.length == 0)
+		var arr = [];
+		for(var i in arguments)
+			arr = arr.concat(arguments[i]);
+		if(arr.length === 0)
 			return deep.when([]);
 		var def = deep.Deferred();
 		var count = arr.length;
@@ -2580,9 +2654,9 @@ deep : just say : Powaaaaaa ;)
 			}, function (error){
 				if(!def.rejected && !def.resolved && !def.canceled)
 					def.reject(error);
-			})
+			});
 			d++;
-		})
+		});
 		return deep.promise(def);
 	};
 
@@ -2591,13 +2665,13 @@ deep : just say : Powaaaaaa ;)
 	promise.all = deep.all;
 	deep.Deferred = promise.Deferred = function (){
 		return new DeepDeferred();
-	}
+	};
 	deep.metaSchema = {};
 	deep.isNode = (typeof process !== 'undefined' && process.versions && process.versions.node);
 	deep.rql = require("./deep-rql");
 	deep.query = Querier.query;
 	deep.collider = require("./deep-collider");
-
+	deep.Querier = Querier;
 	deep.interpret = utils.interpret;
 
 	deep.context = null;
@@ -2608,34 +2682,26 @@ deep : just say : Powaaaaaa ;)
 			store:handler._store,
 			queue:handler.callQueue.concat([])
 		});
-		console.log("dee.chain.position setted ________________________________")
-	}
-
-	deep.chain.error = function (argument) {
-		var f = function (argument) {
-			// body...
-		}
-	}
-
-	deep.sequence = function (funcs, args) 
+	};
+	deep.sequence = function (funcs, args)
 	{
-		if(!funcs || funcs.length == 0)
+		if(!funcs || funcs.length === 0)
 			return args;
 		var current = funcs.shift();
 		var def = deep.Deferred();
 		var context = {};
 		var doIt = function (r) {
-			deep.when(r).then(function (r) 
+			deep.when(r).then(function (r)
 			{
 				//console.log("deep.sequence : doIt.when : r : ", r)
-				if(funcs.length == 0)
+				if(funcs.length === 0)
 				{
 					if(typeof r === 'undefined')
 					{
 						r = args;
 						if(args.length == 1)
 							r = args[0];
-					}	
+					}
 					//console.log("deep.sequence. resolve because funcs.length == 0 : ", r)
 					def.resolve(r);
 					return r;
@@ -2650,16 +2716,17 @@ deep : just say : Powaaaaaa ;)
 				if(!def.rejected && !def.resolved && !def.canceled)
 					def.reject(error);
 			});
-		}
+		};
 		doIt(current.apply(context, args));
 		return deep.promise(def);
 	};
 
-	deep.protocoles = {};
+	//_______________________________________________________________________________ STORES
+
 	deep.stores = {};
 	deep.handlers = {};
 	deep.handlers.decorations = {};
-	deep.store = function (name, definer, options) 
+	deep.store = function (name, definer, options)
 	{
 		options = options || {};
 		var store = null;
@@ -2667,7 +2734,7 @@ deep : just say : Powaaaaaa ;)
 		{
 			if(!deep.stores[name])
 				throw new Error("deep.store(name) : no store found with : ", name);
-			store = deep.stores[name];
+			return deep.stores[name];
 		}
 		else if(definer instanceof Array)
 			store = deep.stores[name] = deep.store.ArrayStore(definer, options);
@@ -2677,8 +2744,7 @@ deep : just say : Powaaaaaa ;)
 		store.name = name;
 		store.options = options;
 		return store;
-	}
-	
+	};
 	deep.Handler.prototype.store = function (argument)
 	{
 		var self = this;
@@ -2686,279 +2752,500 @@ deep : just say : Powaaaaaa ;)
 		if(typeof argument === 'string')
 		{
 			if(!deep.stores[argument])
-			 	throw new Error("no store found with.");
-			 store = deep.stores[argument];
+				throw new Error("no store found with.");
+			store = deep.stores[argument];
 		}
 		else
-		{
 			store = argument;
-		}
-		
 		var func = function (s,e) {
 
 			self._store = store;
 			deep.chain.position(self, store.name);
-			self.running = false;			
+			self.running = false;
 			nextQueueItem.apply(self, [s, e]);
-		}
+		};
 		deep.handlers.decorations.store(store, self);
 		return self;
-
-	}
+	};
 	deep.handlers.decorations.store = function (store, handler) {
-		console.log("store decoration");
+		//console.log("store decoration");
 		deep.utils.up({
-			_store:deep.collider.replace(store),
-			post:deep.compose.condition(typeof store.post === "function").createIfNecessary().replace(function (object, id) {
+			_store : deep.collider.replace(store),
+
+			get : deep.compose
+			.condition(typeof store.get === "function")
+			.createIfNecessary()
+			.replace(function (id, options) {
 				var self = this;
-				console.log("deep.chain.post  add in chain : ", object, id);
+				if(id == "?" || !id)
+					id = "";
 
 				var func = function (s,e) {
-					console.log("deep.chain.post : ", object, id);
-					deep(self._store.post(object || deep.chain.val(self),id))
+					self._store.get(id, options)
 					.done(function (success) {
-						self._entries = [success];
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
+						console.log("deep(...).store : get : success : ", success);
+						if(success instanceof Array)
+							self._entries = deep(success).query("./*").nodes();
+						else
+							self._entries = [deep.Querier.createRootNode( success )];
+						forceNextQueueItem(self, success, null);
 					})
 					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				}
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-			put:deep.compose.condition(typeof store.put === "function").createIfNecessary().replace(function (object, id) {
-				var self = this;
-				console.log("deep.chain.put : add in chain : ", object, id);
-				var func = function (s,e) {
-					console.log("deep.chain.put : ", object, id);
-					deep(self._store.put(object  || deep.chain.val(self),id))
-					.done(function (success) {
-						self._entries = [success];
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				}
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-			patch:deep.compose.condition(typeof store.patch === "function").createIfNecessary().replace(function (object, id) {
-				var self = this;
-				var func = function (s,e) {
-					deep(self._store.patch(object  || deep.chain.val(self),id))
-					.done(function (success) {
-						self._entries = [success];
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				}
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-			get:deep.compose.condition(typeof store.get === "function").createIfNecessary().replace(function (id) {
-				var self = this;
-				var func = function (s,e) {
-					deep(self._store.get(id))
-					.done(function (success) {
-						self._entries = [].concat(success);
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				}
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-			rpc:deep.compose.condition(typeof store.rpc === "function").createIfNecessary().replace(function (id) {
-				var self = this;
-				var func = function (s,e) {
-					deep(self._store.rpc(method, body))
-					.done(function (success) {
-						self._entries = [].concat(success);
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				}
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-			del:deep.compose.condition(typeof store.del === "function").createIfNecessary().replace(function (id) {
-				var self = this;
-				var func = function (s,e) {
-					var val = deep.chain.val(self)
-					deep(self._store.del(id || val.id))
-					.done(function (success) {
-						self._entries = [].concat(success);
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				}
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-			range:deep.compose.condition(typeof store.range === "function").createIfNecessary().replace(function (arg1, arg2) {
-				var self = this;
-				var func = function (s,e) {
-					deep(self._store.range(id))
-					.done(function (success) {
-						self._entries = [].concat(success);
-						self.running = false;
-						nextQueueItem.apply(self, [success, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
+						forceNextQueueItem(self, null, error);
 					});
 				};
 				addInQueue.apply(this,[func]);
+				self.range = deep.Handler.range;
 				return self;
 			}),
+
+			post : deep.compose
+			.condition(typeof store.post === "function")
+			.createIfNecessary()
+			.replace(function (object, id, options) {
+				var self = this;
+				var func = function (s,e)
+				{
+					self._store.post(object || deep.chain.val(self),id, options)
+					.done(function (success) {
+						self._entries = [deep.Querier.createRootNode(success)];
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						console.log("deeo.chain.store.post : post failed : ", error);
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			}),
+
+			put : deep.compose
+			.condition(typeof store.put === "function")
+			.createIfNecessary()
+			.replace(function (object, options) {
+				var self = this;
+				//console.log("deep.chain.put : add in chain : ", object, id);
+				var func = function (s,e) {
+					//console.log("deep.chain.put : ", object, id);
+					self._store.put(object  || deep.chain.val(self),id, options)
+					.done(function (success) {
+						self._entries = [deep.Querier.createRootNode(success)];
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			}),
+
+			patch : deep.compose
+			.condition(typeof store.patch === "function")
+			.createIfNecessary()
+			.replace(function (object, id, options) {
+				var self = this;
+				var func = function (s,e) {
+					self._store.patch(object  || deep.chain.val(self),id, options)
+					.done(function (success) {
+						self._entries = [deep.Querier.createRootNode(success)];
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			}),
+
+			del : deep.compose
+			.condition(typeof store.del === "function")
+			.createIfNecessary()
+			.replace(function (id, options) {
+				var self = this;
+				var func = function (s,e) {
+					var val = deep.chain.val(self);
+					self._store.del(id || val.id, options)
+					.done(function (success) {
+						self._entries = [deep.Querier.createRootNode(success)];
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			}),
+
+			rpc : deep.compose
+			.condition(typeof store.rpc === "function")
+			.createIfNecessary()
+			.replace(function (method, body, uri, options) {
+				var self = this;
+				var func = function (s,e) {
+					self._store.rpc(method, body, uri, options)
+					.done(function (success) {
+						self._entries = [deep.Querier.createRootNode(success)];
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			}),
+
+			range : deep.compose
+			.condition(typeof store.range === "function")
+			.createIfNecessary()
+			.replace(function (arg1, arg2, uri, options) {
+				var self = this;
+				var func = function (s,e) {
+					self._store.range(arg1, arg2, uri, options)
+					.done(function (success) {
+						self._entries = deep(success.results).query("./*").nodes();
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			}),
+
+			bulk : deep.compose
+			.condition(typeof store.bulk === "function")
+			.createIfNecessary()
+			.replace(function (arr, uri, options) {
+				var self = this;
+				var func = function (s,e) {
+					self._store.bulk(arr, uri, options)
+					.done(function (success) {
+						self._entries = deep(success).query("./*").nodes();
+						forceNextQueueItem(self, success, null);
+					})
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				};
+				self.range = deep.Handler.range;
+				addInQueue.apply(this,[func]);
+				return self;
+			})
 		}, handler);
 		return handler;
-	}
+	};
 
-	deep.store.DeepStore = function () {
-		// body...
-	}
-	deep.store.DeepStore.prototype = {}
-	
+	deep.store.DeepStore = function () {};
+	deep.store.DeepStore.prototype = {};
 
 	deep.store.ArrayStore = function (arr, options) {
 		var store = new deep.store.DeepStore();
 		options = options || {};
-
-		deep.utils.up({
-			get:function (id) {
-				if(id.match("^((\.?/)?\?)|^(\?)"))
-					return deep(arr).query(id).store(this);
-				return deep(arr).query("./*?id="+id).store(this);
-			},
-			put:function (object, id) {
-				id = id || object.id;
-				if(options.schema)
-					deep(object)
-					.validate(options.schema)
-					.fail(function (error) {
-						object = error;
-					})
-					.root(arr)
-					.replace("./*?id="+id, object);
-				else
-					deep(arr)
-					.replace("./*?id="+id, object);
-				return deep(object).store(this);
-			},
-			post:function (object, id) {
-				id = id || object.id;
-				if(!id)
-					object.id = id = new Date().valueOf(); // mongo styled id
-				if(options.schema)
-					deep(object)
-					.validate(options.schema)
-					.done(function (report) {
-						arr.push(object);
-					})
-					.fail(function (error) {
-						object = error;
-					});
-				else
+		store.get = function (id) {
+			if(id === "")
+				id = "?";
+			if( id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
+				return deep(arr).query(id).store( this);
+			return deep(arr).query("./*?id="+id).store(this);
+		};
+		store.put = function (object, id) {
+			id = id || object.id;
+			if(options.schema)
+				deep(object)
+				.validate(options.schema)
+				.fail(function (error) {
+					object = error;
+				})
+				.root(arr)
+				.replace("./*?id="+id, object);
+			else
+				deep(arr)
+				.replace("./*?id="+id, object);
+			return deep(object).store(this);
+		};
+		store.post = function (object, id) {
+			id = id || object.id;
+			if(!id)
+				object.id = id = new Date().valueOf(); // mongo styled id
+			if(options.schema)
+				deep(object)
+				.validate(options.schema)
+				.done(function (report) {
 					arr.push(object);
-				return deep(object).store(this);
-			},
-			del:function (id) {
-				return deep(arr).remove("./*?id="+id).store(this);
-			},
-			patch:function (object, id) {
-				return deep(arr).query("./*?id="+id).up(object).store(this);
-			},
-			log:function (message) {
-				return deep(arr).query("./*").log(message).store(this);
-			}
-		}, store);
+				})
+				.fail(function (error) {
+					object = error;
+				});
+			else
+				arr.push(object);
+			return deep(object).store(this);
+		};
+		store.del = function (id) {
+			return deep(arr).remove("./*?id="+id).store(this);
+		};
+		store.patch = function (object, id) {
+			return deep(arr).query("./*?id="+id).up(object).store(this);
+		};
+		store.range = function (start, end) {
+			return deep(arr).query("./*?id="+id).up(object).store(this);
+		};
 		return store;
 	};
 
-	deep.store.ObjectStore = function (obj, options) {
+	deep.store.ObjectStore = function (obj, options)
+	{
 		var store = new deep.store.DeepStore();
 		options = options || {};
-		deep.utils.up({
-			get:function (id) {
-				if(id[0] == "." || id[0] == "/")
-					return deep(obj).query(id).store(this);
-				return deep(obj).query("./"+id).store(this);
-			},
-			put:function (object, query) {
-				console.log("ObjectStore.put : ", object, query);
+		store.get = function (id)
+		{
+			if(id[0] == "." || id[0] == "/")
+				return deep(obj).query(id).store(this);
+			return deep(obj).query("./"+id).store(this);
+		};
+		store.put = function (object, query)
+		{
+			console.log("ObjectStore.put : ", object, query);
+			deep(obj)
+			.setByPath(query, object);
+			return deep(object).store(this);
+		};
+		store.post = function (object, path)
+		{
+			if(options.schema)
+				deep(object)
+				.validate(options.schema)
+				.fail(function (error) {
+					object = error;
+				})
+				.root(obj)
+				.setByPath(path, object);
+			else
 				deep(obj)
-				.setByPath(query, object);
-				return deep(object).store(this);
-			},
-			post:function (object, path) {
-				if(options.schema)
-					deep(object)
-					.validate(options.schema)
-					.fail(function (error) {
-						object = error;
-					})
-					.root(obj)
-					.setByPath(path, object);
-				else
-					deep(obj)
-					.setByPath(path, object);
-				return deep(object).store(this);
-			},
-			del:function (id) {
-				var res = [];
-				if(id[0] == "." || id[0] == "/")
-					deep(obj).remove(id)
-					.done(function (removed) {
-						res = removed;
-					});
-				else
-					deep(obj).remove("./"+id)
-					.done(function (removed) {
-						res = removed;
-					});
-				return deep(res).store(this);
-			},
-			patch:function (object, id) {
-				if(id[0] == "." || id[0] == "/")
-					return deep(arr).query(id).up(object).store(this);
-				return deep(arr).query("./"+id).up(object).store(this);
-			},
-			log:function (message) {
-				return deep(obj).log(message).store(this);
-			}
-		}, store);
+				.setByPath(path, object);
+			return deep(object).store(this);
+		};
+		store.del = function (id)
+		{
+			var res = [];
+			if(id[0] == "." || id[0] == "/")
+				deep(obj).remove(id)
+				.done(function (removed)
+				{
+					res = removed;
+				});
+			else
+				deep(obj).remove("./"+id)
+				.done(function (removed)
+				{
+					res = removed;
+				});
+			return deep(res).store(this);
+		};
+		store.patch = function (object, id)
+		{
+			if(id[0] == "." || id[0] == "/")
+				return deep(arr).query(id).up(object).store(this);
+			return deep(arr).query("./"+id).up(object).store(this);
+		};
 		return store;
 	};
 
+	deep.get = function  (request, options) {
+		if(typeof request !== "string")
+			return request;
+		var infos = deep.parseRequest(request);
+		if(!infos.store)
+			return request;
+		return infos.store.get(infos.uri, options);
+	};
+	deep.getAll = function  (requests, options) {
+		var alls = [];
+		requests.forEach(function (request) {
+			if(typeof request !== "string")
+			{
+				alls.push(request);
+				return;
+			}
+			var infos = deep.parseRequest(request);
+			if(!infos.store)
+				alls.push( request );
+			else
+				alls.push( infos.store.get(infos.uri, options));
+		});
+		return deep.all(alls);
+	};
 
-	// console.log("Deep initialisaed");
+	deep.stores.queryThis = {
+		get:function (request, options) {
+			options = options || {};
+			var root = options.root;
+			var basePath = options.basePath;
+			var infos = request;
+			if(typeof infos === 'string')
+				infos = deep.parseRequest(infos);
+			var res = null;
+			if(root._isDQ_NODE_)
+				res = Querier.query(root, request, { keepCache:false });
+			else
+			{
+				basePath = basePath || '';
+				if(basePath !== '' && infos.uri.substring(0,3) == "../")
+					infos.uri = ((basePath[basePath.length-1] != "/")?(basePath+"/"):basePath)+infos.uri;
+				res = Querier.query(root, infos.uri, { keepCache:false });
+			}
+			if(res)
+				switch(infos.protocole)
+				{
+					case "first" :
+						res = res[0] || null;
+						break;
+					case "last" :
+						res = res[res.length-1] || null;
+						break;
+				}
+			console.log("QUERY THIS : "+request + " - base path : "+basePath, " - results : ", JSON.stringify(res, null, ' '));
+			return res;
+		}
+	};
 
+	deep.parseRequest = function (request) {
+		var protoIndex = request.indexOf("::");
+		var protoc = null;
+		var uri = request;
+		var store = null;
+		if(protoIndex >= 0)
+		{
+			protoc = request.substring(0,protoIndex);
+			uri = request.substring(protoIndex+2);
+		}
+		//console.log("parseRequest : protoc : ", protoc, " - uri : ", uri);
+		var queryThis = false;
+		if(uri[0] == '#' || protoc == "first" || protoc == "last" || protoc == "this")
+		{
+			store = deep.stores.queryThis;
+			queryThis = true;
+		}
+		else if(!protoc)
+		{
+			//console.log("no protocole : try extension");
+			for( var i in deep.stores )
+			{
+				var storez = deep.stores[i];
+				if(!storez.extensions)
+					continue;
+				for(var j =0; j < storez.extensions.length; ++j)
+				{
+					var extension = storez.extensions[j];
+					if(uri.match(extension))
+					{
+						store = storez;
+						break;
+					}
+				}
+				if(store)
+					break;
+			}
+		}
+		else
+			store = deep.stores[protoc];
+		if(uri[0] == '#')
+			uri = uri.substring(1);
+		return {
+			queryThis:queryThis,
+			store:store,
+			protocole:protoc,
+			uri:uri
+		};
+	};
+	//_______________________________________________________________________________________
+
+	deep.treat =  function(treatment, context) {
+		return deep.applyTreatment.apply(treatment, [context || {}]);
+	};
+	deep.applyTreatment = function(context) 
+	{
+		if (!this.how || this.condition === false)
+			return false;
+		if (typeof this.condition === "function" && !this.condition.apply(this))
+			return false;
+		context = context || this;
+		var self = this;
+		var objs = [];
+
+		if (typeof this.what === 'string')
+		{
+			var what = deep.interpret(this.what, context);
+			objs.push(deep.get(what, {
+				root: context._deep_entry || context
+			}));
+		}
+		else if (typeof this.what === 'function')
+			objs.push(this.what.apply(controller));
+		else if (this.what)
+			objs.push(this.what);
+
+		if (typeof this.how === "string")
+		{
+			var how = deep.interpret(this.how, context);
+			objs.push(deep.get(how, {
+				root: context._deep_entry || context
+			}));
+		}
+		if (typeof this.where === "string") {
+			var where = deep.interpret(this.where, context);
+			objs.push(deep.get(where, {
+				root: context._deep_entry || context,
+				acceptQueryThis: true
+			}));
+		}
+		return deep.all(objs)
+		.done(function(results) {
+			var what = (self.what) ? results.shift() : context;
+			if (what._isDQ_NODE_) what = what.value;
+			var how = (typeof self.how === "string") ? results.shift() : self.how;
+			var where = (typeof self.where === "string") ? results.shift() : self.where;
+			var r = "";
+			var nodes = self.nodes || null;
+			try {
+				r = how(what);
+				if (where) nodes = where(r, nodes);
+			} catch (e) {
+				console.log("Error while treating : ", e);
+				if (typeof self.fail === 'function')
+					return self.fail.apply(context, [e]) || e;
+				return e;
+			}
+			//if(!dontKeepNodes)
+			//	self.nodes = nodes;
+			if (typeof self.done === "function")
+				return self.done.apply(context, [nodes, r, what]) || [nodes, r, what];
+
+			return nodes || r;
+		})
+		.fail(function(error) {
+			console.log("Error while treating : ", error);
+			if (typeof self.fail === 'function')
+				return self.fail.apply(context, [error]) || error;
+			return error;
+		});
+	};
+
+	//_________________________________________________________________________________________
+	deep.DeepPromise = DeepPromise;
 	deep.rethrow = true;
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________
-})
+});

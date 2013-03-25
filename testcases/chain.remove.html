@@ -99,10 +99,17 @@
 	 }], report);
 
 	//________________________________________________________________________________________
+
+
+
 	deep.all(tests).then(function (argument) {
 		printReport("chain.remove : success ", success, tests.length-success, tests.length);
 	}, function (argument) {
 		printReport("chain.remove : errors ", success, tests.length-success, tests.length);
 	});
+
+
+
+
 })();
 </script>

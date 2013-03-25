@@ -366,7 +366,47 @@ define(function(require){
 	}
 	//var result = {};
 
-	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function retrieveFullSchemaByPath(schema, path, delimitter)
+	var createStartEndRangeObject = utils.createStartEndRangeObject = function (start, end, total) {
+		var res = {
+			step:0.0,
+			width:end-start+1,
+			total:total,
+			start:0,
+			end:0
+		} 
+		if(total == 0)
+			return res;
+		res.start = Math.max(Math.min(total-res.width,start), 0);
+		res.end = Math.max(Math.min(end, total),0);
+		res.step = (res.start)/res.width;
+		//console.log("start-end range : ", res);
+		return res;
+	}
+	var createStepWidthRangeObject = utils.createStepWidthRangeObject = function (step, width, total) 
+	{
+		var res = {
+			step:0,
+			width:0,
+			total:total,
+			start:0,
+			end:0
+		} 
+		if(total == 0)
+			return res;
+		res.width = width;
+		res.step = step;
+		res.start = Math.round(step*width);
+		res.end = Math.min(Math.round((step+1)*width)-1, total-1);
+		if(res.start >= total)
+		{
+			res.start = Math.max(total-width,0);
+			res.step = res.start/res.width;
+		}	
+		console.log("step-width range : ", res);
+		return res;
+	}
+
+	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function (schema, path, delimitter)
 	{
 		var parts = path.split(delimitter || ".");
 		if(parts[0] == "" || parts[0] == ".")

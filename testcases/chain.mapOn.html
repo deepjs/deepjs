@@ -1,0 +1,61 @@
+<h2>deep chain.mapOn : </h2>
+<script type="text/javascript">
+	//console.log("deep-copy.html loaded : ");
+(function(){
+	var deep = require("deep");
+	var success = 0;
+	var failed = 0;
+	var count = 0;
+
+	function report(result)
+	{
+		count++;
+		var ok = result.equal;
+		if(ok)
+			success++;
+		else
+			failed++;
+	}
+
+	var tests = [];
+
+	//________________________________________________________________________________________
+
+
+deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
+.pushHandlerTo(tests)
+.query("./*")
+.mapOn([
+    {itemId:1, value:true}, 
+    {itemId:2, value:"133"}, 
+    {itemId:2, value:"hello"}
+    ], 
+    "id","itemId","linkeds")
+.valuesEqual([
+    {
+        title:"my title", 
+        id:1, 
+        linkeds:{itemId:1, value:true}
+    },
+    { 
+        title:"my title 2", 
+        id:2,
+        linkeds:[
+            {itemId:2, value:"133"},
+            { itemId:2, value:"hello"}
+        ]
+    }
+], report);
+
+
+	deep.all(tests).then(function (argument) {
+		printReport("chain.mapOn : success ", success, tests.length-success, tests.length);
+	}, function (argument) {
+		printReport("chain.mapOn : errors ", success, tests.length-success, tests.length);
+	});
+
+
+
+
+})();
+</script>

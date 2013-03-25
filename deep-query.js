@@ -649,20 +649,10 @@ define(function defineDeepQuery(require)
 						var r =  part.handler(item);
 						if(r && r.length > 0)
 							results = results.concat(r);
-					})
-					/*results.forEach(function (a) {
-						console.log("do selector results: ", a.path)
-					})*/
-					//console.log("catch selector : items : ", results)
-					
+					});
 					items = results;
 					break;
 				case 'rql': 
-					//console.log("before do rql : ", items)
-					/*results.forEach(function (a) {
-						console.log("before do rql ", a.path)
-					})*/
-					
 					items = part.handler(items);
 					break;
 			}
