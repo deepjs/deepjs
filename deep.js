@@ -1169,16 +1169,16 @@ function(require)
 		 * @param  {Array} args the arguments to pass to 'func'
 		 * @return {DeepHandler}  the current chain handler (this)
 		 */
-		run : function (func, args)
+		run : function (funcRef, args)
 		{
 			var self = this;
 			args = args || [];
 			var create = function(s,e){
-				// console.log("deep.run : entries : ", self._entries)
+				//console.log("deep.run : entries : ", self._entries, funcRef);
 				var alls = [];
 				self._entries.forEach(function(result){
-					// console.log("deep.run : ", func, args, result.value[func])
-					if(!func)
+					//console.log("deep.run : ", result.value, result.value[funcRef]);
+					if(!funcRef)
 					{
 						if(typeof result.value != "function")
 							return;
@@ -1188,10 +1188,10 @@ function(require)
 							alls.push(result.value(args || null));
 						return;
 					}
-					if(typeof func === 'function')
-						alls.push(runFunctionFromValue(result, func, args));
-					else if(typeof func === 'string')
-						alls.push(callFunctionFromValue(result, func, args));
+					if(typeof funcRef === 'function')
+						alls.push(runFunctionFromValue(result, funcRef, args));
+					else if(typeof funcRef === 'string')
+						alls.push(callFunctionFromValue(result, funcRef, args));
 					else
 						alls.push(result);
 				});
@@ -3016,7 +3016,10 @@ deep : just say : Powaaaaaa ;)
 			return request;
 		var infos = deep.parseRequest(request);
 		if(!infos.store)
-			return request;
+			if(!infos.protocole)
+				return request;
+			else
+				return new Error("no store found with : ", request);
 		if(infos.queryThis)
 			return infos.store.get(infos, options);
 		return infos.store.get(infos.uri, options);

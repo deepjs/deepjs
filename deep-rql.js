@@ -291,48 +291,10 @@ layer.operators = {
 		return ok;
 	}),
 	contains: filter(function rqlContains(array, value){
-		//console.log("rql : contains : ", array, value)
-		if(typeof value == "function"){
-			if(array instanceof Array)
-				return array.some(function(v){
-					var r = retrieve(value);
-					if(r)
-						return r.call([v]).length;
-					return false;
-				});
-			else
-				return false;
-		}
-		else{
-			if(!(array instanceof Array ))
-				return false;
-			var ok = false;
-			var count = 0;
-			while(!ok && count < array.length)
-				if(array[count++] == value)
-					ok = true;
-			return ok;
-		}
+		return utils.inArray(value, array);
 	}),
 	excludes: filter(function rqlExcludes(array, value){
-		if(!(array instanceof Array ))
-				return false;
-		if(typeof value == "function"){
-			return !array.some(function(v){
-				var r = retrieve(value);
-				if(r)
-					return r.call([v]).length;
-				return false;
-			});
-		}
-		else{
-			var ok = true;
-			var count = 0;
-			while(!ok && count < array.length)
-				if(array[count++] == value)
-					ok = false;
-			return ok;
-		}
+		return !utils.inArray(value, array);
 	}),
 	or: function rqlOr(){
 		var items = [];
