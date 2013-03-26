@@ -154,106 +154,6 @@ function(require)
 	var Querier = require("./deep-query");
 	var deepCompose = require("./deep-compose");
 
-	/**
-	 * Deep Synch Chain Handler (maybe deprecated)
-	 * @class  SynchHandler
-	 * @constructor
-	 * @param {Object} obj    the object from where start synch chain
-	 * @param {Object} schema the schema associated to it's object
-	 */
-	var SynchHandler = function (obj, schema)
-	{
-		if(obj instanceof DeepHandler)
-		{
-			this.chain = obj;
-		}
-		else
-			this.chain = deep(obj, schema);
-	};
-	SynchHandler.prototype = {
-		chain:null,
-		branches:null,
-		query:function (q, options) {
-			var res = deep.chain.values(this.chain.query(q, options));
-			return res;
-		},
-		/*select:function (q, options) {
-			this.chain.query(q, options);
-			return this;
-		},*/
-		cancelBranches:function (reason) {
-			if(this.branches)
-				this.branches.forEach(function (b) {
-					b.cancel();
-				});
-			return this;
-		},
-		values:function () {
-			return deep.chain.values(this.chain);
-		},
-		nodes:function () {
-			return deep.chain.nodes(this.chain);
-		},
-		paths:function () {
-			return deep.chain.paths(this.chain);
-		},
-		schemas:function () {
-			return deep.chain.schemas(this.chain);
-		},
-		branch:function ()
-		{
-			if(!this.branches)
-				this.branches = [];
-			var cloned = cloneHandler(this.chain, true);
-			cloned.running = false;
-			this.branches.push(cloned);
-			nextQueueItem.apply(cloned, [this.chain.result, this.chain.failure]);
-			return cloned;
-		},
-		_isBRANCHES_:true,
-		replace:function (what, by) {
-			this.chain.replace(what,by);
-			return this;
-		},
-		remove:function (what) {
-			this.chain.remove(what);
-			return this;
-		},
-		up:function () {
-			var args = Array.prototype.slice.call(arguments);
-			this.chain._entries.forEach(function (e) {
-				args.forEach(function  (a) {
-					deep.utils.up( a, e.value, e.schema );
-				});
-			});
-			return this;
-		},
-		bottom:function () {
-			var args = Array.prototype.slice.call(arguments);
-			this.chain._entries.forEach(function (e) {
-				args.forEach(function  (a) {
-					deep.utils.bottom( a, e.value, e.schema );
-				});
-			});
-			return this;
-		},
-		log:function () {
-			this.chain.log.apply(this.chain, arguments);
-			return this;
-		},
-		logValues:function (msg) {
-			this.chain.logValues(msg);
-			return this;
-		},
-		error:function (argument) {
-			var er = new Error(argument);
-			er.values = deep.chain.values(this.chain);
-			return er;
-		}
-	};
-
-
-
 	function callFunctionFromValue(entry, functionName, args)
 	{
 		if(typeof args === 'undefined')
@@ -326,6 +226,11 @@ function(require)
 			this.reports.result = result;
 		}
 
+		if(this.oldQueue)
+		{
+			this.callQueue = this.callQueue.concat(this.oldQueue);
+			delete this.oldQueue;
+		}
 
 		if(this.callQueue.length>0)
 		{
@@ -423,12 +328,9 @@ function(require)
 			nextQueueItem.apply(this);
 	}
 
-	function createSynchHandler(self, s, e){
-		return new SynchHandler(self);
-	}
-
 	function cloneHandler(handler, cloneValues)
 	{
+		//console.log("cloneHandler : ", handler);
 		var newRes = [];
 		if(cloneValues)
 			handler._entries.forEach(function (old) {
@@ -476,7 +378,22 @@ function(require)
 		callQueue:null,
 		reports:null,
 		queries:null,
-
+		brancher:function ()
+		{
+			var self = this;
+			var brancher = {
+				branch:function () {
+					if(!this.branches)
+						this.branches = [];
+					var cloned = cloneHandler(self, true);
+					this.branches.push(cloned);
+					forceNextQueueItem(cloned,self.reports.result, self.reports.failure)
+					return cloned;
+				},
+				_isBRANCHES_:true
+			}
+			return brancher;
+		},
 		/**
 		* reverse entries order
 		*/
@@ -537,7 +454,7 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				deep.when(func(createSynchHandler(self,s,e))).then(function (success)
+				deep.when(func(cloneHandler(self,true).brancher())).then(function (success)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [success, null]);
@@ -581,13 +498,13 @@ function(require)
 				//console.log("deep.chain.done : ",s,e)
 				if(e || !callBack || s instanceof Error)
 				{
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
+					forceNextQueueItem(self, s, e);
 					return;
 				}
-				//console.log("done : self : ", self._entries);
+				self.oldQueue = self.callQueue;
+				self.callQueue = [];
 
-				deep.when(callBack(s, createSynchHandler(self,s,e))).then(function (argument) {
+				deep.when(callBack(s, self, self.brancher())).then(function (argument) {
 					var error = null;
 					if(typeof argument === 'undefined')
 						argument = s;
@@ -596,11 +513,13 @@ function(require)
 						error = argument;
 						argument = null;
 					}
-					self.running = false;
-					nextQueueItem.apply(self, [argument, error]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, argument, error);
 				}, function (error) {
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, null, error);
 				});
 			};
 			func._isTHEN_ = true;
@@ -614,30 +533,24 @@ function(require)
 			{
 				if((e === null || typeof e === 'undefined') || !callBack)
 				{
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
+					forceNextQueueItem(self, s, e);
 					return;
 				}
-
-				deep.when(callBack(e, createSynchHandler(self,s,e))).then(function (argument) {
+				self.oldQueue = self.callQueue;
+				self.callQueue = [];
+				deep.when(callBack(e, self, self.brancher())).then(function (argument) {
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
 					if(typeof argument === 'undefined')
-					{
-						self.running = false;
-						nextQueueItem.apply(self, [null, e]);
-					}
+						forceNextQueueItem(self, null, e);
 					else if(argument instanceof Error)
-					{
-						self.running = false;
-						nextQueueItem.apply(self, [null, argument]);
-					}
+						forceNextQueueItem(self, null, argument);
 					else
-					{
-						self.running = false;
-						nextQueueItem.apply(self, [argument, null]);
-					}
+						forceNextQueueItem(self, argument, null);
 				}, function (error) {
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, null, error);
 				});
 			};
 			func._isTHEN_ = true;
@@ -860,6 +773,26 @@ function(require)
 			};
 			addInQueue.apply(src, [func]);
 			return src;
+		},
+		select : function(q, errorIfEmpty)
+		{
+			var src = this;
+			if(!(q instanceof Array))
+				q = [q];
+			var res = [];
+			src._entries.forEach(function (r) {
+				q.forEach(function (qu) {
+					res = res.concat(src.querier.query(r, qu , {resultType:"full"}));
+				});
+			});
+			res = deep.utils.arrayUnique(res, "path");
+			if(res.length === 0 && errorIfEmpty)
+				throw new Error("deep.query could not gives empty results");
+			var finaly = [];
+			res.forEach(function (r) {
+				finaly.push(r.value);
+			});
+			return finaly;
 		},
 		//_________________________________________________________________    MODELISATION
 		schema : function(schema)
@@ -2102,9 +2035,21 @@ function(require)
 				forceNextQueueItem(self, deep.chain.values(self), null);
 			};
 			var func = function(s, e) {
+				if(self._entries.length === 0)
+				{
+					forceNextQueueItem(self, deep.chain.values(self), null);
+					return;
+				}
 				if(typeof what === 'string')
 				{
 					var parsed = deep.parseRequest(what);
+					var cloned = cloneHandler(self, true);
+					var foreigns = cloned.select("./"+localKey).join(",");
+					var constrain = foreignKey+"=in=("+foreigns+")";
+					if(parsed.uri.match(/\/\?/gi))
+						parsed.uri += "&"+constrain;
+					else
+						parsed.uri += "?"+constrain;
 					if(parsed.store !== null)
 					{
 						deep(parsed.store.get(parsed.uri)).done(function (results) {
@@ -2787,7 +2732,7 @@ deep : just say : Powaaaaaa ;)
 				var func = function (s,e) {
 					self._store.get(id, options)
 					.done(function (success) {
-						console.log("deep(...).store : get : success : ", success);
+						//console.log("deep(...).store : get : success : ", success);
 						if(success instanceof Array)
 							self._entries = deep(success).query("./*").nodes();
 						else
