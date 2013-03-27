@@ -81,6 +81,7 @@ deep : just say : Powaaaaaa ;)
 				obj.forEach(function (a) {
 					handler._entries.push(Querier.createRootNode(a, schema));
 				});
+				return forceNextQueueItem(handler, deep.chain.values(handler), null);
 			}
 			else if(obj instanceof DeepHandler)
 				handler._entries = [].concat(obj._entries);
@@ -297,16 +298,12 @@ deep : just say : Powaaaaaa ;)
 		//console.log("cloneHandler : ", handler);
 		var newRes = [];
 		if(cloneValues)
-			handler._entries.forEach(function (old) {
-				newRes.push(old);
-			});
-		var newHandler = handler.newHandler({
-			//root:handler._root,
-			queries:utils.copyArray(handler.queries),
-			_entries:newRes
+			newRes = newRes.concat(handler._entries);
+		var newHandler = new DeepHandler({
+			_entries:newRes,
+			result: handler.reports.result,
+			failure: handler.reports.failure
 		});
-		newHandler.reports.result = handler.reports.result;
-		newHandler.reports.failure = handler.reports.failure;
 		return newHandler;
 	}
 
@@ -326,14 +323,13 @@ deep : just say : Powaaaaaa ;)
 		options = options || {};
 		this.querier = new Querier();
 		this.callQueue = [];
-		//this._root = options._root || {};
 		this._entries = options._entries || [];
 		this.queries = [];
 		this.deferred = deep.Deferred();
 		this.rejected=false;
 		this.reports = {
-			result:null,
-			failure:null
+			result:options.result || null,
+			failure:options.failure || null
 		};
 	};
 	deep.Handler = DeepHandler;
@@ -659,18 +655,11 @@ deep : just say : Powaaaaaa ;)
 			{
 				//console.log("do query : ", q)
 				var res = [];
-				if(console.flags && console.flags["deep.query.profile"])
-					console.time("query");
 				src._entries.forEach(function (r) {
-					// console.log("do query : ", q , " - on : ", r)
 					q.forEach(function (qu) {
 						res = res.concat(src.querier.query(r, qu , {resultType:"full"}));
 					});
-					//console.log("do query : ", q , " - on : ", r, " - results \n", res);
 				});
-				if(console.flags && console.flags["deep.query.profile"])
-					console.timeEnd("query");
-				res = deep.utils.arrayUnique(res, "path");
 				src._entries = res;
 				if(res.length === 0 && errorIfEmpty)
 					throw new Error("deep.query could not gives empty results");
@@ -691,7 +680,6 @@ deep : just say : Powaaaaaa ;)
 					res = res.concat(src.querier.query(r, qu , {resultType:"full"}));
 				});
 			});
-			res = deep.utils.arrayUnique(res, "path");
 			if(res.length === 0 && errorIfEmpty)
 				throw new Error("deep.query could not gives empty results");
 			var finaly = [];
@@ -1331,14 +1319,14 @@ deep : just say : Powaaaaaa ;)
 		val:function  (callBack)
 		{
 			var self = this;
-			var func = function()
+			var func = function(s,e)
 			{
 				var  a = self._entries[0]?self._entries[0].value:null;
 				deep.when(callBack(a)).then(function (argument) {
 					if(typeof argument === "undefined")
 						argument = a;
 					self.running = false;
-					nextQueueItem.apply(self, [argument, null]);
+					nextQueueItem.apply(self, [s, e]);
 				}, function (error) {
 					console.error("error : deep.values : ",error);
 					self.running = false;
@@ -1377,14 +1365,14 @@ deep : just say : Powaaaaaa ;)
 		values:function  (callBack)
 		{
 			var self = this;
-			var func = function()
+			var func = function(s,e)
 			{
 				var  a = deep.chain.values(self);
 				deep.when(callBack(a)).then(function (argument) {
 					if(typeof argument === "undefined")
 						argument = a;
 					self.running = false;
-					nextQueueItem.apply(self, [argument, null]);
+					nextQueueItem.apply(self, [s, e]);
 				}, function (error) {
 					console.error("error : deep.values : ",error);
 					self.running = false;
@@ -1402,14 +1390,12 @@ deep : just say : Powaaaaaa ;)
 		nodes:function  (callBack)
 		{
 			var self = this;
-			var func = function()
+			var func = function(s,e)
 			{
 				var  a = self._entries.concat([]);
 				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
 					self.running = false;
-					nextQueueItem.apply(self, [argument, null]);
+					nextQueueItem.apply(self, [s, e]);
 				}, function (error) {
 					console.error("error : deep.nodes : ",error);
 					self.running = false;
@@ -1427,14 +1413,14 @@ deep : just say : Powaaaaaa ;)
 		paths:function  (callBack)
 		{
 			var self = this;
-			var func = function()
+			var func = function(s,e)
 			{
 				var  a = deep.chain.paths(self);
 				deep.when(callBack(a)).then(function (argument) {
 					if(typeof argument === "undefined")
 						argument = a;
 					self.running = false;
-					nextQueueItem.apply(self, [argument, null]);
+					nextQueueItem.apply(self, [s, e]);
 				}, function (error) {
 					console.error("error : deep.paths : ",error);
 					self.running = false;
@@ -1452,14 +1438,14 @@ deep : just say : Powaaaaaa ;)
 		schemas:function  (callBack)
 		{
 			var self = this;
-			var func = function()
+			var func = function(s,e)
 			{
 				var  a = deep.chain.schemas(self);
 				deep.when(callBack(a)).then(function (argument) {
 					if(typeof argument === "undefined")
 						argument = a;
 					self.running = false;
-					nextQueueItem.apply(self, [argument, null]);
+					nextQueueItem.apply(self, [s,e]);
 				}, function (error) {
 					console.error("error : deep.schemas : ",error);
 					self.running = false;
@@ -1512,7 +1498,7 @@ deep : just say : Powaaaaaa ;)
 								var val = toLoad.value;
 								if(context)
 									val = deep.interpret(toLoad.value, context);
-								promises.push(deep.get(toLoad.value, {root:toLoad.root.value, basePath:toLoad.path }));
+								promises.push(deep.get(toLoad.value, {root:(toLoad.root)?toLoad.root.value:toLoad.value, basePath:toLoad.path }));
 							}
 							//console.log("deep.deepLoad : toLoad : ", toLoad);
 							else if(typeof toLoad.value === 'function')
@@ -1577,7 +1563,7 @@ deep : just say : Powaaaaaa ;)
 								var toLoad = e.value;
 								if(context)
 									toLoad = deep.interpret(toLoad, context);
-								promises.push(deep.get(toLoad, { root:e.root.value, basePath:e.path }));
+								promises.push(deep.get(toLoad, { root:(e.root)?e.root.value:e.value, basePath:e.path }));
 							}
 							else
 								promises.push(e.value);
@@ -2348,7 +2334,6 @@ deep : just say : Powaaaaaa ;)
 						def.reject(a);
 					return;
 				}
-
 				res[i] = a;
 				c++;
 				if(c == count)
@@ -2362,7 +2347,6 @@ deep : just say : Powaaaaaa ;)
 							def.reject(r);
 						return;
 					}
-
 					res[i] = r;
 					c++;
 					if(c == count)
@@ -2382,11 +2366,9 @@ deep : just say : Powaaaaaa ;)
 	deep.Deferred = promise.Deferred = function (){
 		return new DeepDeferred();
 	};
-		//______________________________________
+	//______________________________________
 	deep.DeepPromise = DeepPromise;
 	//________________________________________________________ DEEP CHAIN UTILITIES
-
-
 
 	deep.sequence = function (funcs, args)
 	{
@@ -2398,7 +2380,6 @@ deep : just say : Powaaaaaa ;)
 		var doIt = function (r) {
 			deep.when(r).then(function (r)
 			{
-				//console.log("deep.sequence : doIt.when : r : ", r)
 				if(funcs.length === 0)
 				{
 					if(typeof r === 'undefined')
@@ -2407,7 +2388,6 @@ deep : just say : Powaaaaaa ;)
 						if(args.length == 1)
 							r = args[0];
 					}
-					//console.log("deep.sequence. resolve because funcs.length == 0 : ", r)
 					def.resolve(r);
 					return r;
 				}
@@ -2770,7 +2750,8 @@ deep : just say : Powaaaaaa ;)
 		return store;
 	};
 
-	deep.get = function  (request, options) {
+	deep.get = function  (request, options)
+	{
 		if(typeof request !== "string")
 			return request;
 		var infos = deep.parseRequest(request);
@@ -2783,7 +2764,8 @@ deep : just say : Powaaaaaa ;)
 			return infos.store.get(infos, options);
 		return infos.store.get(infos.uri, options);
 	};
-	deep.getAll = function  (requests, options) {
+	deep.getAll = function  (requests, options)
+	{
 		var alls = [];
 		requests.forEach(function (request) {
 			if(typeof request !== "string")
@@ -2910,8 +2892,6 @@ deep : just say : Powaaaaaa ;)
 					return self.fail.apply(context, [e]) || e;
 				return e;
 			}
-			//if(!dontKeepNodes)
-			//	self.nodes = nodes;
 			if (typeof self.done === "function")
 				return self.done.apply(context, [nodes, r, what]) || [nodes, r, what];
 

@@ -12,7 +12,7 @@ define(function(require){
 		//,"list-item-controller":true
 	};
 	console.log("start app");
-	deep = require("deep");
+	deep = require("deep/deep");
 	var init = function()
 	{	
 		console.log("app intialised");
