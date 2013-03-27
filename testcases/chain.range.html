@@ -22,13 +22,11 @@
 	//________________________________________________________________________________________
 	deep([0,1,2,3,4,5])
 	.pushHandlerTo(tests)
-	.query("./*")
 	.range(1,4)
 	.valuesEqual([1,2,3,4], report);
 
 	deep([0,1,2,3,4,5])
 	.pushHandlerTo(tests)
-	.query("./*")
 	.range({step:1,width:3})
 	.valuesEqual([3,4,5], report);
 

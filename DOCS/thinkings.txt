@@ -959,3 +959,144 @@ deep.store("json::/campaign/")
 ...
 
 deep.ui("...").render().bind()
+
+
+//______________
+
+
+
+/*
+	add on : 
+
+	deep.firstReturn(fn, fn, fn, fn,....);
+
+	and deep.compose.stopIfReturn()
+
+
+	pour la chaine : 
+
+
+	deep(obj, schema, opt)
+
+	ou deep([obj, obj, obj], schema, opt)
+
+	+
+
+	split chain : 
+
+	no more  promise : 
+
+	just deep(...) donne full api deep
+
+	+
+
+
+	.ui() = donne chaine ui (full + restriction + refresh + deeplink + bind ...)
+	.bootstrap() = donne chain ui + modal + pager + 
+
+	.autobahn() = roles + facets + ressources + routes + statics
+	
+	.smartui() = ui + specific
+	.smartbahn() = autobahn + specific
+	
+*/
+
+
+	Stable : 
+		deep-query/rql
+		deep
+		utils
+
+
+Cadre : 
+
+Layered/Aspect/OO
+	relations, inheritance and relative path
+MVC
+	up-bottom
+	
+Asynch
+Thin Server / Rest
+JSON
+
+	CCS
+	class composition
+
+	colliders 
+
+
+TODO : 
+	deep
+		.query just execute query (on each current entries) and inject the concatenation of results in the chain
+		.move change current entries
+
+	deep-compose : manage classes
+	deep-collider : write more
+	deep-schema and CCS :
+		CCS model and algorithm
+
+	deep-request : complete refactoring
+	
+	deep-plugin : 
+		Handler pattern
+		handler base objects
+
+	promise pattern : 
+		the first and only argument must give light weight (and secured - in a small dedicated object) API to access the chain handler itself SYNCHRONOUSLY 
+		And : for asynch management : it must give access for branches creator and will act as promise when returned (only for branches therefor all other function of the handler are synchro)
+
+		example : 
+			deep(...).done(function(success, handler){
+				var values = handler.values();
+				...
+				if(true)
+					return handler.cancel();
+				...
+				if(true)
+					return handler.query("./tata");
+				...
+				if(error)
+					return handler.error("what you want")
+
+				handler.branch().mybranch();
+				handler.branch().mybranch();
+				handler.branch().mybranch();
+
+				return handler;
+			})
+
+
+	test cases pattern : 
+		assertEqual
+		assertValuesEqual
+		assertTrue
+		assertFalse
+		validate
+
+		maybe pattern to keep (clone) whole trunc to be execute in general test caser on demand (later)
+			example :
+
+			to store and execute multiple time the cloned chain (or any chain) for tests purposes : we need something like :
+
+			var d = deep(...).pushTo(tests).keepQueue().mychain()
+
+			and
+
+			d.restart()
+
+			==> implies to modify the nextQueueItem
+				and to keep first reference of the chain.
+
+
+		put condition on tests and validation family : 
+			good pattern : keep a global with flags that will be used as condition
+				example : 
+					deep(...).mychain().assertEqual({}, { condition:console.flags.bazar, callBack:Reporter.report })
+				so you could debug live by playing with flags
+	autobahn : 
+		secured chain
+		jsgi stack
+		clean headers
+
+
+ */

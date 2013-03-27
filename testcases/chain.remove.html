@@ -62,7 +62,7 @@
 
 	deep(obj, schema)
 	.pushHandlerTo(tests)
-	.remove(".//?_schema.private=true")
+	.remove(".//*?_schema.private=true")
 	.equal({ 
 		email: 'test@test.com',
 	 	id: '51013dec530e96b112000001' 
@@ -75,9 +75,7 @@
 		password: 'test54',
 	 	id: '51013dec530e96b112000001' 
 	}]
-	 var schema2 = { 
-	 	type:"array",
-	 	items:{
+	 var schema2 = {
 	 		properties: 
 			{ 
 			  	id: { type: 'string', required: false, minLength: 1 },
@@ -87,16 +85,13 @@
 		 	additionalProperties: false 
 	 	}
 
-	}
-
 	deep(objs, schema2)
-	//.query("./*")
 	.pushHandlerTo(tests)
 	.remove(".//?_schema.private=true")
-	.equal([{ 
+	.equal({ 
 		email: 'test@test.com',
 	 	id: '51013dec530e96b112000001' 
-	 }], report);
+	 }, report);
 
 	//________________________________________________________________________________________
 
