@@ -54,7 +54,7 @@ deep : just say : Powaaaaaa ;)
 
 @module deep
 **/
-	deep = function (obj, schema, options) 
+	deep = function (obj, schema, options)
 	{
 		var alls = [];
 		if(obj instanceof Array)
@@ -232,7 +232,7 @@ deep : just say : Powaaaaaa ;)
 			}
 			catch(e)
 			{
-				var msg = "Internal chain error : rethorw ? "+ self.rethrow;
+				var msg = "Internal chain error : rethrow ? "+ self.rethrow;
 				console.error(msg, e);
 				if(self.rethrow)
 					throw e;
@@ -528,7 +528,7 @@ deep : just say : Powaaaaaa ;)
 			return this;
 		},
 		//___________________________________________________________________________ NAVIGATION
-		range : function (start,end)
+		range : function (start, end)
 		{
 			var self = this;
 			var func = function(s,e){
@@ -1099,7 +1099,31 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[create]);
 			return this;
 		},
-
+		treat: function(treatment) {
+			var self = this;
+			var func = function(s, e)
+			{
+				var alls = [];
+				if (treatment) {
+					self._entries.forEach(function(entry) {
+						alls.push(deep.applyTreatment.apply(treatment, [entry.value]));
+					});
+				} else {
+					self._entries.forEach(function(entry) {
+						if (typeof entry.value.treat === 'function')
+							alls.push(entry.value.treat(treatment));
+						else alls.push(entry.value);
+					});
+				}
+				deep.all(alls)
+					.done(function(results) {
+					self.running = false;
+					deep.chain.nextQueueItem.apply(self, [results, null]);
+				});
+			};
+			deep.chain.addInQueue.apply(this, [func]);
+			return this;
+		},
 		//_______________________________________________________________ TESTS AND VALIDATIONS
 
 		/**
@@ -1827,32 +1851,7 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func()]);
 			return self;
 		},
-		//__________________________________________________________
-		treat: function(treatment) {
-			var self = this;
-			var func = function(s, e)
-			{
-				var alls = [];
-				if (treatment) {
-					self._entries.forEach(function(entry) {
-						alls.push(deep.applyTreatment.apply(treatment, [entry.value]));
-					});
-				} else {
-					self._entries.forEach(function(entry) {
-						if (typeof entry.value.treat === 'function')
-							alls.push(entry.value.treat(treatment));
-						else alls.push(entry.value);
-					});
-				}
-				deep.all(alls)
-					.done(function(results) {
-					self.running = false;
-					deep.chain.nextQueueItem.apply(self, [results, null]);
-				});
-			};
-			deep.chain.addInQueue.apply(this, [func]);
-			return this;
-		},
+		//__________________________________________________________ MAP
 		mapOn: function(what, localKey, foreignKey, whereToStore)
 		{
 			var self = this;
@@ -1891,10 +1890,11 @@ deep : just say : Powaaaaaa ;)
 					var cloned = cloneHandler(self, true);
 					var foreigns = cloned.select("./"+localKey).join(",");
 					var constrain = foreignKey+"=in=("+foreigns+")";
-					if(parsed.uri.match(/\/\?/gi))
+					if(parsed.uri.match(/(\/\?)|^(\?)/gi))
 						parsed.uri += "&"+constrain;
 					else
 						parsed.uri += "?"+constrain;
+					console.log("mapOn : parsedUri with constrains : ",parsed.uri);
 					if(parsed.store !== null)
 					{
 						deep(parsed.store.get(parsed.uri)).done(function (results) {
@@ -2075,7 +2075,8 @@ deep : just say : Powaaaaaa ;)
 				if(r && (r instanceof DeepHandler || r._isBRANCHES_))
 					r = deep.promise(r);
 				if(r && typeof r.then === 'function')
-					r.done(function (argument) {
+					r.done(function (argument)
+					{
 						if(typeof argument === 'undefined')
 							argument = s;
 						self.running = false;
@@ -2437,19 +2438,19 @@ deep : just say : Powaaaaaa ;)
 		if(typeof argument === 'string')
 		{
 			if(!deep.stores[argument])
-				throw new Error("no store found with.");
+				throw new Error("no store found with : ",argument);
 			store = deep.stores[argument];
 		}
 		else
 			store = argument;
 		var func = function (s,e) {
-
+			//console.log("chain.store : set store : ", store.name);
 			self._store = store;
 			deep.chain.position(self, store.name);
-			self.running = false;
-			nextQueueItem.apply(self, [s, e]);
+			forceNextQueueItem(self, s, e);
 		};
 		deep.handlers.decorations.store(store, self);
+		addInQueue.apply(this,[func]);
 		return self;
 	};
 	deep.handlers.decorations.store = function (store, handler) {
@@ -2762,22 +2763,28 @@ deep : just say : Powaaaaaa ;)
 				return new Error("no store found with : ", request);
 		if(infos.queryThis)
 			return infos.store.get(infos, options);
-		return infos.store.get(infos.uri, options);
+		if(infos.method )
+		{
+			if(infos.method !== "range" || !infos.store.range)
+				return deep(new Error("store doesn't contain method : ",request));
+			var splitted = infos.uri.split("?");
+			var rangePart = splitted.shift();
+			var query = splitted.shift() || "";
+			if(query !== "" && query[query.length-1] !== "?")
+				query += "?";
+			var rn = rangePart.split(",");
+			var start = parseInt(rn[0], 10);
+			var end = parseInt(rn[1], 10);
+			return infos.store[infos.method](start, end, query, options);
+		}
+		else
+			return infos.store.get(infos.uri, options);
 	};
 	deep.getAll = function  (requests, options)
 	{
 		var alls = [];
 		requests.forEach(function (request) {
-			if(typeof request !== "string")
-			{
-				alls.push(request);
-				return;
-			}
-			var infos = deep.parseRequest(request);
-			if(!infos.store)
-				alls.push( request );
-			else
-				alls.push( infos.store.get(infos.uri, options));
+			alls.push(deep.get(request,options));
 		});
 		return deep.all(alls);
 	};
@@ -2787,9 +2794,16 @@ deep : just say : Powaaaaaa ;)
 		var protoc = null;
 		var uri = request;
 		var store = null;
-		if(protoIndex >= 0)
+		var method = null;
+		if(protoIndex > -1)
 		{
 			protoc = request.substring(0,protoIndex);
+			var subprotoc = protoc.split(".");
+			if(subprotoc.length > 1)
+			{
+				protoc = subprotoc.shift();
+				method = subprotoc.shift();
+			}
 			uri = request.substring(protoIndex+2);
 		}
 		//console.log("parseRequest : protoc : ", protoc, " - uri : ", uri);
@@ -2827,6 +2841,7 @@ deep : just say : Powaaaaaa ;)
 			queryThis:queryThis,
 			store:store,
 			protocole:protoc,
+			method:method,
 			uri:uri
 		};
 		//console.log("deep.parseRequest : results : ", res);
@@ -2919,7 +2934,7 @@ deep : just say : Powaaaaaa ;)
 				infos.uri = infos.uri.substring(1);
 			var res = null;
 			if(root._isDQ_NODE_)
-				res = Querier.query(root, request, { keepCache:false });
+				res = Querier.query(root, infos.uri, { keepCache:false });
 			else
 			{
 				basePath = basePath || '';

@@ -611,6 +611,7 @@ define(function defineDeepQuery(require)
 
 		if(q[0] === '#')
 			q = q.substring(1);
+		//console.log("DeepQuery : will do : ",q);
 		var parts = this.analyse(q);
 		if(parts.length == 0 || parts[0].type != "move")
 			throw new QueryError("query need to start with move : "+q);

@@ -9,7 +9,7 @@ define(function(require){
 	var compose = require("./deep-compose");
 	var utils = {};
 
-	utils.interpret = function (string, context) 
+	utils.interpret = function (string, context)
 	{
 		var count = string.indexOf('{');
 		if(count == -1)
@@ -25,25 +25,25 @@ define(function(require){
 				if(string[count] != ' ')
 					toAnalyse += string[count];
 				count++;
-			}	
+			}
 			if(string[count] == '}')
 			{
 				parsed += utils.retrieveValueByPath(context, toAnalyse, ".");
 				count++;
-			}	
+			}
 			while(count < ln && string[count] != '{')
 				parsed += string[count++];
 			if(string[count] == '{')
 				count++;
 		}
 		return parsed;
-	}
+	};
 
 	utils.copyArray = function(arr){
 		if(!arr)
 			return [];
 		return arr.concat([]);
-	}
+	};
 
 	utils.cloneFunction = function(fct)
 	{
@@ -56,7 +56,7 @@ define(function(require){
 	        if (fct.hasOwnProperty(property)) 
 	            clone[property] = utils.copy(fct[property]);
 	    return clone;
-	}
+	};
 
 	utils.copy = function copy(obj){
 		var res = null;
@@ -365,46 +365,6 @@ define(function(require){
 		return true;
 	}
 	//var result = {};
-
-	var createStartEndRangeObject = utils.createStartEndRangeObject = function (start, end, total) {
-		var res = {
-			step:0.0,
-			width:end-start+1,
-			total:total,
-			start:0,
-			end:0
-		} 
-		if(total == 0)
-			return res;
-		res.start = Math.max(Math.min(total-res.width,start), 0);
-		res.end = Math.max(Math.min(end, total),0);
-		res.step = (res.start)/res.width;
-		//console.log("start-end range : ", res);
-		return res;
-	}
-	var createStepWidthRangeObject = utils.createStepWidthRangeObject = function (step, width, total) 
-	{
-		var res = {
-			step:0,
-			width:0,
-			total:total,
-			start:0,
-			end:0
-		} 
-		if(total == 0)
-			return res;
-		res.width = width;
-		res.step = step;
-		res.start = Math.round(step*width);
-		res.end = Math.min(Math.round((step+1)*width)-1, total-1);
-		if(res.start >= total)
-		{
-			res.start = Math.max(total-width,0);
-			res.step = res.start/res.width;
-		}	
-		console.log("step-width range : ", res);
-		return res;
-	}
 
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function (schema, path, delimitter)
 	{
@@ -820,6 +780,56 @@ define(function(require){
 		desc = trim_words(desc, numWords, maxChar);
 		return desc;
 	}
+
+
+	var createStartEndRangeObject = utils.createStartEndRangeObject = function (start, end, total) 
+	{
+		var res = createRangeObject(total);
+		if(total == 0)
+			return res;
+		res.start = Math.max(Math.min(total-res.width,start), 0);
+		res.end = Math.max(Math.min(end, total),0);
+		res.step = (res.start)/res.width;
+		res.maxStep = Math.floor(total/res.width);
+		//console.log("start-end range : ", res);
+		return res;
+	}
+
+	var createRangeObject = function (total) {
+		var res = {
+			step:0,
+			width:0,
+			total:total,
+			maxStep:0,
+			start:0,
+			end:0,
+			updateStep:function (step, width, total) {
+				this.step = step;
+				this.width = width = width || this.width;
+				this.total = total = total || this.total;
+				if(total == 0)
+					return this;
+				this.start = Math.round(step*width);
+				this.end = Math.min(Math.round((step+1)*width)-1, total-1);
+				if(this.start >= total)
+				{
+					this.start = Math.max(total-width,0);
+					this.step = this.start/this.width;
+				}	
+				this.maxStep = Math.ceil(total/this.width);
+			}
+		};
+		return res;
+	}
+
+	var createStepWidthRangeObject = utils.createStepWidthRangeObject = function (step, width, total) 
+	{
+		var res = createRangeObject(total);
+		res.updateStep(step,width,total);
+		//console.log("step-width range : ", res);
+		return res;
+	}
+
 
 	return utils;	
 })
