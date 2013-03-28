@@ -785,12 +785,7 @@ define(function(require){
 	var createStartEndRangeObject = utils.createStartEndRangeObject = function (start, end, total) 
 	{
 		var res = createRangeObject(total);
-		if(total == 0)
-			return res;
-		res.start = Math.max(Math.min(total-res.width,start), 0);
-		res.end = Math.max(Math.min(end, total),0);
-		res.step = (res.start)/res.width;
-		res.maxStep = Math.floor(total/res.width);
+		res.updateStartEnd(start,end,total);
 		//console.log("start-end range : ", res);
 		return res;
 	}
@@ -803,10 +798,28 @@ define(function(require){
 			maxStep:0,
 			start:0,
 			end:0,
+			updateStartEnd:function (start, end, total) {
+				this.total = total = total || this.total || 0;
+				this.start = start = start || this.start || 0;
+				this.end = end = end || this.end || 0;
+				if(total == 0)
+					return this;
+				this.width = Math.max(end-start, 0);
+				this.start = Math.max(Math.min(total-this.width,start), 0);
+				this.end = Math.max(Math.min(end, total),0);
+				if(start > 0 && this.width > 0)
+					this.step = (this.start)/this.width;
+				else
+					this.step = 0;
+				if(total> 0 && this.width > 0)
+					this.maxStep = Math.floor(total/this.width)-1;
+				else
+					this.maxStep = 0;
+			},
 			updateStep:function (step, width, total) {
-				this.step = step;
-				this.width = width = width || this.width;
-				this.total = total = total || this.total;
+				this.step = step || 0;
+				this.width = width = width || this.width || 0;
+				this.total = total = total || this.total || 0;
 				if(total == 0)
 					return this;
 				this.start = Math.round(step*width);
@@ -814,9 +827,15 @@ define(function(require){
 				if(this.start >= total)
 				{
 					this.start = Math.max(total-width,0);
-					this.step = this.start/this.width;
+					if(this.start == 0 || this.width == 0)
+						this.step = 0;
+					else
+						this.step = this.start/this.width;
 				}	
-				this.maxStep = Math.ceil(total/this.width);
+				if(total> 0 && this.width > 0)
+					this.maxStep = Math.floor(total/this.width);
+				else
+					this.maxStep = 0;
 			}
 		};
 		return res;
