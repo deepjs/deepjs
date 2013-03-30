@@ -77,10 +77,9 @@ deep : just say : Powaaaaaa ;)
 			handler.initialised = true;
 			if(obj instanceof Array)
 			{
-				handler._entries = [];
-				obj.forEach(function (a) {
-					handler._entries.push(Querier.createRootNode(a, schema));
-				});
+				if(schema && schema.type !== "array")
+					schema = { type:"array", items:schema };
+				handler._entries = deep.query(obj, "./*", { resultType:"full", schema:schema });
 				return forceNextQueueItem(handler, deep.chain.values(handler), null);
 			}
 			else if(obj instanceof DeepHandler)
@@ -151,6 +150,8 @@ deep : just say : Powaaaaaa ;)
 		else if(!(args instanceof Array))
 			args = [args];
 
+		if(!entry.value)
+			return undefined;
 		entry.value._deep_entry = entry;
 		var prom = func.apply(entry.value, args);
 		if(prom && prom.then)
@@ -2770,8 +2771,8 @@ deep : just say : Powaaaaaa ;)
 			var splitted = infos.uri.split("?");
 			var rangePart = splitted.shift();
 			var query = splitted.shift() || "";
-			if(query !== "" && query[query.length-1] !== "?")
-				query += "?";
+			if(query !== "" && query[0] !== "?")
+				query = "?"+query;
 			var rn = rangePart.split(",");
 			var start = parseInt(rn[0], 10);
 			var end = parseInt(rn[1], 10);

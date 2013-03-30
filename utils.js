@@ -798,6 +798,8 @@ define(function(require){
 			maxStep:0,
 			start:0,
 			end:0,
+			hasNext:false,
+			hasPrevious:false,
 			updateStartEnd:function (start, end, total) {
 				this.total = total = total || this.total || 0;
 				this.start = start = start || this.start || 0;
@@ -815,9 +817,13 @@ define(function(require){
 					this.maxStep = Math.floor(total/this.width)-1;
 				else
 					this.maxStep = 0;
+				this.hasNext = this.end < this.total;
+				this.hasPrevious = this.start > 0;
+				return this;
 			},
 			updateStep:function (step, width, total) {
 				this.step = step || 0;
+				this.step = Math.max(0,this.step);
 				this.width = width = width || this.width || 0;
 				this.total = total = total || this.total || 0;
 				if(total == 0)
@@ -836,6 +842,9 @@ define(function(require){
 					this.maxStep = Math.floor(total/this.width);
 				else
 					this.maxStep = 0;
+				this.hasNext = this.end < this.total;
+				this.hasPrevious = this.start > 0;
+				return this;
 			}
 		};
 		return res;
