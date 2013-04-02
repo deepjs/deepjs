@@ -225,6 +225,11 @@ deep : just say : Powaaaaaa ;)
 					//console.log("failure : next isThen");
 					next(result,failure);
 				}
+				/*else // PASSIVE TRANSPARENCY : SKIP CURRENT handle
+				{
+					self.running = false;
+					nextQueueItem.apply(self, [result, failure]);
+				}*/
 				else if(!this.rejected)
 				{
 					//console.log("failure : no more Then : reject");
