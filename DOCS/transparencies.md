@@ -22,7 +22,7 @@ deep(...)
 
 Recap :
 
-when you ask a promise on a chain (i.e. when a chain is returned from a function - so as it's returned : all the chain is placed before in queue): 
+when you ask a promise on a chain (i.e. when a chain is returned from a function - so as it's returned : all the chain handles is placed before in queue): 
 it will ceal the chain.
 no more handles could be added : the promise listening the whole chain execution : 
 	if success : 
@@ -50,7 +50,7 @@ no more handles could be added : the promise listening the whole chain execution
 
 		so the chain should throw an error "chain is cealed ! promise(s) listening it. no more handle could be added. breaking code : there is a probleme in your pattern." when adding handles after chain ceal. This error should not be catched by the chain it self.
 
-		the cealed flags need to be setted to false (if previously true - and reseted to true after) when injecting chain handler in done/fail : because they are internal chain jobs, and will maybe added asynch (and so after promise listeners).
+		the 'ceal' flags need to be setted to false (if previously true - and reseted to true after) when injecting chain handler in done/fail : because they are internal chain jobs, and will maybe added asynch (and so after promise listeners).
 		But as they are played from within done/fail : they are always been executed follwing transparencies/return rules, and before any rejection or chain ending.
 
 		we could always ask a promise on a chain : if chain was ended (rejected or resolved) : the promise will run immediatly.
@@ -64,7 +64,7 @@ Return rule :
 
 	if an error is thrown : 
 		- from within a fail handler : 
-			it break chain and reject it
+			it break chain(+clear queue), and reject it
 		- from within any handle : it depends if chain catch errors.
 
 
