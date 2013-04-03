@@ -106,13 +106,13 @@ define(function(require, exports, module){
 					var args = arguments;
 					return promise.when(previous.apply(this, args))
 					.done(function (res) {
-						console.log("compose.fail : previous done : ", res);
+						//console.log("compose.fail : previous done : ", res);
 						if(res instanceof Error)
 							return fn.apply(self, [res]);
 						return res;
 					})
 					.fail(function (error) {
-						console.log("compose.fail : previous error : ", error);
+						//console.log("compose.fail : previous error : ", error);
 						return fn.apply(self, [error]);
 					});
 				};
