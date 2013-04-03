@@ -539,10 +539,8 @@ deep : just say : Powaaaaaa ;)
 			var self = this;
 			var func = function(s,e){
 				var rangeObject = null;
-				if(typeof start === 'object')
-					rangeObject = utils.createStepWidthRangeObject(start.step, start.width, self._entries.length);
-				else
-					rangeObject = utils.createStartEndRangeObject(start, end, self._entries.length);
+				
+				rangeObject = utils.createRangeObject(start, end, self._entries.length);
 				self._entries = self._entries.slice(rangeObject.start, rangeObject.end+1);
 				rangeObject.results = deep.chain.values(self);
 				forceNextQueueItem(self, rangeObject, null);
