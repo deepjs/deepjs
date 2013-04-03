@@ -930,7 +930,7 @@ deep : just say : Powaaaaaa ;)
 				return [];
 			if(entry._isDQ_NODE_)
 				value = entry.value;
-			if(value.backgrounds)
+			if(value.backgrounds !== null && typeof value.backgrounds === "object")
 			{
 				var deferred = deep.Deferred();
 				if(!value.backgrounds.push)
