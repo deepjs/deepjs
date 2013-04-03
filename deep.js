@@ -1327,15 +1327,20 @@ deep : just say : Powaaaaaa ;)
 				console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)");
 				self._entries.forEach(function (e) {
 					var val = e;
-					var entry = e.value._deep_entry;
-					delete e.value._deep_entry;
+					var entry = null;
+					if(e.value)
+					{
+						entry = e.value._deep_entry;
+						delete e.value._deep_entry;
+					}
+					
 					if(!options.full)
 						val = e.value;
 					if(options.pretty)
 						val = JSON.stringify(val, null, ' ');
 					console.log("\t- entry : ("+e.path+") : ", val);
-					if(entry)
-						e._deep_entry = entry;
+					if(entry && e.value)
+						e.value._deep_entry = entry;
 				});
 				self.running = false;
 				nextQueueItem.apply(self,[success, error]);
