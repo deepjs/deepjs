@@ -1248,7 +1248,7 @@ deep : just say : Powaaaaaa ;)
 				var  a = [];
 				//console.log("deep.log : ", self._entries)
 				self._entries.forEach(function (e) {
-					a.push(Validator.validate(e.value, e.schema));
+					a.push(Validator.validate(e.value, options.schema || e.schema));
 				});
 				deep.all( a ).then( function ( reports ) {
 					var freport = {
@@ -1275,7 +1275,7 @@ deep : just say : Powaaaaaa ;)
 					else
 					{
 						self.running = false;
-						nextQueueItem.apply(self, [null, freport]);
+						nextQueueItem.apply(self, [freport, null]);
 					}
 				}, function (error) {
 					self.running = false;
