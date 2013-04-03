@@ -790,6 +790,8 @@ define(function(require){
 		return res;
 	}
 
+
+
 	var createRangeObject = function (total) {
 		var res = {
 			step:0,
@@ -800,13 +802,35 @@ define(function(require){
 			end:0,
 			hasNext:false,
 			hasPrevious:false,
-			updateStartEnd:function (start, end, total) {
+			next:function () 
+			{
+				if(!this.hasNext)
+					return this;
+				this.start += this.width;
+				this.end += this.width;
+				var w = this.width;
+				this.updateStartEnd(this.start, this.end);
+				this.width = w;
+			},
+			previous:function () 
+			{
+				if(!this.hasPrevious)
+					return this;
+				this.start -= this.width;
+				this.end -= this.width;
+				var w = this.width;
+				this.updateStartEnd(this.start, this.end);
+				this.width = w;
+			},
+			updateStartEnd:function (start, end, total) 
+			{
+				//this.width = Math.max(end-start, 0);
 				this.total = total = total || this.total || 0;
 				this.start = start = start || this.start || 0;
 				this.end = end = end || this.end || 0;
 				if(total == 0)
 					return this;
-				this.width = Math.max(end-start, 0);
+
 				this.start = Math.max(Math.min(total-this.width,start), 0);
 				this.end = Math.max(Math.min(end, total),0);
 				if(start > 0 && this.width > 0)
@@ -817,12 +841,12 @@ define(function(require){
 					this.maxStep = Math.floor(total/this.width)-1;
 				else
 					this.maxStep = 0;
-				this.hasNext = this.end < this.total;
+				this.hasNext = this.end < (this.total);
 				this.hasPrevious = this.start > 0;
 				return this;
 			},
-			updateStep:function (step, width, total) {
-				this.step = step || 0;
+			updateStep:function (step, width, total) 
+			{
 				this.step = Math.max(0,this.step);
 				this.width = width = width || this.width || 0;
 				this.total = total = total || this.total || 0;
@@ -832,17 +856,17 @@ define(function(require){
 				this.end = Math.min(Math.round((step+1)*width)-1, total-1);
 				if(this.start >= total)
 				{
-					this.start = Math.max(total-width,0);
+					this.start = Math.max(total-this.width,0);
 					if(this.start == 0 || this.width == 0)
 						this.step = 0;
 					else
 						this.step = this.start/this.width;
 				}	
 				if(total> 0 && this.width > 0)
-					this.maxStep = Math.floor(total/this.width);
+					this.maxStep = Math.max(Math.ceil(total/this.width)-1,0);
 				else
 					this.maxStep = 0;
-				this.hasNext = this.end < this.total;
+				this.hasNext = this.end < (this.total);
 				this.hasPrevious = this.start > 0;
 				return this;
 			}
