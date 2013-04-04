@@ -228,6 +228,8 @@ define(function(require){
 		Does not make a deep-copy if collision : just if collid : make unique
 	*/
 	utils.arrayUnique = function arrayUnique(arr1, uniqueOn){
+		if(!arr1.forEach)
+			return arr1;
 		var map = {}
 		var count = 0;
 		var arr = [];
