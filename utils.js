@@ -9,6 +9,8 @@ define(function(require){
 	var compose = require("./deep-compose");
 	var utils = {};
 
+
+	// TODO : need to be asynch and to retrieve values from stores : as app::language
 	utils.interpret = function (string, context)
 	{
 		var count = string.indexOf('{');

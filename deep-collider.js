@@ -22,9 +22,7 @@ But you could do it for us...;)
 define(function(require)
 {
 
-	var Collider = function(){
-
-	}
+	var Collider = function(){}
 	Collider.prototype = {}
 	return {
 		Collider:Collider,
@@ -57,15 +55,14 @@ define(function(require)
 		log:function(){
 			//console.log("add layer composition : log")
 			var a =function(value){
-				console.log("LayerTools : log : ",value);
+				console.log("deep.collider : log : ",value);
 				return value;
 			};
 			a._deep_collider = true;
 			return  a;
 		},
 		validate:function(schema){
-			return function(value){
-				this._deep_collider = true;
+			var a = function(value){
 				if(!validator.isValid(value, schema))
 					throw new ValidationError(validator.report);
 				return value;
@@ -100,102 +97,34 @@ define(function(require)
 				return a;
 			},
 			equal:function(equalTo){
-				return function(value){
-					this._deep_collider = true;
+				var a = function(value){
 					return value == equalTo;
 				}
+				a._deep_collider = true;
+				return a;
 			},
 			notEqual:function(notEqualTo){
-				return function(value){
-					this._deep_collider = true;
+				var a = function(value){
 					return value != notEqualTo;
 				}
+				a._deep_collider = true;
+				return a;
 			},
 			isNumber:function(){
-				return function(value){
-
+				var a = function(value){
+					return !isNaN(value) && isFinite(value);
 				}
-			},
-			isBoolean:function(){
-				return function(value){
-					this._deep_collider = true;
-					return Math.abs(value);
-				}
-			},
-			isFloat:function(){
-				return function(value){
-					
-				}
-			},
-			isInteger:function(){
-				return function(value){
-					
-				}
-			},
-			isString:function(){
-				return function(value){
-					
-				}
-			},
-			isFunction:function(){
-				return function(value){
-					
-				}
-			},
-			isArray:function(){
-				return function(value){
-					
-				}
-			},
-			isObject:function(){
-				return function(value){
-					
-				}
-			},
-			isPresentInArray:function(array){
-
-			},
-			isRetrievable:function(){
-
+				a._deep_collider = true;
+				return a;
 			}
 		},
 		array:{
-
-			median:function(by){
-				return function(value){
-					this._deep_collider = true;
-
-				}
-			},
-			mean:function(by){
-				return function(value){
-					this._deep_collider = true;
-
-				}
-			},
 			reverse:function(){
 				return function(value){
 					this._deep_collider = true;
 					if(typeof value.push === 'function')
 						return value.reverse();
 					return value;
-				}
-			},
-			sort:function(on){
-				return function(value){
-					this._deep_collider = true;
-
-				}
-			},
-			filter:function(by){
-				return function(value){
-					this._deep_collider = true;
-
-				}
-			},
-			merge:function(newArray, mergeOn){
-				return function(value){
-					this._deep_collider = true;
 				}
 			},
 			remove:function(what){
@@ -213,160 +142,11 @@ define(function(require)
 				}
 				a._deep_collider = true;
 				return a;
-			},
-			push:function(newArray){
-				return function(value){
-					return newArray;
-				}
-			},
-			unshift:function(newArray){
-				return function(value){
-					return newArray;
-				}
-			},
-			pushTo:function(object, path){
-				return function(value){
-					this._deep_collider = true;
-					utils.setValueByPath(object, path, value)
-					return value;
-				}
-			},
-			unshiftTo:function(object, path){
-				return function(value){
-					this._deep_collider = true;
-					utils.setValueByPath(object, path, value)
-					return value;
-				}
 			}
-			// concat
 		},
 		string:{
-			injectedAs:function(swig_string, name){
-
-			},
-			inject:function(what){},
-			injectTo:function(path, object){
-				return function(value){
-					this._deep_collider = true;
-
-				}
-			},
-			injectController:function(){
-				return function (value, controller){
-					this._deep_collider = true;
-
-				}
-			},
-			injectValueAs:function(value, name){
-
-			},
-			replace:function(newObject){
-				return function(){
-				this._deep_collider = true;
-					return newObject;
-				}
-			},
-			reverse:function(by){
-				return function(value){
-					this._deep_collideréds = true;
-
-				}
-			},
-			prepend:function(what){
-				var a =  function(value, parent, key){
-					return what+value+"";
-				}
-				a._deep_collider = true;
-				return a;
-			},
-			append:function(what){
-				var a =  function(value, parent, key){
-					return value+what+"";
-				}
-				a._deep_collider = true;
-				return a;
-			},
-			split:function(by){
-				return function(value){
-					this._deep_collider = true;
-
-				}
-			}
 		},
 		number:{
-			increment:function(addition){
-				return function(value){
-					this._deep_collider = true;
-					return value + 1;
-				}
-			},
-			decrement:function(addition){
-				return function(value){
-					this._deep_collider = true;
-					return value - 1;
-				}
-			},
-			add:function(addition){
-				return function(value){
-					this._deep_collider = true;
-					return value + addition;
-				}
-			},
-			substract:function(val){
-				return function(value){
-					this._deep_collider = true;
-					return value - val;
-				}
-			},
-			substractedOf:function(val){
-				return function(value){
-					this._deep_collider = true;
-					return val - value;
-				}
-			},
-			abs:function(){
-				return function(value){
-					this._deep_collider = true;
-					return Math.abs(value);
-				}
-			},
-			multiply:function(by){
-				return function(value){
-					this._deep_collider = true;
-					return by*value;
-				}
-			},
-			divid:function(val){
-				return function(value){
-					this._deep_collider = true;
-					return val/value;
-				}
-			},
-			dividedBy:function(val){
-				return function(value){
-					this._deep_collider = true;
-					return value/val;
-				}
-			},
-			replace:function(newObject){
-				return function(value){
-
-					this.__leafControllerTools = true;
-					return newObject;
-				}
-			},
-			max:function(val){
-				return function(value){
-					this._deep_collider = true;
-					return Math.max(value, val);
-				}
-			},
-			min:function(val){
-				return function(value){
-					this._deep_collider = true;
-					return Math.min(value, min);
-				}
-			}
 		},
 		object:{
 			merge:function merge(newObject, overwrite, schema){
@@ -383,16 +163,6 @@ define(function(require)
 				a._deep_collider = true;
 				return  a;
 			},
-			swapProperty:function(prop1,prop2){
-
-			},
-			insertPropertyBefore:function(propertyToFind, propertyToInsert){
-
-			},
-			insertAfter:function(propertyToFind, propertyToInsert){},
-			prepend:function(propertyToInsert){
-
-			},
 			appendProperty:function(propertyName, propertyValue){
 				var a = function(value, parent, key)
 				{
@@ -404,17 +174,9 @@ define(function(require)
 			}
 		},
 		"boolean":{
-			and:function(val){},
-			or:function(val){}
 		},
 		"func":{
-			apply:function(othis, args){
-				return function(value){
-					args = args || null;
-					this._deep_collider = true;
-					return value.apply(othis, args);
-				}
-			}
+			
 		}
 	}
 	
