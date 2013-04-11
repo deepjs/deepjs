@@ -9,6 +9,33 @@ define(function(require){
 	var compose = require("./deep-compose");
 	var utils = {};
 
+	// _______________________________________ swig related
+
+	utils.getMacroImport = function(controller, macrosSet)
+	{
+		var renderedTemplate = "";
+		if(controller.layer && controller.layer.templates)
+		{    
+			var macros = controller.layer.templates.macros;
+			for (var i in macros)
+			{
+				if(!macros.hasOwnProperty(i) || (macrosSet && ! i in macrosSet))
+					continue;
+				var  m = macros[i];
+				var prefix = "";
+				var index = m.indexOf(":");
+				if(index > -1)
+				{    
+					prefix = m.substring(0,index);
+					m = m.substring(index+2);
+				}
+				renderedTemplate += "{% import '" + m + "' as "+i+" %}\n";
+			}
+		}
+		return renderedTemplate;
+	}
+
+	// ______________________________________ STRINGS RELATED
 
 	// TODO : need to be asynch and to retrieve values from stores : as app::language
 	utils.interpret = function (string, context)
@@ -40,6 +67,63 @@ define(function(require){
 		}
 		return parsed;
 	};
+
+
+	utils.stripFirstSlash = function(text)
+	{
+		if(text.substring(0,1) == "/")
+			return text.substring(1);
+		return text;
+	}
+
+	utils.catchParenthesis = function(path)
+	{
+		if(path[0] != '(')
+			return null;
+		var count = 1;
+		var catched = 1;
+		var res = "";
+		while(( path[ count ] != ')' || catched > 1) && count < path.length )
+		{
+			if( path[ count ] == '(' )
+				catched++;
+			if( path[ count ] == ')' )
+				catched--;
+			if(path[ count ] == ')' )
+			{	
+				if(catched > 1)
+					res += path[ count++ ]
+			}
+			else
+				res += path[ count++ ]
+		}
+		count++;
+		return { value:res, rest:path.substring(count)};
+	}
+
+	function trim_words(theString, numWords, maxChar) {
+	    expString = theString.split(/\s+/,numWords);
+	    if(expString.length == 1)
+	    {
+			maxChar = maxChar || 10;
+	    	if(expString[0].length > maxChar)
+	    		return theString.substring(0,maxChar)
+	    	return expString[0];
+	    }
+	    theNewString=expString.join(" ");
+	    if(theNewString.length < theString.length && theNewString[theNewString.length-1] != ".")
+			theNewString += "...";
+	    return theNewString;
+	}
+
+	utils.trimWords = function(string, numWords, maxChar){
+		var reg=new RegExp("<[^>]*>", "gi" );
+		var desc = string.replace(reg, "");
+		desc = trim_words(desc, numWords, maxChar);
+		return desc;
+	}
+
+	//_________________________________________________________________ OBJECTS/ARRAY RELATED
 
 	utils.copyArray = function(arr){
 		if(!arr)
@@ -106,55 +190,8 @@ define(function(require){
 	    return undefined;
 	}
 
-	utils.catchParenthesis = function(path)
-	{
-		if(path[0] != '(')
-			return null;
-		var count = 1;
-		var catched = 1;
-		var res = "";
-		while(( path[ count ] != ')' || catched > 1) && count < path.length )
-		{
-			if( path[ count ] == '(' )
-				catched++;
-			if( path[ count ] == ')' )
-				catched--;
-			if(path[ count ] == ')' )
-			{	
-				if(catched > 1)
-					res += path[ count++ ]
-			}
-			else
-				res += path[ count++ ]
-		}
-		count++;
-		return { value:res, rest:path.substring(count)};
-	}
 
-	utils.getMacroImport = function(controller, macrosSet)
-	{
 
-		var renderedTemplate = "";
-		if(controller.layer && controller.layer.templates)
-		{    
-			var macros = controller.layer.templates.macros;
-			for (var i in macros)
-			{
-				if(!macros.hasOwnProperty(i) || (macrosSet && ! i in macrosSet))
-					continue;
-				var  m = macros[i];
-				var prefix = "";
-				var index = m.indexOf(":");
-				if(index > -1)
-				{    
-					prefix = m.substring(0,index);
-					m = m.substring(index+2);
-				}
-				renderedTemplate += "{% import '" + m + "' as "+i+" %}\n";
-			}
-		}
-		return renderedTemplate;
-	}
 
 	utils.setValueByPath = function setValueByPath(object, path, value, pathDelimiter)
 	{
@@ -312,13 +349,6 @@ define(function(require){
 		if(obj instanceof Array)
 			return "array"
 		return typeof obj;
-	}
-
-	utils.stripFirstSlash = function(text)
-	{
-		if(text.substring(0,1) == "/")
-			return text.substring(1);
-		return text;
 	}
 
 	utils.deepEqual = function(a,b, ordered)
@@ -763,28 +793,7 @@ define(function(require){
 	utils.up = up;
 	utils.bottom = bottom;
 
-	function trim_words(theString, numWords, maxChar) {
-	    expString = theString.split(/\s+/,numWords);
-	    if(expString.length == 1)
-	    {
-			maxChar = maxChar || 10;
-	    	if(expString[0].length > maxChar)
-	    		return theString.substring(0,maxChar)
-	    	return expString[0];
-	    }
-	    theNewString=expString.join(" ");
-	    if(theNewString.length < theString.length && theNewString[theNewString.length-1] != ".")
-			theNewString += "...";
-	    return theNewString;
-	}
-
-	utils.trimWords = function(string, numWords, maxChar){
-		var reg=new RegExp("<[^>]*>", "gi" );
-		var desc = string.replace(reg, "");
-		desc = trim_words(desc, numWords, maxChar);
-		return desc;
-	}
-
+	//___________________________________________ RANGE RELATED
 
 	utils.createRangeObject = function (start, end, total) {
 		var res = {
@@ -827,6 +836,53 @@ define(function(require){
 		};
 		res.update(start,end,total)
 		return res;
+	}
+
+	//_________________________________________________ HTTP RELATED
+
+	utils.parseBody = function (body, headers) 
+	{
+		if(typeof body === 'undefined' || body == null)
+			return null;
+		var contentType = headers["content-type"] || headers["Content-Type"] || "application/json";
+		var contentType = contentType.split(";")[0];
+		switch(contentType)
+		{
+			case "application/json-rpc" : 
+				var b = "";
+				if(body.forEach)
+					body.forEach(function (bd) {
+						b += bd.toString();
+					});
+				else
+					b = body.toString();
+				return JSON.parse(b);
+				break;	
+
+			case "application/json" : 
+				var b = "";
+				if(body.forEach)
+					body.forEach(function (bd) {
+						b += bd.toString();
+					});
+				else
+					b = body.toString();
+				return JSON.parse(b);
+				break;	
+
+			case "application/javascript" :   // TODO : should be parsed by json-extended parser
+				var b = "";
+				if(body.forEach)
+					body.forEach(function (bd) {
+						b += bd.toString();
+					});
+				else
+					b = body.toString();
+				return JSON.parse(b);
+				break;	
+			default :
+				return body;
+		}
 	}
 
 	return utils;	

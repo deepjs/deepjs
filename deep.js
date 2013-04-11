@@ -29,7 +29,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 }
 
-define(["require", "./ie-hacks","./utils", "./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose"],
+define(["require","./utils", './ie-hacks', "./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose"],
 function(require)
 {
 	// console.log("Deep init");
