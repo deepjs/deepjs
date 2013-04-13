@@ -1015,6 +1015,46 @@ deep : just say : Powaaaaaa ;)
 		},
 		//______________________________________________________________  RUNS
 		/**
+		 * transform : loop on entries, apply 'func' with 'args' on each entry : replace entries values with func result
+		 *
+		 * - loop on entries : true
+		 * - chainable : true
+		 * - transparent : false
+		 * - promised management : true
+		 * - success injected : the array of results of each call on func
+		 * - error injected : any error returned (or produced) from a func call
+		 * @method transform
+		 * @param  {Function} func any function that need to be apply on each chain entry
+		 * @param  {Array} args the arguments to pass to 'func'
+		 * @return {DeepHandler}  the current chain handler (this)
+		 */
+		transform : function (transformer)
+		{
+			var self = this;
+			var func = function(s,e){
+				var alls = [];
+				self._entries.forEach(function(result){
+					result.value = transformer(result.value);
+					if(result.ancestor)
+						result.ancestor[result.key] = result.value;
+					alls.push(result.value);
+				});
+				deep.all(alls).then(function (loadeds)
+				{
+					self.running = false;
+					nextQueueItem.apply(self, [loadeds, null]);
+				},
+				function (error)
+				{
+					console.error("error : deep.transform : ", error);
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
+				});
+			};
+			addInQueue.apply(this,[func]);
+			return this;
+		},
+		/**
 		 * run : loop on entries, apply 'func' with 'args' on each entry (entry become 'this' of func)
 		 *
 		 * - loop on entries : true
