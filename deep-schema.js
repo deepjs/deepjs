@@ -260,7 +260,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 	var swig = require("swig");
 }	
-define(["require", "./utils", "./promise"],
+define(["require", "./utils", "./promise", "deep/deep"],
 function(require){
 	var deep = require("deep/deep");
 
