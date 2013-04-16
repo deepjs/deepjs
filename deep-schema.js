@@ -262,6 +262,7 @@ if(typeof define !== 'function')
 }	
 define(["require", "./utils", "./promise"],
 function(require){
+	var deep = require("deep/deep");
 
 	if(deep.isNode)
 	{	swig.init({
