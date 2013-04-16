@@ -259,13 +259,12 @@ if(typeof define !== 'function')
 {
 	var define = require('amdefine')(module);
 	var swig = require("swig");
-	var deep = require("deep/deep");
+	var isNode = true;
 }	
-define(["require", "./utils", "./promise", "deep/deep"],
+define(["require", "./utils", "./promise"],
 function(require){
-	var deep = require("deep/deep");
 
-	if(deep.isNode)
+	if(isNode)
 	{	swig.init({
 			filters:{
 				join_coma:function (input) {
