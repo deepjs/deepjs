@@ -263,6 +263,19 @@ if(typeof define !== 'function')
 define(["require", "./utils", "./promise"],
 function(require){
 
+	if(deep.isNode)
+	{	swig.init({
+			filters:{
+				join_coma:function (input) {
+					if(input instanceof Array)
+						return input.join(",");
+					return input;
+				}
+			}
+		});
+	}
+
+
 	var utils = require("./utils");
 	var promise = require("./promise");
 	function findPatternProperties(name, patterns)
