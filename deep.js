@@ -346,6 +346,15 @@ deep : just say : Powaaaaaa ;)
 		callQueue:null,
 		reports:null,
 		queries:null,
+		/**
+		 * allow to create chain branches 
+		 *
+		 * synch
+		 * transparent : not relevant
+		 * 
+		 * @method  brancher
+		 * @return brancher function 
+		 */
 		brancher:function ()
 		{
 			var self = this;
@@ -364,6 +373,12 @@ deep : just say : Powaaaaaa ;)
 		},
 		/**
 		* reverse entries order
+		*
+		* asynch
+		* inject entries values as chain success.
+		* 
+		 * @method  reverse
+		 * @return {DeepHandler} this
 		*/
 		reverse:function () {
 			var self = this;
@@ -371,13 +386,20 @@ deep : just say : Powaaaaaa ;)
 			{
 				self._entries.reverse();
 				self.running = false;
-				nextQueueItem.apply(self, [self._entries, null]);
+				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			};
 			addInQueue.apply(this, [create]);
 			return self;
 		},
 		/**
 		* catch any throwned error while chain running
+		*
+		* asycnh
+		* transparent true
+		* 
+		 * @method  catchError
+		 * @param {boolean} catchIt if true : catch all future chain error. (true by default) 
+		 * @return {DeepHandler}
 		*/
 		catchError:function (catchIt) {
 			var self = this;
@@ -394,7 +416,16 @@ deep : just say : Powaaaaaa ;)
 			return self;
 		},
 		//_______________________________________________________________  CANCEL AND REJECT
-
+		/**
+		 * cancel chain. 
+		 *
+		 * end of chain
+		 * synch
+		 *
+		 * @method  cancel
+		 * @param  reason the reason of the chain cancelation (any string or object)
+		 * @return nothing
+		 */
 		cancel:function (reason)  // not chainable
 		{
 			//console.log("_________________________________________ CHAIN CANCELATION")
@@ -405,6 +436,16 @@ deep : just say : Powaaaaaa ;)
 			this.reports.cancel = reason;
 			this.deferred.cancel(reason);
 		},
+		/**
+		 * reject chain. 
+		 *
+		 * end of chain
+		 * synch
+		 *
+		 * @method  reject
+		 * @param  {*} reason the reason of the chain cancelation (any string or object)
+		 * @return nothing
+		 */
 		reject:function (reason)  // not chainable
 		{
 			//console.log("deep chain reject : reason : ", reason);
@@ -416,7 +457,15 @@ deep : just say : Powaaaaaa ;)
 			this.deferred.reject(reason);
 		},
 		//_____________________________________________________________  BRANCHES
-
+		/**
+		 * asynch handler for chain branches creation
+		 *
+		 * transparent false
+		 * 
+		 * @method  branches
+		 * @param   {Function} func the callback that will receive the brancher (see above)
+		 * @return  {DeepHandler} this
+		 */
 		branches:function ( func )
 		{
 			var self = this;
@@ -438,6 +487,16 @@ deep : just say : Powaaaaaa ;)
 			return self;
 		},
 		//______________________________________________________ PROMISE INTERFACE
+		/**
+		 * wait promise resolution or rejection before continuing chain
+		 *
+		 *	asynch
+		 *	transparent false
+		 * 
+		 * @method  when
+		 * @param  {Promise} prom the promise to waiting for
+		 * @return {Deephandler}
+		 */
 		when:function(prom)
 		{
 			var self = this;
@@ -458,6 +517,22 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
+		/**
+		 * handle previous chain's handle success
+		 *
+		 * the callback receive 3 arguments : 
+		 * 		success, handler, brancher
+		 *
+		 * the success is the success object produced by previous chain's handle
+		 * the handler is the chain handle itself
+		 * the brancher is the brancher function that create clone of the chain to produce chain branches
+		 * 
+		 *	asynch
+		 * 
+		 * @method  done
+		 * @param  callback the calback function to handle success
+		 * @return Deephandler
+		 */
 		done : function(callBack)
 		{
 			var self = this;
@@ -494,6 +569,22 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this, [func]);
 			return self;
 		},
+		/**
+		 * handle previous chain handle error
+		 *
+		 * the callback receive 3 arguments : 
+		 * 		error, handler, brancher
+		 *
+		 * the error is the success object produced by previous chain's handle
+		 * the handler is the chain handle itself
+		 * the brancher is the brancher function that create clone of the chain to produce chain branches
+		 * 
+		 *	asynch
+		 * 
+		 * @method  fail
+		 * @param  callback the calback function to handle error
+		 * @return Deephandler
+		 */
 		fail:function (callBack)
 		{
 			var self = this;
@@ -525,6 +616,16 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return self;
 		},
+		/**
+		 * handle previous chain handle success and error
+		 *
+		 * 	add a .done and a .fail (orderedly) in chain with callbacks.
+		 * 
+		 * @method  then
+		 * @param  successCallBack the calback function to handle success
+		 * @param  errorCallBack the calback function to handle error
+		 * @return {Deephandler} this
+		 */
 		then:function (successCallBack, errorCallBack)
 		{
 			if(successCallBack)
@@ -534,6 +635,27 @@ deep : just say : Powaaaaaa ;)
 			return this;
 		},
 		//___________________________________________________________________________ NAVIGATION
+		/**
+		 * perform a range on chain entries : so will remove any chain entries of of range index.
+		 *
+		 *	asynch
+		 *
+		 *
+		 *  inject a rangeObject as chain success : 
+		 *  	{
+		 *  		start:number,
+		 *  		end:number,
+		 *  		total:number,
+		 *  		results:Array,
+		 *  		hasNext:boolean,
+		 *  		hasPrevious:boolean
+		 *  	}
+		 * 
+		 * @method  range
+		 * @param  start the index of range start
+		 * @param  end the index of range end
+		 * @return {DeepHandler} this
+		 */
 		range : function (start, end)
 		{
 			var self = this;
@@ -548,6 +670,20 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * save current chain position. it means that it will save
+		 * 	- current entries 
+		 * 	- current success and errors
+		 * 	- current store (if any) in private queue before continuing.
+		 * 
+		 *	asynch
+		 *	transparent true
+		 * 
+		 * @method  position
+		 * @param  name the name of position (its id/label)
+		 * @param  options optional object (no options for the moment)
+		 * @return {DeepHandler} this
+		 */
 		position : function  (name, options)
 		{
 			var self = this;
@@ -559,6 +695,19 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * go back to a previously saved position (see .position).
+		 * If no name is provided : go back to last position (if any)
+		 *
+		 * throw an error if no position founded.
+		 *
+		 * inject chain values as chain success
+		 * 
+		 * @method  back
+		 * @param   name the name of the last position asked
+		 * @param  	options   (optional - no options for the moment)
+		 * @return {[type]}
+		 */
 		back : function  (name, options)
 		{
 			var self = this;
@@ -585,14 +734,21 @@ deep : just say : Powaaaaaa ;)
 					throw new Error("chain handler error : no positions to go back with name : "+name);
 				self._entries = position.entries;
 				self._store = position.store;
-				if(position.restartChain || (options && options.restartChain))
-					self.callQueue = position.queue;
 				self.running = false;
-				nextQueueItem.apply(self, [self._entries,null]);
+				nextQueueItem.apply(self, [deep.chain.values(self),null]);
 			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * keep only the first chain entries. remove all others
+		 *
+		 * asynch
+		 * inject selected entry value as chain success
+		 * 
+		 * @method  first
+		 * @return DeepHandler
+		 */
 		first : function  ()
 		{
 			var self = this;
@@ -604,17 +760,37 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * keep only the last chain entries. remove all others
+		 *
+		 * asynch
+		 * inject selected entry value as chain success
+		 * 
+		 * @method  last
+		 * @return DeepHandler
+		 */
 		last : function  ()
 		{
 			var self = this;
 			var func = function(){
 				self._entries = [self._entries[self._entries.length-1]];
 				self.running = false;
-				nextQueueItem.apply(self, [self._entries]);
+				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * take current entries parents (if any) as new entries.
+		 *
+		 * inject new entries values as chain success.
+		 * 
+		 * asynch
+		 * 
+		 * @method  parents
+		 * @param boolean errorIfEmpty : if true and no parents was selected : throw an error 
+		 * @return DeepHandler
+		 */
 		parents : function (errorIfEmpty)
 		{
 			var self = this;
@@ -628,17 +804,24 @@ deep : just say : Powaaaaaa ;)
 				if(res.length === 0 && errorIfEmpty)
 					throw new Error("deep.parents could not gives empty results");
 				self.running = false;
-				nextQueueItem.apply(self, [self._entries, null]);
+				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			};
 			addInQueue.apply(this,[func]);
 			return self;
 		},
-		root:function (root, schema)
+		/**
+		 * take object, shcema, options and create fresh chain entries from it. Same mecanism as new chain.
+		 * @method  root
+		 * @param  object the object to produce entries  (could be a retrievable string - e.g. "json::myobject.json" - see retrievable doc)
+		 * @param  schema the schema of the object  (could be a retrievable string - e.g. "json::myobject.json" - see retrievable doc)
+		 * @return [DeepHandler] this
+		 */
+		root:function (object, schema, options)
 		{
 			var self = this;
 			var func = function()
 			{
-				deep(root, schema)
+				deep(object, schema)
 				.nodes(function (nodes) {
 					self._entries = nodes;
 				})
@@ -649,10 +832,21 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * Apply the query on EACH chain entries and concatened all the results to form new chain entries.
+		 *
+		 *
+		 * inject queried results as chain success
+		 * 
+		 * @method  query
+		 * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
+		 * @param  {boolean} errorIfEmpty : if true : throw an error if query return nothing
+		 * @return {DeepHandler} this (chain handler)
+		 */
 		query : function(q, errorIfEmpty)
 		{
 			var src = this;
-			src.queries.push(q);
+			//src.queries.push(q);
 			if(!(q instanceof Array))
 				q = [q];
 			var func = function()
@@ -673,7 +867,18 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(src, [func]);
 			return src;
 		},
-		select : function(q, errorIfEmpty)
+		/**
+		 * same as .query : but in place of holding queried entries : it return directly the query results.
+		 * Is the synch version of the query handle.
+		 *
+		 * synch true
+		 * transparent false
+		 * 
+		 * @method  select
+		 * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
+		 * @return {DeepHandler} this
+		 */
+		select : function(q)
 		{
 			var src = this;
 			if(!(q instanceof Array))
@@ -681,18 +886,19 @@ deep : just say : Powaaaaaa ;)
 			var res = [];
 			src._entries.forEach(function (r) {
 				q.forEach(function (qu) {
-					res = res.concat(src.querier.query(r, qu , {resultType:"full"}));
+					res = res.concat(src.querier.query(r, qu));
 				});
 			});
-			if(res.length === 0 && errorIfEmpty)
-				throw new Error("deep.query could not gives empty results");
-			var finaly = [];
-			res.forEach(function (r) {
-				finaly.push(r.value);
-			});
-			return finaly;
+			return res;
 		},
 		//_________________________________________________________________    MODELISATION
+		/**
+		 * set schema of all entries (purely assignation)
+		 * inject entries shemas as chain success
+		 * @method  schema
+		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
+		 * @return {DeepHandler} this (chain handler)
+		 */
 		schema : function(schema)
 		{
 			//metaSchema = metaSchema || deep.metaSchema || {};
@@ -716,6 +922,13 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * apply provided schema on all entries schemas (.up application)
+		 * inject entries shemas as chain success
+		 * @method  schemaUp
+		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
+		 * @return {DeepHandler} this (chain handler)
+		 */
 		schemaUp : function(schema, metaSchema)
 		{
 			metaSchema = metaSchema || deep.metaSchema || {};
@@ -735,7 +948,7 @@ deep : just say : Powaaaaaa ;)
 					},
 					function (error) {
 						console.error("error : deep.schemaUp : ",error);
-						throw new Error("error : deep.schemaUp : "+error);
+						forceNextQueueItem(self, null, error)
 					});
 				})
 				.fail(function (error) {
@@ -746,6 +959,16 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * apply provided schema on all entries schemas (.bottom application)
+		 *
+		 * inject entries shemas as chain success
+		 *
+		 * 
+		 * @method  schemaBottom
+		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
+		 * @return {DeepHandler} this (chain handler)
+		 */
 		schemaBottom : function(schema, metaSchema)
 		{
 			metaSchema = metaSchema || deep.metaSchema || {};
@@ -761,11 +984,12 @@ deep : just say : Powaaaaaa ;)
 					});
 					deep.all(alls).then(function (loadeds) {
 						self.running = false;
-						nextQueueItem.apply(self, [self._entries, null]);
+						nextQueueItem.apply(self, [deep.chain.schemas(self), null]);
 					},
 					function (error) {
 						console.error("error : deep.schemaBottom : ",error);
-						throw new Error("error : deep.schemaBottom : "+error);
+						forceNextQueueItem(self, null, error)
+						
 					});
 				})
 				.fail(function (error) {
@@ -776,6 +1000,16 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * set entries properties by path.
+		 *
+		 * synch
+		 * inject setted values as chain success
+		 * 
+		 * @method  setByPath
+		 * @param {string} path  a slash delimitted path (e.g. "/my/property")
+		 * @param {object|primitive} obj the value to assign (could be a retrievable strings)
+		 */
 		setByPath : function(path, obj)
 		{
 			var self = this;
@@ -790,15 +1024,23 @@ deep : just say : Powaaaaaa ;)
 					nextQueueItem.apply(self, [res, null]);
 				},
 				function (error) {
-					console.error("error : deep.setByPath : ",error);
-					if(error instanceof Error)
-						throw error;
-					throw new Error("error : deep.setByPath : "+String(error));
+					self.running = false;
+					nextQueueItem.apply(self, [null, error]);
 				});
 			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * apply arguments from UP on each entries : will merge objects and array together DEEPLY. see docs and examples.
+		 *
+		 * synch
+		 * inject entries values as chain success.
+		 * 
+		 * @method  up
+		 * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
+		 * @return {DeepHandler} this
+		 */
 		up : function()
 		{
 			var args = Array.prototype.slice.call(arguments);
@@ -813,16 +1055,26 @@ deep : just say : Powaaaaaa ;)
 						});
 					});
 					self.running = false;
-					nextQueueItem.apply(self, [self._entries, null]);
+					nextQueueItem.apply(self, [deep.chain.values(self), null]);
 				},
 				function (error) {
 					console.error("error : deep.up : ",error);
-					throw new Error("error : deep.up : "+error);
+					forceNextQueueItem(self, null, error)
 				});
 			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * 
+		 * apply arguments from BOTTOM on each entries : will merge objects and array together DEEPLY. see docs and examples.
+		 *
+		 * synch
+		 * inject entries values as chain success.
+		 * @method  bottom
+		 * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
+		 * @return {DeepHandler} this
+		 */
 		bottom : function()
 		{
 			var args = Array.prototype.slice.call(arguments);
@@ -837,16 +1089,28 @@ deep : just say : Powaaaaaa ;)
 						});
 					});
 					self.running = false;
-					nextQueueItem.apply(self, [self._entries, null]);
+					nextQueueItem.apply(self, [deep.chain.values(self), null]);
 				},
-				function (argument) {
-					//console.error("error : deep.bottom : ",error);
-					throw new Error("error : deep.bottom : "+error);
+				function (error) {
+					console.error("error : deep.bottom : ",error);
+					forceNextQueueItem(self, null, error)
 				});
 			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 *
+		 *	synch
+		 * 
+		 * replace queried entries properties by new value and inject replaced properties as chain success.
+		 * 
+		 * @method  replace
+		 * @param  {string} what a query to select properties to replace 
+		 * @param  {object} by  any value to assign (could be a retrievable string)
+		 * @param  {object} options (optional) : it is the options object for the deep.get which will eventually retrieve the 'by' object (see deep.get)
+		 * @return {DeepHandler} this
+		 */
 		replace : function (what, by, options)
 		{
 			var self = this;
@@ -864,14 +1128,24 @@ deep : just say : Powaaaaaa ;)
 					});
 					self.running = false;
 					nextQueueItem.apply(self, [replaced, null]);
-				}, function (argument) {
+				}, function (error) {
 					//console.error("error : deep.replace : ",error);
-					throw new Error("error : deep.replace : "+error);
+					forceNextQueueItem(self, null, error)
 				});
 			};
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 *
+		 * synch
+		 * 
+		 * remove queried properties from entries and inject removed properties as chain success.
+		 * 
+		 * @method  remove
+		 * @param  {string} what a query to select properties to replace 
+		 * @return {DeepHandler} this
+		 */
 		remove : function (what)
 		{
 			var self = this;
@@ -897,6 +1171,15 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * will perform the backgrounds application on any backgrounds properties at any level
+		 * 
+		 *	not intend to be call directly by programmer. use at your own risk. use .flatten instead.
+		 *	
+		 * @method  extendsChilds
+		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
+		 * @return {DeepHandler} this
+		 */
 		extendsChilds : function(entry)
 		{
 			if(!entry)
@@ -920,6 +1203,15 @@ deep : just say : Powaaaaaa ;)
 			});
 			return deep.promise(deferred);
 		},
+		/**
+		 * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
+		 *
+		 *	not intend to be call directly by programmer. use at your own risk.  use .flatten instead.
+		 * 
+		 * @method  extendsBackgrounds
+		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
+		 * @return {DeepHandler} this
+		 */
 		extendsBackgrounds:function (entry)
 		{
 			var self = this;
@@ -965,6 +1257,16 @@ deep : just say : Powaaaaaa ;)
 			}
 			return [];
 		},
+		/**
+		 * will perform FULL backgrounds application on chain entries. (see backgrounds documentation)
+		 *
+		 * asynch
+		 * Success injected : entries values
+		 * Errors injected : any flatten error
+		 * 
+		 * @method  flatten
+		 * @return {DeepHandler} this
+		 */
 		flatten : function()
 		{
 			var self = this;
@@ -988,7 +1290,7 @@ deep : just say : Powaaaaaa ;)
 				self._entries.forEach(function (result)
 				{
 					count++;
-					if(result.value.backgrounds)
+					if(typeof result.value.backgrounds !== 'undefined' && result.value.backgrounds !== null)
 					{
 						deep.when(self.extendsBackgrounds(result)).then(function(stack) {
 							var f = {};
@@ -1016,6 +1318,7 @@ deep : just say : Powaaaaaa ;)
 		//______________________________________________________________  RUNS
 		/**
 		 * transform : loop on entries, apply 'func' with 'args' on each entry : replace entries values with func result
+		 * function could return promise.
 		 *
 		 * - loop on entries : true
 		 * - chainable : true
@@ -1023,6 +1326,7 @@ deep : just say : Powaaaaaa ;)
 		 * - promised management : true
 		 * - success injected : the array of results of each call on func
 		 * - error injected : any error returned (or produced) from a func call
+		 * 
 		 * @method transform
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
@@ -1034,13 +1338,15 @@ deep : just say : Powaaaaaa ;)
 			var func = function(s,e){
 				var alls = [];
 				self._entries.forEach(function(result){
-					result.value = transformer(result.value);
-					if(result.ancestor)
-						result.ancestor[result.key] = result.value;
-					alls.push(result.value);
+					alls.push(transformer(result.value));
 				});
-				deep.all(alls).then(function (loadeds)
+				deep.all(alls).done(function (loadeds)
 				{
+					self._entries.forEach(function(result){
+						result.value = loadeds.shift();
+						if(result.ancestor)
+							result.ancestor[result.key] = result.value;
+					});
 					self.running = false;
 					nextQueueItem.apply(self, [loadeds, null]);
 				},
@@ -1056,6 +1362,7 @@ deep : just say : Powaaaaaa ;)
 		},
 		/**
 		 * run : loop on entries, apply 'func' with 'args' on each entry (entry become 'this' of func)
+		 * function could retrun promise.
 		 *
 		 * - loop on entries : true
 		 * - chainable : true
@@ -1109,6 +1416,7 @@ deep : just say : Powaaaaaa ;)
 		},
 		/**
 		 * exec :  call 'func' with 'args' (the 'this' of the function isn't modified)
+		 * function could retruen promise.
 		 *
 		 * - loop on entries : false
 		 * - chainable : true
@@ -1116,6 +1424,7 @@ deep : just say : Powaaaaaa ;)
 		 * - promised management : true
 		 * - success injected : the result of the call on func
 		 * - error injected : any error returned (or produced) from func call
+		 *
 		 *
 		 * @method  exec
 		 * @param  {Function} func any function that need to be apply on each chain entry
@@ -1143,6 +1452,28 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[create]);
 			return this;
 		},
+		/**
+		 * apply a 'treatments' on chain entries (each entry will be the context of the treatment). (renderables are treatments - see doc and example).
+		 *
+		 * a treaments is an object that contains : {
+		 *   what : (optional) object|retrievable_string a value to inject in 'how' function. if no 'what' is provided : inject the entry (the context) in 'how'
+		 * 	 how : a function to treat 'what' (simple function that have a single argument (what) and return its result),
+		 * 	 where: (optional) a function to send the results somewhere, return the descriptor of the sended ressource (see deep-ui : dom.apendTo for example),
+		 * 	 done : a callback function that will be called on treated entry (the context of the done) when treatment succeed
+		 * 	 fail : a callback function that will be called on treated entry (the context of the fail) when treatment failed
+		 * }
+		 *
+		 * if entry contain a 'treat' function : will be called and provided treatment will be passed as argument
+		 *
+		 * Keep previous entries (maybe modified by treatment)
+		 *
+		 * Chain Success Injection : the treatments results
+		 * Chain Error Injection : the treatments errors
+		 * 
+		 * @method  treat
+		 * @param  {object} treatment
+		 * @return {DeepHandler} this
+		 */
 		treat: function(treatment) {
 			var self = this;
 			var func = function(s, e)
@@ -1160,9 +1491,13 @@ deep : just say : Powaaaaaa ;)
 					});
 				}
 				deep.all(alls)
-					.done(function(results) {
+				.done(function(results) {
 					self.running = false;
 					deep.chain.nextQueueItem.apply(self, [results, null]);
+				})
+				.fail(function(results) {
+					self.running = false;
+					deep.chain.nextQueueItem.apply(self, [null, results]);
 				});
 			};
 			deep.chain.addInQueue.apply(this, [func]);
@@ -1179,6 +1514,10 @@ deep : just say : Powaaaaaa ;)
 		 * - promised management : true (on callBack)
 		 * - success injected : the result of the callBack or the report if callback returned nothing
 		 * - error injected : the report or any error returned (or produced) from callBack
+		 *
+		 *
+		 * 	Chain Success injection : the valid report
+		 *	Chain Error injection : the unvalid report
 		 *
 		 * @method  valuesEqual
 		 * @param  {Object} obj      the object to test equality
@@ -1220,6 +1559,12 @@ deep : just say : Powaaaaaa ;)
 
 		/**
 		 * equal test strict equality on each entry value against provided object
+		 *
+		 *	Chain Success injection : the valid report
+		 *	Chain Error injection : the unvalid report
+		 *
+		 * 
+		 * @method  equal
 		 * @param  {*} obj      the object to test
 		 * @param  {Function}	optional. callBack a callBack to manage report
 		 * @return {DeepHandler}        this
@@ -1274,6 +1619,10 @@ deep : just say : Powaaaaaa ;)
 
 		/**
 		 * validate apply validation
+		 *
+		 *	Chain Success injection : the valid report
+		 *	Chain Error injection : the unvalid report
+		 * 
 		 * @method  validate
 		 * @param  {Object} options [description]
 		 * @return {DeepHandler}         [description]
@@ -1325,7 +1674,17 @@ deep : just say : Powaaaaaa ;)
 		},
 
 		// __________________________________________________ LOG
-
+		/**
+		 * 
+		 * log any provided arguments.
+		 * If no arguments provided : will log current success or error state.
+		 *
+		 * asynch
+		 * transparent true
+		 * 
+		 * @method  log
+		 * @return {DeepHandler} this
+		 */
 		log:function ()
 		{
 			var self = this;
@@ -1356,6 +1715,21 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * 
+		 * log current chain entries  with optional title
+		 *
+		 * full option means print full entry in place of just entry.value
+		 * pretty option means print pretty json (indented)
+		 * 
+		 * asynch
+		 * transparent true
+		 *
+		 * @method  logValues
+		 * @param title (optional) the title you want
+		 * @param options (optional) : an object { full:true|false, pretty:true|false }
+		 * @return {DeepHandler} this
+		 */
 		logValues:function (title, options)
 		{
 			var self = this;
@@ -1389,6 +1763,18 @@ deep : just say : Powaaaaaa ;)
 		},
 		// ________________________________________ READ ENTRIES
 
+		/**
+		 *
+		 * if no callBack is present : just return the FIRST value of entries. It's a chain end handle.
+		 * If callback is provided : the FIRST entry  value will be passed as argument to callback.
+		 * 		and so th chain could continue : the return of this handle is the deep handler.
+		 *
+		 * transparent true
+		 * 
+		 * @method  val
+		 * @param callBack
+		 * @return {Deephandler|entry.value} this or val
+		 */
 		val:function  (callBack)
 		{
 			var self = this;
@@ -1414,6 +1800,19 @@ deep : just say : Powaaaaaa ;)
 			else
 				return deep.chain.values(this).shift();
 		},
+		/**
+		 *
+		 * will passe as argument each entries to callback.
+		 * callback could return promise. the chain will wait any promise before continuing.
+		 *
+		 *
+		 *	Chain Success injection : the results of callback calls (resolved if promises)
+		 *	Chain Error injection : the errors of callback calls (rejected if promises)
+		 * 
+		 * @method  each
+		 * @param callBack
+		 * @return {Deephandler} this
+		 */
 		each:function  (callBack)
 		{
 			var self = this;
@@ -1435,6 +1834,19 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		  /**
+		 *
+		 * if no callBack is present : just return the array of values of entries. It's a chain end handle.
+		 * If callback is provided : the entries values will be passed as argument to callback.
+		 * 		and so th chain could continue : the return of this handle is the deep handler.
+		 *
+		 * transparent true
+		 *
+		 * 
+		 * @method  values
+		 * @param callBack
+		 * @return {Deephandler|Array} this or values
+		 */
 		values:function  (callBack)
 		{
 			var self = this;
@@ -1460,6 +1872,18 @@ deep : just say : Powaaaaaa ;)
 			else
 				return deep.chain.values(this);
 		},
+		/**
+		 *
+		 * if no callBack is present : just return the array of entries. It's a chain end handle.
+		 * If callback is provided : the entries will be passed as argument to callback.
+		 * 		and so th chain could continue : the return of this handle is the deep handler.
+		 * 
+		 * transparent true
+		 * 
+		 * @method  nodes
+		 * @param callBack
+		 * @return {Deephandler|Array} this or entries
+		 */
 		nodes:function  (callBack)
 		{
 			var self = this;
@@ -1483,6 +1907,18 @@ deep : just say : Powaaaaaa ;)
 			else
 				return deep.chain.nodes(this);
 		},
+		/**
+		 *
+		 * if no callBack is present : just return the array of paths of entries. It's a chain end handle.
+		 * If callback is provided : the entries paths will be passed as argument to callback.
+		 * 		and so th chain could continue : the return of this handle is the deep handler.
+		 *
+		 * transparent true
+		 * 
+		 * @method  paths
+		 * @param callBack
+		 * @return {Deephandler|Array} this or paths
+		 */
 		paths:function  (callBack)
 		{
 			var self = this;
@@ -1508,6 +1944,18 @@ deep : just say : Powaaaaaa ;)
 			else
 				return deep.chain.paths(this);
 		},
+		/**
+		 *
+		 * if no callBack is present : just return the array of schemas of entries. It's a chain end handle.
+		 * If callback is provided : the entries schemas will be passed as argument to callback.
+		 * 		and so th chain could continue : the return of this handle is the deep handler.
+		 * 
+		 * transparent true
+		 * 
+		 * @method  schemas
+		 * @param callBack
+		 * @return {Deephandler|Array} this or schemas
+		 */
 		schemas:function  (callBack)
 		{
 			var self = this;
@@ -1535,6 +1983,16 @@ deep : just say : Powaaaaaa ;)
 		},
 		//___________________________________________________________ WAIT
 
+		/**
+		 * will wait xxxx ms before contiuing chain
+		 *
+		 * transparent true
+		 * 
+		 * 
+		 * @method delay
+		 * @param  {number} ms
+		 * @return {Deephandler} this
+		 */
 		delay:function (ms)
 		{
 			var self = this;
@@ -1554,6 +2012,17 @@ deep : just say : Powaaaaaa ;)
 		},
 		//____________________________________________________________________  LOAD
 
+		/**
+		 * will seek in entries after any retrievable string OR executable functions : and will replace references by loaded/returned content.
+		 *
+		 * if context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.
+		 *
+		 * Chain Success injection : array of loaded results
+		 *
+		 * @method deepLoad
+		 * @param  {object} context (optional) a context to interpret strings before retrieving
+		 * @return {DeepHandler} this
+		 */
 		deepLoad:function(context)
 		{
 			var self = this;
@@ -1602,6 +2071,24 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func()]);
 			return this;
 		},
+		/**
+		 *
+		 * if request is provided : 
+		 * 		try to retrieve 'request' and replace entries values by loaded result
+		 * 	else
+		 * 		will try to retrieve any entry.value strings (will not seek deeply) and replace associated entries values by loaded result.
+		 * 		OR if entry.value is an object : look if there is any .load() function in it. If so : fire it.
+		 * 
+		 * if context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.
+		 * 	(on request or entries values)
+		 *
+		 * Chain success injection : array of loaded content.
+		 * 	
+		 * @method load
+		 * @param  {string} (optional) request
+		 * @param  {object} (optional) context the context to interpret strings
+		 * @return {DeepHandler} this
+		 */
 		load:function (request, context)
 		{
 			var self = this;
@@ -1686,6 +2173,16 @@ deep : just say : Powaaaaaa ;)
 
 		//________________________________________________________________________ INTERPET STRINGS
 
+		/**
+		 *
+		 * seek after any strings and try to interpret it with current context.
+		 *
+		 * see interpretation for simple case  
+		 * 
+		 * @method deepInterpret
+		 * @param  {object} context the oebjct to inject in strings
+		 * @return {DeepHandler} this
+		 */
 		deepInterpret:function(context)
 		{
 			var self = this;
@@ -1720,6 +2217,16 @@ deep : just say : Powaaaaaa ;)
 			addInQueue.apply(this,[func]);
 			return this;
 		},
+		/**
+		 * will interpret entries values with context
+		 * example : 
+		 * 	 deep("hello { name }").interpret({ name:"john" }).val();
+		 *   will provide "hello john".
+		 *   
+		 * @method interpret
+		 * @param  {object} context the context to inject in strings
+		 * @return {DeepHandler} this
+		 */
 		interpret:function(context)
 		{
 			var self = this;
@@ -1901,6 +2408,19 @@ deep : just say : Powaaaaaa ;)
 			return self;
 		},
 		//__________________________________________________________ MAP
+		/**
+		 * It's the way of performing a SQL JOIN like between two objects.
+		 * Objects could be retrievables.
+		 *
+		 * take current entries, seek after localKeys, use it to get 'what' with foreignKey=localKey, and finnaly store result at 'whereToStore' path in current entries values.
+		 * 
+		 * @method mapOn
+		 * @param  {Collection|retrievable_string} what
+		 * @param  {string} localKey  the name of the localKey to match with Collection items
+		 * @param  {string} foreignKey  the name of the foreignKey to match with current entries
+		 * @param  {string} whereToStore the path where save map result in each entries
+		 * @return {DeepHandler} this
+		 */
 		mapOn: function(what, localKey, foreignKey, whereToStore)
 		{
 			var self = this;
@@ -2011,16 +2531,18 @@ deep : just say : Powaaaaaa ;)
 				res.push(e.schema);
 			});
 			return res;
+		},
+		position = function (handler, name, options) {
+			options = options || {};
+			handler.positions.push({
+				name:name,
+				entries:handler._entries.concat([]),
+				store:handler._store,
+				queue:(options.restartChain)?handler.callQueue.concat([]):null
+			});
 		}
 	};
-	deep.chain.position = function (handler, name) {
-		handler.positions.push({
-			name:name,
-			entries:handler._entries.concat([]),
-			store:handler._store,
-			queue:handler.callQueue.concat([])
-		});
-	};
+	
 
 	//_____________________________________________________________________ DEFERRED
 

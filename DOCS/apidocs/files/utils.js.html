@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>utils.js - deepjs API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.9.1</em>
+            <em>API Docs for: 1.0.rc</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,15 +41,13 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
-            
-                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
-                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+                <li><a href="../modules/deep.html">deep</a></li>
             
             </ul>
         </div>
@@ -90,18 +88,47 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
+/**
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
- *&#x2F;
+ */
 if(typeof define !== &#x27;function&#x27;)
 	var define = require(&#x27;amdefine&#x27;)(module);
 
 define(function(require){
-	var collider = require(&quot;deep&#x2F;deep-collider&quot;);
-	var compose = require(&quot;deep&#x2F;deep-compose&quot;);
+	var collider = require(&quot;./deep-collider&quot;);
+	var compose = require(&quot;./deep-compose&quot;);
 	var utils = {};
 
-	utils.interpret = function (string, context) 
+	// _______________________________________ swig related
+
+	utils.getMacroImport = function(controller, macrosSet)
+	{
+		var renderedTemplate = &quot;&quot;;
+		if(controller.layer &amp;&amp; controller.layer.templates)
+		{    
+			var macros = controller.layer.templates.macros;
+			for (var i in macros)
+			{
+				if(!macros.hasOwnProperty(i) || (macrosSet &amp;&amp; ! i in macrosSet))
+					continue;
+				var  m = macros[i];
+				var prefix = &quot;&quot;;
+				var index = m.indexOf(&quot;:&quot;);
+				if(index &gt; -1)
+				{    
+					prefix = m.substring(0,index);
+					m = m.substring(index+2);
+				}
+				renderedTemplate += &quot;{% import &#x27;&quot; + m + &quot;&#x27; as &quot;+i+&quot; %}\n&quot;;
+			}
+		}
+		return renderedTemplate;
+	}
+
+	// ______________________________________ STRINGS RELATED
+
+	// TODO : need to be asynch and to retrieve values from stores : as app::language
+	utils.interpret = function (string, context)
 	{
 		var count = string.indexOf(&#x27;{&#x27;);
 		if(count == -1)
@@ -117,83 +144,26 @@ define(function(require){
 				if(string[count] != &#x27; &#x27;)
 					toAnalyse += string[count];
 				count++;
-			}	
+			}
 			if(string[count] == &#x27;}&#x27;)
 			{
 				parsed += utils.retrieveValueByPath(context, toAnalyse, &quot;.&quot;);
 				count++;
-			}	
+			}
 			while(count &lt; ln &amp;&amp; string[count] != &#x27;{&#x27;)
 				parsed += string[count++];
 			if(string[count] == &#x27;{&#x27;)
 				count++;
 		}
 		return parsed;
-	}
+	};
 
-	utils.copyArray = function(arr){
-		if(!arr)
-			return [];
-		return arr.concat([]);
-	}
 
-	utils.cloneFunction = function(fct)
+	utils.stripFirstSlash = function(text)
 	{
-		&#x2F;&#x2F;console.log(&quot;cloneFunction : fct.decorator = &quot;, fct.decorator)
-	    var clone = function() {
-	        return fct.apply(this, arguments);
-	    };
-	    clone.prototype = fct.prototype;
-	    for (property in fct) 
-	        if (fct.hasOwnProperty(property)) 
-	            clone[property] = utils.copy(fct[property]);
-	    return clone;
-	}
-
-	utils.copy = function copy(obj){
-		var res = null;
-		if(obj instanceof Array)
-		{
-			res = [];
-			obj.forEach(function(e){
-				res.push(copy(e));
-			})
-		}
-		else if(typeof obj === &#x27;object&#x27;)
-		{
-			if(obj instanceof RegExp)
-				return obj;
-			if(obj instanceof Date)
-				return new Date(obj.valueOf());
-		
-			res = {};
-			for(var i in obj)
-			{
-				if(i == &quot;_deep_entry&quot;)
-					continue;
-				if(obj.hasOwnProperty(i))
-					res[i] = copy(obj[i]);
-			}
-		}
-		else if(typeof obj === &#x27;function&#x27;)
-		{
-			if(obj.decorator instanceof compose.Decorator)
-				res = compose.cloneStart(obj);
-			else
-				res = obj; &#x2F;&#x2F;utils.cloneFunction(obj);
-		}
-		else
-			res = obj;
-		return res;
-	}
-
-	utils.getObjectClass = function(obj) {
-	    if (obj &amp;&amp; obj.constructor &amp;&amp; obj.constructor.toString) {
-	        var arr = obj.constructor.toString().match(&#x2F;function\s*(\w+)&#x2F;);
-	        if (arr &amp;&amp; arr.length == 2) 
-	            return arr[1];
-	    }
-	    return undefined;
+		if(text.substring(0,1) == &quot;/&quot;)
+			return text.substring(1);
+		return text;
 	}
 
 	utils.catchParenthesis = function(path)
@@ -221,35 +191,102 @@ define(function(require){
 		return { value:res, rest:path.substring(count)};
 	}
 
-	utils.getMacroImport = function(controller, macrosSet)
-	{
+	function trim_words(theString, numWords, maxChar) {
+	    expString = theString.split(/\s+/,numWords);
+	    if(expString.length == 1)
+	    {
+			maxChar = maxChar || 10;
+	    	if(expString[0].length &gt; maxChar)
+	    		return theString.substring(0,maxChar)
+	    	return expString[0];
+	    }
+	    theNewString=expString.join(&quot; &quot;);
+	    if(theNewString.length &lt; theString.length &amp;&amp; theNewString[theNewString.length-1] != &quot;.&quot;)
+			theNewString += &quot;...&quot;;
+	    return theNewString;
+	}
 
-		var renderedTemplate = &quot;&quot;;
-		if(controller.layer &amp;&amp; controller.layer.templates)
-		{    
-			var macros = controller.layer.templates.macros;
-			for (var i in macros)
+	utils.trimWords = function(string, numWords, maxChar){
+		var reg=new RegExp(&quot;&lt;[^&gt;]*&gt;&quot;, &quot;gi&quot; );
+		var desc = string.replace(reg, &quot;&quot;);
+		desc = trim_words(desc, numWords, maxChar);
+		return desc;
+	}
+
+	//_________________________________________________________________ OBJECTS/ARRAY RELATED
+
+	utils.copyArray = function(arr){
+		if(!arr)
+			return [];
+		return arr.concat([]);
+	};
+
+	utils.cloneFunction = function(fct)
+	{
+		//console.log(&quot;cloneFunction : fct.decorator = &quot;, fct.decorator)
+	    var clone = function() {
+	        return fct.apply(this, arguments);
+	    };
+	    clone.prototype = fct.prototype;
+	    for (property in fct) 
+	        if (fct.hasOwnProperty(property)) 
+	            clone[property] = utils.copy(fct[property]);
+	    return clone;
+	};
+
+	utils.copy = function copy(obj){
+		var res = null;
+		if(obj instanceof Array)
+		{
+			res = [];
+			obj.forEach(function(e){
+				res.push(copy(e));
+			})
+		}
+		else if(obj &amp;&amp; typeof obj === &#x27;object&#x27;)
+		{
+			if(obj instanceof RegExp)
+				return obj;
+			if(obj instanceof Date)
+				return new Date(obj.valueOf());
+		
+			res = {};
+			for(var i in obj)
 			{
-				if(!macros.hasOwnProperty(i) || (macrosSet &amp;&amp; ! i in macrosSet))
+				if(i == &quot;_deep_entry&quot;)
 					continue;
-				var  m = macros[i];
-				var prefix = &quot;&quot;;
-				var index = m.indexOf(&quot;:&quot;);
-				if(index &gt; -1)
-				{    
-					prefix = m.substring(0,index);
-					m = m.substring(index+2);
-				}
-				renderedTemplate += &quot;{% import &#x27;&quot; + m + &quot;&#x27; as &quot;+i+&quot; %}\n&quot;;
+				if(obj.hasOwnProperty(i))
+					res[i] = copy(obj[i]);
 			}
 		}
-		return renderedTemplate;
+		else if(typeof obj === &#x27;function&#x27;)
+		{
+			if(obj.decorator instanceof compose.Decorator)
+				res = compose.cloneStart(obj);
+			else
+				res = obj; //utils.cloneFunction(obj);
+		}
+		else
+			res = obj;
+		return res;
 	}
+
+	utils.getObjectClass = function(obj) {
+	    if (obj &amp;&amp; obj.constructor &amp;&amp; obj.constructor.toString) {
+	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
+	        if (arr &amp;&amp; arr.length == 2) 
+	            return arr[1];
+	    }
+	    return undefined;
+	}
+
+
+
 
 	utils.setValueByPath = function setValueByPath(object, path, value, pathDelimiter)
 	{
 		var parts = path.split(pathDelimiter||&quot;.&quot;);
-		if(pathDelimiter == &quot;&#x2F;&quot; &amp;&amp; parts[0] == &quot;&quot;)
+		if(pathDelimiter == &quot;/&quot; &amp;&amp; parts[0] == &quot;&quot;)
 			parts.shift();
 		var tmp = object;
 		while(parts.length&gt;1)
@@ -265,7 +302,7 @@ define(function(require){
 	utils.retrieveValueByPath = function retrieveValueByPath(object, path, pathDelimiter)
 	{
 		var parts = path.split(pathDelimiter||&quot;.&quot;);
-		if(pathDelimiter == &quot;&#x2F;&quot; &amp;&amp; parts[0] == &quot;&quot;)
+		if(pathDelimiter == &quot;/&quot; &amp;&amp; parts[0] == &quot;&quot;)
 			parts.shift();
 		var tmp = object;
 		while(parts.length&gt;1)
@@ -283,7 +320,7 @@ define(function(require){
 	utils.deletePropertyByPath = function deletePropertyByPath(object, path, pathDelimiter)
 	{
 		var parts = path.split(pathDelimiter||&quot;.&quot;);
-		if(pathDelimiter == &quot;&#x2F;&quot; &amp;&amp; parts[0] == &quot;&quot;)
+		if(pathDelimiter == &quot;/&quot; &amp;&amp; parts[0] == &quot;&quot;)
 			parts.shift();
 		var tmp = object;
 		while(parts.length&gt;1)
@@ -299,9 +336,9 @@ define(function(require){
 
 	utils.retrieveSchemaByPath = function retrieveSchemaByPath(schema, path, pathDelimiter)
 	{
-		&#x2F;&#x2F;console.log(&quot;retrieveSchemaByPath : &quot;, schema, path);
+		//console.log(&quot;retrieveSchemaByPath : &quot;, schema, path);
 		var parts = path.split(pathDelimiter||&quot;.&quot;);
-		if(pathDelimiter == &quot;&#x2F;&quot; &amp;&amp; parts[0] == &quot;&quot;)
+		if(pathDelimiter == &quot;/&quot; &amp;&amp; parts[0] == &quot;&quot;)
 			parts.shift();
 		var tmp = schema;
 		while(parts.length&gt;1)
@@ -316,10 +353,12 @@ define(function(require){
 		else
 			return null;
 	}
-	&#x2F;*
+	/*
 		Does not make a deep-copy if collision : just if collid : make unique
-	*&#x2F;
+	*/
 	utils.arrayUnique = function arrayUnique(arr1, uniqueOn){
+		if(!arr1.forEach)
+			return arr1;
 		var map = {}
 		var count = 0;
 		var arr = [];
@@ -372,8 +411,8 @@ define(function(require){
 
 	utils.inArray = function inArray(what, inArr)
 	{
-		&#x2F;&#x2F;console.log(&quot;inArray : what : &quot;+JSON.stringify(what) + &quot; - in : &quot;+JSON.stringify(inArr));
-		if(!inArr)
+		//console.log(&quot;inArray : what : &quot;+JSON.stringify(what) + &quot; - in : &quot;+JSON.stringify(inArr));
+		if(!inArr || !inArr instanceof Array)
 			return false;
 		var test = {};
 		inArr.forEach(function(e){
@@ -400,13 +439,6 @@ define(function(require){
 		if(obj instanceof Array)
 			return &quot;array&quot;
 		return typeof obj;
-	}
-
-	utils.stripFirstSlash = function(text)
-	{
-		if(text.substring(0,1) == &quot;&#x2F;&quot;)
-			return text.substring(1);
-		return text;
 	}
 
 	utils.deepEqual = function(a,b, ordered)
@@ -456,19 +488,19 @@ define(function(require){
 			return false;
 		return true;
 	}
-	&#x2F;&#x2F;var result = {};
+	//var result = {};
 
-	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function retrieveFullSchemaByPath(schema, path, delimitter)
+	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function (schema, path, delimitter)
 	{
 		var parts = path.split(delimitter || &quot;.&quot;);
 		if(parts[0] == &quot;&quot; || parts[0] == &quot;.&quot;)
 			parts.shift();
-		 &#x2F;&#x2F; console.log(&quot;retrieveSchemaByPath : &quot;, parts, schema);
+		 // console.log(&quot;retrieveSchemaByPath : &quot;, parts, schema);
 		var tmp = schema;
 		while(parts.length&gt;1)
 		{
 			var part = parts.shift();
-			if(part.match(&#x2F;^[0-9]*$&#x2F;))
+			if(part.match(/^[0-9]*$/))
 			{
 				if(tmp.type == &quot;array&quot;)
 				{
@@ -480,30 +512,30 @@ define(function(require){
 				return null;
 			tmp = tmp.properties[part];
 		}
-		&#x2F;&#x2F; console.log(&quot;after test last part -1 : &quot;, tmp);
+		// console.log(&quot;after test last part -1 : &quot;, tmp);
 
 		var lastPart = parts.shift();
 		var res= [];
-		if(lastPart.match(&#x2F;^[0-9]*$&#x2F;))
+		if(lastPart.match(/^[0-9]*$/))
 		{
 			if(tmp.type == &quot;array&quot;)
 			{
 				tmp = tmp.items || {};
 				res.push(tmp)
 			}
-			&#x2F;&#x2F; TODO : gestion pattern items
+			// TODO : gestion pattern items
 		}
 		else
 		{
 			if(tmp.properties &amp;&amp; tmp.properties[lastPart])
 				res.push(tmp.properties[lastPart]);
-			&#x2F;&#x2F; console.log(&quot;after test last part : &quot;, res);
+			// console.log(&quot;after test last part : &quot;, res);
 			if(tmp.patternProperties)
 				for(var i in tmp.patternProperties)
 					if(new RegExp(i).test(lastPart))
 						res.push(tmp.patternProperties[i])
 
-			 &#x2F;&#x2F; console.log(&quot;after test last part pattern props : &quot;, res);
+			 // console.log(&quot;after test last part pattern props : &quot;, res);
 
 			if(res.length ==0)
 				if (tmp.additionalProperties == undefined || tmp.additionalProperties == false)
@@ -520,7 +552,7 @@ define(function(require){
 			});
 		else if(res.length == 1)
 			finalSchema = res[0];
-		 &#x2F;&#x2F; console.log(&quot;retrieveSchemaByPath : finally : &quot;, path, finalSchema);
+		 // console.log(&quot;retrieveSchemaByPath : finally : &quot;, path, finalSchema);
 
 		return finalSchema;
 	}
@@ -581,32 +613,35 @@ define(function(require){
 
 	var up = function (src, target, schema, parent, key) 
 	{
+		if( typeof src === &#x27;undefined&#x27; )
+			return target;
 		if(src === null)
-			return target;
-		if(typeof target === &#x27;undefined&#x27; || target === null)
 		{
-			target = utils.copy(src);
 			if(parent &amp;&amp; key)
-				parent[key] = target;
-			return target;
-		}	
-		&#x2F;&#x2F; console.log(&quot;deepUp : objects not nulls.&quot;)
+				parent[key] = null;
+			return null;
+		}
+
+		
+		// console.log(&quot;deepUp : objects not nulls.&quot;)
 		var result = null;
 		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
-		&#x2F;&#x2F;console.log(&quot;deepUp : objects types : &quot;, srcType, targetType);
+		//console.log(&quot;deepUp : objects types : &quot;, srcType, targetType);
 		if (srcType === &#x27;function&#x27;)
 		{	
 			if (targetType === &#x27;function&#x27;)
 			{
 				if(src.decorator &amp;&amp; src.decorator instanceof compose.Decorator)
 				{
-					&#x2F;&#x2F;console.log(&quot;deepUp: src is decorator : &quot;,src)
+					if(src.decorator.condition &amp;&amp; typeof src.decorator.condition === &#x27;function&#x27; &amp;&amp; !src.decorator.condition())
+						return target;
+					//console.log(&quot;deepUp: src is decorator : &quot;,src)
 					result = compose.up(target, src);
 				}	
 				else if(src._deep_collider)
 				{
-					&#x2F;&#x2F;console.log(&quot;deepUp: src is collider : &quot;,src)
+					//console.log(&quot;deepUp: src is collider : &quot;,src)
 					if(target._deep_collider)
 						result = collider.wrap(src,target);
 					else
@@ -614,15 +649,29 @@ define(function(require){
 				}
 				else
 				{
-					&#x2F;&#x2F;console.log(&quot;deepUp: src is simple function : &quot;,src)
+					//console.log(&quot;deepUp: src is simple function : &quot;,src)
 					result = src;
 				}	
 			}
 			else
 			{
 				if(src.decorator &amp;&amp; src.decorator instanceof compose.Decorator)
-					throw new Error(&quot;deep.compose need to be applied on function ! &quot;);
-				if(src._deep_collider)
+				{
+					if(typeof target === &#x27;undefined&#x27;)
+					{
+						if(src.decorator.ifExists)
+						{
+							return target;
+						}	
+						else{
+							//src.decorator.createIfNecessary = true;
+							result = src;
+						}
+					}
+					else
+						throw new Error(&quot;deep.compose need to be applied on function ! &quot;);
+				}	
+				else if(src._deep_collider)
 					result = src(target, parent, key);
 				else
 					result = src;
@@ -630,11 +679,18 @@ define(function(require){
 		}
 		if(result)
 		{
-			&#x2F;&#x2F;console.log(&quot;deepUp : objects functions collison gives : &quot;, result);
+			//console.log(&quot;deepUp : objects functions collison gives : &quot;, result);
 			if(parent &amp;&amp; key)
 				parent[key] = result;
 			return result;
 		}
+		if(typeof target === &#x27;undefined&#x27; || target === null)
+		{
+			target = utils.copy(src);
+			if(parent &amp;&amp; key)
+				parent[key] = target;
+			return target;
+		}	
 		if(srcType !== targetType)
 		{
 			target = utils.copy(src);
@@ -648,7 +704,7 @@ define(function(require){
 				result = deepArrayFusion(target, src, schema);
 				if(parent &amp;&amp; key)
 					parent[key] = result;
-				&#x2F;&#x2F;console.log(&quot;array fusion up rsult : &quot;, JSON.stringify(result), parent, key, JSON.stringify(parent))
+				//console.log(&quot;array fusion up rsult : &quot;, JSON.stringify(result), parent, key, JSON.stringify(parent))
 				return result;
 				break;
 			case &#x27;object&#x27; :
@@ -670,6 +726,13 @@ define(function(require){
 				{
 					if(i == &quot;_deep_entry&quot;)
 						continue;
+
+					if(src[i] == null)
+					{
+
+						target[i] = null;
+						continue;
+					}
 
 					if(src[i] &amp;&amp; src[i]._deep_colliderRemove)
 					{
@@ -693,36 +756,38 @@ define(function(require){
 
 	var bottom = function (src, target, schema, parent, key) 
 	{
-		 &#x2F;&#x2F; console.log(&quot;utils.bottom : objects &quot;, src, target)
+		 // console.log(&quot;utils.bottom : objects &quot;, src, target)
 
-		if(src === null)
+		if(src === null || typeof src === &quot;undefined&quot;)
 			return target;
-		if(typeof target === &#x27;undefined&#x27; || target === null)
+		if(target == null)
+			return target;
+		if(typeof target === &#x27;undefined&#x27;)
 		{
 			target = utils.copy(src);
 			if(parent &amp;&amp; key)
 				parent[key] = target;
 			return target;
 		}	
-		&#x2F;&#x2F;console.log(&quot;utils.bottom : objects not nulls.&quot;)
+		//console.log(&quot;utils.bottom : objects not nulls.&quot;)
 		var result= null;
 		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
-		&#x2F;&#x2F; console.log(&quot;utils.bottom : objects types : &quot;, srcType, targetType);
+		// console.log(&quot;utils.bottom : objects types : &quot;, srcType, targetType);
 		if ( targetType === &#x27;function&#x27;)
 		{	
 			if ( srcType === &#x27;function&#x27;)
 			{
 				if(target.decorator &amp;&amp; target.decorator instanceof compose.Decorator)
 				{
-					&#x2F;&#x2F; console.log(&quot;utils.bottom: target is decorator : &quot;,target)
+					// console.log(&quot;utils.bottom: target is decorator : &quot;,target)
 					result = compose.bottom(src, target); 
 
 				}	
 
 				else if(target._deep_collider)
 				{
-					&#x2F;&#x2F;console.log(&quot;utils.bottom: src is collider : &quot;,src)
+					//console.log(&quot;utils.bottom: src is collider : &quot;,src)
 					if(src._deep_collider)
 						result = collider.wrap(target, src);
 					else
@@ -730,7 +795,7 @@ define(function(require){
 				}
 				else
 				{
-					&#x2F;&#x2F;console.log(&quot;utils.bottom: src is simple function : &quot;,src)
+					//console.log(&quot;utils.bottom: src is simple function : &quot;,src)
 					result = target;
 				}	
 			}
@@ -746,7 +811,7 @@ define(function(require){
 		}
 		if(result)
 		{
-			&#x2F;&#x2F; console.log(&quot;deep.bottom : objects functions collison gives : &quot;, result);
+			// console.log(&quot;deep.bottom : objects functions collison gives : &quot;, result);
 			if(parent &amp;&amp; key)
 				parent[key] = result;
 			return result;
@@ -765,7 +830,7 @@ define(function(require){
 				return result;
 				break;
 			case &#x27;object&#x27; :
-				&#x2F;&#x2F; console.log(&quot;deep.bottom : apply objects together&quot;)
+				// console.log(&quot;deep.bottom : apply objects together&quot;)
 				var oldProps = {};
 				for(var i in target)
 				{
@@ -785,6 +850,11 @@ define(function(require){
 				{
 					if(i == &quot;_deep_entry&quot;)
 						continue;
+					if(oldProps[i] == null)
+					{
+						target[i] = null;
+						continue;
+					}
 					if(oldProps[i] &amp;&amp; oldProps[i]._deep_colliderRemove)
 					{
 						delete target[i];
@@ -805,7 +875,7 @@ define(function(require){
 	var deepCopy = utils.deepCopy = function deepCopy(source, target, overwrite, schema, parent, key)
 	{
 		overwrite = (overwrite != null &amp;&amp; overwrite != undefined)?overwrite:true;
-	&#x2F;&#x2F;	console.log(&quot;deep-copy : &quot;,source, &quot; in &quot;, target, &quot; - ow : &quot;, overwrite, &quot; - parent &quot;, parent, &quot; - key : &quot;, key)
+	//	console.log(&quot;deep-copy : &quot;,source, &quot; in &quot;, target, &quot; - ow : &quot;, overwrite, &quot; - parent &quot;, parent, &quot; - key : &quot;, key)
 		if(overwrite)
 			return utils.up(source, target, schema, parent, key);
 		return utils.bottom(source, target, schema, parent, key);
@@ -813,26 +883,96 @@ define(function(require){
 	utils.up = up;
 	utils.bottom = bottom;
 
-	function trim_words(theString, numWords, maxChar) {
-	    expString = theString.split(&#x2F;\s+&#x2F;,numWords);
-	    if(expString.length == 1)
-	    {
-			maxChar = maxChar || 10;
-	    	if(expString[0].length &gt; maxChar)
-	    		return theString.substring(0,maxChar)
-	    	return expString[0];
-	    }
-	    theNewString=expString.join(&quot; &quot;);
-	    if(theNewString.length &lt; theString.length &amp;&amp; theNewString[theNewString.length-1] != &quot;.&quot;)
-			theNewString += &quot;...&quot;;
-	    return theNewString;
+	//___________________________________________ RANGE RELATED
+
+	utils.createRangeObject = function (start, end, total) {
+		var res = {
+			total:total,
+			start:0,
+			end:0,
+			hasNext:false,
+			hasPrevious:false,
+			next:function (width) 
+			{
+				if(!this.hasNext)
+					return this;
+				this.start += width;
+				this.end = this.start+(width-1);
+				return  this.update(this.start, this.end);
+			},
+			previous:function (width) 
+			{
+				if(!this.hasPrevious)
+					return this;
+				this.start -= width;
+				this.end = this.start+(width-1);
+				return this.update(this.start, this.end);
+			},
+			update:function (start, end, total) 
+			{
+				this.total = total || this.total || 0;
+				if(this.total == 0)
+				{
+					this.start = this.end = 0
+					return this;
+				}
+				this.start = Math.max(Math.min(this.total-1,start), 0);
+				this.end = Math.max(Math.min(end, this.total-1),0);
+				this.hasNext = (this.end &lt; (this.total-1));
+				this.hasPrevious = (this.start &gt; 0);
+				//console.log(&quot;update range  : res : &quot;,this);
+				return this;
+			}
+		};
+		res.update(start,end,total)
+		return res;
 	}
 
-	utils.trimWords = function(string, numWords, maxChar){
-		var reg=new RegExp(&quot;&lt;[^&gt;]*&gt;&quot;, &quot;gi&quot; );
-		var desc = string.replace(reg, &quot;&quot;);
-		desc = trim_words(desc, numWords, maxChar);
-		return desc;
+	//_________________________________________________ HTTP RELATED
+
+	utils.parseBody = function (body, headers) 
+	{
+		if(typeof body === &#x27;undefined&#x27; || body == null)
+			return null;
+		var contentType = headers[&quot;content-type&quot;] || headers[&quot;Content-Type&quot;] || &quot;application/json&quot;;
+		var contentType = contentType.split(&quot;;&quot;)[0];
+		switch(contentType)
+		{
+			case &quot;application/json-rpc&quot; : 
+				var b = &quot;&quot;;
+				if(body.forEach)
+					body.forEach(function (bd) {
+						b += bd.toString();
+					});
+				else
+					b = body.toString();
+				return JSON.parse(b);
+				break;	
+
+			case &quot;application/json&quot; : 
+				var b = &quot;&quot;;
+				if(body.forEach)
+					body.forEach(function (bd) {
+						b += bd.toString();
+					});
+				else
+					b = body.toString();
+				return JSON.parse(b);
+				break;	
+
+			case &quot;application/javascript&quot; :   // TODO : should be parsed by json-extended parser
+				var b = &quot;&quot;;
+				if(body.forEach)
+					body.forEach(function (bd) {
+						b += bd.toString();
+					});
+				else
+					b = body.toString();
+				return JSON.parse(b);
+				break;	
+			default :
+				return body;
+		}
 	}
 
 	return utils;	
@@ -847,13 +987,13 @@ define(function(require){
         </div>
     </div>
 </div>
-<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
-<script src="..&#x2F;assets/js/yui-prettify.js"></script>
-<script src="..&#x2F;assets/../api.js"></script>
-<script src="..&#x2F;assets/js/api-filter.js"></script>
-<script src="..&#x2F;assets/js/api-list.js"></script>
-<script src="..&#x2F;assets/js/api-search.js"></script>
-<script src="..&#x2F;assets/js/apidocs.js"></script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
 </body>
 </html>

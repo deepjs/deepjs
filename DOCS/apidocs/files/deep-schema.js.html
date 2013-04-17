@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>deep-schema.js - deepjs API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.9.1</em>
+            <em>API Docs for: 1.0.rc</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,15 +41,13 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
-            
-                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
-                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+                <li><a href="../modules/deep.html">deep</a></li>
             
             </ul>
         </div>
@@ -90,10 +88,10 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
+/**
  *	@author gilles.coomans@gmail.com
  *	JSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions
- * 	http:&#x2F;&#x2F;tools.ietf.org&#x2F;html&#x2F;draft-zyp-json-schema-03
+ * 	http://tools.ietf.org/html/draft-zyp-json-schema-03
  * 
 
 		Ajout par rapport à la v3
@@ -125,10 +123,10 @@
 		id has to became uri
 
 
-		v3 &#x2F; V4
+		v3 / V4
 		pattern remplace format ?
 		divisibleBy -&gt; mod
-		max&#x2F;minProperties
+		max/minProperties
 
 		required : fuzzy concept now : need 
 		dependencies : always fuzzy : need example to be clear
@@ -137,13 +135,13 @@
 
 		{
 			myConstraintProperty:{
-				required:Boolean,   &#x2F;&#x2F; means that&#x27;s, in any case, this property is needed
+				required:Boolean,   // means that&#x27;s, in any case, this property is needed
 				require:{
-					&#x2F;&#x2F; is the schema that the whole object (from root) need to satisfy
+					// is the schema that the whole object (from root) need to satisfy
 					path:{
 						to:{
 							requiredProperty:{
-								&#x2F;&#x2F; schema that requiredProperty need to satisfy
+								// schema that requiredProperty need to satisfy
 							}
 						}
 					}
@@ -151,7 +149,7 @@
 			}
 		}
 
-		Fuzzy : format&#x2F;pattern&#x2F;value :    value is more clear : 
+		Fuzzy : format/pattern/value :    value is more clear : 
 		I propose : 
 			when object.value is a leaf of the object instance (no array, nor object):
 			if(schema.value is RegExp)
@@ -168,11 +166,11 @@
 			dependencies:[
 				{ 
 					constraint:{
-						&#x2F;&#x2F; the schema that need to be matched on the dependant value
+						// the schema that need to be matched on the dependant value
 						pattern:&quot;tva-pattern-uk&quot;
 					}, 
 					instance:{
-						&#x2F;&#x2F; the schemas that pointed properties (from root) need to satisfy to evaluate 
+						// the schemas that pointed properties (from root) need to satisfy to evaluate 
 						path:{
 							to:{
 								country:{
@@ -184,11 +182,11 @@
 				},
 				{ 
 					constraint:{
-						&#x2F;&#x2F; the schema that need to be matched on the dependant value
+						// the schema that need to be matched on the dependant value
 						pattern:&quot;tva-pattern-eu&quot;
 					}, 
 					instance:{
-						&#x2F;&#x2F; the schema that pointed properties (from root) need to satisfy to evaluate 
+						// the schema that pointed properties (from root) need to satisfy to evaluate 
 						properties:{
 							pathTo:{
 								properties:{
@@ -209,24 +207,24 @@
 			required:true,
 			dependencies:[
 				{ 
-					constraint:{  &#x2F;&#x2F; the schema that need to be matched on the dependant value. Optional : empty schema by default
+					constraint:{  // the schema that need to be matched on the dependant value. Optional : empty schema by default
 						pattern:&quot;tva-pattern-uk&quot;
 					}, 
 					test:{
-						&#x2F;&#x2F; the schemas that pointed property (from root - in object instance) need to be satisfied to evaluate constraint above
-						&quot;#&#x2F;address&#x2F;country&quot;:{
+						// the schemas that pointed property (from root - in object instance) need to be satisfied to evaluate constraint above
+						&quot;#/address/country&quot;:{
 							pattern:&quot;UK&quot;
 						}
 					}
 				},
 				{ 
 					constraint:{
-						&#x2F;&#x2F; the schema that need to be matched on the dependant value
+						// the schema that need to be matched on the dependant value
 						pattern:&quot;tva-pattern-eu&quot;
 					}, 
 					test:{
-						&#x2F;&#x2F; the schema that whole object (from root) needs to be satisfied to evaluate constraint above
-						&quot;#&#x2F;address&#x2F;country&quot;:{ 
+						// the schema that whole object (from root) needs to be satisfied to evaluate constraint above
+						&quot;#/address/country&quot;:{ 
 							enum:[&quot;FR&quot;, &quot;ES&quot;]
 						}
 					}
@@ -249,7 +247,7 @@
 		mySchema:{
 			obj:{
 				obj2:{
-					&quot;$ref&quot;: &quot;&#x2F;&quot;
+					&quot;$ref&quot;: &quot;/&quot;
 				}
 			}
 		}
@@ -260,8 +258,8 @@
 			properties:{
 				myNestedChilds:{
 					patternProperties:{
-						&#x2F;.* &#x2F;g:{
-							backgrounds:[&quot;#&#x2F;&quot;],   &#x2F;&#x2F; TOdo faire attention dans l&#x27;backgrounds d&#x27;un ancêtre : cycle possible : faut que l&#x27;extension ne cycle pas mais que la structure soit bien nesté à l&#x27;infini : solution faire l&#x27;backgrounds le plus tard possible : ne pas extender toute la structure dés le début
+						/.* /g:{
+							backgrounds:[&quot;#/&quot;],   // TOdo faire attention dans l&#x27;backgrounds d&#x27;un ancêtre : cycle possible : faut que l&#x27;extension ne cycle pas mais que la structure soit bien nesté à l&#x27;infini : solution faire l&#x27;backgrounds le plus tard possible : ne pas extender toute la structure dés le début
 							properties:{ 
 								parent:{ type:&quot;any&quot; } 
 							} 
@@ -279,7 +277,7 @@
 		REFACTORING EXTENDS
 		backgrounds dans deep-schema : faire un mix : 
 		précompilation du schéma : dés qu&#x27;on voit qu&#x27;on doit choper un ancetre pour un backgrounds (dans le schema) : on laisse l&#x27;backgrounds  (on remplace dans l&#x27;array backgrounds tout ce qui peut etre compilé par sa compilation (par groupe en laissant l&#x27;ordre et les référence vers anc^etres tel quel - tout ce qui est en dessous de la première référence à un parent peut déjà être appliqué))
-		lorsqu&#x27;on a une instance : lors du parsing&#x2F;compilation (au deep-copy par exemple, lorsqu&#x27;on voit passer tous les champs) : 
+		lorsqu&#x27;on a une instance : lors du parsing/compilation (au deep-copy par exemple, lorsqu&#x27;on voit passer tous les champs) : 
 			on chope le schema associé à la propriété courante
 				si backgrounds encore présent dans schema : copier ancetre dans vide, (sans backgrounds), coller schema prop courante dessus (sans backgrounds) : retourner le tout
 
@@ -293,13 +291,13 @@
  		au final : comme un schema chope de plus en plus de propriétés d&#x27;un deep-factory : il faudrait que le schema soit un deep-factory 
  		dont son propre schema soit le meta schema du schema
 
- *&#x2F;
+ */
 
-&#x2F;**
+/**
  * TODO : 
  * json-pointer dereferencement							OK
  * add relative reference to json-pointer					OK
- * dependencies : clarify, and&#x2F;or implement if(constraint.match(root)) constraint(value)
+ * dependencies : clarify, and/or implement if(constraint.match(root)) constraint(value)
  * links dereferencer  : template-engine + instance injection + DeepRequest.retrieve
  * référencement interne : backgrounds ou $ref with json-pointer					OK
 
@@ -313,16 +311,16 @@ Patterns :
 		christophil:{
 			dependenciesQueries:
 			{
-				matchEurope:{     &#x2F;&#x2F; it&#x27;s the relation&#x2F;dependency name
+				matchEurope:{     // it&#x27;s the relation/dependency name
 					query:&quot;&quot;,
-					required:true,   &#x2F;&#x2F; mean that the query MUST give something : so the dependency MUST be valid
+					required:true,   // mean that the query MUST give something : so the dependency MUST be valid
 					patternProperties:{
-						&quot;$ref&quot;:[ &quot;json::&#x2F;Pathologies&#x2F;?type=perenial&amp;zone=europe&amp;$result=hash&quot; ]  &#x2F;&#x2F; exemple of external patterns definitions
+						&quot;$ref&quot;:[ &quot;json::/Pathologies/?type=perenial&amp;zone=europe&amp;$result=hash&quot; ]  // exemple of external patterns definitions
 					}
 				},
 				matchUK:{
 					query:&quot;&quot;;
-					required:false,  &#x2F;&#x2F; optional dependency
+					required:false,  // optional dependency
 					properties:{
 	
 					}
@@ -337,26 +335,26 @@ Imagine you would define a pathologie list for plants. Each plant could be sensi
 The service could provids the list of known pathologies, and the subset have to match 
 
 
- *&#x2F;
+ */
 
 
- &#x2F;**
+ /**
  * console.flags : {
 	validationError,
 	validator
  }
- *&#x2F;
+ */
 
 if(typeof define !== &#x27;function&#x27;)
 {
 	var define = require(&#x27;amdefine&#x27;)(module);
 	var swig = require(&quot;swig&quot;);
 }	
-define([&quot;require&quot;, &quot;deep&#x2F;utils&quot;, &quot;deep&#x2F;promise&quot;],
+define([&quot;require&quot;, &quot;./utils&quot;, &quot;./promise&quot;],
 function(require){
 
-	var utils = require(&quot;deep&#x2F;utils&quot;);
-	var promise = require(&quot;deep&#x2F;promise&quot;);
+	var utils = require(&quot;./utils&quot;);
+	var promise = require(&quot;./promise&quot;);
 	function findPatternProperties(name, patterns)
 	{
 		var res = [];
@@ -393,10 +391,10 @@ function(require){
 				value = parseInt(value); break;
 			case &quot;boolean&quot; : 
 				value =  (value == &quot;true&quot; || value == &quot;1&quot;)?true:false; break;
-			default : &#x2F;&#x2F; string
+			default : // string
 				value;
 		}
-		&#x2F;&#x2F;console.log(&quot;convertStringTo : &quot;, value,   &quot; - &quot;, type)
+		//console.log(&quot;convertStringTo : &quot;, value,   &quot; - &quot;, type)
 		return value;
 	}
 
@@ -405,7 +403,7 @@ function(require){
 
 	Validator.prototype.doTest = function doTest(entry, value, type, schema, valuePath, schemaPath, schemaProperty)
 	{
-		&#x2F;&#x2F;console.log(&quot;do test &quot;+entry.test.apply(this, [value, type, schema, valuePath, schemaPath, schemaProperty]))
+		//console.log(&quot;do test &quot;+entry.test.apply(this, [value, type, schema, valuePath, schemaPath, schemaProperty]))
 		if(entry.test &amp;&amp; !entry.test.apply(this, [value, type, schema, valuePath, schemaPath, schemaProperty]))
 			this.createError(entry.error, value, type, schema, valuePath, schemaPath, schemaProperty);
 	}
@@ -435,20 +433,20 @@ function(require){
 		return error;
 	}
 
-	&#x2F;*Validator.prototype.extendsObject = function extendsObject(schema, path)
+	/*Validator.prototype.extendsObject = function extendsObject(schema, path)
 	{
 		return this.extendsObject(schema, path);
 	}
 
 	Validator.prototype.dereferenceObject = function dereferenceObject(schema, path)
 	{
-		&#x2F;&#x2F;console.log(&quot;dereference : &quot;+path, &quot; - schema : &quot;, schema);
+		//console.log(&quot;dereference : &quot;+path, &quot; - schema : &quot;, schema);
 		return this.dereferenceObject(schema, path);
 	}
 
 	Validator.prototype.compileObject = function(schema){
 		return this.compileObject(schema);
-	}*&#x2F;
+	}*/
 	
 	Validator.prototype.checkRef = function checkRef(value, schema, valuePath, schemaPath, nextValidation)
 	{
@@ -481,7 +479,7 @@ function(require){
 	}
 
 	Validator.prototype.validate = function validate(value, schema, options){
-		&#x2F;&#x2F;console.log(&quot;validate ___________________&quot;)
+		//console.log(&quot;validate ___________________&quot;)
 
 		this.rootValue = value;
 		this.errors = [];
@@ -514,19 +512,19 @@ function(require){
 		var schemaPaths = [];
 		var deferred = promise.Deferred();
 		var othis = this;
-		&#x2F;&#x2F;console.log(&quot;Validator&quot;, &quot;partialValidation : fieldsToCheck = &quot; + fieldsToCheck);
+		console.log(&quot;Validator&quot;, &quot;partialValidation : fieldsToCheck = &quot; + fieldsToCheck);
 	
 		fieldsToCheck.forEach(function  (required) {
-			&#x2F;&#x2F;console.log(&quot;Validator&quot;, &quot;partialValidation : forEach : field = &quot; + required);
+			//console.log(&quot;Validator&quot;, &quot;partialValidation : forEach : field = &quot; + required);
 
 			var schem = utils.retrieveFullSchemaByPath(schema, required);
 			if(!schem)
 				return;
-			&#x2F;&#x2F;console.log(&quot;partial schema : &quot;, schem)
+			//console.log(&quot;partial schema : &quot;, schem)
 			var obj = utils.retrieveValueByPath(object, required);
 			if(obj != &quot;&quot; &amp;&amp; !obj &amp;&amp; schem.required)
 			{
-				&#x2F;&#x2F;console.log(&quot;partial : missing prop : (required)&quot;);
+				//console.log(&quot;partial : missing prop : (required)&quot;);
 				othis.createError(othis.lexic[othis.lexic.__requiredEquivalent].error ,obj, &quot;undefined&quot;,  schem, required );
 				return;
 			}
@@ -538,7 +536,7 @@ function(require){
 			var valid = true;
 			
 			results.forEach(function partialValidationDoneLoopResult(report){
-			&#x2F;&#x2F;console.log(&quot;validator&quot;, &quot;________________ partialValidation : report : &quot;+JSON.stringify(report));
+			//console.log(&quot;validator&quot;, &quot;________________ partialValidation : report : &quot;+JSON.stringify(report));
 				if(!report.valid)
 				{
 					valid = false;
@@ -550,7 +548,7 @@ function(require){
 					}
 				}	
 			})
-			&#x2F;&#x2F;console.log(&quot;validator&quot;, &quot;________________ partialValidation : final errorsMap : &quot;+JSON.stringify(errorsMap));
+			//console.log(&quot;validator&quot;, &quot;________________ partialValidation : final errorsMap : &quot;+JSON.stringify(errorsMap));
 			deferred.resolve({ schema:schema, value:object, errorsMap:othis.errorsMap, valid:valid,  date:Date.now(), partial:true })
 		})
 		return promise.promise(deferred);
@@ -587,23 +585,23 @@ function(require){
 
 	Validator.prototype.validateProperty = function (value, schema, valuePath, schemaPath)
 	{
-		&#x2F;&#x2F;if(console.flags.validator) console.log(&quot;validator&quot;, &quot;validateProperty : &quot;,value, schema)
+		//if(console.flags.validator) console.log(&quot;validator&quot;, &quot;validateProperty : &quot;,value, schema)
 		var validations = [];
 		var type = this.getType(value);
 
 		if(this.options.forceConversion &amp;&amp; schema.type != type)
 		switch(schema.type)
 			{
-			&#x2F;*	case &quot;array&quot; : 
+			/*	case &quot;array&quot; : 
 				if(value )
 					if(field.lastNodeRef[field.lastPathPart] == null)
 						field.lastNodeRef[field.lastPathPart] = new Array();
-					break;*&#x2F;
+					break;*/
 				case &quot;number&quot; : value = parseFloat(value); break;	
 				case &quot;float&quot; : value = parseFloat(value); break;	
 				case &quot;integer&quot; : value = parseInt(value); break;
 				case &quot;boolean&quot; :
-					&#x2F;&#x2F;console.log(&quot;VERIFY A BOOLEAN VALUE - value = &quot;, val )
+					//console.log(&quot;VERIFY A BOOLEAN VALUE - value = &quot;, val )
 					value = (value == &#x27;true&#x27; || value == &quot;1&quot; || value == true)?true:false;
 					break;	
 				default : ;
@@ -620,7 +618,7 @@ function(require){
 		if(!types.push)
 			types = [types];
 
-		&#x2F;&#x2F;console.log(&quot;will test type in types : &quot; , type, types)
+		//console.log(&quot;will test type in types : &quot; , type, types)
 
 		var ok = false;
 		for(var i = 0; i &lt; types.length; ++i)
@@ -649,7 +647,7 @@ function(require){
 		}
 		if(!ok)
 			this.createError(this.lexic.__additionalErrors.badType, value, type, schema, valuePath, schemaPath, schemaPath+&quot;.type&quot;);
-			&#x2F;&#x2F;console.log(&quot;test _______________&quot;)
+			//console.log(&quot;test _______________&quot;)
 		
 		var dependenciesMatch = false;
 		if(schema.dependencies &amp;&amp; schema.dependencies.length &gt; 0)
@@ -657,12 +655,12 @@ function(require){
 
 			schema.dependencies.forEach(function  (dep) {
 				var res = Querier.query(value, dep.query);
-				&#x2F;&#x2F;console.log(&quot;test dependancy query: &quot;, res, &quot; - constraints : &quot;, dep.constraints)
+				//console.log(&quot;test dependancy query: &quot;, res, &quot; - constraints : &quot;, dep.constraints)
 				if(res.length &gt; 0)
 				{
 					dependenciesMatch = true;
 					var rep = othis.validateProperty(value, dep.constraints, valuePath, schemaPath);
-					&#x2F;&#x2F;&#x2F;console.log(&quot;dependency validation ? &quot;, rep.valid)
+					///console.log(&quot;dependency validation ? &quot;, rep.valid)
 					ok = ok &amp;&amp; rep.valid;
 				}
 			})
@@ -689,50 +687,50 @@ function(require){
 
 		if(!dependenciesMatch &amp;&amp; type == &quot;object&quot;)
 		{
-			&#x2F;&#x2F; check all properties of object
+			// check all properties of object
 			for(var i in value)
 			{
 				if(!value.hasOwnProperty(i))
 					continue;
 				var schemas = [];
-				&#x2F;&#x2F; get schema pattern properties that match property name
+				// get schema pattern properties that match property name
 				if(schema.patternProperties)
 					schemas = findPatternProperties(i, schema.patternProperties);
-				&#x2F;&#x2F; get regular property
+				// get regular property
 				if(schema.properties &amp;&amp; schema.properties[i])
 					schemas.push(schema.properties[i]);
-				if(schemas.length == 0) &#x2F;&#x2F; no pattern nor regular schema find for this property
+				if(schemas.length == 0) // no pattern nor regular schema find for this property
 				{ 
-					if(schema.additionalProperties == undefined || schema.additionalProperties !== false)  &#x2F;&#x2F; try additionalProperties schema
+					if(schema.additionalProperties == undefined || schema.additionalProperties !== false)  // try additionalProperties schema
 		 				validations.push(this.checkRef(value[i], schema.additionalProperties || { type:&quot;any&quot; }, valuePath+&quot;.&quot;+i, schemaPath+&quot;.additionalProperties&quot;));
 					else if(schema.additionalProperties === false)
 						this.createError(this.lexic.additionalProperties.error, value[i], getType.apply(this, [value[i]]),  schema, valuePath+&quot;.&quot;+i,  schemaPath+&quot;.properties.&quot;+i );
 				}
-				else{	&#x2F;&#x2F; merge array of schema found for this property (patterns and&#x2F;or regular schema properties)
+				else{	// merge array of schema found for this property (patterns and/or regular schema properties)
 					var res = {};
-					schemas.forEach(function deepCopySchema(e){   &#x2F;&#x2F; merge : patterns in backgrounds, regular on top
+					schemas.forEach(function deepCopySchema(e){   // merge : patterns in backgrounds, regular on top
 						utils.deepCopy(e, res);
 					})
 			 		validations.push(this.checkRef(value[i], res, valuePath+&quot;.&quot;+i,  schemaPath+&quot;.(merged)properties.&quot;+i));
 				}
 			}
-			&#x2F;&#x2F;console.log(&quot;required ? &quot;+this.lexic[this.lexic.__requiredEquivalent].schema.type)
-			&#x2F;&#x2F; check required that&#x27;s missing
-			if(this.lexic[this.lexic.__requiredEquivalent].schema.type == &quot;boolean&quot;) &#x2F;&#x2F; handling v2 and v3 behaviour. Ommited for v4.
+			//console.log(&quot;required ? &quot;+this.lexic[this.lexic.__requiredEquivalent].schema.type)
+			// check required that&#x27;s missing
+			if(this.lexic[this.lexic.__requiredEquivalent].schema.type == &quot;boolean&quot;) // handling v2 and v3 behaviour. Ommited for v4.
 			{	
-			&#x2F;&#x2F;	console.log(&quot;handle required as boolean&quot;)
+			//	console.log(&quot;handle required as boolean&quot;)
 				for(var i in schema.properties)
 					if(schema.properties[i][this.lexic.__requiredEquivalent] &amp;&amp; typeof value[i] === &#x27;undefined&#x27;)
 						this.createError(this.lexic[this.lexic.__requiredEquivalent].error , value[i], &quot;undefined&quot;,  schema, valuePath+&quot;.&quot;+i,  schemaPath+&quot;.properties.&quot;+i );
 			}
 		}
-		&#x2F;&#x2F;	console.log(&quot;test _______________&quot;)
+		//	console.log(&quot;test _______________&quot;)
 		if(!dependenciesMatch)
 			for(var i in schema)
 			{
 				if(!schema.hasOwnProperty(i))
 					continue;
-				&#x2F;&#x2F;console.log(&quot;simple schema prop test : &quot;+i + &quot; - schema : &quot;+JSON.stringify(schema))
+				//console.log(&quot;simple schema prop test : &quot;+i + &quot; - schema : &quot;+JSON.stringify(schema))
 				switch(i)
 				{
 					case &quot;type&quot;: break;
@@ -743,7 +741,7 @@ function(require){
 					case &quot;additionalItems&quot;: break;
 					case &quot;additionalProperties&quot;: break;
 					default:
-					&#x2F;&#x2F;console.log(&quot;Validator.lexic[i] &quot;,i)
+					//console.log(&quot;Validator.lexic[i] &quot;,i)
 					if(this.lexic[i])
 						this.doTest( this.lexic[i], value, type, schema, valuePath, schemaPath );
 					else
@@ -765,42 +763,42 @@ function(require){
 		__requiredEquivalent:&quot;required&quot;,
 		__defaultPattern:{
 			uri:{
-				test: function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test: function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with uri format&quot;
 			},
 			date:{
-				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test:function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with date format&quot;
 			},
 			phone:{
-				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test:function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with phone format&quot;
 			},
 			email:{
-				&#x2F;&#x2F;test:function(value){ return (&#x2F;^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$&#x2F;).test(value) },
-				test:function(value){ return (&#x2F;^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$&#x2F;gi).test(value) },
+				//test:function(value){ return (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/).test(value) },
+				test:function(value){ return (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/gi).test(value) },
 				error:&quot;need to be with email format&quot;
 			},
 			zip:{
-				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test:function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with zip format&quot;
 			},
 			ipv4:{
-				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test:function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with ipv4 format&quot;
 			},
 			ipv6:{
-				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test:function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with ipv6 format&quot;
 			},
 			&quot;date-time&quot;:{
-				test:function(value){ return (&#x2F;.*&#x2F;g).test(value) },
+				test:function(value){ return (/.*/g).test(value) },
 				error:&quot;need to be with date-time format&quot;
 			},
 			&quot;utc-millisec&quot;:{
 				test:function(value){ 
 					
-					return (&#x2F;.*&#x2F;g).test(value) 
+					return (/.*/g).test(value) 
 				},
 				error:&quot;need to be with date-time format&quot;
 			}
@@ -819,7 +817,7 @@ function(require){
 			},
 			number:{
 				test:function(value){
-			&#x2F;&#x2F;	console.log(&quot;DEEP-SCHEMA : test number type of : &quot;, value, typeof value);
+			//	console.log(&quot;DEEP-SCHEMA : test number type of : &quot;, value, typeof value);
 				 return typeof value === &#x27;number&#x27; &amp;&amp; !isNaN(value); 
 				},
 				error:&quot;{{ path }} need to be float. Value provided : {{ value }}&quot;
@@ -860,12 +858,12 @@ function(require){
 			test:function(value, type, schema, valuePath, schemaPath){ 
 				var othis = this;
 				var ok = true;
-				&#x2F;&#x2F;console.log(&quot;DEEP-SCHEMA : test dependencies : &quot;, schema.dependencies);
+				//console.log(&quot;DEEP-SCHEMA : test dependencies : &quot;, schema.dependencies);
 				if(schema.dependencies &amp;&amp; schema.dependencies.length &gt; 0)
 					schema.dependencies.forEach(function  (dep) {
 
 						var res = Querier.query(value, dep.query);
-						&#x2F;&#x2F;console.log(&quot;test dependancy query: &quot;, res)
+						//console.log(&quot;test dependancy query: &quot;, res)
 						if(res.length &gt; 0)
 						{
 							var schemaCopied = {}
@@ -877,7 +875,7 @@ function(require){
 							}
 							schemaCopied = utils.deepCopy(dep.constraints, schemaCopied);
 							var rep = othis.validateProperty(value, schemaCopied, valuePath, schemaPath);
-							&#x2F;&#x2F;&#x2F;console.log(&quot;dependency validation ? &quot;, rep.valid)
+							///console.log(&quot;dependency validation ? &quot;, rep.valid)
 							ok = ok &amp;&amp; rep.valid;
 						}
 					})
@@ -891,11 +889,11 @@ function(require){
 				if((!value) &amp;&amp; !schema.required)
 					return true;
 				if(type == &quot;array&quot; || type == &quot;object&quot;) return true; 
-				&#x2F;&#x2F;console.log(&quot;try interpret reg exp for format : &quot;+this.lexic.__defaultPattern[schema.format].test)
+				//console.log(&quot;try interpret reg exp for format : &quot;+this.lexic.__defaultPattern[schema.format].test)
 
 				if(this.lexic.__defaultPattern[schema.format])
 					return this.lexic.__defaultPattern[schema.format].test.apply(this, [value, type, schema, valuePath, schemaPath, schemaPath+&quot;.format&quot;]);	
-				&#x2F;&#x2F;console.log(&quot;try interpret direct reg exp for format : &quot;+schema.format)
+				//console.log(&quot;try interpret direct reg exp for format : &quot;+schema.format)
 				return new RegExp(schema.format).test(String(value)); 
 			},
 			error:&quot;{{ path }} unmatched format {{ schema.format }}. Value provided : {{ value }}&quot;
@@ -915,7 +913,7 @@ function(require){
 		minLength:{
 			schema:{ type:&quot;integer&quot; },
 			test:function(value, type, schema){ 
-				&#x2F;&#x2F;console.log(&quot;min length &quot;+value.length+ &quot; - type : &quot;+type + &quot; - have to be : &quot;+schema.minLength)
+				//console.log(&quot;min length &quot;+value.length+ &quot; - type : &quot;+type + &quot; - have to be : &quot;+schema.minLength)
 				if(type != &quot;array&quot; &amp;&amp; type != &quot;string&quot; &amp;&amp; type != &quot;integer&quot;) return true; 
 				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
 					return true;
@@ -975,10 +973,10 @@ function(require){
 			 },
 			error:&quot;{{ path }} need to be at max {{ schema.maxItems }} long. Value provided : {{ value|json }}&quot;
 		},
-		required:{      &#x2F;&#x2F;&#x2F; draft v3
+		required:{      /// draft v3
 			schema:{ type:&quot;boolean&quot; },
 			test:function(value, type, schema){ 
-				&#x2F;&#x2F;console.log(&quot;Validator : check required : &quot;, typeof value !== &#x27;undefined&#x27; )
+				//console.log(&quot;Validator : check required : &quot;, typeof value !== &#x27;undefined&#x27; )
 				return typeof value !== &#x27;undefined&#x27;;  
 			},
 			error:&quot;{{ path }} is required and is missing.&quot;
@@ -986,7 +984,7 @@ function(require){
 		&quot;enum&quot;:{
 			schema:{ type:&quot;array&quot;, items:{ type:&quot;string&quot; } },
 			test:function(value, type, schema){
-				if((!value || value == &quot;&quot;) &amp;&amp; !schema.required)
+				if((typeof value === &#x27;undefined&#x27; || value == &quot;&quot;) &amp;&amp; !schema.required)
 					return true;
 				if(type != &quot;string&quot; &amp;&amp; type != &quot;number&quot; &amp;&amp; type != &quot;integer&quot;) return true;
 				var ok = false;
@@ -1042,7 +1040,7 @@ function(require){
 			error:&quot;each item need to be unique&quot;
 		},
 		
-		&#x2F;* ______________________________________   *&#x2F;
+		/* ______________________________________   */
 
 
 		exclusiveMinimum:{
@@ -1051,8 +1049,8 @@ function(require){
 		exclusiveMaximum:{
 			schema:{ type:&quot;boolean&quot; }
 		},
-	&#x2F;*	dependencies:{
-		},*&#x2F;
+	/*	dependencies:{
+		},*/
 		&quot;default&quot;:{
 			schema:{ type:&quot;any&quot; }
 		},
@@ -1068,9 +1066,9 @@ function(require){
 		readOnly:{
 			schema:{ type:&quot;boolean&quot; }
 		},
-	&#x2F;*
+	/*
 		EXTERNAL REFERENCES
-	*&#x2F;
+	*/
 		&quot;backgrounds&quot;:{
 			schema:{ type:[&quot;string&quot;, &quot;array&quot;], items:{ type:&quot;string&quot; }, loadable:&quot;direct&quot;}
 		},
@@ -1092,12 +1090,12 @@ function(require){
 				 	properties:{
 						rel:{ type:&quot;string&quot;, required:true },
 						href:{ type:&quot;string&quot;, required:true },
-						template:{ type:&quot;string&quot; },  &#x2F;&#x2F; replace template
+						template:{ type:&quot;string&quot; },  // replace template
 						targetSchema:{ type:&quot;string&quot; },
 						method:{ type:&quot;string&quot;, &quot;enum&quot;:[&quot;GET&quot;, &quot;PUT&quot;, &quot;POST&quot;, &quot;DELETE&quot;] },
 						enctype:{
 							type:&quot;string&quot;,
-							&quot;default&quot;:&quot;application&#x2F;json&quot; 
+							&quot;default&quot;:&quot;application/json&quot; 
 						},
 						schema:{ type:&quot;schema&quot; }
 				 	}
@@ -1109,10 +1107,10 @@ function(require){
 			error:&quot;no additional properties are allowed&quot;
 		},
 		patternProperties:{
-			schema:{ type:&quot;object&quot;, patternProperties:{ &quot;&#x2F;.*&#x2F;g&quot;:{ type:&quot;schema&quot; } } }
+			schema:{ type:&quot;object&quot;, patternProperties:{ &quot;/.*/g&quot;:{ type:&quot;schema&quot; } } }
 		},
 		properties:{
-			schema:{ type:&quot;object&quot;, patternProperties:{ &quot;&#x2F;.*&#x2F;g&quot;:{ type:&quot;schema&quot; } } }
+			schema:{ type:&quot;object&quot;, patternProperties:{ &quot;/.*/g&quot;:{ type:&quot;schema&quot; } } }
 		},
 		contentEncoding:{
 			schema:{ type:&quot;string&quot; }
@@ -1134,9 +1132,9 @@ function(require){
 		divisibleBy:{
 			&quot;$ommit&quot;:true
 		},
-		&#x2F;*format:{
+		/*format:{
 			&quot;$ommit&quot;:true
-		},*&#x2F;
+		},*/
 		mod:{
 			schema:{ type:&quot;integer&quot;, minimum:1, absoluteMinimum:true },
 			test:function(value, type, schema){
@@ -1147,7 +1145,7 @@ function(require){
 			},
 			error:&quot;need to be divisible by {{ schema.divisibleBy }}&quot;
 		},
-		&#x2F;*required:{      &#x2F;&#x2F; draft v4
+		/*required:{      // draft v4
 			schema:{ type:&quot;array&quot;, items:{ type:&quot;string&quot; } },
 			test:function(value, type, schema){ 
 				if(type == &quot;object&quot;)
@@ -1158,7 +1156,7 @@ function(require){
 				return true;
 			},
 			error:&quot;is required and is missing.&quot;
-		},*&#x2F;
+		},*/
 		maxProperties:{
 			schema:{
 				type:&quot;integer&quot;,
@@ -1206,7 +1204,7 @@ function(require){
 					return true;
 					return DeepRequest.isRetrievable(value).type != null; 
 				},
-				error:&quot;need to be in &#x27;retrievable&#x27; format. (see deep&#x2F;deep-request&#x2F;isRetrievable())&quot;
+				error:&quot;need to be in &#x27;retrievable&#x27; format. (see deep/deep-request/isRetrievable())&quot;
 			}
 		},
 		merge:{
@@ -1228,7 +1226,7 @@ function(require){
 
 	var newSpec = {
 		type:{
-			&#x2F;*
+			/*
 			&quot;hash&quot;:{
 				test:function(value, type, schema){ 
 					if(typeof value !== &#x27;object&#x27;)
@@ -1248,7 +1246,7 @@ function(require){
 					return true;
 				},
 				error:&quot;need to be a object (hash)&quot;
-			}*&#x2F;
+			}*/
 		},
 		notNull:{
 			schema:{ type:&quot;boolean&quot; },
@@ -1370,7 +1368,7 @@ function(require){
 	utils.deepCopy(jsonExt, Validator.prototype.lexic);
 	utils.deepCopy(newSpec, Validator.prototype.lexic);
 	utils.deepCopy(se_spec, Validator.prototype.lexic);
-&#x2F;&#x2F;	utils.deepCopy(leafSpecific, Validator.prototype.lexic);
+//	utils.deepCopy(leafSpecific, Validator.prototype.lexic);
 
 
 	var valider = new Validator();
@@ -1400,13 +1398,13 @@ function(require){
         </div>
     </div>
 </div>
-<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
-<script src="..&#x2F;assets/js/yui-prettify.js"></script>
-<script src="..&#x2F;assets/../api.js"></script>
-<script src="..&#x2F;assets/js/api-filter.js"></script>
-<script src="..&#x2F;assets/js/api-list.js"></script>
-<script src="..&#x2F;assets/js/api-search.js"></script>
-<script src="..&#x2F;assets/js/apidocs.js"></script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
 </body>
 </html>

@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>deep-compose.js - deepjs API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.9.1</em>
+            <em>API Docs for: 1.0.rc</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,15 +41,13 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
-            
-                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
-                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+                <li><a href="../modules/deep.html">deep</a></li>
             
             </ul>
         </div>
@@ -90,42 +88,44 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
+/**
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
- *&#x2F;
+ */
 if(typeof define !== &#x27;function&#x27;)
 	var define = require(&#x27;amdefine&#x27;)(module);
 
 define(function(require, exports, module){
-	var promise = require(&quot;deep&#x2F;promise&quot;);
-	&#x2F;&#x2F; console.log(&quot;Deep-compose init&quot;);
+	var promise = require(&quot;./promise&quot;);
+	// console.log(&quot;Deep-compose init&quot;);
+
 	var DeepDecorator = function (stack) {
 		this.stack = stack || [];
-	}
+	};
+
 	function chain(before, after)
 	{
 		return function () {
 			var self = this;
-			var args = Array.prototype.slice.call(arguments);
-			
+			var args = arguments;
 			var def = promise.Deferred();
 			var r = before.apply(this, args);
-			&#x2F;&#x2F;console.log(&quot;chain.first : result == &quot;, r)
+			//console.log(&quot;chain.first : result == &quot;, r)
 
 			if(typeof r === &#x27;undefined&#x27;)
 			{
-				&#x2F;&#x2F;console.log(&quot;chain.first : result == undefined&quot;)
+				//console.log(&quot;chain.first : result == undefined&quot;)
 				r = after.apply(self,args);
-				&#x2F;&#x2F;console.log(&quot;chain.second : result : &quot;, r)
+				//console.log(&quot;chain.second : result : &quot;, r)
 				if(typeof r === &#x27;undefined&#x27;)
 					return r;
 				if(!r.then)
 					return r;
-				promise.when(r).then(function (suc) {
+				promise.when(r)
+				.then(function (suc) {
 					def.resolve(suc);
 				}, function (error) {
 					def.reject(error);
-				})
+				});
 			}
 			else if(!r.then)
 			{
@@ -135,18 +135,18 @@ define(function(require, exports, module){
 				if(!r.then)
 					return r;
 				promise.when(r).then(function (suc) {
-					&#x2F;&#x2F;	console.log(&quot;chain.second.promise.when : result : &quot;, suc)
+					//	console.log(&quot;chain.second.promise.when : result : &quot;, suc)
 					def.resolve(suc);
 				}, function (error) {
 					def.reject(error);
-				})
+				});
 			}
 			else
 			{
-				&#x2F;&#x2F;console.log(&quot;________________BEFORE promise.when___________&quot;);
+				//console.log(&quot;________________BEFORE promise.when___________&quot;);
 				promise.when(r).then(function (r)
 				{
-					&#x2F;&#x2F;console.log(&quot;after : promise.when(first) res : &quot;, r);
+					//console.log(&quot;after : promise.when(first) res : &quot;, r);
 					var argus = args ;
 					if(typeof r !== &#x27;undefined&#x27; )
 						argus = [r];
@@ -162,63 +162,95 @@ define(function(require, exports, module){
 					});
 				}, function (error) {
 					def.reject(error);
-				})
+				});
 			}
 			return promise.promise(def);
-		}
+		};
 	}
 	DeepDecorator.prototype = {
-		around : function (argument, options) 
+		around : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
 				return argument(previous);
-			}
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		after : function (argument, options) 
+		after : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
 				return chain(previous, argument);
-			}
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		before : function (argument, options) 
+		fail : function (fn)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
+			{
+				return function()
+				{
+					var self = this;
+					var args = arguments;
+					return promise.when(previous.apply(this, args))
+					.done(function (res) {
+						//console.log(&quot;compose.fail : previous done : &quot;, res);
+						if(res instanceof Error)
+							return fn.apply(self, [res]);
+						return res;
+					})
+					.fail(function (error) {
+						//console.log(&quot;compose.fail : previous error : &quot;, error);
+						return fn.apply(self, [error]);
+					});
+				};
+			};
+			this.stack.push(wrapper);
+			return this;
+		},
+		before : function (argument)
+		{
+			var wrapper = function (previous)
 			{
 				return chain(argument, previous);
-			}
+			};
 			this.stack.push(wrapper);
 			return this;
 		},
-		parallele : function (argument, options) 
+		replace : function (argument)
 		{
-			var wrapper = function (previous) 
+			var wrapper = function (previous)
 			{
-				return function () 
+				return argument;
+			};
+			this.stack.push(wrapper);
+			return this;
+		},
+		parallele : function (argument)
+		{
+			var wrapper = function (previous)
+			{
+				return function ()
 				{
-					var args = Array.prototype.slice.call(arguments);	
+					var args = arguments;
 					var promises = [argument.apply(this, args), previous.apply(this,args)];
 					return promise.all(promises);
-				}
-			}
+				};
+			};
 			this.stack.push(wrapper);
 			return this;
 		}
-	}
-	var createStart = function (decorator) 
+	};
+	var createStart = function (decorator)
 	{
-		var decorator = decorator || new DeepDecorator();
+		decorator = decorator || new DeepDecorator();
 		var start = function () {
 			if(!decorator.createIfNecessary)
 				throw new Error(&quot;Decorator not applied ! (start)&quot;);
-		&#x2F;&#x2F;	var args = Array.prototype.slice.call(arguments);
-			return compose.wrap(function(){}, decorator).apply(this)
-		}
+			return compose.wrap(function(){}, decorator).apply(this, arguments);
+		};
 		start.decorator = decorator;
 		start.after = function (argument) {
 			decorator.after(argument);
@@ -226,6 +258,10 @@ define(function(require, exports, module){
 		};
 		start.before = function (argument) {
 			decorator.before(argument);
+			return start;
+		};
+		start.fail = function (argument) {
+			decorator.fail(argument);
 			return start;
 		};
 		start.around = function (argument) {
@@ -236,33 +272,61 @@ define(function(require, exports, module){
 			decorator.parallele(argument);
 			return start;
 		};
+		start.replace = function (argument) {
+			decorator.replace(argument);
+			return start;
+		};
+		start.createIfNecessary = function (arg) {
+			start.decorator.createIfNecessary = (typeof arg === &#x27;undefined&#x27;)?true:arg;
+			return start;
+		};
+		start.ifExists = function (arg) {
+			start.decorator.ifExists = (typeof arg === &#x27;undefined&#x27;)?true:arg;
+			return start;
+		};
+		start.condition = function (arg) {
+			start.condition = arg;
+			return start;
+		};
 		return start;
-	}
+	};
 
 	var compose = {
 		Decorator:DeepDecorator,
 		cloneStart:function (start) {
 			var newStack = start.decorator.stack.concat([]);
 			var nd = new DeepDecorator(newStack);
+			nd.ifExists = start.decorator.ifExists;
 			nd.createIfNecessary = start.decorator.createIfNecessary;
 			return createStart(nd);
 		},
-		wrap:function (func, decorator) 
+		wrap:function (func, decorator)
 		{
 			var fin = func;
-			decorator.stack.forEach(function (wrapper) 
+			decorator.stack.forEach(function (wrapper)
 			{
 				fin = wrapper(fin);
-			})
+			});
 			return fin;
 		},
-		createIfNecessary : function () 
+		createIfNecessary : function ()
 		{
 			var start = createStart();
 			start.decorator.createIfNecessary = true;
 			return start;
 		},
-		up : function (bottom, up) 
+		ifExists : function ()
+		{
+			var start = createStart();
+			start.decorator.ifExists = true;
+			return start;
+		},
+		condition:function (argument) {
+			var start = createStart();
+			start.decorator.condition = argument;
+			return start;
+		},
+		up : function (bottom, up)
 		{
 			if(typeof up !== &#x27;function&#x27; || typeof bottom !== &#x27;function&#x27;)
 				throw new Error(&quot;DeepDecorator.collide : you could only apply function together&quot;);
@@ -275,7 +339,7 @@ define(function(require, exports, module){
 			}
 			return compose.wrap(bottom,up.decorator);
 		},
-		bottom : function (bottom, up) 
+		bottom : function (bottom, up)
 		{
 			if(typeof up !== &#x27;function&#x27; || typeof bottom !== &#x27;function&#x27;)
 				throw new Error(&quot;DeepDecorator.collide : you could only apply function together&quot;);
@@ -288,27 +352,35 @@ define(function(require, exports, module){
 			}
 			return compose.wrap(bottom,up.decorator);
 		},
-		around : function (argument) 
+		around : function (argument)
 		{
 			return createStart().around(argument);
 		},
-		after : function (argument) 
+		after : function (argument)
 		{
 			return createStart().after(argument);
 		},
-		before : function (argument) 
+		before : function (argument)
 		{
 			return createStart().before(argument);
 		},
-		parallele : function (argument) 
+		fail : function (argument)
+		{
+			return createStart().fail(argument);
+		},
+		parallele : function (argument)
 		{
 			return createStart().parallele(argument);
+		},
+		replace : function (argument)
+		{
+			return createStart().replace(argument);
 		}
-	}
-	&#x2F;&#x2F; console.log(&quot;Deep-compose initialised&quot;);
+	};
+	// console.log(&quot;Deep-compose initialised&quot;);
 
 	return compose;
-})
+});
     </pre>
 </div>
 
@@ -318,13 +390,13 @@ define(function(require, exports, module){
         </div>
     </div>
 </div>
-<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
-<script src="..&#x2F;assets/js/yui-prettify.js"></script>
-<script src="..&#x2F;assets/../api.js"></script>
-<script src="..&#x2F;assets/js/api-filter.js"></script>
-<script src="..&#x2F;assets/js/api-list.js"></script>
-<script src="..&#x2F;assets/js/api-search.js"></script>
-<script src="..&#x2F;assets/js/apidocs.js"></script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
 </body>
 </html>

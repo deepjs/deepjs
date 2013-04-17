@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>deep-rql.js - deepjs API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.9.1</em>
+            <em>API Docs for: 1.0.rc</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,15 +41,13 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
-            
-                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
-                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+                <li><a href="../modules/deep.html">deep</a></li>
             
             </ul>
         </div>
@@ -90,20 +88,20 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;*
- * A deep oriented implementation of RQL for JavaScript arrays based on rql&#x2F;js-array from Kris Zyp (https:&#x2F;&#x2F;github.com&#x2F;persvr&#x2F;rql).
+/*
+ * A deep oriented implementation of RQL for JavaScript arrays based on rql/js-array from Kris Zyp (https://github.com/persvr/rql).
  * For example:
- * require(&quot;deep&#x2F;deep-rql&quot;).query(&quot;a=3&quot;, {}, [{a:1},{a:3}]) -&gt; [{a:3}]
+ * require(&quot;deep/deep-rql&quot;).query(&quot;a=3&quot;, {}, [{a:1},{a:3}]) -&gt; [{a:3}]
 
 What&#x27;s different from js-array ? It could handle schema properties and ancestor access when filtering
 
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
- *&#x2F;
+ */
 
 if(typeof define !== &#x27;function&#x27;){
 	var define = require(&#x27;amdefine&#x27;)(module);
 }
-&#x2F;**
+/**
 TODO : 
 add distinct(testPropertyPath)
 add merge()
@@ -116,21 +114,21 @@ add _brothers  (any brothers)
 
 ! TEST ALL operations !
 
-*&#x2F; 
+*/ 
 define(function defineJsonQuery(require){
 	RQL_Global = {}
 
 var layer = {};
-var utils = require(&quot;deep&#x2F;utils&quot;);
+var utils = require(&quot;./utils&quot;);
 var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
-var parser = require(&quot;rql&#x2F;parser&quot;);
+var parser = require(&quot;rql/parser&quot;);
 var parseQuery = parser.parseQuery;
 var stringify = JSON.stringify || function(str){
-	return &#x27;&quot;&#x27; + str.replace(&#x2F;&quot;&#x2F;g, &quot;\\\&quot;&quot;) + &#x27;&quot;&#x27;;
+	return &#x27;&quot;&#x27; + str.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &#x27;&quot;&#x27;;
 };
 
 function getJSPrimitiveType(obj){
-	if(obj instanceof Array || obj.push)
+	if(obj &amp;&amp; (obj instanceof Array || obj.push))
 		return &quot;array&quot;
 	return typeof obj;
 }
@@ -146,9 +144,9 @@ layer.jsOperatorMap = {
 
 var isPresent = RQL_Global.isPresent = function isPresent(path, items){
 	var res = [];
-	&#x2F;&#x2F;console.log(&quot;is present : &quot;+path)
+	//console.log(&quot;is present : &quot;+path)
 	items.forEach(function (e){	
-	&#x2F;&#x2F;	console.log(&quot;got items : test : &quot; + path + &quot; - object &quot;,e);
+	//	console.log(&quot;got items : test : &quot; + path + &quot; - object &quot;,e);
 		if(retrieve(e, path))
 			res.push(e);
 	});
@@ -160,44 +158,44 @@ var isPresent = RQL_Global.isPresent = function isPresent(path, items){
 var rewritePath = RQL_Global.rewritePath = function rewritePath(path){
 
 	var parts = path || [];
-	&#x2F;&#x2F;console.log(&quot;rewrite path : &quot; +path, &quot; - prefix ? &quot;,objectPrefix)
+	//console.log(&quot;rewrite path : &quot; +path, &quot; - prefix ? &quot;,objectPrefix)
 	if(typeof parts  === &#x27;string&#x27;)
 		parts = parts.split(&quot;.&quot;);
-	&#x2F;&#x2F;console.log(&quot;retrieve final path : &quot; +JSON.stringify(parts))
-	&#x2F;&#x2F;console.log(parts[0] != &#x27;_schema&#x27; &amp;&amp; parts[0] != &quot;_parent&quot; &amp;&amp; objectPrefix &amp;&amp; objectPrefix != &quot;&quot;)
+	//console.log(&quot;retrieve final path : &quot; +JSON.stringify(parts))
+	//console.log(parts[0] != &#x27;_schema&#x27; &amp;&amp; parts[0] != &quot;_parent&quot; &amp;&amp; objectPrefix &amp;&amp; objectPrefix != &quot;&quot;)
 	if(objectPrefix &amp;&amp; parts[0] != &#x27;_schema&#x27; &amp;&amp; parts[0] != &quot;_parent&quot;)
 		parts.unshift(objectPrefix);	
-	&#x2F;&#x2F;console.log(&quot;rewrited path : &quot;,JSON.stringify(parts))
+	//console.log(&quot;rewrited path : &quot;,JSON.stringify(parts))
 	return parts;
 }
-&#x2F;*
+/*
 retrieve schema property
-*&#x2F;
+*/
 var retrieveSchemaProp = RQL_Global.retrieveSchemaProp = function retrieveSchemaProp(path, schema, parts, obj){
-	&#x2F;&#x2F;console.log(&quot;retrieveSchemaProp of : &quot;,path, &quot; - parts : &quot;, parts, &quot; - schema : &quot;, schema)
-	&#x2F;&#x2F;return schema || {};
+	//console.log(&quot;retrieveSchemaProp of : &quot;,path, &quot; - parts : &quot;, parts, &quot; - schema : &quot;, schema)
+	//return schema || {};
 	if(parts[0] == &quot;_schema&quot;)
 		parts.shift();
 	var tmp = schema;
 	if(!schema)
-		&#x2F;&#x2F;tmp = retrieveFullSchemaByPath(schema, parts.join(&quot;.&quot;));
-	&#x2F;&#x2F;else 
+		//tmp = retrieveFullSchemaByPath(schema, parts.join(&quot;.&quot;));
+	//else 
 	{
 		if(parts.length == 1 &amp;&amp; parts[0] == &quot;type&quot;)
 		{
-			&#x2F;&#x2F;console.log(&quot;no schema but need type : produce it : &quot;,typeof obj)
+			//console.log(&quot;no schema but need type : produce it : &quot;,typeof obj)
 			parts.shift();
 			return getJSPrimitiveType(obj);
 		}
 		else if(parts.length == 1 &amp;&amp; parts[0] == &quot;depth&quot;)
 		{
-			&#x2F;&#x2F;console.log(&quot;no schema but need type : produce it : &quot;,typeof obj)
+			//console.log(&quot;no schema but need type : produce it : &quot;,typeof obj)
 			parts.shift();
-			return path.split(&quot;&#x2F;&quot;).length;
+			return path.split(&quot;/&quot;).length;
 		}
 		else if(parts.length == 1 &amp;&amp; parts[0] == &quot;class&quot;)
 		{
-			&#x2F;&#x2F;console.log(&quot;no schema but need type : produce it : &quot;,typeof obj)
+			//console.log(&quot;no schema but need type : produce it : &quot;,typeof obj)
 			parts.shift();
 			return utils.getObjectClass(obj);
 		}
@@ -216,16 +214,16 @@ var retrieveSchemaProp = RQL_Global.retrieveSchemaProp = function retrieveSchema
 var retrieveParent = RQL_Global.retrieveParent = function retrieveParent(obj, parts, count)
 {
 	var tmp = obj;
-	&#x2F;&#x2F;console.log(&quot;RETREIEVE PARENT : &quot;, tmp.value, count)
+	//console.log(&quot;RETREIEVE PARENT : &quot;, tmp.value, count)
 	while(tmp.ancestor &amp;&amp; count &gt; 0)
 	{
 		tmp = tmp.ancestor;
 		count--;
 	}
-	&#x2F;&#x2F;tmp = tmp.value;
+	//tmp = tmp.value;
 	if(count != 0)
 		tmp = null;
-	&#x2F;&#x2F;console.log(&quot;retrieve parent got :&quot;, tmp)
+	//console.log(&quot;retrieve parent got :&quot;, tmp)
 
 	return tmp;
 }
@@ -234,14 +232,14 @@ var getRetrieveFunc = RQL_Global.getRetrieveFunc = function getRetrieveFunc(path
 {
 	if(dicoRetrieve[path])
 		return dicoRetrieve[path];
-	&#x2F;&#x2F;console.log(&quot;deep-rql : get retrieve func : &quot;, path, parts)
+	//console.log(&quot;deep-rql : get retrieve func : &quot;, path, parts)
 	
 	var func = &quot;&quot;;
 	var parts = rewritePath(path);
 	if(parts.length == 0)
 	{
-		&#x2F;&#x2F;func = &quot;(function applyEvaluatedRetrieve(object){return object;})&quot;;
-	&#x2F;&#x2F;	console.log(&quot;function evaluation retrieve : &quot;,func);
+		//func = &quot;(function applyEvaluatedRetrieve(object){return object;})&quot;;
+	//	console.log(&quot;function evaluation retrieve : &quot;,func);
 		return dicoRetrieve[path] = new Function(&quot;object&quot;, &quot;return object;&quot;);
 	}	
 	
@@ -255,11 +253,11 @@ var getRetrieveFunc = RQL_Global.getRetrieveFunc = function getRetrieveFunc(path
 		}	
 
 		func += &quot;object = RQL_Global.retrieveParent(object, null, &quot;+count+&quot;); if(object == null) return null; &quot;;
-		&#x2F;&#x2F;console.log(&quot;will get parent with : &quot;, func)
+		//console.log(&quot;will get parent with : &quot;, func)
 		if(parts.length == 0)
 		{
 			func += &quot;return object;&quot;;
-			&#x2F;&#x2F;console.log(&quot;function evaluation (with parent) : &quot;,func);
+			//console.log(&quot;function evaluation (with parent) : &quot;,func);
 			return dicoRetrieve[path] = new Function(&quot;object&quot;,func);
 		}	
 		if(objectPrefix &amp;&amp; parts[0] != &quot;_schema&quot;)
@@ -267,23 +265,23 @@ var getRetrieveFunc = RQL_Global.getRetrieveFunc = function getRetrieveFunc(path
 	}
 	if(parts[0] == &quot;_schema&quot;)
 	{
-		&#x2F;&#x2F;console.log(&quot;RETRIEVE SCHEMA&quot;);
+		//console.log(&quot;RETRIEVE SCHEMA&quot;);
 		parts.shift();
 		func += &quot;var res = RQL_Global.retrieveSchemaProp(object.path, object.schema, [&#x27;&quot;+parts.join(&quot;&#x27;][&#x27;&quot;)+&quot;&#x27;], &quot;+((objectPrefix)?(&quot;object[&#x27;&quot;+objectPrefix+&quot;&#x27;]&quot;):&quot;object&quot;)+&quot;); return res;&quot;;
-		&#x2F;&#x2F;func += &quot;console.log(&#x27;result of retrieve schema prop : &#x27;,res);&quot;
-		&#x2F;&#x2F;func  = &quot;(function applyEvaluatedRetrieve(object){&quot;+func+&quot;})&quot;;
-		&#x2F;&#x2F;console.log(&quot;function evaluation (with direct schema) : &quot;+func);
+		//func += &quot;console.log(&#x27;result of retrieve schema prop : &#x27;,res);&quot;
+		//func  = &quot;(function applyEvaluatedRetrieve(object){&quot;+func+&quot;})&quot;;
+		//console.log(&quot;function evaluation (with direct schema) : &quot;+func);
 		var evaluated = new Function(&quot;object&quot;, func);
 		dicoRetrieve[path] = evaluated;
-		return evaluated; &#x2F;*dicoRetrieve[path] = function applyEvaluatedRetrieve(object){
+		return evaluated; /*dicoRetrieve[path] = function applyEvaluatedRetrieve(object){
 			evaluated(object, parts);
-		}*&#x2F;
+		}*/
 	}
 	func += &quot;var fullPath = object.path;&quot;;
-	&#x2F;&#x2F;var currentPath = [tmp.path];
+	//var currentPath = [tmp.path];
 	var part = parts[0];
 	var escaped = [];
-	&#x2F;&#x2F;var unescaped = [];
+	//var unescaped = [];
 	var item = &quot;object&quot;;
 	var schemaEnd = false;
 	var escapedJoined = &quot;&quot;;
@@ -304,15 +302,15 @@ var getRetrieveFunc = RQL_Global.getRetrieveFunc = function getRetrieveFunc(path
 	}
 	if(!schemaEnd)
 		func += &quot;if(&quot;+item+&quot;) return object[&#x27;&quot;+ escapedJoined + &quot;&#x27;]; else return null;&quot;;
-	&#x2F;&#x2F;console.log(&quot;function evaluation retrieve : &quot;,func);
+	//console.log(&quot;function evaluation retrieve : &quot;,func);
 	var evaluated = new Function(&quot;object&quot;,func);
 	return dicoRetrieve[path] = evaluated;
 }
 var retrieve = function retrieve(object, path)
 {
-	&#x2F;&#x2F;console.log(&quot;retrieve : path : &quot; ,path , &quot; - &quot;,object);
+	//console.log(&quot;retrieve : path : &quot; ,path , &quot; - &quot;,object);
 	var res = getRetrieveFunc(path)(object);
-	&#x2F;&#x2F;console.log(&quot;retrieve got : &quot;, res)
+	//console.log(&quot;retrieve got : &quot;, res)
 	return res;
 }
 RQL_Global.retrieve = retrieve;
@@ -351,7 +349,7 @@ layer.operators = {
 		return new RegExp(regex).test(retrieve(value));
 	}),
 	&quot;instanceOf&quot;: function rqlInstanceOf(value, values){
-		&#x2F;&#x2F;console.log(&quot;IN OP : query &quot;+value+&quot; in : &quot;,values)
+		//console.log(&quot;IN OP : query &quot;+value+&quot; in : &quot;,values)
 		var ok = false;
 		var count = 0;
 		for(var i in values)
@@ -366,7 +364,7 @@ layer.operators = {
 		return ok;
 	},
 	&quot;in&quot;: filter(function rqlIn(value, values){
-		&#x2F;&#x2F;console.log(&quot;IN OP : query &quot;+value+&quot; in : &quot;,values)
+		//console.log(&quot;IN OP : query &quot;+value+&quot; in : &quot;,values)
 		var ok = false;
 		var count = 0;
 		while(!ok &amp;&amp; count &lt; values.length)
@@ -383,52 +381,14 @@ layer.operators = {
 		return ok;
 	}),
 	contains: filter(function rqlContains(array, value){
-		&#x2F;&#x2F;console.log(&quot;rql : contains : &quot;, array, value)
-		if(typeof value == &quot;function&quot;){
-			if(array instanceof Array)
-				return array.some(function(v){
-					var r = retrieve(value);
-					if(r)
-						return r.call([v]).length;
-					return false;
-				});
-			else
-				return false;
-		}
-		else{
-			if(!(array instanceof Array ))
-				return false;
-			var ok = false;
-			var count = 0;
-			while(!ok &amp;&amp; count &lt; array.length)
-				if(array[count++] == value)
-					ok = true;
-			return ok;
-		}
+		return utils.inArray(value, array);
 	}),
 	excludes: filter(function rqlExcludes(array, value){
-		if(!(array instanceof Array ))
-				return false;
-		if(typeof value == &quot;function&quot;){
-			return !array.some(function(v){
-				var r = retrieve(value);
-				if(r)
-					return r.call([v]).length;
-				return false;
-			});
-		}
-		else{
-			var ok = true;
-			var count = 0;
-			while(!ok &amp;&amp; count &lt; array.length)
-				if(array[count++] == value)
-					ok = false;
-			return ok;
-		}
+		return !utils.inArray(value, array);
 	}),
 	or: function rqlOr(){
 		var items = [];
-		&#x2F;&#x2F;TODO: remove duplicates and use condition property
+		//TODO: remove duplicates and use condition property
 		for(var i = 0; i&lt; arguments.length; ++i){
 			if(typeof arguments[i] == &#x27;function&#x27;)
 				items = items.concat(arguments[i].call(this));
@@ -440,14 +400,14 @@ layer.operators = {
 	},
 	and: function rqlAnd(){
 		var items = this;
-	&#x2F;&#x2F;	console.log(&quot;rqlAnd : &quot;, arguments);
-		&#x2F;&#x2F; TODO: use condition property
+	//	console.log(&quot;rqlAnd : &quot;, arguments);
+		// TODO: use condition property
 		for(var i = 0; i&lt; arguments.length; ++i){
-			&#x2F;&#x2F;console.log(&quot;and call args : &quot;+i+ &quot; - &quot;+arguments[i]);
-		&#x2F;&#x2F;	console.log(&quot;and call args : items : &quot;, items);
+			//console.log(&quot;and call args : &quot;+i+ &quot; - &quot;+arguments[i]);
+		//	console.log(&quot;and call args : items : &quot;, items);
 			if(typeof arguments[i] == &#x27;function&#x27;)
 				items = arguments[i].call(items);
-			else &#x2F;&#x2F;if(typeof arguments[i] === &#x27;string&#x27;)
+			else //if(typeof arguments[i] === &#x27;string&#x27;)
 				items = isPresent(arguments[i], items);
 		}
 		return items;
@@ -467,7 +427,7 @@ layer.operators = {
 			return selected;
 		});
 	},
-	&#x2F;* _______________________________________________ WARNING : NOT IMPLEMENTED WITH PREFIX*&#x2F;
+	/* _______________________________________________ WARNING : NOT IMPLEMENTED WITH PREFIX*/
 	unselect: function rqlUnselect(){
 		var args = arguments;
 		var argc = arguments.length;
@@ -523,21 +483,21 @@ layer.operators = {
 		var primitives = {};
 		var needCleaning = [];
 		var newResults = this.filter(function(value){
-			&#x2F;&#x2F;console.log(&quot;distinct : value : &quot;,value);
+			//console.log(&quot;distinct : value : &quot;,value);
 
 			value = retrieve(value);
-			&#x2F;&#x2F;console.log(&quot;distinct : value : &quot;,value);
+			//console.log(&quot;distinct : value : &quot;,value);
 			if(value &amp;&amp; typeof value == &quot;object&quot;){
 				if(!value.__found__){
-					value.__found__ = function(){};&#x2F;&#x2F; get ignored by JSON serialization
+					value.__found__ = function(){};// get ignored by JSON serialization
 					needCleaning.push(value);
 					return true;
 				}
 				return false;
 			}else{
-				&#x2F;&#x2F;console.log(&quot;found primitive : &quot;+value + &quot; - &quot;+JSON.stringify(primitives))
+				//console.log(&quot;found primitive : &quot;+value + &quot; - &quot;+JSON.stringify(primitives))
 				if(!primitives[value]){
-					&#x2F;&#x2F;console.log(&quot;primitive was not there&quot;)
+					//console.log(&quot;primitive was not there&quot;)
 					primitives[value] = true;
 					return true;
 				}
@@ -550,7 +510,7 @@ layer.operators = {
 		return newResults;
 	},
 	recurse: function rqlRecurse(property){
-		&#x2F;&#x2F; TODO: this needs to use lazy-array
+		// TODO: this needs to use lazy-array
 		var newResults = [];
 		function recurse(value){
 			if(value instanceof Array){
@@ -591,7 +551,7 @@ layer.operators = {
 			object = retrieve(object);
 			var key = &quot;&quot;;
 			for(var i = 0; i &lt; dl;i++){
-				key += &#x27;&#x2F;&#x27; + object[distinctives[i]];
+				key += &#x27;/&#x27; + object[distinctives[i]];
 			}
 			var arrayForKey = distinctObjects[key];
 			if(!arrayForKey){
@@ -626,7 +586,7 @@ layer.operators = {
 		return a + b;
 	}),
 	mean: function rqlMean(property){
-		return layer.operators.sum.call(this, property)&#x2F;this.length;
+		return layer.operators.sum.call(this, property)/this.length;
 	},
 	max: reducer(function rqlMax(a, b){
 		var a= retrieve(a);
@@ -658,7 +618,7 @@ layer.operators = {
 };
 layer.filter = filter;
 function filter(condition, not){
-	&#x2F;&#x2F; convert to boolean right now
+	// convert to boolean right now
 	var filter = function doFilter(property, second){
 		if(typeof second == &quot;undefined&quot;){
 			second = property;
@@ -698,7 +658,7 @@ function evaluateProperty(object, property){
 		return retrieve(object, decodeURIComponent(property));
 	}
 };
-&#x2F;*
+/*
 var conditionEvaluator = layer.conditionEvaluator = function(condition){
 	var jsOperator = layer.jsOperatorMap[term.name];
 	if(jsOperator){
@@ -708,7 +668,7 @@ var conditionEvaluator = layer.conditionEvaluator = function(condition){
 		js += &quot;operators[&#x27;&quot; + term.name + &quot;&#x27;]&quot;;
 	}
 	return eval(js);
-};*&#x2F; 
+};*/ 
 layer.executeQuery = function executeQuery(query, options, target){
 	return layer.query(query, options, target);
 }
@@ -724,10 +684,10 @@ var queryCache = {};
 
 function query(target, qry, options){
 	var q = qry;
-	&#x2F;&#x2F;console.log(&quot;deep-rql : query : &quot;, q, options, target);
+	//console.log(&quot;deep-rql : query : &quot;, q, options, target);
 	options = options || {};
-	&#x2F;&#x2F;queryCache = {};
-	&#x2F;&#x2F;dicoRetrieve = {};
+	//queryCache = {};
+	//dicoRetrieve = {};
 	
 	var evaluationFunc = queryCache[q];
 	if(evaluationFunc)
@@ -743,19 +703,19 @@ function query(target, qry, options){
 	objectPrefix = prefix || null;
 	targetSchema = options.schema || null;
 	targetCache = options.cache || null;
-	&#x2F;&#x2F;console.log(&quot;query : &quot;+JSON.stringify(query) + &quot; - prefix : &quot;+prefix);
-	&#x2F;&#x2F;console.log(&quot;target : &quot;+JSON.stringify(target));
+	//console.log(&quot;query : &quot;+JSON.stringify(query) + &quot; - prefix : &quot;+prefix);
+	//console.log(&quot;target : &quot;+JSON.stringify(target));
 
-	&#x2F;&#x2F;if(options.keepCache == false || !queryCache)
+	//if(options.keepCache == false || !queryCache)
 	function t(){}
 	t.prototype = layer.operators;
 	var operators = new t;
 	var op = function op(name){
-		&#x2F;&#x2F;console.log(&quot;rqlOp: &quot;, name, &quot; - res : &quot; , operators[name] || layer.missingOperator(name))
+		//console.log(&quot;rqlOp: &quot;, name, &quot; - res : &quot; , operators[name] || layer.missingOperator(name))
 		return operators[name] || layer.missingOperator(name);
 	}
 	RQL_Global.op = op;
-	&#x2F;&#x2F; inherit from layer.operators
+	// inherit from layer.operators
 	for(var i in options.operators)
 		operators[i] = options.operators[i];
 
@@ -764,45 +724,45 @@ function query(target, qry, options){
 	function queryToJS(value){
 		if(value &amp;&amp; typeof value === &quot;object&quot;){
 			if(value instanceof Array){
-				&#x2F;&#x2F;console.log(&quot;__________________ QUERY TO JS : query object is array : &quot;+JSON.stringify(value))
+				//console.log(&quot;__________________ QUERY TO JS : query object is array : &quot;+JSON.stringify(value))
 				return &#x27;[&#x27; + value.map(queryToJS) + &#x27;]&#x27;;
 			}else{
-				&#x2F;&#x2F;console.log(&quot;QUERY TO JS : query value : &quot;+JSON.stringify(value))
+				//console.log(&quot;QUERY TO JS : query value : &quot;+JSON.stringify(value))
 				var jsOperator = layer.jsOperatorMap[value.name];
 				if(jsOperator)
 				{
-					&#x2F;&#x2F;console.log(&quot;__________________ GOT OPERTAOR : &quot;+value.name + &quot; - have prefix ? &quot;+prefix)
+					//console.log(&quot;__________________ GOT OPERTAOR : &quot;+value.name + &quot; - have prefix ? &quot;+prefix)
 					var path = value.args[0];
 					var target = value.args[1];
 					var item = &quot;&quot;;
 					if (typeof target === &quot;undefined&quot;){
-						&#x2F;&#x2F;console.log(&quot;Query to js : path is not provided : &quot;+JSON.stringify(path))
+						//console.log(&quot;Query to js : path is not provided : &quot;+JSON.stringify(path))
 						item = &quot;item&quot;;
 						target = path;
 						if(objectPrefix)
 							item += &quot;.&quot;+objectPrefix;
 					}
 					else {
-						&#x2F;&#x2F;console.log(&quot;Query to js : path  : &quot;+JSON.stringify(path))
+						//console.log(&quot;Query to js : path  : &quot;+JSON.stringify(path))
 						item = &quot;val&amp;&amp;val&quot;;
 					}
 					var condition = item + jsOperator + queryToJS(target);
-					&#x2F;&#x2F;console.log(&quot;conditions : &quot;+condition)
+					//console.log(&quot;conditions : &quot;+condition)
 					if (typeof Array.prototype.filter === &#x27;function&#x27;) {
 						return &quot;(function applyNativeArrayFilter(){return this.filter(function(item){var val = RQL_Global.retrieve(item,&#x27;&quot;+path+&quot;&#x27;); return &quot; + condition + &quot;})})&quot;;
-						&#x2F;&#x2F;???return &quot;this.filter(function(item){return &quot; + condition + &quot;})&quot;;
+						//???return &quot;this.filter(function(item){return &quot; + condition + &quot;})&quot;;
 					} else {
 						throw &quot;error : array have no filter&quot;;
-						&#x2F;&#x2F;return &quot;(function(){var filtered = []; for(var i = 0, length = this.length; i &lt; length; i++){var item = this[i]; var val = retrieve(item,&#x27;&quot;+path+&quot;&#x27;); if(&quot; + condition + &quot;){filtered.push(item);}} return filtered;})&quot;;
+						//return &quot;(function(){var filtered = []; for(var i = 0, length = this.length; i &lt; length; i++){var item = this[i]; var val = retrieve(item,&#x27;&quot;+path+&quot;&#x27;); if(&quot; + condition + &quot;){filtered.push(item);}} return filtered;})&quot;;
 					}
 				}else{
-					&#x2F;&#x2F;console.log(&quot;NO JS OPERATOR : value : &quot;, value.name)
+					//console.log(&quot;NO JS OPERATOR : value : &quot;, value.name)
 					return &quot;(function(){&quot;
-							&#x2F;&#x2F;+&quot;console.log(&#x27;op ? : &#x27;, RQL_Global.op);&quot;
-							&#x2F;&#x2F;+&quot;console.log(&#x27;this ? : &#x27;, this);&quot;
+							//+&quot;console.log(&#x27;op ? : &#x27;, RQL_Global.op);&quot;
+							//+&quot;console.log(&#x27;this ? : &#x27;, this);&quot;
 							+&quot;var opo = RQL_Global.op(&#x27;&quot; + value.name + &quot;&#x27;);&quot;
-							&#x2F;&#x2F;+&quot;console.log(&#x27;typeof returned opo : &#x27;, typeof opo);&quot;
-							&#x2F;&#x2F;+&quot;return [];&quot;
+							//+&quot;console.log(&#x27;typeof returned opo : &#x27;, typeof opo);&quot;
+							//+&quot;return [];&quot;
 							+&quot;return opo&quot;
 							+&quot;.call(this&quot; +(value &amp;&amp; value.args &amp;&amp; value.args.length &gt; 0 ? (&quot;, &quot; + value.args.map(queryToJS).join(&quot;,&quot;)) : &quot;&quot;) +&quot;)&quot;
 						+&quot;})&quot;;
@@ -813,22 +773,22 @@ function query(target, qry, options){
 			return typeof value === &quot;string&quot; ? stringify(value) : value;
 	}
 	var evaluationString = &quot;return &quot; + queryToJS(query) + &quot;.call(target);&quot; ;
-	&#x2F;&#x2F;evaluationString = &quot;(function(){ console.log(&#x27;grrrrrrrrrrr &#x27;) }).call(target); return []&quot;;
+	//evaluationString = &quot;(function(){ console.log(&#x27;grrrrrrrrrrr &#x27;) }).call(target); return []&quot;;
 	var	toEval = new Function(&quot;target&quot;, evaluationString);
 	
 
-	&#x2F;&#x2F;console.log(&quot;EVALUATION STRING \n\n&quot;,toEval);
-	&#x2F;&#x2F;var toEval = eval(evaluationString);
+	//console.log(&quot;EVALUATION STRING \n\n&quot;,toEval);
+	//var toEval = eval(evaluationString);
 	queryCache[q] = toEval;
-		&#x2F;&#x2F;console.log(&quot;op ? &quot;, op(&#x27;and&#x27;))
+		//console.log(&quot;op ? &quot;, op(&#x27;and&#x27;))
 	try{
-	&#x2F;&#x2F;	console.log(&quot;typeof toEval : &quot;, typeof toEval);
-	&#x2F;&#x2F;	console.log(&quot;typeof target : &quot;, typeof target);
-	&#x2F;&#x2F;	console.log(&quot;instance target : &quot;,  target instanceof Array);
-		&#x2F;&#x2F;return (function (){return op(&#x27;and&#x27;).call(this, &quot;backgrounds&quot;)}).call(target);
-		&#x2F;&#x2F;if(q == &quot;backgrounds&quot;)
-		&#x2F;&#x2F;	return target ? op(&#x27;and&#x27;).call(target, &quot;backgrounds&quot;) : [];
-		&#x2F;&#x2F;return toEval;
+	//	console.log(&quot;typeof toEval : &quot;, typeof toEval);
+	//	console.log(&quot;typeof target : &quot;, typeof target);
+	//	console.log(&quot;instance target : &quot;,  target instanceof Array);
+		//return (function (){return op(&#x27;and&#x27;).call(this, &quot;backgrounds&quot;)}).call(target);
+		//if(q == &quot;backgrounds&quot;)
+		//	return target ? op(&#x27;and&#x27;).call(target, &quot;backgrounds&quot;) : [];
+		//return toEval;
 		if(target)
 			return toEval(target);
 		return toEval;
@@ -836,7 +796,7 @@ function query(target, qry, options){
 	catch(e)
 	{
 		console.log(&quot;WARNING : RQL throw : &quot;,JSON.stringify(e));
-		&#x2F;&#x2F;console.log(&quot;op ? &quot;, op(&#x27;and&#x27;))
+		//console.log(&quot;op ? &quot;, op(&#x27;and&#x27;))
 		throw e;
 	}
 }
@@ -852,13 +812,13 @@ return layer;
         </div>
     </div>
 </div>
-<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
-<script src="..&#x2F;assets/js/yui-prettify.js"></script>
-<script src="..&#x2F;assets/../api.js"></script>
-<script src="..&#x2F;assets/js/api-filter.js"></script>
-<script src="..&#x2F;assets/js/api-list.js"></script>
-<script src="..&#x2F;assets/js/api-search.js"></script>
-<script src="..&#x2F;assets/js/apidocs.js"></script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
 </body>
 </html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>deep-restart.js - deepjs API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.rc</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/deep.html">deep</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: deep-restart.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+if(typeof define !== &#x27;function&#x27;)
+	var define = require(&#x27;amdefine&#x27;)(module);
+define([&quot;require&quot;], function (require)
+{
+	
+
+
+	var deep = function (obj, schema, options) 
+	{
+		options = options || {};
+		var toLoad = [];
+		if(typeof obj === &#x27;string&#x27;) 
+			toLoad.push(deep.request(obj));
+		else if(obj instanceof Array) 
+			toLoad(deep.all(obj));
+		else toLoad.push(obj);
+
+		if(schema) 
+			toLoad.push(schema);
+
+		var handler  = new DeepHandler(options);
+		handler._running = true;
+
+		var self = this;
+		deep.all(toLoad)
+		.done(function (results) 
+		{
+			var obj = results.shift();
+			if(schema)
+				schema = results.shift();
+			handler._entries = [];
+			if(obj instanceof DeepHandler)
+			{
+				deep.utils.chain.assertNoState(obj);
+				handler._entries = obj._entries.concat([]);
+				deep.utils.nextHandle(self, deep.utils.chain.values(), null, true);
+			}	
+			else if(obj instanceof Array)
+			{	
+				obj.forEach(function (o) 
+				{
+					handler._entries.push(Querier.createRootNode(o, schema || {})); // should check if dqNode or _deep_entry
+				});
+				deep.utils.nextHandle(self, deep.utils.chain.values(), null, true);
+			}
+			else 
+			{
+				handler._entries.push(Querier.createRootNode(o, schema || {})); // should check if dqNode or _deep_entry
+				deep.utils.nextHandle(self, deep.utils.chain.val(), null, true);
+			}	
+		})
+		.fail(function (error) 
+		{
+			console.error(&quot;deep start chain error : &quot;, error);
+			deep.utils.chain.nextHandle(self, null, error, true);
+		})
+		return handler.deep();
+	}
+
+	deep.utils.chain = {
+		addHandle : function ( handler, func )
+		{	
+			if(this._rejected &amp;&amp; !this._acceptHandleAfterRejection)
+			{
+				console.log(&quot;deep chain error : chain are already rejected &quot;)
+				throw new Error(&quot;deep chain error : chain are already rejected &quot;)
+			}
+			handler._queue.push(func);
+			if ( !handler._runOnState || (handler._runOnState &amp;&amp; handler.state()) )
+				deep.utils.chain.nextHandle(this);
+		},
+		nextHandle : function ( handler, success, error, force )
+		{
+			if(!force &amp;&amp; handler._running)
+				return;
+
+		},
+		assertNoState : function ( handler ) {
+			if(handler.state())
+				throw new deep.errors.Chain(&quot;you try to initialise a deep chain with another deep chain that was ended. state : &quot;+handler.state());
+		}
+	}
+
+	deep.all = function (arr, options) {
+		// body...
+	}
+
+	var DeepHandler = function(options){
+		options = options || {};
+		this._canceler = options.canceler;
+		this._report = {
+			error:null,
+			success:null,
+			cancel:null
+		};
+		this._entries = [];
+	}
+
+	var PromiseHandler = {
+		_resolved:false,
+		_runOnState:true,
+		_acceptHandleAfterRejection:true,
+		state:deep.compose.firstReturnAfter(function  () {
+			return  (this._resolved?&quot;resolved&quot;:undefined);
+		}),
+		resolve:function (obj) {
+			deep.utils.chain.assertNoState(obj);
+			this.report.success = obj;
+			this.report.error = null;
+			this._resolved = true;
+			deep.utils.chain.nextHandle(this, obj, null, true);
+		}
+	}
+
+
+	/*
+
+		idée : 
+
+			définir chaine par interface de fonction simple : 
+			suivant la regle du return
+
+			: production modèle handler (ou instanciation)
+			 ==&gt; copier et wrapper tous l&#x27;api du handler dans fonction qui place en queue de handler 
+
+			définition simple des API de chaines : et accès au compositions sur ces API
+
+			exemple : 
+
+				View avec form + store 
+
+				storeController + view
+
+				Store :
+
+				store.post = function  (obj) {
+					return deep.request.post(this.store.uri, obj);
+				}
+
+
+				View with store (aka form ctrl)
+
+				view.post = deep.compose.before(function (arg) {
+					if(arg)
+						return arg;
+					else
+						return this.binder.output;
+				});
+				
+
+
+				your view : 
+
+				myview.post = deep.compose.after(function (posted) {
+					this.delegatePosted(posted)
+				})
+				
+	*/
+
+
+
+
+	DeepHandler.prototype = {
+
+		// params
+		_runOnState:false,
+		_acceptHandleAfterRejection:false,
+		_catchError:false,
+
+		// states
+		_running:false,   
+		_rejected:false,
+		_canceled:false,
+
+		// local structs
+		_entries:null,
+		_report:null,
+		_queue:null,
+		_listenerQueue:null,
+
+
+		state:function () 
+		{
+			return (this._rejected?&quot;rejected&quot;:undefined) || (this._canceled?&quot;canceled&quot;:undefined);
+		},
+
+		reject : function (reason) 
+		{
+			deep.utils.chain.assertNoState(this);
+			this.report.success = null;
+			this.report.error = reason;
+			this._rejected = true;
+			deep.utils.chain.nextHandle(this, null, reason, true);
+		},
+		cancel : function (reason) 
+		{
+			deep.utils.chain.assertNoState(this);
+			this.report.canceled = obj;
+			this.report.success = null;
+			this.report.error = null;
+			this._canceled = true;
+			this._queue = null;
+			this._acceptHandle = false;
+			if(this._canceler)
+				this._canceler(this);
+		},
+		//________________________________
+		deep:function (obj, schema, options) 
+		{
+			if(obj)
+				return deep(obj, schema, options);
+			else
+				// set deep handler
+		},
+		done:function  (fn) 
+		{
+			// body...
+		},
+		fail:function  (fn) 
+		{
+			// body...
+		},
+		then:function (fn, fn) 
+		{
+			// body...
+		},
+		catchError:function (ctch) {
+			this._catchError = ctch;
+		}
+	}
+
+/*
+	Dif entre chain deep et promesses
+
+	promesse :
+		run on state
+		accept base Handle after resolution or rejection
+		handle : done/fail/then
+		not accept handle after cancelation
+
+	deep
+		! run on state 
+		accept base handle after rejection
+		
+
+	pour que deep puisse etre utilsé comme une promesse
+
+		==&gt; 
+
+
+		var d = deep.Deferred() // retourne chaine deep avec runOnState = true;
+		asynchCall = function (argument) {
+			if(success)
+				d.resolve(success)
+			else
+				d.reject(error)
+		}()
+		return d;
+
+
+		===&gt;
+
+		var d = deep().pause();
+
+
+		...
+
+		d.inject(sucess, error); // run
+
+		...
+
+		return d;
+
+		....
+
+
+		==&gt;
+
+		deep( d ).fail().done().query(...)
+
+		deep( d ) 
+			- doit ajouter un hanlde fail ET done dans une deuxième queue du handler
+			: c&#x27;et la queue d&#x27;&quot;écoute externe&quot; qui attend l&#x27;état rejected ou resolved
+
+			ordre d&#x27;ajout : d&#x27;abord done puis fail (i.e. then)
+				==&gt; si done retourne ne erreur : elle est aussi catché par fail
+	
+			faut ajouter dans la chaine deep resolve et _resolved
+
+
+			si la chaine d est rejetée (elle ne sait plus handler son erreur interne) ==&gt; reject
+			OU si la chaine arrive au bout sans erreur ==&gt; resolve avec résultat courrant (.val si seul, .values si array)
+
+
+			reject ou resolve : lancement queue écoute externe 
+
+
+			cancel : 
+
+			deep( d ).canceled(fn)
+				catch cancelation of d, pass in _canceled state
+
+			d.....canceled().....
+
+			d.cancel()
+				==&gt; look in chain after canceled handles without go through non promise API
+				==&gt; if no such handle : run the external listener queue
+
+			Si la chaine est cancelée :
+				==&gt; no more internal handles : warninng + throw
+				==&gt; possible to add more external handler
+
+
+			Si la chaine est rejettée :
+				==&gt; consume internal queue until non promise handle.
+
+				==&gt; no more internal handler 
+					==&gt; when added : print a warning : and ignore any 
+				==&gt; elle accepte tjrs les handles externes
+
+
+		==&gt;
+		plutot : lorsque ecoute externe : place in both queue : 
+		in listener queue : place func
+		in internal queue : place reminder
+
+		==&gt; if rejection before this point  : consume internal until non promise API.
+		Then : consume listeners.fails. 
+			if fail return something not error :
+				==&gt; pass it through done ?
+
+
+		==&gt; if no rejection : so done will fired at point
+			==&gt; the internl queue continue
+
+
+
+			
+
+		//________________________________________________________________
+
+		deep(...).context(...)
+
+			==&gt; get/set context for done/fail/canceled
+			==&gt; will be saved in .position(...)
+
+*/
+
+
+
+	var smartui = {
+		/**
+		* select login controller : give controller chain
+		*/
+		login:function  (obj) {
+			/*
+				if obj is provided : do a login on server with it (email/pass)
+				and set _APP associated state
+
+				if !obj
+				show login ui
+
+			*/
+		},
+		register:function () {
+			// show register ui and wait for registration submition
+		},
+		dashboard:function (argument) {
+			// body...
+		}
+
+	}
+
+	var controllerChain = {
+		show:function  (argument) {
+			// body...
+		},
+		hide:function (argument) {
+			// body...
+		},
+		refresh:function (argument) {
+			// body...
+		}
+	}
+
+
+
+	/**
+	* Permit to manipulate server store through restful IO...
+	*/
+	var clientStoreChain = {
+		store:{
+
+		},
+		/**
+		* Do post on login services.
+		If arg is provided : post arg as login object.
+		If no args : use from ui if possible
+		*/
+		post:function (argument) {
+			// body...
+		},
+		put:function (argument) {
+			// body...
+		},
+		/**
+		* get object from store
+		*/
+		get:function (id) {
+			
+
+		}
+	}
+
+
+	deep
+	.push()
+	.login({ email:&quot;...&quot;, password:&quot;...&quot;})
+	.fail(function (error) {
+		
+	})
+	.campaign()
+	.get(&quot;12133223&quot;)
+	.comments(&quot;...&quot;)
+	.show(&quot;#!/campaign/&quot;)
+	.done(function (ctrl) {
+		return deep.request.post(&quot;/register/&quot;, registrationObject);
+	})
+	.submit(function (object) {
+		return ...
+	})
+	.fail(function (error) {
+		deep.push().register().error(error);
+	})
+	.dashboard()
+
+
+})
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>deep-query.js - deepjs API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.9.1</em>
+            <em>API Docs for: 1.0.rc</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,15 +41,13 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
-            
-                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
-                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+                <li><a href="../modules/deep.html">deep</a></li>
             
             </ul>
         </div>
@@ -90,64 +88,64 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
+/**
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
 
-see Docs&#x2F;deep-query.md   for full documentations
+see Docs/deep-query.md   for full documentations
 
-A other proposal for (json&#x2F;object)-query which (as differences from official proposal):
+A other proposal for (json/object)-query which (as differences from official proposal):
 use simple slash delimitted syntax, 
 could handle regular expression for step selection, 
 could handle rql (for filtering) on each step selection,
-could be relative to where the query are placed in a object&#x2F;json
+could be relative to where the query are placed in a object/json
 so could handle a step toward any ancestor
 could handle json-schema in rql filtering
 could handle ancestor in rql filtering
 
 queries: 
-&#x2F;?foo=2&amp;bar&#x2F;myArray.*?length=gt=10&#x2F;[1:4:2,@.length-2]&#x2F;&#x2F;(^p.*)g?=in=(hello,bye)&amp;_parent.taxerate=lt=0.12&amp;_schema.type=string
-..&#x2F;foo&#x2F;bar?zoo.name&#x2F;&#x2F;price?=in=(12,55)
-&#x2F;foo&#x2F;bar&#x2F;
-&#x2F;&#x2F;(p.+)gi&#x2F;..&#x2F;..&#x2F;foo&#x2F;&#x2F;bar?=3
+/?foo=2&amp;bar/myArray.*?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&amp;_parent.taxerate=lt=0.12&amp;_schema.type=string
+../foo/bar?zoo.name//price?=in=(12,55)
+/foo/bar/
+//(p.+)gi/../../foo//bar?=3
 
 Each move could be composed of 
 
-[&#x27;&#x27;|&#x27;.&#x27;|&#x27;..&#x27;|&#x27;...&#x27;] [&#x27;&#x2F;&#x27;|&#x27;&#x2F;&#x2F;&#x27;]
+[&#x27;&#x27;|&#x27;.&#x27;|&#x27;..&#x27;|&#x27;...&#x27;] [&#x27;/&#x27;|&#x27;//&#x27;]
 
 Any selector could be :
 !				current
-empty | *		any childs  (obviously not in ..&#x2F;..&#x2F; (there is no selectors between : just up moves))
+empty | *		any childs  (obviously not in ../../ (there is no selectors between : just up moves))
 string (precise)	particular child
-(regExp without &#x2F;)[gi]	reg exp matching
+(regExp without /)[gi]	reg exp matching
 [array of selectors]   (will give the union of all selectors)
 
 Any filter could be a (deep)RQL query
-*&#x2F;
-&#x2F;*
+*/
+/*
 query options : 
 resultType : &quot;full&quot; || undefined : full : you got all the map (with path etc.), undefined you got just results
-*&#x2F;
+*/
 
 
-&#x2F;*
+/*
 parser gives : [ { up:0, recursif:false, access:[____, ____], rql:[____, ____] } ]
-*&#x2F; 
-&#x2F;*
+*/ 
+/*
 	TODO : 
 	add context and parametrisation
 	add full expression in access
 	add -brothers selector
-&#x2F;+brothers
+/+brothers
 
 	check if parent access give array if starting from items 		OK it does
-*&#x2F;
+*/
 if(typeof define !== &#x27;function&#x27;){
 	var define = require(&#x27;amdefine&#x27;)(module);
 }
 define(function defineDeepQuery(require)
 {
-	var rqlQuery = require(&quot;deep&#x2F;deep-rql&quot;).query;
-	var utils = require(&quot;deep&#x2F;utils&quot;);
+	var rqlQuery = require(&quot;./deep-rql&quot;).query;
+	var utils = require(&quot;./utils&quot;);
 	var QueryError = Error;
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
 
@@ -155,7 +153,7 @@ define(function defineDeepQuery(require)
 
 	DQ.prototype.analyseEreg = function analyseEreg(path, parts)
 	{
-	&#x2F;&#x2F;	console.log(&quot;PARSE EREG : path : &quot;+JSON.stringify(path))
+	//	console.log(&quot;PARSE EREG : path : &quot;+JSON.stringify(path))
 		var parsed = utils.catchParenthesis(path);
 		var reg = parsed.value;
 		var regOptions = &quot;&quot;;
@@ -176,8 +174,8 @@ define(function defineDeepQuery(require)
 				var res = [];
 				for(var i in parent.value)
 				{
-					&#x2F;&#x2F;if(!parent.value.hasOwnProperty(i))
-					&#x2F;&#x2F;	continue;
+					//if(!parent.value.hasOwnProperty(i))
+					//	continue;
 					if(i == &quot;_deep_entry&quot;)
 						continue;
 					if(new RegExp(this.value,this.options).test(i))
@@ -195,9 +193,10 @@ define(function defineDeepQuery(require)
 
 	DQ.prototype.analyse = function (path) 
 	{
-		&#x2F;&#x2F;console.log(&quot;analyse&quot;)
+		//console.log(&quot;analyse&quot;)
 		var paths = [];
 		var rest = path;
+		this.asked = path;
 		while(rest.length &gt; 0)
 		{
 			var rest = this.analyseMoves(rest, paths);
@@ -206,14 +205,14 @@ define(function defineDeepQuery(require)
 			if(rest.length == 0)
 				break;
 			rest = this.analyseSelector(rest, paths);
-			&#x2F;&#x2F;console.log(&quot;selector analysed : rest : &quot;,rest)
+			//console.log(&quot;selector analysed : rest : &quot;,rest)
 			if(rest.length == 0)
 				break;
 			if(rest[0]== &quot;?&quot;)
 				rest = this.analyseRQL(rest,paths);
 		}
 		var self = this;
-		if(paths.length &gt; 0 &amp;&amp; paths[paths.length-1].slashes == &quot;&#x2F;&quot;)
+		if(paths.length &gt; 0 &amp;&amp; paths[paths.length-1].slashes == &quot;/&quot;)
 			paths.push({
 				type:&quot;selector&quot;,
 				value:&quot;*&quot;,
@@ -233,7 +232,7 @@ define(function defineDeepQuery(require)
 		if(path[0] != &quot;?&quot;)
 			return path;
 		path = path.substring(1);
-		&#x2F;&#x2F;console.log(&quot;will analyse rql : &quot;, path)
+		//console.log(&quot;will analyse rql : &quot;, path)
 		if(path[0] == &#x27;(&#x27;)
 		{
 			var parsed = utils.catchParenthesis(path);
@@ -248,16 +247,16 @@ define(function defineDeepQuery(require)
 		}
 		var count = 0;
 		var rql = &quot;&quot;;
-		while(path[count] != &quot;&#x2F;&quot; &amp;&amp; count &lt; path.length)
+		while(path[count] != &quot;/&quot; &amp;&amp; count &lt; path.length)
 			rql += path[count++];
 		parts.push({
 			type:&quot;rql&quot;,
 			value:rql,
 			handler:function(items){
 				try{
-					&#x2F;&#x2F;console.log(&quot;doRQLHANDLER : items : &quot;, items)
+					//console.log(&quot;doRQLHANDLER : items : &quot;, items)
 					var res = rqlQuery(items, rql, { prefix:&quot;value&quot;, fromDeepQuery:true });
-					&#x2F;&#x2F;console.log(&quot;doRQLHANDLER : res : &quot;, res)
+					//console.log(&quot;doRQLHANDLER : res : &quot;, res)
 				}
 				catch(e)
 				{
@@ -267,7 +266,7 @@ define(function defineDeepQuery(require)
 				return res;
 			}
 		});
-		&#x2F;&#x2F;console.log(&quot;rql analyse gives : &quot;, rql)
+		//console.log(&quot;rql analyse gives : &quot;, rql)
 
 		return path.substring(count);
 	}
@@ -276,7 +275,7 @@ define(function defineDeepQuery(require)
 	{
 		var tmp = &quot;&quot;;
 		var count = 0;
-		while(path[count] != &quot;&#x2F;&quot; &amp;&amp; path[count] != &quot;?&quot; &amp;&amp; count &lt; path.length)
+		while(path[count] != &quot;/&quot; &amp;&amp; path[count] != &quot;?&quot; &amp;&amp; count &lt; path.length)
 			tmp += path[count++];
 		var splitted = tmp.split(&quot;:&quot;);
 		var self = this;
@@ -332,7 +331,7 @@ define(function defineDeepQuery(require)
 			else if(e.substring(0,8) == &#x27;@.length&#x27;)
 			{	
 				var rest = e.substring(8);
-				&#x2F;&#x2F;console.log(&quot;got index with @.length : rest : &quot;,rest)
+				//console.log(&quot;got index with @.length : rest : &quot;,rest)
 				if(rest.length == 0 || rest[0] != &quot;-&quot;)
 					throw new QueryError(&quot;when you use @.length : you could only use minus &#x27;-&#x27; operator followed by an integer.&quot;, path, parts);
 				var integ = parseInt(rest.substring(1));
@@ -400,7 +399,7 @@ define(function defineDeepQuery(require)
 						res = res.concat(locals);
 				})
 				return res;
-				&#x2F;&#x2F; make unique on path
+				// make unique on path
 			}
 		}
 		splitted.forEach(function (spl) {
@@ -412,18 +411,18 @@ define(function defineDeepQuery(require)
 	DQ.prototype.createEntry = function  (key, ancestor) 
 	{
 		var path = ancestor.path
-		if(path[path.length-1] == &#x27;&#x2F;&#x27;)
+		if(path[path.length-1] == &#x27;/&#x27;)
 			path += key;
 		else
-			path += &quot;&#x2F;&quot;+key;
-		&#x2F;&#x2F;if(this.cache[path])
-		&#x2F;&#x2F;	return this.cache[path];
+			path += &quot;/&quot;+key;
+		//if(this.cache[path])
+		//	return this.cache[path];
 
 		var schema = null;
-		&#x2F;&#x2F;console.log(&quot;ancestor.schema : &quot;, ancestor.schema)
+		//console.log(&quot;ancestor.schema : &quot;, ancestor.schema)
 		if(ancestor.schema)
-			schema = retrieveFullSchemaByPath(ancestor.schema, key, &quot;&#x2F;&quot;);
-		&#x2F;&#x2F;console.log(&quot;DQ.createEntry : &quot;+path+&quot; : schema : &quot;,schema)
+			schema = retrieveFullSchemaByPath(ancestor.schema, key, &quot;/&quot;);
+		//console.log(&quot;DQ.createEntry : &quot;+path+&quot; : schema : &quot;,schema)
 		return this.cache[path] = {
 			_isDQ_NODE_:true,
 			root:ancestor.root,
@@ -446,13 +445,13 @@ define(function defineDeepQuery(require)
 			entry = this.createEntry(key, entry);
 		else
 			entry = null;
-		&#x2F;&#x2F;console.log(&quot;returnProperty : &quot;, key, &quot; - on : &quot;, obj, &quot; - entry : &quot;, entry)
+		//console.log(&quot;returnProperty : &quot;, key, &quot; - on : &quot;, obj, &quot; - entry : &quot;, entry)
 		return entry;
 
 	}
 	DQ.prototype.returnAllProps = function(entry){
-		&#x2F;&#x2F;if(typeof entry.value === &quot;string&quot;)
-		&#x2F;&#x2F;	return [this.createEntry(&#x27;length&#x27;, entry)];
+		//if(typeof entry.value === &quot;string&quot;)
+		//	return [this.createEntry(&#x27;length&#x27;, entry)];
 		if(typeof entry.value === &quot;string&quot;)
 			return [];
 		var obj = entry.value;
@@ -470,7 +469,7 @@ define(function defineDeepQuery(require)
 		return childs;
 	}
 	DQ.prototype.returnRecursiveProps = function(entry){
-		&#x2F;&#x2F;console.log(&quot;recursive props : &quot;, entry.path)
+		//console.log(&quot;recursive props : &quot;, entry.path)
 
 		if(typeof entry.value === &quot;string&quot;)
 			return [];
@@ -494,12 +493,12 @@ define(function defineDeepQuery(require)
 	}
 	DQ.prototype.analyseSelector = function (path, parts, fromUnion) 
 	{
-		&#x2F;&#x2F;console.log(&quot;analyseSelector : &quot;, path);
+		//console.log(&quot;analyseSelector : &quot;, path);
 		var count = 0;
 		var self = this;
 		if(path.length == 0)
 		{
-			if(parts.length &gt; 1 &amp;&amp; parts[parts.length-1].slashes == &quot;&#x2F;&#x2F;&quot;)
+			if(parts.length &gt; 1 &amp;&amp; parts[parts.length-1].slashes == &quot;//&quot;)
 				return path;
 			parts.push({
 				type:&quot;selector&quot;,
@@ -512,10 +511,10 @@ define(function defineDeepQuery(require)
 		}
 		if(path[0] == &quot;?&quot;)
 		{
-			&#x2F;&#x2F;console.log(&quot;analyseSelector : find rql directly : preious is &#x2F;&#x2F; : &quot;,parts[parts.length-1].value == &quot;&#x2F;&#x2F;&quot;)
+			//console.log(&quot;analyseSelector : find rql directly : preious is // : &quot;,parts[parts.length-1].value == &quot;//&quot;)
 			if(fromUnion)
 				throw new QueryError(&quot;you couldn&#x27;t have &#x27;?&#x27; (rql) in an union of selectors.&quot;, path, parts);
-			if(parts[parts.length-1].slashes == &quot;&#x2F;&#x2F;&quot;)
+			if(parts[parts.length-1].slashes == &quot;//&quot;)
 				return path;
 			parts.push({
 				type:&quot;selector&quot;,
@@ -532,19 +531,19 @@ define(function defineDeepQuery(require)
 				type:&quot;selector&quot;,
 				value:&quot;!&quot;,
 				handler:function(parent){
-					&#x2F;&#x2F;console.log(&quot;apply direct acces : &quot;, path)
+					//console.log(&quot;apply direct acces : &quot;, path)
 					if(parent)
 						return [parent];
 					return [];
 				}
 			})
-			&#x2F;&#x2F;console.log(&quot;git drect access : &quot;, path, JSON.stringify(parts));
+			//console.log(&quot;git drect access : &quot;, path, JSON.stringify(parts));
 
 			return path.substring(1);
 		}
 		if(path[0] == &quot;(&quot;)
 			return this.analyseEreg(path, parts);
-		if(&#x2F;^[0-9]&#x2F;.test(path[0]) || path[0] == &#x27;@&#x27; || path[0] == &quot;:&quot;)
+		if(/^[0-9]/.test(path[0]) || path[0] == &#x27;@&#x27; || path[0] == &quot;:&quot;)
 			return this.analyseIndexAccess(path, parts);
 		if(path[0] == &#x27;[&#x27;)
 		{
@@ -553,12 +552,12 @@ define(function defineDeepQuery(require)
 			return this.analyseUnionAccess(path, parts);
 		}	
 		var string = &quot;&quot;;
-		while(path[count] != &#x27;&#x2F;&#x27; &amp;&amp; path[count] != &#x27;?&#x27;  &amp;&amp; count &lt; path.length)
+		while(path[count] != &#x27;/&#x27; &amp;&amp; path[count] != &#x27;?&#x27;  &amp;&amp; count &lt; path.length)
 			string += path[count++];
-		&#x2F;&#x2F;console.log(&quot;analyseSelector : got string&quot;, string);
+		//console.log(&quot;analyseSelector : got string&quot;, string);
 		if(string == &quot;*&quot;)
 		{	
-			if(parts[parts.length-1].slashes == &quot;&#x2F;&#x2F;&quot;)
+			if(parts[parts.length-1].slashes == &quot;//&quot;)
 				return path.substring(count);
 
 			parts.push({
@@ -575,7 +574,7 @@ define(function defineDeepQuery(require)
 			value:string,
 			handler:function(parent)
 			{
-			&#x2F;&#x2F;	console.log(&quot;analyseSelector string handler : &quot;, string, parent);
+			//	console.log(&quot;analyseSelector string handler : &quot;, string, parent);
 				var res = self.returnProperty(parent, string);
 				if(res != null &amp;&amp; typeof res !== &#x27;undefined&#x27;)
 					return [res];
@@ -588,13 +587,13 @@ define(function defineDeepQuery(require)
 		var steps = [];
 		var tmp = &quot;&quot;;
 		var a = 0;
-		&#x2F;&#x2F;console.log(&quot;analyseMoves&quot;);
-		while(a &lt; path.length &amp;&amp; (path[a] == &quot;.&quot; || path[a] == &quot;&#x2F;&quot;) )
+		//console.log(&quot;analyseMoves&quot;);
+		while(a &lt; path.length &amp;&amp; (path[a] == &quot;.&quot; || path[a] == &quot;/&quot;) )
 		{
-			&#x2F;&#x2F;console.log(&quot;analyse move: &quot;, path[a])
-			while(path[a] == &#x27;&#x2F;&#x27;)
+			//console.log(&quot;analyse move: &quot;, path[a])
+			while(path[a] == &#x27;/&#x27;)
 			{
-				tmp += &#x27;&#x2F;&#x27;;
+				tmp += &#x27;/&#x27;;
 				a++;
 			}	
 			if(tmp.length &gt; 0)
@@ -616,13 +615,15 @@ define(function defineDeepQuery(require)
 				steps.push(tmp);
 				tmp = &#x27;&#x27;;
 			}
-			&#x2F;&#x2F;console.log(&quot;a ?&quot;,a, path.length)
-			&#x2F;&#x2F;break;
+			//console.log(&quot;a ?&quot;,a, path.length)
+			//break;
 		}
-		&#x2F;&#x2F;console.log(&quot;analyseMoves : steps : &quot;, steps);
+		//console.log(&quot;analyseMoves : steps : &quot;, steps);
 		
-		&#x2F;&#x2F;return &quot;&quot;;
+		//return &quot;&quot;;
 		var last = steps[steps.length-1];
+		if(!last)
+			throw new QueryError(&quot;deepQuery : missformed query : &quot;+this.asked);
 		if(last[0] == &quot;.&quot;)
 			a -= last.length;
 			
@@ -635,11 +636,11 @@ define(function defineDeepQuery(require)
 				res.points = step;
 				step = steps.shift();
 			}
-			if(step  != &#x27;&#x2F;&#x27; &amp;&amp; step != &#x27;&#x2F;&#x2F;&#x27;)
+			if(step  != &#x27;/&#x27; &amp;&amp; step != &#x27;//&#x27;)
 				throw new QueryError(&quot;bad move : &quot;+JSON.stringify( path )+&quot; - &quot;+step);
 			res.slashes = step;
 			paths.push(res);
-			&#x2F;&#x2F;console.log(&quot;analyse move give : &quot;,res)
+			//console.log(&quot;analyse move give : &quot;,res)
 		}
 
 		return path.substring(a);
@@ -679,10 +680,10 @@ define(function defineDeepQuery(require)
 				else
 					newItems.push(item);
 			}
-			if(toDo.slashes == &quot;&#x2F;&#x2F;&quot;)
+			if(toDo.slashes == &quot;//&quot;)
 				newItems = newItems.concat(self.returnRecursiveProps(item));
 		})
-		&#x2F;&#x2F;console.log(&quot;DO MOVE gives : &quot;, newItems);
+		//console.log(&quot;DO MOVE gives : &quot;, newItems);
 		return newItems;
 	}
 	
@@ -692,32 +693,35 @@ define(function defineDeepQuery(require)
 		{
 			return [];
 		}
-		&#x2F;&#x2F;console.log(&quot;DQ.query : &quot;, obj, q, options)
+		//console.log(&quot;DQ.query : &quot;, obj, q, options)
 		options = options || {};
 		if(!this.cache || !options.keepQueryCache)
 			this.cache = {};
 		var items = null;
 
+		if(q[0] === &#x27;#&#x27;)
+			q = q.substring(1);
+		//console.log(&quot;DeepQuery : will do : &quot;,q);
 		var parts = this.analyse(q);
 		if(parts.length == 0 || parts[0].type != &quot;move&quot;)
 			throw new QueryError(&quot;query need to start with move : &quot;+q);
 		if(obj &amp;&amp; obj._isDQ_NODE_ == true)
 		{
-			&#x2F;&#x2F;console.log(&quot;DQ : start with _isDQ_NODE_&quot;)
-			this.root = this.cache[&quot;&#x2F;&quot;] = obj.root || obj;
+			//console.log(&quot;DQ : start with _isDQ_NODE_&quot;)
+			this.root = this.cache[&quot;/&quot;] = obj.root || obj;
 			items = [obj];
 		}
 		else if(obj &amp;&amp; obj._deep_entry)
 		{
-			&#x2F;&#x2F;console.log(&quot;DQ : start with object with _deep_entry &quot;)
-			this.root = this.cache[&quot;&#x2F;&quot;] = obj._deep_entry.root;
+			//console.log(&quot;DQ : start with object with _deep_entry &quot;)
+			this.root = this.cache[&quot;/&quot;] = obj._deep_entry.root;
 			items = [obj._deep_entry];
 		}
 		else
 		{
-			this.root = this.cache[&quot;&#x2F;&quot;] = DQ.createRootNode(obj, options.schema)
-			&#x2F;&#x2F;this.root.root = this.root;
-			items = [this.cache[&quot;&#x2F;&quot;]];
+			this.root = this.cache[&quot;/&quot;] = DQ.createRootNode(obj, options.schema)
+			//this.root.root = this.root;
+			items = [this.cache[&quot;/&quot;]];
 		}
 		items[0].root = this.root;
 
@@ -730,7 +734,7 @@ define(function defineDeepQuery(require)
 			{
 				case &#x27;move&#x27; : 
 					items = self.doMove(part, items, start);
-					&#x2F;&#x2F;console.log(&quot;do move : &quot;, items)
+					//console.log(&quot;do move : &quot;, items)
 					break;
 				case &#x27;selector&#x27; : 
 					var results = [];
@@ -738,28 +742,18 @@ define(function defineDeepQuery(require)
 						var r =  part.handler(item);
 						if(r &amp;&amp; r.length &gt; 0)
 							results = results.concat(r);
-					})
-					&#x2F;*results.forEach(function (a) {
-						console.log(&quot;do selector results: &quot;, a.path)
-					})*&#x2F;
-					&#x2F;&#x2F;console.log(&quot;catch selector : items : &quot;, results)
-					
+					});
 					items = results;
 					break;
 				case &#x27;rql&#x27;: 
-					&#x2F;&#x2F;console.log(&quot;before do rql : &quot;, items)
-					&#x2F;*results.forEach(function (a) {
-						console.log(&quot;before do rql &quot;, a.path)
-					})*&#x2F;
-					
 					items = part.handler(items);
 					break;
 			}
-			&#x2F;&#x2F;console.log(&quot;catch results : &quot;, items)
+			//console.log(&quot;catch results : &quot;, items)
 			start = false;
 		}
 		items =	utils.arrayUnique(items, &quot;path&quot;);
-		&#x2F;&#x2F;console.log(&quot;DQ : raw results : &quot;, items)
+		//console.log(&quot;DQ : raw results : &quot;, items)
 		if(options.resultType == &quot;full&quot;)
 			return items;
 		var finalRes = [];
@@ -779,7 +773,7 @@ define(function defineDeepQuery(require)
 		return {
 				_isDQ_NODE_:true,
 				value:obj,
-				path:&quot;&#x2F;&quot;,
+				path:&quot;/&quot;,
 				key:null,
 				ancestor:null,
 				schema:schema || {},
@@ -797,13 +791,13 @@ define(function defineDeepQuery(require)
         </div>
     </div>
 </div>
-<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
-<script src="..&#x2F;assets/js/yui-prettify.js"></script>
-<script src="..&#x2F;assets/../api.js"></script>
-<script src="..&#x2F;assets/js/api-filter.js"></script>
-<script src="..&#x2F;assets/js/api-list.js"></script>
-<script src="..&#x2F;assets/js/api-search.js"></script>
-<script src="..&#x2F;assets/js/apidocs.js"></script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
 </body>
 </html>

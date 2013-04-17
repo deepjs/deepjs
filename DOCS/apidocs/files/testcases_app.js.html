@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>testcases&#x2F;app.js - deepjs API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <title>testcases/app.js - deepjs API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.9.1</em>
+            <em>API Docs for: 1.0.rc</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,15 +41,13 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="..&#x2F;classes/DeepHandler.html">DeepHandler</a></li>
-            
-                <li><a href="..&#x2F;classes/SynchHandler.html">SynchHandler</a></li>
+                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
-                <li><a href="..&#x2F;modules/deep.html">deep</a></li>
+                <li><a href="../modules/deep.html">deep</a></li>
             
             </ul>
         </div>
@@ -86,25 +84,25 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: testcases&#x2F;app.js</h1>
+                        <h1 class="file-heading">File: testcases/app.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
+/**
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
- *&#x2F;
+ */
 define(function(require){
 	console.flags = { 
 		&quot;none&quot;:false
-		&#x2F;&#x2F;, &quot;layer-factory&quot;: true
-		&#x2F;&#x2F;, &quot;request-factory&quot;:true
+		//, &quot;layer-factory&quot;: true
+		//, &quot;request-factory&quot;:true
 		, &quot;form-controller&quot;:true
-		&#x2F;&#x2F;, &quot;view-controller&quot;:true
-		&#x2F;&#x2F;,&quot;list-controller&quot;:true
-		&#x2F;&#x2F;,&quot;list-item-controller&quot;:true
+		//, &quot;view-controller&quot;:true
+		//,&quot;list-controller&quot;:true
+		//,&quot;list-item-controller&quot;:true
 	};
 	console.log(&quot;start app&quot;);
-	deep = require(&quot;deep&#x2F;deep&quot;);
+	deep = require(&quot;deep/deep&quot;);
 	var init = function()
 	{	
 		console.log(&quot;app intialised&quot;);
@@ -121,13 +119,13 @@ define(function(require){
         </div>
     </div>
 </div>
-<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
-<script src="..&#x2F;assets/js/yui-prettify.js"></script>
-<script src="..&#x2F;assets/../api.js"></script>
-<script src="..&#x2F;assets/js/api-filter.js"></script>
-<script src="..&#x2F;assets/js/api-list.js"></script>
-<script src="..&#x2F;assets/js/api-search.js"></script>
-<script src="..&#x2F;assets/js/apidocs.js"></script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
 </body>
 </html>
