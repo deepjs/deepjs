@@ -2532,7 +2532,7 @@ deep : just say : Powaaaaaa ;)
 			});
 			return res;
 		},
-		position = function (handler, name, options) {
+		position : function (handler, name, options) {
 			options = options || {};
 			handler.positions.push({
 				name:name,
