@@ -41,13 +41,37 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/deep.html">deep</a></li>
+            
+                <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
+            
+                <li><a href="../classes/DeepDeferred.html">DeepDeferred</a></li>
+            
                 <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
+            
+                <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
+            
+                <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
                 <li><a href="../modules/deep.html">deep</a></li>
+            
+                <li><a href="../modules/deep-collider.html">deep-collider</a></li>
+            
+                <li><a href="../modules/deep-compose.html">deep-compose</a></li>
+            
+                <li><a href="../modules/deep-query.html">deep-query</a></li>
+            
+                <li><a href="../modules/deep-rql.html">deep-rql</a></li>
+            
+                <li><a href="../modules/deep-schema.html">deep-schema</a></li>
+            
+                <li><a href="../modules/deep.stores.html">deep.stores</a></li>
+            
+                <li><a href="../modules/utils.html">utils</a></li>
             
             </ul>
         </div>
@@ -88,13 +112,13 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/*
+ /**
  * A deep oriented implementation of RQL for JavaScript arrays based on rql/js-array from Kris Zyp (https://github.com/persvr/rql).
- * For example:
- * require(&quot;deep/deep-rql&quot;).query(&quot;a=3&quot;, {}, [{a:1},{a:3}]) -&gt; [{a:3}]
-
-What&#x27;s different from js-array ? It could handle schema properties and ancestor access when filtering
-
+ *	What&#x27;s different from js-array ? It could handle schema properties and ancestor access when filtering
+ * @module deep
+ * @submodule deep-rql
+ * @example 
+ * 		require(&quot;deep/deep-rql&quot;).query(&quot;a=3&quot;, {}, [{a:1},{a:3}]) -&gt; [{a:3}]
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
  */
 

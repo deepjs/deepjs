@@ -1,8 +1,8 @@
 /**
- *	@author gilles.coomans@gmail.com
  *	JSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions
  * 	http://tools.ietf.org/html/draft-zyp-json-schema-03
- * 
+ *
+ * @example
 
 		Ajout par rapport à la v3
 
@@ -200,7 +200,9 @@
  
  		au final : comme un schema chope de plus en plus de propriétés d'un deep-factory : il faudrait que le schema soit un deep-factory 
  		dont son propre schema soit le meta schema du schema
-
+ *	@author gilles.coomans@gmail.com
+ * @module deep
+ * @submodule deep-schema
  */
 
 /**

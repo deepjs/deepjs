@@ -1,16 +1,63 @@
 YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
-        "DeepHandler"
+        "DeepDecorator",
+        "DeepDeferred",
+        "DeepHandler",
+        "DeepPromise",
+        "DeepQuery",
+        "deep"
     ],
     "modules": [
-        "deep"
+        "deep",
+        "deep-collider",
+        "deep-compose",
+        "deep-query",
+        "deep-rql",
+        "deep-schema",
+        "deep.stores",
+        "utils"
     ],
     "allModules": [
         {
             "displayName": "deep",
             "name": "deep",
             "description": "deep : just say : Powaaaaaa ;)"
+        },
+        {
+            "displayName": "deep-collider",
+            "name": "deep-collider",
+            "description": "layer-data-composition : inspired by Compose, it offer a large set of tools that permit to manipulate values \n from within the object used as layer when applied together. \n As Compose merge two prototype by wrapping collided functions by appropriate Compose method (after, before, around),\n layer-compose do the same by applying a function when values are collided with that function.\n\n If you know photoshop : it's an equivalent of the fusion modes between two layers (or part of two layers)."
+        },
+        {
+            "displayName": "deep-compose",
+            "name": "deep-compose",
+            "description": "When you collide two functions together, you could use deep.compose to manage how collision is resolved.\n Keep in mind that if you collide a simple function (up) on a composition (chained or not) : it mean : simply overwrite the composition by the function.\n So if you apply a composition from bottom on a function, the composition will never b applied.\n If you collide two compositions : they will be merged to give a unique composition chain."
+        },
+        {
+            "displayName": "deep-query",
+            "name": "deep-query",
+            "description": "A other proposal for (json/object)-query which (as differences from official proposal):\n use simple slash delimitted syntax, \n could handle regular expression for step selection, \n could handle rql (for filtering) on each step selection,\n could be relative to where the query are placed in a object/json\n so could handle steps toward any ancestor\n could handle json-schema in rql filtering\n could handle ancestor in rql filtering"
+        },
+        {
+            "displayName": "deep-rql",
+            "name": "deep-rql",
+            "description": "A deep oriented implementation of RQL for JavaScript arrays based on rql/js-array from Kris Zyp (https://github.com/persvr/rql).\n\tWhat's different from js-array ? It could handle schema properties and ancestor access when filtering"
+        },
+        {
+            "displayName": "deep-schema",
+            "name": "deep-schema",
+            "description": "JSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions\n \thttp://tools.ietf.org/html/draft-zyp-json-schema-03"
+        },
+        {
+            "displayName": "deep.stores",
+            "name": "deep.stores",
+            "description": "how manage collections and objects as http styled stores"
+        },
+        {
+            "displayName": "utils",
+            "name": "utils",
+            "description": "a bunch of utilities functions for deep"
         }
     ]
 } };

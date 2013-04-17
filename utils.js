@@ -1,5 +1,10 @@
 /**
+ *
+ *	a bunch of utilities functions for deep
+ * 
  * @author Gilles Coomans <gilles.coomans@gmail.com>
+ * @module deep
+ * @submodule utils
  */
 if(typeof define !== 'function')
 	var define = require('amdefine')(module);

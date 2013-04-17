@@ -49,11 +49,25 @@ function(require)
 
 	//________________________________________________________ DEEP Module
 
-/**
-deep : just say : Powaaaaaa ;)
+	/**
+	 * deep : just say : Powaaaaaa ;)
+	 * @module deep
+	 */
 
-@module deep
-**/
+	/**
+	 * Start of deep chain
+	 *
+	 * @example
+	 * 		deep("./json/simple.json").logValues("simple.json : ");
+	 *
+	 * 
+	 * @class deep
+	 * @constructor
+	 * @param  {Object} obj an object (or retrievable string) or an array of objects to start chain. will wait if there is promise
+	 * @param  {Object} schema (optional) a schema for entries. could be a retrievable
+	 * @param  {Object} options (optional) an option object. could contain : rethrow:true|false
+	 * @return {DeepHandler} a deep handler that hold object(s)
+	 */
 	deep = function (obj, schema, options)
 	{
 		var alls = [];
@@ -100,21 +114,86 @@ deep : just say : Powaaaaaa ;)
 		});
 		return handler;
 	};
+	/**
+	 * rethrow any throw during chain execution.
+	 * @property rethrow  
+	 * @type {Boolean}
+	 */
 	deep.rethrow = true;
 	deep.metaSchema = {};
-	deep.request = DeepRequest;
+	/**
+	 * final namespace for deep/utils
+	 * @static
+	 * @property utils
+	 * @type {Object}
+	 */
 	deep.utils = utils;
+	/**
+	 * perform a deep-schema validation
+	 * @static
+	 * @method validate
+	 * @type {Function}
+	 */
 	deep.validate = Validator.validate;
+	/**
+	 * perform a deep-schema partial validation
+	 * @static
+	 * @method partialValidation
+	 * @type {Function}
+	 */
 	deep.partialValidation = Validator.partialValidation;
+	/**
+	 * final namespace for deep/deep-compose
+	 * @static
+	 * @property utils
+	 * @type {Object}
+	 */
 	deep.compose = deepCompose;
-	deep.metaSchema = {};
+	/**
+	 * are you on nodejs or not
+	 * @static
+	 * @property isNode
+	 * @type {Boolean}
+	 */
 	deep.isNode = (typeof process !== 'undefined' && process.versions && process.versions.node);
+	/**
+	 * perform a deep-rql query
+	 * @static
+	 * @method rql
+	 * @type {Function}
+	 */
 	deep.rql = require("./deep-rql");
+	/**
+	 * perform a deep-query query
+	 * @method query
+	 * @static
+	 * @type {Function}
+	 */
 	deep.query = Querier.query;
+	/**
+	 * final namespace for deep/deep-collider 
+	 * @static
+	 * @property collider
+	 * @type {Object}
+	 */
 	deep.collider = require("./deep-collider");
+	/**
+	 * final namespace for deep/deep-query
+	 * @static
+	 * @property Querier
+	 * @type {DeepQuery}
+	 */
 	deep.Querier = Querier;
+	/**
+	 * shortcut for utils.interpret
+	 * @static
+	 * @method interpret
+	 * @type {Function}
+	 */
 	deep.interpret = utils.interpret;
 	deep.context = null;
+
+	deep.request = DeepRequest;
 
 	//_____________________________________________________________________ local (private) functions
 
@@ -377,6 +456,7 @@ deep : just say : Powaaaaaa ;)
 		* asynch
 		* inject entries values as chain success.
 		* 
+		 * @chainable
 		 * @method  reverse
 		 * @return {DeepHandler} this
 		*/
@@ -398,6 +478,7 @@ deep : just say : Powaaaaaa ;)
 		* transparent true
 		* 
 		 * @method  catchError
+		 * @chainable
 		 * @param {boolean} catchIt if true : catch all future chain error. (true by default) 
 		 * @return {DeepHandler}
 		*/
@@ -460,9 +541,29 @@ deep : just say : Powaaaaaa ;)
 		/**
 		 * asynch handler for chain branches creation
 		 *
-		 * transparent false
+		 * if you return the branches function (the branch creator) : the chain will wait until all the branches are done before continuing
+		 *
+		 *  Inject function result in chain as success or error.
+		 *
+		 * 	@example
+		*	chain.branches( function(branches)
+		*	{
+		*		branches.branch().query(...).load().log()
+		*		branches.branch().query(...).post().log();
+		*		//...
+		*		return branches;
+		*	});
+		*
+		*	// if you want to return a subset of branches promises : 
+		*	// you could use deep.all([array_of_promises]) :
+		*
+		*		var branch = branches.branch().myChain()...;
+		*		//...
+		*		return deep.all([deep.promise(branch), ...]);
 		 * 
 		 * @method  branches
+		 * @async
+		 * @chainable
 		 * @param   {Function} func the callback that will receive the brancher (see above)
 		 * @return  {DeepHandler} this
 		 */
@@ -495,6 +596,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * @method  when
 		 * @param  {Promise} prom the promise to waiting for
+		 * @chainable
 		 * @return {Deephandler}
 		 */
 		when:function(prom)
@@ -530,6 +632,7 @@ deep : just say : Powaaaaaa ;)
 		 *	asynch
 		 * 
 		 * @method  done
+		 * @chainable
 		 * @param  callback the calback function to handle success
 		 * @return Deephandler
 		 */
@@ -582,6 +685,7 @@ deep : just say : Powaaaaaa ;)
 		 *	asynch
 		 * 
 		 * @method  fail
+		 * @chainable
 		 * @param  callback the calback function to handle error
 		 * @return Deephandler
 		 */
@@ -623,6 +727,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * @method  then
 		 * @param  successCallBack the calback function to handle success
+		 * @chainable
 		 * @param  errorCallBack the calback function to handle error
 		 * @return {Deephandler} this
 		 */
@@ -654,6 +759,7 @@ deep : just say : Powaaaaaa ;)
 		 * @method  range
 		 * @param  start the index of range start
 		 * @param  end the index of range end
+		 * @chainable
 		 * @return {DeepHandler} this
 		 */
 		range : function (start, end)
@@ -704,6 +810,7 @@ deep : just say : Powaaaaaa ;)
 		 * inject chain values as chain success
 		 * 
 		 * @method  back
+		 * @chainable
 		 * @param   name the name of the last position asked
 		 * @param  	options   (optional - no options for the moment)
 		 * @return {[type]}
@@ -746,6 +853,7 @@ deep : just say : Powaaaaaa ;)
 		 * asynch
 		 * inject selected entry value as chain success
 		 * 
+		 * @chainable
 		 * @method  first
 		 * @return DeepHandler
 		 */
@@ -766,6 +874,7 @@ deep : just say : Powaaaaaa ;)
 		 * asynch
 		 * inject selected entry value as chain success
 		 * 
+		 * @chainable
 		 * @method  last
 		 * @return DeepHandler
 		 */
@@ -788,6 +897,7 @@ deep : just say : Powaaaaaa ;)
 		 * asynch
 		 * 
 		 * @method  parents
+		 * @chainable
 		 * @param boolean errorIfEmpty : if true and no parents was selected : throw an error 
 		 * @return DeepHandler
 		 */
@@ -812,6 +922,7 @@ deep : just say : Powaaaaaa ;)
 		/**
 		 * take object, shcema, options and create fresh chain entries from it. Same mecanism as new chain.
 		 * @method  root
+		 * @chainable
 		 * @param  object the object to produce entries  (could be a retrievable string - e.g. "json::myobject.json" - see retrievable doc)
 		 * @param  schema the schema of the object  (could be a retrievable string - e.g. "json::myobject.json" - see retrievable doc)
 		 * @return [DeepHandler] this
@@ -839,6 +950,7 @@ deep : just say : Powaaaaaa ;)
 		 * inject queried results as chain success
 		 * 
 		 * @method  query
+		 * @chainable
 		 * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
 		 * @param  {boolean} errorIfEmpty : if true : throw an error if query return nothing
 		 * @return {DeepHandler} this (chain handler)
@@ -875,6 +987,7 @@ deep : just say : Powaaaaaa ;)
 		 * transparent false
 		 * 
 		 * @method  select
+		 * @chainable
 		 * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
 		 * @return {DeepHandler} this
 		 */
@@ -896,6 +1009,7 @@ deep : just say : Powaaaaaa ;)
 		 * set schema of all entries (purely assignation)
 		 * inject entries shemas as chain success
 		 * @method  schema
+		 * @chainable
 		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
 		 * @return {DeepHandler} this (chain handler)
 		 */
@@ -926,6 +1040,7 @@ deep : just say : Powaaaaaa ;)
 		 * apply provided schema on all entries schemas (.up application)
 		 * inject entries shemas as chain success
 		 * @method  schemaUp
+		 * @chainable
 		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
 		 * @return {DeepHandler} this (chain handler)
 		 */
@@ -966,6 +1081,7 @@ deep : just say : Powaaaaaa ;)
 		 *
 		 * 
 		 * @method  schemaBottom
+		 * @chainable
 		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
 		 * @return {DeepHandler} this (chain handler)
 		 */
@@ -1007,6 +1123,7 @@ deep : just say : Powaaaaaa ;)
 		 * inject setted values as chain success
 		 * 
 		 * @method  setByPath
+		 * @chainable
 		 * @param {string} path  a slash delimitted path (e.g. "/my/property")
 		 * @param {object|primitive} obj the value to assign (could be a retrievable strings)
 		 */
@@ -1038,6 +1155,7 @@ deep : just say : Powaaaaaa ;)
 		 * inject entries values as chain success.
 		 * 
 		 * @method  up
+		 * @chainable
 		 * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
 		 * @return {DeepHandler} this
 		 */
@@ -1072,6 +1190,7 @@ deep : just say : Powaaaaaa ;)
 		 * synch
 		 * inject entries values as chain success.
 		 * @method  bottom
+		 * @chainable
 		 * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
 		 * @return {DeepHandler} this
 		 */
@@ -1108,6 +1227,7 @@ deep : just say : Powaaaaaa ;)
 		 * @method  replace
 		 * @param  {string} what a query to select properties to replace 
 		 * @param  {object} by  any value to assign (could be a retrievable string)
+		 * @chainable
 		 * @param  {object} options (optional) : it is the options object for the deep.get which will eventually retrieve the 'by' object (see deep.get)
 		 * @return {DeepHandler} this
 		 */
@@ -1142,6 +1262,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * remove queried properties from entries and inject removed properties as chain success.
 		 * 
+		 * @chainable
 		 * @method  remove
 		 * @param  {string} what a query to select properties to replace 
 		 * @return {DeepHandler} this
@@ -1177,8 +1298,10 @@ deep : just say : Powaaaaaa ;)
 		 *	not intend to be call directly by programmer. use at your own risk. use .flatten instead.
 		 *	
 		 * @method  extendsChilds
+		
+		 * @private
 		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-		 * @return {DeepHandler} this
+		 * @return {DeepPromise} a promise
 		 */
 		extendsChilds : function(entry)
 		{
@@ -1209,8 +1332,9 @@ deep : just say : Powaaaaaa ;)
 		 *	not intend to be call directly by programmer. use at your own risk.  use .flatten instead.
 		 * 
 		 * @method  extendsBackgrounds
+		 * @private
 		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-		 * @return {DeepHandler} this
+		 * @return {DeepPromise} a promise
 		 */
 		extendsBackgrounds:function (entry)
 		{
@@ -1264,6 +1388,7 @@ deep : just say : Powaaaaaa ;)
 		 * Success injected : entries values
 		 * Errors injected : any flatten error
 		 * 
+		 * @chainable
 		 * @method  flatten
 		 * @return {DeepHandler} this
 		 */
@@ -1328,6 +1453,7 @@ deep : just say : Powaaaaaa ;)
 		 * - error injected : any error returned (or produced) from a func call
 		 * 
 		 * @method transform
+		 * @chainable
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
 		 * @return {DeepHandler}  the current chain handler (this)
@@ -1371,6 +1497,7 @@ deep : just say : Powaaaaaa ;)
 		 * - success injected : the array of results of each call on func
 		 * - error injected : any error returned (or produced) from a func call
 		 * @method run
+		 * @chainable
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
 		 * @return {DeepHandler}  the current chain handler (this)
@@ -1427,6 +1554,7 @@ deep : just say : Powaaaaaa ;)
 		 *
 		 *
 		 * @method  exec
+		 * @chainable
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
 		 * @return {DeepHandler}  the current chain handler (this)
@@ -1472,6 +1600,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * @method  treat
 		 * @param  {object} treatment
+		 * @chainable
 		 * @return {DeepHandler} this
 		 */
 		treat: function(treatment) {
@@ -1522,6 +1651,7 @@ deep : just say : Powaaaaaa ;)
 		 * @method  valuesEqual
 		 * @param  {Object} obj      the object to test equality
 		 * @param  {Function} callBack optional : any callBack to manage the report. Could return a promise.
+		 * @chainable
 		 * @return {DeepHandler}     this
 		 */
 		valuesEqual : function(obj, callBack)
@@ -1567,6 +1697,7 @@ deep : just say : Powaaaaaa ;)
 		 * @method  equal
 		 * @param  {*} obj      the object to test
 		 * @param  {Function}	optional. callBack a callBack to manage report
+		 * @chainable
 		 * @return {DeepHandler}        this
 		 */
 		equal : function(obj, callBack)
@@ -1625,6 +1756,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * @method  validate
 		 * @param  {Object} options [description]
+		 * @chainable
 		 * @return {DeepHandler}         [description]
 		 */
 		validate:function(options)
@@ -1684,6 +1816,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * @method  log
 		 * @return {DeepHandler} this
+		 * @chainable
 		 */
 		log:function ()
 		{
@@ -1726,6 +1859,7 @@ deep : just say : Powaaaaaa ;)
 		 * transparent true
 		 *
 		 * @method  logValues
+		 * @chainable
 		 * @param title (optional) the title you want
 		 * @param options (optional) : an object { full:true|false, pretty:true|false }
 		 * @return {DeepHandler} this
@@ -1773,6 +1907,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * @method  val
 		 * @param callBack
+		 * @chainable
 		 * @return {Deephandler|entry.value} this or val
 		 */
 		val:function  (callBack)
@@ -1810,6 +1945,7 @@ deep : just say : Powaaaaaa ;)
 		 *	Chain Error injection : the errors of callback calls (rejected if promises)
 		 * 
 		 * @method  each
+		 * @chainable
 		 * @param callBack
 		 * @return {Deephandler} this
 		 */
@@ -1844,6 +1980,7 @@ deep : just say : Powaaaaaa ;)
 		 *
 		 * 
 		 * @method  values
+		 * @chainable
 		 * @param callBack
 		 * @return {Deephandler|Array} this or values
 		 */
@@ -1881,6 +2018,7 @@ deep : just say : Powaaaaaa ;)
 		 * transparent true
 		 * 
 		 * @method  nodes
+		 * @chainable
 		 * @param callBack
 		 * @return {Deephandler|Array} this or entries
 		 */
@@ -1915,6 +2053,7 @@ deep : just say : Powaaaaaa ;)
 		 *
 		 * transparent true
 		 * 
+		 * @chainable
 		 * @method  paths
 		 * @param callBack
 		 * @return {Deephandler|Array} this or paths
@@ -1952,6 +2091,7 @@ deep : just say : Powaaaaaa ;)
 		 * 
 		 * transparent true
 		 * 
+		 * @chainable
 		 * @method  schemas
 		 * @param callBack
 		 * @return {Deephandler|Array} this or schemas
@@ -1989,6 +2129,7 @@ deep : just say : Powaaaaaa ;)
 		 * transparent true
 		 * 
 		 * 
+		 * @chainable
 		 * @method delay
 		 * @param  {number} ms
 		 * @return {Deephandler} this
@@ -2021,6 +2162,7 @@ deep : just say : Powaaaaaa ;)
 		 *
 		 * @method deepLoad
 		 * @param  {object} context (optional) a context to interpret strings before retrieving
+		 * @chainable
 		 * @return {DeepHandler} this
 		 */
 		deepLoad:function(context)
@@ -2087,6 +2229,7 @@ deep : just say : Powaaaaaa ;)
 		 * @method load
 		 * @param  {string} (optional) request
 		 * @param  {object} (optional) context the context to interpret strings
+		 * @chainable
 		 * @return {DeepHandler} this
 		 */
 		load:function (request, context)
@@ -2178,8 +2321,13 @@ deep : just say : Powaaaaaa ;)
 		 * seek after any strings and try to interpret it with current context.
 		 *
 		 * see interpretation for simple case  
+		 * @example
+		 * 
+		 * 		deep({ msg:"hello { name }" }).deepInterpret({ name:"john" }).logValues().equal({ msg:"hello john" });
+		 * 
 		 * 
 		 * @method deepInterpret
+		 * @chainable
 		 * @param  {object} context the oebjct to inject in strings
 		 * @return {DeepHandler} this
 		 */
@@ -2219,11 +2367,19 @@ deep : just say : Powaaaaaa ;)
 		},
 		/**
 		 * will interpret entries values with context
-		 * example : 
-		 * 	 deep("hello { name }").interpret({ name:"john" }).val();
-		 *   will provide "hello john".
+		 * @example  
+		 * 	 	deep("hello { name }").interpret({ name:"john" }).val();
+		 *   	//will provide "hello john".
+		 * 		deep({
+		 *     		msg:"hello { name }"
+		 * 		})
+		 * 		.query("./msg")
+		 * 		.interpret({ name:"john" })
+		 * 		.logValues()
+		 * 		.equal("hello john");
 		 *   
 		 * @method interpret
+		 * @chainable
 		 * @param  {object} context the context to inject in strings
 		 * @return {DeepHandler} this
 		 */
@@ -2415,6 +2571,7 @@ deep : just say : Powaaaaaa ;)
 		 * take current entries, seek after localKeys, use it to get 'what' with foreignKey=localKey, and finnaly store result at 'whereToStore' path in current entries values.
 		 * 
 		 * @method mapOn
+		 * @chainable
 		 * @param  {Collection|retrievable_string} what
 		 * @param  {string} localKey  the name of the localKey to match with Collection items
 		 * @param  {string} foreignKey  the name of the foreignKey to match with current entries
@@ -2546,6 +2703,11 @@ deep : just say : Powaaaaaa ;)
 
 	//_____________________________________________________________________ DEFERRED
 
+	/**
+	 * A deep implementation of Deferred object (see promise on web)
+	 * @class DeepDeferred
+	 * @constructor
+	 */
 	var DeepDeferred = function ()
 	{
 		this.context = deep.context;
@@ -2562,6 +2724,12 @@ deep : just say : Powaaaaaa ;)
 		canceled:false,
 		result:null,
 		failure:null,
+		/**
+		 * resolve the Deferred and so the associated promise
+		 * @method resolve
+		 * @param  {Object} the resolved object injected in promise
+		 * @return {DeepDeferred} this
+		 */
 		resolve:function (argument)
 		{
 			if(this.rejected || this.resolved || this.canceled)
@@ -2578,6 +2746,12 @@ deep : just say : Powaaaaaa ;)
 				nextPromiseHandler.apply(this.promise, [argument, null]);
 			}
 		},
+		/**
+		 * reject the Deferred and so the associated promise
+		 * @method reject
+		 * @param  {Object} the rejected object injected in promise
+		 * @return {DeepDeferred} this
+		 */
 		reject:function (argument)
 		{
 			//console.log("DeepDeferred.reject");
@@ -2588,6 +2762,12 @@ deep : just say : Powaaaaaa ;)
 			this.promise.running = false;
 			nextPromiseHandler.apply(this.promise, [null, argument]);
 		},
+		/**
+		 * cancel the Deferred and so the associated promise
+		 * @method cancel
+		 * @param  {Object} the cancel reason object injected in promise
+		 * @return {DeepDeferred} this
+		 */
 		cancel:function (argument)
 		{
 			// console.log("DeepDeferred.cancel");
@@ -2596,17 +2776,42 @@ deep : just say : Powaaaaaa ;)
 			this.canceled = this.promise.canceled = true;
 			this.promise.queue = [];
 		},
+		/**
+		 * add .done and .fail in promise chain.
+		 * @method then
+		 * @param  {Function} sc successHandler
+		 * @param  {Function} ec errorhandler
+		 * @return {DeepDeferred} this
+		 */
 		then:function (sc,ec) {
 			this.promise.then(s,e);
 		},
+		/**
+		 * add .done callback handler in promise chain
+		 * @method done
+		 * @param  {Function} argument successHandler
+		 * @return {DeepDeferred} this
+		 */
 		done:function (argument) {
 			this.promise.done(argument);
 		},
+		/**
+		 * add .fail callback handler in promise chain
+		 * @method fail
+		 * @param  {Function} argument successHandler
+		 * @return {DeepDeferred} this
+		 */
 		fail:function (argument) {
 			this.promise.fail(argument);
 		}
 	};
 	//________________________________________________________ PROMISES
+	/**
+	 * a deep implementation of Promise (see web for Promise) 
+	 * @class DeepPromise
+	 * @constructor
+	 * @param {DeepDeferred} deferred
+	 */
 	var DeepPromise = function (deferred)
 	{
 		this.running = true;
@@ -2628,6 +2833,12 @@ deep : just say : Powaaaaaa ;)
 		synch:false,
 		result:null,
 		failure:null,
+		/**
+		 * add .done callback handler in promise chain
+		 * @method done
+		 * @param  {Function} argument successHandler
+		 * @return {DeepDeferred} this
+		 */
 		done:function (callBack)
 		{
 			//console.log("add done in defInterface : ", this.rejected, this.resolved, this.running)
@@ -2678,6 +2889,12 @@ deep : just say : Powaaaaaa ;)
 				nextPromiseHandler.apply(this);
 			return self;
 		},
+		/**
+		 * add .fail callback handler in promise chain
+		 * @method fail
+		 * @param  {Function} argument successHandler
+		 * @return {DeepDeferred} this
+		 */
 		fail:function (callBack)
 		{
 			var self = this;
@@ -2730,6 +2947,13 @@ deep : just say : Powaaaaaa ;)
 				nextPromiseHandler.apply(this);
 			return self;
 		},
+		/**
+		 * add .done and .fail in promise chain.
+		 * @method then
+		 * @param  {Function} sc successHandler
+		 * @param  {Function} ec errorhandler
+		 * @return {DeepDeferred} this
+		 */
 		then:function (successCallBack, errorCallBack)
 		{
 			var self = this;
@@ -2829,6 +3053,14 @@ deep : just say : Powaaaaaa ;)
 		return prom;
 	}
 
+	/**
+	 * 
+	 * @for deep
+	 * @static 
+	 * @method promise
+	 * @param  {Object} arg  an object on when create a promise
+	 * @return {DeepPromise} a promise
+	 */
 	deep.promise = function(arg)
 	{
 		//console.log("deep.promise : ", arg)
@@ -2874,6 +3106,14 @@ deep : just say : Powaaaaaa ;)
 		return createImmediatePromise(arg);
 	};
 
+	/**
+	 * return a promise that will be fullfilled when arg are ready (resolve or immediat)
+	 * @for deep
+	 * @static 
+	 * @method when
+	 * @param  {Object} arg an object to waiting for
+	 * @return {DeepPromise} a promise
+	 */
 	deep.when = function (arg)
 	{
 		if(arg instanceof DeepHandler)
@@ -2883,6 +3123,14 @@ deep : just say : Powaaaaaa ;)
 		return deep.promise(arg);
 	};
 
+	/**
+	 * return a promise that will be fullfilled when all args are ready (resolve or immediat)
+	 * @for deep
+	 * @static 
+	 * @method all
+	 * @param  {Object} arg an array of objects to waiting for
+	 * @return {DeepPromise} a promise
+	 */
 	deep.all = function()
 	{
 		var arr = [];
@@ -2942,6 +3190,15 @@ deep : just say : Powaaaaaa ;)
 	deep.DeepPromise = DeepPromise;
 	//________________________________________________________ DEEP CHAIN UTILITIES
 
+	/**
+	 * execute array of funcs sequencially
+	 * @for deep
+	 * @static 
+	 * @method sequence
+	 * @param  {String} funcs an array of functions to execute sequentially
+	 * @param  {Object} args (optional) some args to pass to first functions
+	 * @return {DeepHandler} a handler that hold result 
+	 */
 	deep.sequence = function (funcs, args)
 	{
 		if(!funcs || funcs.length === 0)
@@ -2980,6 +3237,12 @@ deep : just say : Powaaaaaa ;)
 
 	//_______________________________________________________________________________ STORES
 
+	/**
+	 *
+	 * how manage collections and objects as http styled stores
+	 * 
+	 * @submodule deep.stores
+	 */
 	deep.stores = {};
 	deep.handlers = {};
 	deep.handlers.decorations = {};
@@ -3322,6 +3585,18 @@ deep : just say : Powaaaaaa ;)
 		return store;
 	};
 
+
+	/**
+	 * retrieve request (if string in retrievable format) (e.g. "json::test.json")
+	 * perform an http get
+	 * if request is not a string : will just return request
+	 * @for deep
+	 * @static 
+	 * @method get
+	 * @param  {String} request a string to retrieve
+	 * @param  {Object} options (optional)
+	 * @return {DeepHandler} a handler that hold result 
+	 */
 	deep.get = function  (request, options)
 	{
 		if(typeof request !== "string")
@@ -3351,6 +3626,16 @@ deep : just say : Powaaaaaa ;)
 		else
 			return infos.store.get(infos.uri, options);
 	};
+	/**
+	 * retrieve an array of retrievable strings (e.g. "json::test.json")
+	 * if request is not a string : will just return request
+	 * @for deep
+	 * @static 
+	 * @method getAll
+	 * @param  {String} requests a array of strings to retrieve
+	 * @param  {Object} options (optional)
+	 * @return {DeepHandler} a handler that hold result 
+	 */
 	deep.getAll = function  (requests, options)
 	{
 		var alls = [];

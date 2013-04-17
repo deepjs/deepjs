@@ -248,20 +248,6 @@ deep : the deep core
 			will delay the execution of any followers until the promise is resolved
 			continueIfRejected:null || false
 
-	## post/put
-
-		chain.post( uri, options )
-
-			post current entrie(s) value(s) to uri (with deep.request)
-				if there is a single entry : it will be post as object.
-				if there is multiple entries : they will be sent as array.
-
-		chain.put( uri, options )
-
-			put current entrie(s) value(s) to uri (with deep.request)
-				if there is a single entry : it will be put as object.
-				if there is multiple entries : they will be sent as array.
-
 	## loads
 
 		How load externals content.
@@ -549,27 +535,6 @@ deep : the deep core
 			will return a chain that will wait until all promises contained in array are resolved.
 			will be rejected at first promise from array that are rejected 
  
-	## deep.request
-
-		deep.request.retrieve( retrievable )
-			retrievable : string || function
-
-		deep.request.retrieveAll( [retrievables] )
-			retrievable : string || function
-
-		deep.request.put(object, uri)
-
-		deep.request.post(object, uri)
-	
-		deep.request.json(uri)
-	
-		deep.request.html(uri)
-	
-		deep.request.swig(uri)
-	
-		deep.request.xml(uri)
-	
-		deep.request.rss(uri)
 	
 	## deep.utils
 

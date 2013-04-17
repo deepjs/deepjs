@@ -1,10 +1,10 @@
-/*
+ /**
  * A deep oriented implementation of RQL for JavaScript arrays based on rql/js-array from Kris Zyp (https://github.com/persvr/rql).
- * For example:
- * require("deep/deep-rql").query("a=3", {}, [{a:1},{a:3}]) -> [{a:3}]
-
-What's different from js-array ? It could handle schema properties and ancestor access when filtering
-
+ *	What's different from js-array ? It could handle schema properties and ancestor access when filtering
+ * @module deep
+ * @submodule deep-rql
+ * @example 
+ * 		require("deep/deep-rql").query("a=3", {}, [{a:1},{a:3}]) -> [{a:3}]
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 
