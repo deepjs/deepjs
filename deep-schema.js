@@ -259,9 +259,23 @@ if(typeof define !== 'function')
 {
 	var define = require('amdefine')(module);
 	var swig = require("swig");
+	var isNode = true;
 }	
 define(["require", "./utils", "./promise"],
 function(require){
+
+	if(isNode)
+	{	swig.init({
+			filters:{
+				join_coma:function (input) {
+					if(input instanceof Array)
+						return input.join(",");
+					return input;
+				}
+			}
+		});
+	}
+
 
 	var utils = require("./utils");
 	var promise = require("./promise");
