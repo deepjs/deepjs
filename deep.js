@@ -2305,14 +2305,14 @@ function(require)
 						var strings = self.querier.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
 						strings.forEach(function (toLoad) {
 
+							//console.log("deep.deepLoad : toLoad : ", toLoad);
 							if(typeof toLoad.value === 'string')
 							{
 								var val = toLoad.value;
 								if(context)
 									val = deep.interpret(toLoad.value, context);
-								promises.push(deep.get(toLoad.value, {root:(toLoad.root)?toLoad.root.value:toLoad.value, basePath:toLoad.path }));
+								promises.push(deep.get(val, {root:(toLoad.root)?toLoad.root.value:null, basePath:toLoad.path }));
 							}
-							//console.log("deep.deepLoad : toLoad : ", toLoad);
 							else if(typeof toLoad.value === 'function')
 								promises.push(toLoad.value());
 							else
@@ -2322,6 +2322,7 @@ function(require)
 					});
 					deep.all(promises)
 					.done(function (results) {
+						//console.log("direct results of deepLoad : ", results);
 						var count = 0;
 						results.forEach(function  (r) {
 							var e = paths[count++];
