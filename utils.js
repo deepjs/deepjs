@@ -12,10 +12,23 @@ if(typeof define !== 'function')
 define(function(require){
 	var collider = require("./deep-collider");
 	var compose = require("./deep-compose");
+	/**
+	 * @class utils
+	 */
 	var utils = {};
 
 	// _______________________________________ swig related
 
+	/**
+	 * swig related : produce swig-macro-import string
+	 * @deprecated 
+	 * @category swig
+	 * @method getMacroImport
+	 * @static
+	 * @param  {ViewController} controller
+	 * @param  {Array} macrosSet
+	 * @return {String} the macro import string
+	 */
 	utils.getMacroImport = function(controller, macrosSet)
 	{
 		var renderedTemplate = "";
@@ -43,6 +56,23 @@ define(function(require){
 	// ______________________________________ STRINGS RELATED
 
 	// TODO : need to be asynch and to retrieve values from stores : as app::language
+	/**
+	 * interpret a string with a context : means fetch in context and replace in string any variable-string-format (e.g. { my.property.in.my.context }) 
+	 * founded in string
+	 * @example
+	 * 		var interpreted = deep.utils.interpret("hello { name }", { name:"john" });
+	 *
+	 * @example
+	 * 		// equivalent of first example
+	 * 		var interpreted = deep("hello { name }").interpret({ name:"john" }).val();
+	 * 		
+	 * @method interpret
+	 * @category stringUtils
+	 * @static
+	 * @param  {String} string the string to interpret
+	 * @param  {Object} context the context to inject
+	 * @return {String} the interpreted string
+	 */
 	utils.interpret = function (string, context)
 	{
 		var count = string.indexOf('{');
@@ -130,12 +160,26 @@ define(function(require){
 
 	//_________________________________________________________________ OBJECTS/ARRAY RELATED
 
+	/**
+	 * make a copy of provided array, but do not copy items. just reproduce an array with same items.
+	 * @method copyArray
+	 * @static
+	 * @param  {Array} arr
+	 * @return {Array} the array copy
+	 */
 	utils.copyArray = function(arr){
-		if(!arr)
+		if(!arr || arr.length === 0)
 			return [];
 		return arr.concat([]);
 	};
 
+	/**
+	 * clone a function and copy it's proto or vars.
+	 * @method cloneFunction
+	 * @static
+	 * @param  {Function} fct  the function to copy
+	 * @return {Function} the cloned function
+	 */
 	utils.cloneFunction = function(fct)
 	{
 		//console.log("cloneFunction : fct.decorator = ", fct.decorator)
@@ -149,6 +193,14 @@ define(function(require){
 	    return clone;
 	};
 
+	/**
+	 * copy any object/value/array deeply. (e.g. any array will be copied AND also its items).
+	 * Any function encountered will not be cloned (simply use same ref). (just deep decorators will be)
+	 * @method copy
+	 * @static
+	 * @param  {Object|Primitive} obj
+	 * @return {Object|Primitive} the copied value/object/array
+	 */
 	utils.copy = function copy(obj){
 		var res = null;
 		if(obj instanceof Array)

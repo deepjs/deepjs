@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>deep - deepjs API</title>
+    <title>deep - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs Javascript Framework"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/Collider.html">Collider</a></li>
+            
                 <li><a href="../classes/deep.html">deep</a></li>
             
                 <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
@@ -52,6 +54,8 @@
                 <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
             
                 <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+            
+                <li><a href="../classes/utils.html">utils</a></li>
             
             </ul>
 
@@ -65,9 +69,13 @@
             
                 <li><a href="../modules/deep-query.html">deep-query</a></li>
             
+                <li><a href="../modules/deep-roles.html">deep-roles</a></li>
+            
                 <li><a href="../modules/deep-rql.html">deep-rql</a></li>
             
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
+            
+                <li><a href="../modules/deep-stores.html">deep-stores</a></li>
             
                 <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
@@ -116,7 +124,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep.js.html#l2807"><code>deep.js:2807</code></a>
+            Defined in: <a href="../files/utils.js.html#l15"><code>utils.js:15</code></a>
         </div>
     
 
@@ -137,6 +145,12 @@
             <p>This module provides the following classes:</p>
 
             <ul class="module-classes">
+            
+                <li class="module-class">
+                    <a href="../classes/Collider.html">
+                        Collider
+                    </a>
+                </li>
             
                 <li class="module-class">
                     <a href="../classes/deep.html">
@@ -171,6 +185,12 @@
                 <li class="module-class">
                     <a href="../classes/DeepQuery.html">
                         DeepQuery
+                    </a>
+                </li>
+            
+                <li class="module-class">
+                    <a href="../classes/utils.html">
+                        utils
                     </a>
                 </li>
             
@@ -219,13 +239,23 @@
 
                     <div class="module-submodule-description">
                         A other proposal for (json/object)-query which (as differences from official proposal):
- use simple slash delimitted syntax, 
- could handle regular expression for step selection, 
- could handle rql (for filtering) on each step selection,
- could be relative to where the query are placed in a object/json
- so could handle steps toward any ancestor
- could handle json-schema in rql filtering
- could handle ancestor in rql filtering
+ 	- use simple slash delimitted syntax, 
+ 	- could handle regular expression for step selection, 
+ 	- could handle rql (for filtering) on each step selection,
+ 	- could be relative to where the query are placed in a object/json
+ 	- so could handle steps toward any ancestor
+ 	- could handle json-schema in rql filtering
+ 	- could handle ancestor in rql filtering
+                    </div>
+                </li>
+            
+                <li class="module-submodule">
+                    <a href="../modules/deep-roles.html">
+                        deep-roles
+                    </a>
+
+                    <div class="module-submodule-description">
+                        
                     </div>
                 </li>
             
@@ -248,6 +278,16 @@
                     <div class="module-submodule-description">
                         JSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions
  	http://tools.ietf.org/html/draft-zyp-json-schema-03
+                    </div>
+                </li>
+            
+                <li class="module-submodule">
+                    <a href="../modules/deep-stores.html">
+                        deep-stores
+                    </a>
+
+                    <div class="module-submodule-description">
+                        
                     </div>
                 </li>
             

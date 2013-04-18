@@ -55,14 +55,13 @@
 	.bottom(b)
 	.flatten()
 	.run("myFunc")
-	.run(function(){
-	   	deep(this.obj).equal({
-	   		first:true,
-	   		second:true,
-	        a:true,
-	        b:true
-	    }, report);
-	})
+	.query("./obj")
+	.equal({
+   		first:true,
+   		second:true,
+        a:true,
+        b:true
+    });
 
 	deep({
 	    sub:{
@@ -75,15 +74,15 @@
 	.flatten()
 	.query("/sub")
 	.run("myFunc")
-	.run(function(){
-	    deep(this.obj).equal({
-	    	first:true,
-	   		second:true,
-	   		third:true,
-	        a:true,
-	        b:true
-	    }, report);
-	})
+	.query("./obj")
+	 .equal({
+    	first:true,
+   		second:true,
+   		third:true,
+        a:true,
+        b:true
+    });
+	
 
 	return	printReport("chain.flatten", success, failed, count);
 })();

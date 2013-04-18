@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DeepDeferred - deepjs API</title>
+    <title>DeepDeferred - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs Javascript Framework"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/Collider.html">Collider</a></li>
+            
                 <li><a href="../classes/deep.html">deep</a></li>
             
                 <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
@@ -52,6 +54,8 @@
                 <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
             
                 <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+            
+                <li><a href="../classes/utils.html">utils</a></li>
             
             </ul>
 
@@ -65,9 +69,13 @@
             
                 <li><a href="../modules/deep-query.html">deep-query</a></li>
             
+                <li><a href="../modules/deep-roles.html">deep-roles</a></li>
+            
                 <li><a href="../modules/deep-rql.html">deep-rql</a></li>
             
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
+            
+                <li><a href="../modules/deep-stores.html">deep-stores</a></li>
             
                 <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
@@ -116,7 +124,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep.js.html#l2704"><code>deep.js:2704</code></a>
+            Defined in: <a href="../files/deep.js.html#l2859"><code>deep.js:2859</code></a>
         </div>
     
 
@@ -170,7 +178,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2704"><code>deep.js:2704</code></a>
+        <a href="../files/deep.js.html#l2859"><code>deep.js:2859</code></a>
         
         </p>
 
@@ -283,7 +291,7 @@
             
                 <li class="arg">
                     
-                        <code>the</code>
+                        <code>reason</code>
                     
                 </li>
             
@@ -320,7 +328,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2763"><code>deep.js:2763</code></a>
+        <a href="../files/deep.js.html#l2918"><code>deep.js:2918</code></a>
         
         </p>
 
@@ -342,14 +350,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">the</code>
+                        <code class="param-name">reason</code>
                         <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>cancel reason object injected in promise</p>
+                        <p>the cancel reason object injected in promise</p>
                     </div>
 
                     
@@ -424,7 +432,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2787"><code>deep.js:2787</code></a>
+        <a href="../files/deep.js.html#l2942"><code>deep.js:2942</code></a>
         
         </p>
 
@@ -528,7 +536,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2796"><code>deep.js:2796</code></a>
+        <a href="../files/deep.js.html#l2951"><code>deep.js:2951</code></a>
         
         </p>
 
@@ -595,7 +603,7 @@
             
                 <li class="arg">
                     
-                        <code>the</code>
+                        <code>argument</code>
                     
                 </li>
             
@@ -632,7 +640,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2747"><code>deep.js:2747</code></a>
+        <a href="../files/deep.js.html#l2902"><code>deep.js:2902</code></a>
         
         </p>
 
@@ -654,14 +662,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">the</code>
+                        <code class="param-name">argument</code>
                         <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>rejected object injected in promise</p>
+                        <p>the rejected object injected in promise</p>
                     </div>
 
                     
@@ -699,7 +707,7 @@
             
                 <li class="arg">
                     
-                        <code>the</code>
+                        <code>argument</code>
                     
                 </li>
             
@@ -736,7 +744,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2725"><code>deep.js:2725</code></a>
+        <a href="../files/deep.js.html#l2880"><code>deep.js:2880</code></a>
         
         </p>
 
@@ -758,14 +766,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">the</code>
+                        <code class="param-name">argument</code>
                         <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>resolved object injected in promise</p>
+                        <p>the resolved object injected in promise</p>
                     </div>
 
                     
@@ -846,7 +854,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2777"><code>deep.js:2777</code></a>
+        <a href="../files/deep.js.html#l2932"><code>deep.js:2932</code></a>
         
         </p>
 

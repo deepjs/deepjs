@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>deep-collider.js - deepjs API</title>
+    <title>deep-collider.js - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs Javascript Framework"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/Collider.html">Collider</a></li>
+            
                 <li><a href="../classes/deep.html">deep</a></li>
             
                 <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
@@ -52,6 +54,8 @@
                 <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
             
                 <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+            
+                <li><a href="../classes/utils.html">utils</a></li>
             
             </ul>
 
@@ -65,9 +69,13 @@
             
                 <li><a href="../modules/deep-query.html">deep-query</a></li>
             
+                <li><a href="../modules/deep-roles.html">deep-roles</a></li>
+            
                 <li><a href="../modules/deep-rql.html">deep-rql</a></li>
             
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
+            
+                <li><a href="../modules/deep-stores.html">deep-stores</a></li>
             
                 <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
@@ -143,11 +151,19 @@ But you could do it for us...;)
 
 define(function(require)
 {
+	/**
+	 * the collider interface
+	 * @class Collider
+	 */
 
-	var Collider = function(){}
-	Collider.prototype = {}
 	return {
-		Collider:Collider,
+		/**
+		 * wrap wrapped function with wrapper function. wrapped will receive ollided value as argument.
+		 * @method wrap
+		 * @param  {Function} wrapper
+		 * @param  {Function} wrapped
+		 * @return {Function} the wrapper
+		 */
 		wrap:function(wrapper, wrapped){
 			var a = function(value, parent, key){
 				return wrapper(wrapped(value, parent, key), parent, key);
@@ -155,6 +171,13 @@ define(function(require)
 			a._deep_collider = true;
 			return a;
 		},
+		/**
+		 * copy collided value somewhere
+		 * @method copyTo
+		 * @param  {Object} object where copy value
+		 * @param  {String} path a dot delimitted path in object where copy value
+		 * @return {Function} the collider
+		 */
 		copyTo:function(object, path){
 			var a = function(value, parent, key){
 				utils.setValueByPath(object, path, value);
@@ -163,10 +186,25 @@ define(function(require)
 			a._deep_collider = true;
 			return a;
 		},
-		around:function(handler){
-			handler._deep_collider = true;
-			return handler;
+		/**
+		 * simply wrap collided value by wrapper function
+		 * @method around
+		 * @param  {Function} wrapper
+		 * @return {Function} the collider
+		 */
+		around:function(wrapper){
+			var a = function (value, parent, key) {
+				return wrapper(value);
+			}
+			a._deep_collider = true;
+			return a;
 		},
+		/**
+		 * replace collided value by new one
+		 * @method replace
+		 * @param  {Object} newValue the value to assign
+		 * @return {Function} the collider
+		 */
 		replace:function(newValue){
 			var a = function(value){
 				return newValue;
@@ -174,6 +212,12 @@ define(function(require)
 			a._deep_collider = true;
 			return a;
 		},
+
+		/**
+		 * log collided value
+		 * @method log
+		 * @return {Function} the collider
+		 */
 		log:function(){
 			//console.log(&quot;add layer composition : log&quot;)
 			var a =function(value){
@@ -183,15 +227,28 @@ define(function(require)
 			a._deep_collider = true;
 			return  a;
 		},
+		/**
+		 * validate collided value with provided schema.
+		 * throw an error with report if not valid.
+		 * @method validate
+		 * @param  {Object} schema
+		 * @return {Function} the collider
+		 */
 		validate:function(schema){
 			var a = function(value){
-				if(!validator.isValid(value, schema))
-					throw new ValidationError(validator.report);
+				var report = validator.validate(value, schema);
+				if(!report.valid)
+					throw new Error(report);
 				return value;
 			}
 			a._deep_collider = true;
 			return a;
 		},
+		/**
+		 * remove collided value
+		 * @method remove
+		 * @return {Function} the collider
+		 */
 		remove:function(){
 			var a = function(value, parent, key)
 			{
@@ -201,7 +258,16 @@ define(function(require)
 			a._deep_colliderRemove = true;
 			return a;
 		},
+		/**
+		 * @category assertions
+		 * @type {Object}
+		 */
 		assert:{
+			/**
+			 * assert is true on collided value. 
+			 * @method isTrue
+			 * @return {Function} the collider
+			 */
 			isTrue:function(){
 				return function(value){
 					console.assert(value === true);
@@ -218,6 +284,11 @@ define(function(require)
 				a._deep_collider = true;
 				return a;
 			},
+			/**
+			 * test equality (deep-equal) with collided value
+			 * @param  {Object} equalTo the object to test
+			 * @return {Function} te collider
+			 */
 			equal:function(equalTo){
 				var a = function(value){
 					return value == equalTo;
@@ -240,15 +311,30 @@ define(function(require)
 				return a;
 			}
 		},
+		/**
+		 * @category array
+		 * @type {Object}
+		 */
 		array:{
+			/**
+			 * reverse collided array
+		 	* @method reverse
+			 * @return {Function} the collider
+			 */
 			reverse:function(){
-				return function(value){
-					this._deep_collider = true;
-					if(typeof value.push === &#x27;function&#x27;)
+				var a = function(value){
+					if(typeof value.reverse === &#x27;function&#x27;)
 						return value.reverse();
 					return value;
 				}
+				a._deep_collider = true;
+				return a;
 			},
+			/**
+			 * remove value in array
+		 	 * @method remove
+			 * @return {Function} the collider
+			 */
 			remove:function(what){
 				var a = function(value, parent, key){
 					if(value &amp;&amp; value.forEach)

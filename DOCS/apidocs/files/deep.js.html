@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>deep.js - deepjs API</title>
+    <title>deep.js - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="../assets/css/logo.png" title="deepjs API"></h1>
+                <h1><img src="../assets/css/logo.png" title="deepjs Javascript Framework"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/Collider.html">Collider</a></li>
+            
                 <li><a href="../classes/deep.html">deep</a></li>
             
                 <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
@@ -52,6 +54,8 @@
                 <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
             
                 <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+            
+                <li><a href="../classes/utils.html">utils</a></li>
             
             </ul>
 
@@ -65,9 +69,13 @@
             
                 <li><a href="../modules/deep-query.html">deep-query</a></li>
             
+                <li><a href="../modules/deep-roles.html">deep-roles</a></li>
+            
                 <li><a href="../modules/deep-rql.html">deep-rql</a></li>
             
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
+            
+                <li><a href="../modules/deep-stores.html">deep-stores</a></li>
             
                 <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
@@ -231,6 +239,7 @@ function(require)
 	/**
 	 * rethrow any throw during chain execution.
 	 * @property rethrow  
+	 * @static
 	 * @type {Boolean}
 	 */
 	deep.rethrow = true;
@@ -259,7 +268,7 @@ function(require)
 	/**
 	 * final namespace for deep/deep-compose
 	 * @static
-	 * @property utils
+	 * @property compose
 	 * @type {Object}
 	 */
 	deep.compose = deepCompose;
@@ -306,6 +315,8 @@ function(require)
 	 */
 	deep.interpret = utils.interpret;
 	deep.context = null;
+
+	deep.request = DeepRequest;
 
 	//_____________________________________________________________________ local (private) functions
 
@@ -563,11 +574,10 @@ function(require)
 			return brancher;
 		},
 		/**
-		* reverse entries order
-		*
-		* asynch
-		* inject entries values as chain success.
-		* 
+		 * reverse entries order
+		 *
+		 * inject entries values as chain success.
+		 * 
 		 * @chainable
 		 * @method  reverse
 		 * @return {DeepHandler} this
@@ -584,11 +594,11 @@ function(require)
 			return self;
 		},
 		/**
-		* catch any throwned error while chain running
-		*
-		* asycnh
-		* transparent true
-		* 
+		 * catch any throwned error while chain running
+		 *
+		 * asycnh
+		 * transparent true
+		 * 
 		 * @method  catchError
 		 * @chainable
 		 * @param {boolean} catchIt if true : catch all future chain error. (true by default) 
@@ -867,6 +877,14 @@ function(require)
 		 *  		hasNext:boolean,
 		 *  		hasPrevious:boolean
 		 *  	}
+		 * @example
+	deep([0,1,2,3,4,5])
+	.range(1,4)
+	.valuesEqual([1,2,3,4]);
+
+	deep([0,1,2,3,4,5])
+	.range(3,5)
+	.valuesEqual([3,4,5]);
 		 * 
 		 * @method  range
 		 * @param  start the index of range start
@@ -1335,7 +1353,30 @@ function(require)
 		 *	synch
 		 * 
 		 * replace queried entries properties by new value and inject replaced properties as chain success.
-		 * 
+		 *
+		 * @example
+		 
+	var a = {
+		aString : &quot;Hello&quot;,
+		anInt : 5,
+		anArray : [&quot;1&quot;,&quot;2&quot;,&quot;3&quot;],
+		anObject : {
+			anArray : [&quot;4&quot;,&quot;5&quot;,&quot;6&quot;],
+			aString : &quot;World&quot;
+		}
+	}
+	deep(a)
+	.replace(&quot;./anArray/1&quot;,&quot;replaceString&quot;)
+	.equal({
+		aString : &quot;Hello&quot;,
+		anInt : 5,
+		anArray : [&quot;1&quot;,&quot;replaceString&quot;,&quot;3&quot;],
+		anObject : {
+			anArray : [&quot;4&quot;,&quot;5&quot;,&quot;6&quot;],
+			aString : &quot;World&quot;
+		}
+	});
+
 		 * @method  replace
 		 * @param  {string} what a query to select properties to replace 
 		 * @param  {object} by  any value to assign (could be a retrievable string)
@@ -1369,11 +1410,54 @@ function(require)
 			return this;
 		},
 		/**
-		 *
-		 * synch
 		 * 
 		 * remove queried properties from entries and inject removed properties as chain success.
-		 * 
+		 * @example
+	var a = {
+		aString : &quot;Hello&quot;,
+		anInt : 5,
+		anArray : [&quot;1&quot;,&quot;2&quot;,&quot;3&quot;],
+		anObject : {
+			anArray : [&quot;4&quot;,&quot;5&quot;,&quot;6&quot;],
+			aString : &quot;World&quot;
+		}
+	}
+
+	deep(a)
+	.remove(&quot;./anArray/1&quot;).log().valuesEqual([{
+		aString : &quot;Hello&quot;,
+		anInt : 5,
+		anArray : [&quot;1&quot;,&quot;3&quot;],
+		anObject : {
+			anArray : [&quot;4&quot;,&quot;5&quot;,&quot;6&quot;],
+			aString : &quot;World&quot;
+		}
+	}]);
+
+	@example
+
+	var obj = { 
+		email: &#x27;test@test.com&#x27;,
+		password: &#x27;test54&#x27;,
+	 	id: &#x27;51013dec530e96b112000001&#x27; 
+	}
+	 var schema = { 
+	 	properties: 
+		{ 
+		  	id: { type: &#x27;string&#x27;, required: false, minLength: 1 },
+		    email: { type: &#x27;string&#x27;, required: true, minLength: 1 },
+		    password: { type: &#x27;string&#x27;, required: true, &quot;private&quot;: true } 
+		},
+	 	additionalProperties: false 
+	}
+
+	deep(obj, schema)
+	.remove(&quot;.//*?_schema.private=true&quot;)
+	.equal({ 
+		email: &#x27;test@test.com&#x27;,
+	 	id: &#x27;51013dec530e96b112000001&#x27; 
+	 });
+
 		 * @chainable
 		 * @method  remove
 		 * @param  {string} what a query to select properties to replace 
@@ -1496,11 +1580,65 @@ function(require)
 		/**
 		 * will perform FULL backgrounds application on chain entries. (see backgrounds documentation)
 		 *
-		 * asynch
 		 * Success injected : entries values
 		 * Errors injected : any flatten error
-		 * 
+		 * @example
+	var a = {
+	    obj:{
+	    	first:true
+	    },
+	    myFunc:function(){
+	        console.log(&quot;base myFunc&quot;);
+	        this.obj.a = true;
+	    }
+	}
+
+	var b = {
+		backgrounds:[a],
+		obj:{
+			second:true
+		},
+		myFunc:deep.compose.after(function()
+		{
+			console.log(&quot;myFunc of b : &quot;, this)
+			this.obj.b = true;
+		})
+	}
+
+	deep({})
+	.bottom(b)
+	.flatten()
+	.run(&quot;myFunc&quot;)
+	.query(&quot;./obj&quot;)
+	.equal({
+   		first:true,
+   		second:true,
+        a:true,
+        b:true
+    });
+
+	deep({
+	    sub:{
+	        backgrounds:[b],
+	        obj:{
+	        	third:true
+	        }
+	    }
+	})
+	.flatten()
+	.query(&quot;/sub&quot;)
+	.run(&quot;myFunc&quot;)
+	.query(&quot;./obj&quot;)
+	 .equal({
+    	first:true,
+   		second:true,
+   		third:true,
+        a:true,
+        b:true
+    });
+
 		 * @chainable
+		 * @async
 		 * @method  flatten
 		 * @return {DeepHandler} this
 		 */
@@ -2681,6 +2819,31 @@ function(require)
 		 * Objects could be retrievables.
 		 *
 		 * take current entries, seek after localKeys, use it to get &#x27;what&#x27; with foreignKey=localKey, and finnaly store result at &#x27;whereToStore&#x27; path in current entries values.
+		 *
+		 * @example
+
+	deep([{ title:&quot;my title&quot;, id:1}, { title:&quot;my title 2&quot;, id:2}])
+	.mapOn([
+	    {itemId:1, value:true}, 
+	    {itemId:2, value:&quot;133&quot;}, 
+	    {itemId:2, value:&quot;hello&quot;}
+	    ], 
+	    &quot;id&quot;,&quot;itemId&quot;,&quot;linkeds&quot;)
+	.valuesEqual([
+	    {
+	        title:&quot;my title&quot;, 
+	        id:1, 
+	        linkeds:{itemId:1, value:true}
+	    },
+	    { 
+	        title:&quot;my title 2&quot;, 
+	        id:2,
+	        linkeds:[
+	            {itemId:2, value:&quot;133&quot;},
+	            { itemId:2, value:&quot;hello&quot;}
+	        ]
+	    }
+	]);
 		 * 
 		 * @method mapOn
 		 * @chainable
@@ -2839,7 +3002,7 @@ function(require)
 		/**
 		 * resolve the Deferred and so the associated promise
 		 * @method resolve
-		 * @param  {Object} the resolved object injected in promise
+		 * @param  {Object} argument the resolved object injected in promise
 		 * @return {DeepDeferred} this
 		 */
 		resolve:function (argument)
@@ -2861,7 +3024,7 @@ function(require)
 		/**
 		 * reject the Deferred and so the associated promise
 		 * @method reject
-		 * @param  {Object} the rejected object injected in promise
+		 * @param  {Object} argument the rejected object injected in promise
 		 * @return {DeepDeferred} this
 		 */
 		reject:function (argument)
@@ -2877,10 +3040,10 @@ function(require)
 		/**
 		 * cancel the Deferred and so the associated promise
 		 * @method cancel
-		 * @param  {Object} the cancel reason object injected in promise
+		 * @param  {Object} reason the cancel reason object injected in promise
 		 * @return {DeepDeferred} this
 		 */
-		cancel:function (argument)
+		cancel:function (reason)
 		{
 			// console.log(&quot;DeepDeferred.cancel&quot;);
 			if(this.rejected || this.resolved || this.canceled)

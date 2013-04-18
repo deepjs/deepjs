@@ -2,13 +2,13 @@
  *
  *
  * A other proposal for (json/object)-query which (as differences from official proposal):
- * use simple slash delimitted syntax, 
- * could handle regular expression for step selection, 
- * could handle rql (for filtering) on each step selection,
- * could be relative to where the query are placed in a object/json
- * so could handle steps toward any ancestor
- * could handle json-schema in rql filtering
- * could handle ancestor in rql filtering
+ * 	- use simple slash delimitted syntax, 
+ * 	- could handle regular expression for step selection, 
+ * 	- could handle rql (for filtering) on each step selection,
+ * 	- could be relative to where the query are placed in a object/json
+ * 	- so could handle steps toward any ancestor
+ * 	- could handle json-schema in rql filtering
+ * 	- could handle ancestor in rql filtering
  *
  *
  * 

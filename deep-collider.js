@@ -29,11 +29,19 @@ But you could do it for us...;)
 
 define(function(require)
 {
+	/**
+	 * the collider interface
+	 * @class Collider
+	 */
 
-	var Collider = function(){}
-	Collider.prototype = {}
 	return {
-		Collider:Collider,
+		/**
+		 * wrap wrapped function with wrapper function. wrapped will receive ollided value as argument.
+		 * @method wrap
+		 * @param  {Function} wrapper
+		 * @param  {Function} wrapped
+		 * @return {Function} the wrapper
+		 */
 		wrap:function(wrapper, wrapped){
 			var a = function(value, parent, key){
 				return wrapper(wrapped(value, parent, key), parent, key);
@@ -41,6 +49,13 @@ define(function(require)
 			a._deep_collider = true;
 			return a;
 		},
+		/**
+		 * copy collided value somewhere
+		 * @method copyTo
+		 * @param  {Object} object where copy value
+		 * @param  {String} path a dot delimitted path in object where copy value
+		 * @return {Function} the collider
+		 */
 		copyTo:function(object, path){
 			var a = function(value, parent, key){
 				utils.setValueByPath(object, path, value);
@@ -49,10 +64,25 @@ define(function(require)
 			a._deep_collider = true;
 			return a;
 		},
-		around:function(handler){
-			handler._deep_collider = true;
-			return handler;
+		/**
+		 * simply wrap collided value by wrapper function
+		 * @method around
+		 * @param  {Function} wrapper
+		 * @return {Function} the collider
+		 */
+		around:function(wrapper){
+			var a = function (value, parent, key) {
+				return wrapper(value);
+			}
+			a._deep_collider = true;
+			return a;
 		},
+		/**
+		 * replace collided value by new one
+		 * @method replace
+		 * @param  {Object} newValue the value to assign
+		 * @return {Function} the collider
+		 */
 		replace:function(newValue){
 			var a = function(value){
 				return newValue;
@@ -60,6 +90,12 @@ define(function(require)
 			a._deep_collider = true;
 			return a;
 		},
+
+		/**
+		 * log collided value
+		 * @method log
+		 * @return {Function} the collider
+		 */
 		log:function(){
 			//console.log("add layer composition : log")
 			var a =function(value){
@@ -69,15 +105,28 @@ define(function(require)
 			a._deep_collider = true;
 			return  a;
 		},
+		/**
+		 * validate collided value with provided schema.
+		 * throw an error with report if not valid.
+		 * @method validate
+		 * @param  {Object} schema
+		 * @return {Function} the collider
+		 */
 		validate:function(schema){
 			var a = function(value){
-				if(!validator.isValid(value, schema))
-					throw new ValidationError(validator.report);
+				var report = validator.validate(value, schema);
+				if(!report.valid)
+					throw new Error(report);
 				return value;
 			}
 			a._deep_collider = true;
 			return a;
 		},
+		/**
+		 * remove collided value
+		 * @method remove
+		 * @return {Function} the collider
+		 */
 		remove:function(){
 			var a = function(value, parent, key)
 			{
@@ -87,7 +136,16 @@ define(function(require)
 			a._deep_colliderRemove = true;
 			return a;
 		},
+		/**
+		 * @category assertions
+		 * @type {Object}
+		 */
 		assert:{
+			/**
+			 * assert is true on collided value. 
+			 * @method isTrue
+			 * @return {Function} the collider
+			 */
 			isTrue:function(){
 				return function(value){
 					console.assert(value === true);
@@ -104,6 +162,11 @@ define(function(require)
 				a._deep_collider = true;
 				return a;
 			},
+			/**
+			 * test equality (deep-equal) with collided value
+			 * @param  {Object} equalTo the object to test
+			 * @return {Function} te collider
+			 */
 			equal:function(equalTo){
 				var a = function(value){
 					return value == equalTo;
@@ -126,15 +189,30 @@ define(function(require)
 				return a;
 			}
 		},
+		/**
+		 * @category array
+		 * @type {Object}
+		 */
 		array:{
+			/**
+			 * reverse collided array
+		 	* @method reverse
+			 * @return {Function} the collider
+			 */
 			reverse:function(){
-				return function(value){
-					this._deep_collider = true;
-					if(typeof value.push === 'function')
+				var a = function(value){
+					if(typeof value.reverse === 'function')
 						return value.reverse();
 					return value;
 				}
+				a._deep_collider = true;
+				return a;
 			},
+			/**
+			 * remove value in array
+		 	 * @method remove
+			 * @return {Function} the collider
+			 */
 			remove:function(what){
 				var a = function(value, parent, key){
 					if(value && value.forEach)

@@ -1,20 +1,24 @@
 YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
+        "Collider",
         "DeepDecorator",
         "DeepDeferred",
         "DeepHandler",
         "DeepPromise",
         "DeepQuery",
-        "deep"
+        "deep",
+        "utils"
     ],
     "modules": [
         "deep",
         "deep-collider",
         "deep-compose",
         "deep-query",
+        "deep-roles",
         "deep-rql",
         "deep-schema",
+        "deep-stores",
         "deep.stores",
         "utils"
     ],
@@ -37,7 +41,11 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "deep-query",
             "name": "deep-query",
-            "description": "A other proposal for (json/object)-query which (as differences from official proposal):\n use simple slash delimitted syntax, \n could handle regular expression for step selection, \n could handle rql (for filtering) on each step selection,\n could be relative to where the query are placed in a object/json\n so could handle steps toward any ancestor\n could handle json-schema in rql filtering\n could handle ancestor in rql filtering"
+            "description": "A other proposal for (json/object)-query which (as differences from official proposal):\n \t- use simple slash delimitted syntax, \n \t- could handle regular expression for step selection, \n \t- could handle rql (for filtering) on each step selection,\n \t- could be relative to where the query are placed in a object/json\n \t- so could handle steps toward any ancestor\n \t- could handle json-schema in rql filtering\n \t- could handle ancestor in rql filtering"
+        },
+        {
+            "displayName": "deep-roles",
+            "name": "deep-roles"
         },
         {
             "displayName": "deep-rql",
@@ -48,6 +56,10 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "deep-schema",
             "name": "deep-schema",
             "description": "JSON-Schema validator : based on json-schema draft 02, 03, and 04 + extensions\n \thttp://tools.ietf.org/html/draft-zyp-json-schema-03"
+        },
+        {
+            "displayName": "deep-stores",
+            "name": "deep-stores"
         },
         {
             "displayName": "deep.stores",

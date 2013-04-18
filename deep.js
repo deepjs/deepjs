@@ -117,6 +117,7 @@ function(require)
 	/**
 	 * rethrow any throw during chain execution.
 	 * @property rethrow  
+	 * @static
 	 * @type {Boolean}
 	 */
 	deep.rethrow = true;
@@ -145,7 +146,7 @@ function(require)
 	/**
 	 * final namespace for deep/deep-compose
 	 * @static
-	 * @property utils
+	 * @property compose
 	 * @type {Object}
 	 */
 	deep.compose = deepCompose;
@@ -451,11 +452,10 @@ function(require)
 			return brancher;
 		},
 		/**
-		* reverse entries order
-		*
-		* asynch
-		* inject entries values as chain success.
-		* 
+		 * reverse entries order
+		 *
+		 * inject entries values as chain success.
+		 * 
 		 * @chainable
 		 * @method  reverse
 		 * @return {DeepHandler} this
@@ -472,11 +472,11 @@ function(require)
 			return self;
 		},
 		/**
-		* catch any throwned error while chain running
-		*
-		* asycnh
-		* transparent true
-		* 
+		 * catch any throwned error while chain running
+		 *
+		 * asycnh
+		 * transparent true
+		 * 
 		 * @method  catchError
 		 * @chainable
 		 * @param {boolean} catchIt if true : catch all future chain error. (true by default) 
@@ -755,6 +755,14 @@ function(require)
 		 *  		hasNext:boolean,
 		 *  		hasPrevious:boolean
 		 *  	}
+		 * @example
+	deep([0,1,2,3,4,5])
+	.range(1,4)
+	.valuesEqual([1,2,3,4]);
+
+	deep([0,1,2,3,4,5])
+	.range(3,5)
+	.valuesEqual([3,4,5]);
 		 * 
 		 * @method  range
 		 * @param  start the index of range start
@@ -1223,7 +1231,30 @@ function(require)
 		 *	synch
 		 * 
 		 * replace queried entries properties by new value and inject replaced properties as chain success.
-		 * 
+		 *
+		 * @example
+		 
+	var a = {
+		aString : "Hello",
+		anInt : 5,
+		anArray : ["1","2","3"],
+		anObject : {
+			anArray : ["4","5","6"],
+			aString : "World"
+		}
+	}
+	deep(a)
+	.replace("./anArray/1","replaceString")
+	.equal({
+		aString : "Hello",
+		anInt : 5,
+		anArray : ["1","replaceString","3"],
+		anObject : {
+			anArray : ["4","5","6"],
+			aString : "World"
+		}
+	});
+
 		 * @method  replace
 		 * @param  {string} what a query to select properties to replace 
 		 * @param  {object} by  any value to assign (could be a retrievable string)
@@ -1257,11 +1288,54 @@ function(require)
 			return this;
 		},
 		/**
-		 *
-		 * synch
 		 * 
 		 * remove queried properties from entries and inject removed properties as chain success.
-		 * 
+		 * @example
+	var a = {
+		aString : "Hello",
+		anInt : 5,
+		anArray : ["1","2","3"],
+		anObject : {
+			anArray : ["4","5","6"],
+			aString : "World"
+		}
+	}
+
+	deep(a)
+	.remove("./anArray/1").log().valuesEqual([{
+		aString : "Hello",
+		anInt : 5,
+		anArray : ["1","3"],
+		anObject : {
+			anArray : ["4","5","6"],
+			aString : "World"
+		}
+	}]);
+
+	@example
+
+	var obj = { 
+		email: 'test@test.com',
+		password: 'test54',
+	 	id: '51013dec530e96b112000001' 
+	}
+	 var schema = { 
+	 	properties: 
+		{ 
+		  	id: { type: 'string', required: false, minLength: 1 },
+		    email: { type: 'string', required: true, minLength: 1 },
+		    password: { type: 'string', required: true, "private": true } 
+		},
+	 	additionalProperties: false 
+	}
+
+	deep(obj, schema)
+	.remove(".//*?_schema.private=true")
+	.equal({ 
+		email: 'test@test.com',
+	 	id: '51013dec530e96b112000001' 
+	 });
+
 		 * @chainable
 		 * @method  remove
 		 * @param  {string} what a query to select properties to replace 
@@ -1384,11 +1458,65 @@ function(require)
 		/**
 		 * will perform FULL backgrounds application on chain entries. (see backgrounds documentation)
 		 *
-		 * asynch
 		 * Success injected : entries values
 		 * Errors injected : any flatten error
-		 * 
+		 * @example
+	var a = {
+	    obj:{
+	    	first:true
+	    },
+	    myFunc:function(){
+	        console.log("base myFunc");
+	        this.obj.a = true;
+	    }
+	}
+
+	var b = {
+		backgrounds:[a],
+		obj:{
+			second:true
+		},
+		myFunc:deep.compose.after(function()
+		{
+			console.log("myFunc of b : ", this)
+			this.obj.b = true;
+		})
+	}
+
+	deep({})
+	.bottom(b)
+	.flatten()
+	.run("myFunc")
+	.query("./obj")
+	.equal({
+   		first:true,
+   		second:true,
+        a:true,
+        b:true
+    });
+
+	deep({
+	    sub:{
+	        backgrounds:[b],
+	        obj:{
+	        	third:true
+	        }
+	    }
+	})
+	.flatten()
+	.query("/sub")
+	.run("myFunc")
+	.query("./obj")
+	 .equal({
+    	first:true,
+   		second:true,
+   		third:true,
+        a:true,
+        b:true
+    });
+
 		 * @chainable
+		 * @async
 		 * @method  flatten
 		 * @return {DeepHandler} this
 		 */
@@ -2569,6 +2697,31 @@ function(require)
 		 * Objects could be retrievables.
 		 *
 		 * take current entries, seek after localKeys, use it to get 'what' with foreignKey=localKey, and finnaly store result at 'whereToStore' path in current entries values.
+		 *
+		 * @example
+
+	deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
+	.mapOn([
+	    {itemId:1, value:true}, 
+	    {itemId:2, value:"133"}, 
+	    {itemId:2, value:"hello"}
+	    ], 
+	    "id","itemId","linkeds")
+	.valuesEqual([
+	    {
+	        title:"my title", 
+	        id:1, 
+	        linkeds:{itemId:1, value:true}
+	    },
+	    { 
+	        title:"my title 2", 
+	        id:2,
+	        linkeds:[
+	            {itemId:2, value:"133"},
+	            { itemId:2, value:"hello"}
+	        ]
+	    }
+	]);
 		 * 
 		 * @method mapOn
 		 * @chainable
@@ -2727,7 +2880,7 @@ function(require)
 		/**
 		 * resolve the Deferred and so the associated promise
 		 * @method resolve
-		 * @param  {Object} the resolved object injected in promise
+		 * @param  {Object} argument the resolved object injected in promise
 		 * @return {DeepDeferred} this
 		 */
 		resolve:function (argument)
@@ -2749,7 +2902,7 @@ function(require)
 		/**
 		 * reject the Deferred and so the associated promise
 		 * @method reject
-		 * @param  {Object} the rejected object injected in promise
+		 * @param  {Object} argument the rejected object injected in promise
 		 * @return {DeepDeferred} this
 		 */
 		reject:function (argument)
@@ -2765,10 +2918,10 @@ function(require)
 		/**
 		 * cancel the Deferred and so the associated promise
 		 * @method cancel
-		 * @param  {Object} the cancel reason object injected in promise
+		 * @param  {Object} reason the cancel reason object injected in promise
 		 * @return {DeepDeferred} this
 		 */
-		cancel:function (argument)
+		cancel:function (reason)
 		{
 			// console.log("DeepDeferred.cancel");
 			if(this.rejected || this.resolved || this.canceled)

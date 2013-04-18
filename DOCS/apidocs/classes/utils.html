@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DeepDecorator - deepjs Javascript Framework</title>
+    <title>utils - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -116,7 +116,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>DeepDecorator Class</h1>
+                        <h1>utils Class</h1>
 <div class="box meta">
     
 
@@ -124,13 +124,13 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep-compose.js.html#l164"><code>deep-compose.js:164</code></a>
+            Defined in: <a href="../files/utils.js.html#l15"><code>utils.js:15</code></a>
         </div>
     
 
     
         
-            Module: <a href="../modules/deep-compose.html">deep-compose</a><br>
+            Module: <a href="../modules/utils.html">utils</a><br>
             Parent Module: <a href="../modules/deep.html">deep</a>
         
     
@@ -144,96 +144,6 @@
     
 </div>
 
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_DeepDecorator" class="method item">
-    <h3 class="name"><code>DeepDecorator</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>stack</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-compose.js.html#l164"><code>deep-compose.js:164</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">stack</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>stack of functions to chain</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
 
 
 <div id="classdocs" class="tabview">
@@ -259,43 +169,48 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_after">after</a>
+                                <a href="#method_cloneFunction">cloneFunction</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_around">around</a>
+                                <a href="#method_copy">copy</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_before">before</a>
+                                <a href="#method_copyArray">copyArray</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_fail">fail</a>
+                            <li class="index-item method deprecated">
+                                <a href="#method_getMacroImport">getMacroImport</a>
 
                                 
+                                    <span class="flag static">static</span>
+                                
+                                
+                                    <span class="flag deprecated">deprecated</span>
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_parallele">parallele</a>
+                                <a href="#method_interpret">interpret</a>
 
                                 
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_replace">replace</a>
-
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -316,8 +231,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_after" class="method item">
-    <h3 class="name"><code>after</code></h3>
+                    <div id="method_cloneFunction" class="method item">
+    <h3 class="name"><code>cloneFunction</code></h3>
 
     
         <div class="args">
@@ -325,7 +240,7 @@
             
                 <li class="arg">
                     
-                        <code>argument</code>
+                        <code>fct</code>
                     
                 </li>
             
@@ -335,7 +250,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>
+            <span class="type">Function</span>
         </span>
     
 
@@ -346,9 +261,9 @@
     
 
     
-
+        <span class="flag static">static</span>
     
-        <span class="flag chainable">chainable</span>
+
     
 
     
@@ -364,7 +279,7 @@
             
         
         
-        <a href="../files/deep-compose.js.html#l318"><code>deep-compose.js:318</code></a>
+        <a href="../files/utils.js.html#l176"><code>utils.js:176</code></a>
         
         </p>
 
@@ -375,12 +290,7 @@
     </div>
 
     <div class="description">
-        <p>If the previous returns something, it will be injected as argument(s) in 'func'.
-If the previous return nothing, th original arguments are injected in 'func'.
-If the previous returns a promise or a chain : it will wait until the resolution of the returned value before executing 'func'.
-If the previous returned object isn't a promise, 'func' is executed immediately.</p>
-
-<p>Same thing for returned object(s) from 'func' : it will be chained..</p>
+        <p>clone a function and copy it's proto or vars.</p>
     </div>
 
     
@@ -391,14 +301,14 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
                 <li class="param">
                     
-                        <code class="param-name">argument</code>
+                        <code class="param-name">fct</code>
                         <span class="type">Function</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the function to execute AFTER the collided one</p>
+                        <p>the function to copy</p>
                     </div>
 
                     
@@ -415,42 +325,20 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>:
+                        <span class="type">Function</span>:
                     
-                    this
+                    the cloned function
                 
             </div>
         </div>
     
 
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <p>var base = {
-    myFunc:function(arg)
-    {
-        return arg + " _ myfunc base";
-    }
-}</p>
-
-<p>deep(base)
-.up({
-    myFunc:deep.compose.after(function(arg){
-        return arg + " _ myfunc from after";
-    })
-});</p>
-
-<p>base.myFunc("hello");</p>
-            </div>
-        </div>
     
 </div>
 
                 
-                    <div id="method_around" class="method item">
-    <h3 class="name"><code>around</code></h3>
+                    <div id="method_copy" class="method item">
+    <h3 class="name"><code>copy</code></h3>
 
     
         <div class="args">
@@ -458,7 +346,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
                 <li class="arg">
                     
-                        <code>wrapper</code>
+                        <code>obj</code>
                     
                 </li>
             
@@ -468,7 +356,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>
+            <span class="type">Object | Primitive</span>
         </span>
     
 
@@ -479,9 +367,9 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
     
 
     
-
+        <span class="flag static">static</span>
     
-        <span class="flag chainable">chainable</span>
+
     
 
     
@@ -497,7 +385,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
         
         
-        <a href="../files/deep-compose.js.html#l276"><code>deep-compose.js:276</code></a>
+        <a href="../files/utils.js.html#l196"><code>utils.js:196</code></a>
         
         </p>
 
@@ -508,11 +396,8 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
     </div>
 
     <div class="description">
-        <p>chainable around composition</p>
-
-<p>here you want to do your own wrapper.
- Juste provid a function that receive in argument the collided function (the one which is bottom),
- an which return the function that use this collided function.</p>
+        <p>copy any object/value/array deeply. (e.g. any array will be copied AND also its items).
+Any function encountered will not be cloned (simply use same ref). (just deep decorators will be)</p>
     </div>
 
     
@@ -523,270 +408,8 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
                 <li class="param">
                     
-                        <code class="param-name">wrapper</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>a fonction to wrap the collided one</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>:
-                    
-                    this
-                
-            </div>
-        </div>
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>     var base = {
-                myFunc:function(arg)
-                {
-                        return arg + " _ myfunc base";
-                }
-            }
-
-            deep(base)
-            .up({
-                myFunc:deep.compose.around(function(collidedMyFunc){
-                    return function(arg){
-                        return collidedMyFunc.apply(this, [arg + " _ myfunc from around"]);
-                    }
-                })
-            });
-
-            base.myFunc("hello");
-</code></pre>
-            </div>
-        </div>
-    
-</div>
-
-                
-                    <div id="method_before" class="method item">
-    <h3 class="name"><code>before</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>argument</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">type</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-compose.js.html#l239"><code>deep-compose.js:239</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>If it returns something, it will be injected as argument(s) in next function.
-            If it return nothing, th original arguments are injected in next function.
-            If it returns a promise or a chain : it will wait until the resolution of the returned value.
-            If the returned object isn't a promise, the next function is executed immediately.</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">argument</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the function to execute BEFORE the collided one</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">type</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>        var base = {
-            myFunc:deep.compose.after(function(arg)
-            {
-                return arg + " _ myfunc base";
-            })
-        }
-
-        deep(base)
-        .bottom({
-            myFunc:function(arg){
-                return arg + " _ myfunc from bottom";
-            }
-        });
-
-        base.myFunc("hello");
-</code></pre>
-            </div>
-        </div>
-    
-</div>
-
-                
-                    <div id="method_fail" class="method item">
-    <h3 class="name"><code>fail</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>fn</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-compose.js.html#l358"><code>deep-compose.js:358</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>wrap collided function with fn and execute fn only if collided function return an error.</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">fn</code>
-                        <span class="type">Function</span>
+                        <code class="param-name">obj</code>
+                        <span class="type">Object | Primitive</span>
                     
 
                     
@@ -809,9 +432,9 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>:
+                        <span class="type">Object | Primitive</span>:
                     
-                    this
+                    the copied value/object/array
                 
             </div>
         </div>
@@ -821,8 +444,8 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
 </div>
 
                 
-                    <div id="method_parallele" class="method item">
-    <h3 class="name"><code>parallele</code></h3>
+                    <div id="method_copyArray" class="method item">
+    <h3 class="name"><code>copyArray</code></h3>
 
     
         <div class="args">
@@ -830,7 +453,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
                 <li class="arg">
                     
-                        <code>argument</code>
+                        <code>arr</code>
                     
                 </li>
             
@@ -840,7 +463,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
 
     
         <span class="returns-inline">
-            <span class="type">type</span>
+            <span class="type">Array</span>
         </span>
     
 
@@ -851,9 +474,9 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
     
 
     
-
+        <span class="flag static">static</span>
     
-        <span class="flag chainable">chainable</span>
+
     
 
     
@@ -869,7 +492,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
         
         
-        <a href="../files/deep-compose.js.html#l405"><code>deep-compose.js:405</code></a>
+        <a href="../files/utils.js.html#l163"><code>utils.js:163</code></a>
         
         </p>
 
@@ -880,169 +503,317 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
     </div>
 
     <div class="description">
-        <p>execute collided function PARALLELY with provided function</p>
+        <p>make a copy of provided array, but do not copy items. just reproduce an array with same items.</p>
+    </div>
 
-<p>when you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)
-        before firing eventual next composed function, you could use deep.compose.parallele( func )</p>
+    
+        <div class="params">
+            <h4>Parameters:</h4>
 
-<pre class="code prettyprint"><code>    Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
-    Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">arr</code>
+                        <span class="type">Array</span>
+                    
 
-    So as implies a foot print on the chaining (the forwarded arguments become an array) : 
-    It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
+                    
 
-    An other point need to be clarify if you use deep(this).myChain()... in the composed function.
-    As you declare a new branch on this, you need to be careful if any other of the composed function (currently parallelised) do the same thing.
+                    <div class="param-description">
+                         
+                    </div>
 
-    You'll maybe work on the same (sub)objects in the same time.
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    the array copy
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getMacroImport" class="method item deprecated">
+    <h3 class="name"><code>getMacroImport</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>controller</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>macrosSet</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+    
+
+    
+        <span class="flag deprecated">deprecated</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/utils.js.html#l22"><code>utils.js:22</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>swig related : produce swig-macro-import string</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">controller</code>
+                        <span class="type">ViewController</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">macrosSet</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">String</span>:
+                    
+                    the macro import string
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_interpret" class="method item">
+    <h3 class="name"><code>interpret</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>string</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>context</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/utils.js.html#l59"><code>utils.js:59</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>interpret a string with a context : means fetch in context and replace in string any variable-string-format (e.g. { my.property.in.my.context }) 
+founded in string</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">string</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the string to interpret</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">context</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the context to inject</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">String</span>:
+                    
+                    the interpreted string
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>    var interpreted = deep.utils.interpret("hello { name }", { name:"john" });
+</code></pre><pre class="code prettyprint"><code>    // equivalent of first example
+    var interpreted = deep("hello { name }").interpret({ name:"john" }).val();
 </code></pre>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">argument</code>
-                        <span class="type">type</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">type</span>:
-                    
-                
             </div>
         </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_replace" class="method item">
-    <h3 class="name"><code>replace</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>argument</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-compose.js.html#l389"><code>deep-compose.js:389</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>replace collided function by this one</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">argument</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/DeepDecorator.html" class="crosslink">DeepDecorator</a></span>:
-                    
-                    this
-                
-            </div>
-        </div>
-    
-
     
 </div>
 
