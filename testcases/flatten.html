@@ -61,7 +61,7 @@
    		second:true,
         a:true,
         b:true
-    });
+    }, report);
 
 	deep({
 	    sub:{
@@ -76,12 +76,12 @@
 	.run("myFunc")
 	.query("./obj")
 	 .equal({
-    	first:true,
-   		second:true,
-   		third:true,
-        a:true,
-        b:true
-    });
+	    	first:true,
+	   		second:true,
+	   		third:true,
+	        a:true,
+	        b:true
+	    }, report);
 	
 
 	return	printReport("chain.flatten", success, failed, count);

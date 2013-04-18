@@ -722,7 +722,7 @@
             "line": 239,
             "description": "If it returns something, it will be injected as argument(s) in next function.\n\t\t\tIf it return nothing, th original arguments are injected in next function.\n\t\t\tIf it returns a promise or a chain : it will wait until the resolution of the returned value.\n\t\t\tIf the returned object isn't a promise, the next function is executed immediately.",
             "example": [
-                "\n\n\t\t\tvar base = {\n\t\t\t    myFunc:deep.compose.after(function(arg)\n\t\t\t    {\n\t\t\t        return arg + \" _ myfunc base\";\n\t\t\t    })\n\t\t\t}\n\n\t\t\tdeep(base)\n\t\t\t.bottom({\n\t\t\t    myFunc:function(arg){\n\t\t\t        return arg + \" _ myfunc from bottom\";\n\t\t\t    }\n\t\t\t});\n\n\t\t\tbase.myFunc(\"hello\");"
+                "\n\n\t\t\t\tvar base = {\n\t\t\t\t    myFunc:deep.compose.after(function(arg)\n\t\t\t\t    {\n\t\t\t\t        return arg + \" _ myfunc base\";\n\t\t\t\t    })\n\t\t\t\t}\n\n\t\t\t\tdeep(base)\n\t\t\t\t.bottom({\n\t\t\t\t    myFunc:function(arg){\n\t\t\t\t        return arg + \" _ myfunc from bottom\";\n\t\t\t\t    }\n\t\t\t\t});\n\n\t\t\t\tbase.myFunc(\"hello\"); // will log 'bottom' then 'base'"
             ],
             "itemtype": "method",
             "name": "before",
@@ -744,7 +744,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 276,
+            "line": 277,
             "description": "chainable around composition\n\n here you want to do your own wrapper.\n Juste provid a function that receive in argument the collided function (the one which is bottom),\n an which return the function that use this collided function.",
             "example": [
                 "\n \t\tvar base = {\n\t\t\t\t\tmyFunc:function(arg)\n\t\t\t\t\t{\n\t\t\t\t\t\t\treturn arg + \" _ myfunc base\";\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tdeep(base)\n\t\t\t\t.up({\n\t\t\t\t    myFunc:deep.compose.around(function(collidedMyFunc){\n\t\t\t\t    \treturn function(arg){\n\t\t\t\t    \t\treturn collidedMyFunc.apply(this, [arg + \" _ myfunc from around\"]);\n\t\t\t\t    \t}\n\t\t\t\t    })\n\t\t\t\t});\n\n\t\t\t\tbase.myFunc(\"hello\");"
@@ -769,10 +769,10 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 318,
+            "line": 319,
             "description": "If the previous returns something, it will be injected as argument(s) in 'func'.\nIf the previous return nothing, th original arguments are injected in 'func'.\nIf the previous returns a promise or a chain : it will wait until the resolution of the returned value before executing 'func'.\nIf the previous returned object isn't a promise, 'func' is executed immediately.\n\nSame thing for returned object(s) from 'func' : it will be chained..",
             "example": [
-                "\n\nvar base = {\n    myFunc:function(arg)\n    {\n        return arg + \" _ myfunc base\";\n    }\n}\n\ndeep(base)\n.up({\n    myFunc:deep.compose.after(function(arg){\n        return arg + \" _ myfunc from after\";\n    })\n});\n\nbase.myFunc(\"hello\");"
+                "\n\n\tvar base = {\n\t    myFunc:function(arg)\n\t    {\n\t        return arg + \" _ myfunc base\";\n\t    }\n\t}\n\n\tdeep(base)\n\t.up({\n\t    myFunc:deep.compose.after(function(arg){\n\t        return arg + \" _ myfunc from after\";\n\t    })\n\t});\n\n\tbase.myFunc(\"hello\"); // will log 'base' before 'after'"
             ],
             "itemtype": "method",
             "name": "after",
@@ -794,7 +794,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 358,
+            "line": 359,
             "description": "wrap collided function with fn and execute fn only if collided function return an error.",
             "itemtype": "method",
             "name": "fail",
@@ -816,7 +816,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 389,
+            "line": 390,
             "description": "replace collided function by this one",
             "itemtype": "method",
             "name": "replace",
@@ -838,8 +838,11 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 405,
-            "description": "execute collided function PARALLELY with provided function\n\nwhen you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)\n\t\tbefore firing eventual next composed function, you could use deep.compose.parallele( func )\n\n\t\tKeep in mind that the output of both functions will be injected as a single array argument in next composed function.\n\t\tBoth will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).\n\n\t\tSo as implies a foot print on the chaining (the forwarded arguments become an array) : \n\t\tIt has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.\n\n\t\tAn other point need to be clarify if you use deep(this).myChain()... in the composed function.\n\t\tAs you declare a new branch on this, you need to be careful if any other of the composed function (currently parallelised) do the same thing.\n\n\t\tYou'll maybe work on the same (sub)objects in the same time.",
+            "line": 406,
+            "description": "execute collided function PARALLELY with provided function\n\nwhen you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)\nbefore firing eventual next composed function, you could use deep.compose.parallele( func )\n\nKeep in mind that the output of both functions will be injected as a single array argument in next composed function.\nBoth will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).\n\nSo as it implies that the forwarded arguments become an array : \nIt has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.",
+            "example": [
+                "\n\n\t\tvar a = {\n\t\t\tload:function(){\n\t\t\t\treturn deep(\"json::myfile.json\")\n\t\t\t\t.done(function (success) {\n\t\t\t\t\t// do something\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\n\t\tdeep({\n\t\t\tload:deep.compose.parallele(function(){\n\t\t\t\treturn deep(\"json::myotherfile.json\")\n\t\t\t\t.done(function (success) {\n\t\t\t\t\t// do something\n\t\t\t\t});\n\t\t\t})\n\t\t})\n\t\t.bottom(a)\n\t\t.load(); // will perform both loads (http get on json files) parallely (in the same time)"
+            ],
             "itemtype": "method",
             "name": "parallele",
             "chainable": 1,

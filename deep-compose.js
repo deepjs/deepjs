@@ -244,21 +244,22 @@ define(function(require, exports, module){
 
 			@example
 
-			var base = {
-			    myFunc:deep.compose.after(function(arg)
-			    {
-			        return arg + " _ myfunc base";
-			    })
-			}
+				var base = {
+				    myFunc:deep.compose.after(function(arg)
+				    {
+				        return arg + " _ myfunc base";
+				    })
+				}
 
-			deep(base)
-			.bottom({
-			    myFunc:function(arg){
-			        return arg + " _ myfunc from bottom";
-			    }
-			});
+				deep(base)
+				.bottom({
+				    myFunc:function(arg){
+				        return arg + " _ myfunc from bottom";
+				    }
+				});
 
-			base.myFunc("hello");
+				base.myFunc("hello"); // will log 'bottom' then 'base'
+
 			@method before
 		 * @chainable
 		 * @param  {Function} argument the function to execute BEFORE the collided one
@@ -325,21 +326,21 @@ define(function(require, exports, module){
 
 		@example
 
-		var base = {
-		    myFunc:function(arg)
-		    {
-		        return arg + " _ myfunc base";
-		    }
-		}
+			var base = {
+			    myFunc:function(arg)
+			    {
+			        return arg + " _ myfunc base";
+			    }
+			}
 
-		deep(base)
-		.up({
-		    myFunc:deep.compose.after(function(arg){
-		        return arg + " _ myfunc from after";
-		    })
-		});
+			deep(base)
+			.up({
+			    myFunc:deep.compose.after(function(arg){
+			        return arg + " _ myfunc from after";
+			    })
+			});
 
-		base.myFunc("hello");
+			base.myFunc("hello"); // will log 'base' before 'after'
 
 		@method after
 		@chainable
@@ -405,21 +406,37 @@ define(function(require, exports, module){
 		/**
 		 * execute collided function PARALLELY with provided function
 		 *
-		 *when you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)
-		before firing eventual next composed function, you could use deep.compose.parallele( func )
+		 * when you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)
+		 * before firing eventual next composed function, you could use deep.compose.parallele( func )
+		 * 
+		 * Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
+		 * Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
 
-		Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
-		Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
-
-		So as implies a foot print on the chaining (the forwarded arguments become an array) : 
-		It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
-
-		An other point need to be clarify if you use deep(this).myChain()... in the composed function.
-		As you declare a new branch on this, you need to be careful if any other of the composed function (currently parallelised) do the same thing.
-
-		You'll maybe work on the same (sub)objects in the same time.
-
+		 * So as it implies that the forwarded arguments become an array : 
+		 * It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
 		 *
+		 * @example
+		 *
+		 * 		var a = {
+		 * 			load:function(){
+		 * 				return deep("json::myfile.json")
+		 * 				.done(function (success) {
+		 * 					// do something
+		 * 				});
+		 * 			}
+		 * 		}
+		 *
+		 * 		deep({
+		 * 			load:deep.compose.parallele(function(){
+		 * 				return deep("json::myotherfile.json")
+		 * 				.done(function (success) {
+		 * 					// do something
+		 * 				});
+		 * 			})
+		 * 		})
+		 * 		.bottom(a)
+		 * 		.load()
+		 * 		.log(); // will perform both loads (http get on json files) parallely (in the same time)
 		 * 
 		 * @method parallele
 		 * @chainable

@@ -364,7 +364,7 @@
             
         
         
-        <a href="../files/deep-compose.js.html#l318"><code>deep-compose.js:318</code></a>
+        <a href="../files/deep-compose.js.html#l319"><code>deep-compose.js:319</code></a>
         
         </p>
 
@@ -428,21 +428,22 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             <h4>Example:</h4>
 
             <div class="example-content">
-                <p>var base = {
+                <pre class="code prettyprint"><code>var base = {
     myFunc:function(arg)
     {
         return arg + " _ myfunc base";
     }
-}</p>
+}
 
-<p>deep(base)
+deep(base)
 .up({
     myFunc:deep.compose.after(function(arg){
         return arg + " _ myfunc from after";
     })
-});</p>
+});
 
-<p>base.myFunc("hello");</p>
+base.myFunc("hello"); // will log 'base' before 'after'
+</code></pre>
             </div>
         </div>
     
@@ -497,7 +498,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
         
         
-        <a href="../files/deep-compose.js.html#l276"><code>deep-compose.js:276</code></a>
+        <a href="../files/deep-compose.js.html#l277"><code>deep-compose.js:277</code></a>
         
         </p>
 
@@ -693,21 +694,21 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             <h4>Example:</h4>
 
             <div class="example-content">
-                <pre class="code prettyprint"><code>        var base = {
-            myFunc:deep.compose.after(function(arg)
-            {
-                return arg + " _ myfunc base";
-            })
-        }
-
-        deep(base)
-        .bottom({
-            myFunc:function(arg){
-                return arg + " _ myfunc from bottom";
+                <pre class="code prettyprint"><code>            var base = {
+                myFunc:deep.compose.after(function(arg)
+                {
+                    return arg + " _ myfunc base";
+                })
             }
-        });
 
-        base.myFunc("hello");
+            deep(base)
+            .bottom({
+                myFunc:function(arg){
+                    return arg + " _ myfunc from bottom";
+                }
+            });
+
+            base.myFunc("hello"); // will log 'bottom' then 'base'
 </code></pre>
             </div>
         </div>
@@ -763,7 +764,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
         
         
-        <a href="../files/deep-compose.js.html#l358"><code>deep-compose.js:358</code></a>
+        <a href="../files/deep-compose.js.html#l359"><code>deep-compose.js:359</code></a>
         
         </p>
 
@@ -869,7 +870,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
         
         
-        <a href="../files/deep-compose.js.html#l405"><code>deep-compose.js:405</code></a>
+        <a href="../files/deep-compose.js.html#l406"><code>deep-compose.js:406</code></a>
         
         </p>
 
@@ -883,19 +884,13 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
         <p>execute collided function PARALLELY with provided function</p>
 
 <p>when you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)
-        before firing eventual next composed function, you could use deep.compose.parallele( func )</p>
+before firing eventual next composed function, you could use deep.compose.parallele( func )</p>
 
-<pre class="code prettyprint"><code>    Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
-    Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
+<p>Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
+Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).</p>
 
-    So as implies a foot print on the chaining (the forwarded arguments become an array) : 
-    It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
-
-    An other point need to be clarify if you use deep(this).myChain()... in the composed function.
-    As you declare a new branch on this, you need to be careful if any other of the composed function (currently parallelised) do the same thing.
-
-    You'll maybe work on the same (sub)objects in the same time.
-</code></pre>
+<p>So as it implies that the forwarded arguments become an array : 
+It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.</p>
     </div>
 
     
@@ -937,6 +932,33 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
         </div>
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>    var a = {
+        load:function(){
+            return deep("json::myfile.json")
+            .done(function (success) {
+                // do something
+            });
+        }
+    }
+
+    deep({
+        load:deep.compose.parallele(function(){
+            return deep("json::myotherfile.json")
+            .done(function (success) {
+                // do something
+            });
+        })
+    })
+    .bottom(a)
+    .load(); // will perform both loads (http get on json files) parallely (in the same time)
+</code></pre>
+            </div>
+        </div>
     
 </div>
 
@@ -989,7 +1011,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
             
         
         
-        <a href="../files/deep-compose.js.html#l389"><code>deep-compose.js:389</code></a>
+        <a href="../files/deep-compose.js.html#l390"><code>deep-compose.js:390</code></a>
         
         </p>
 
