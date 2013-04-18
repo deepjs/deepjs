@@ -84,7 +84,8 @@ define(function(require)
 		 * @return {Function} the collider
 		 */
 		replace:function(newValue){
-			var a = function(value){
+			var a = function(value, parent, key){
+				parent[key] = newValue;
 				return newValue;
 			};
 			a._deep_collider = true;
