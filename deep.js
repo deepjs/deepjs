@@ -98,9 +98,9 @@ function(require)
 			}
 			else if(obj instanceof DeepHandler)
 				handler._entries = [].concat(obj._entries);
-			else if(typeof obj === 'object' && obj._isDQ_NODE_)
+			else if(typeof obj === 'object' && obj && obj._isDQ_NODE_)
 				handler._entries = [obj];
-			else if(typeof obj === 'object' && obj._deep_entry)
+			else if(typeof obj === 'object' && obj && obj._deep_entry)
 				handler._entries = [obj._deep_entry];
 			else
 				handler._entries = [Querier.createRootNode(obj, schema)];
