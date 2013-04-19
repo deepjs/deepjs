@@ -435,8 +435,8 @@ define(function(require, exports, module){
 		 * 			})
 		 * 		})
 		 * 		.bottom(a)
-		 * 		.load()
-		 * 		.log(); // will perform both loads (http get on json files) parallely (in the same time)
+		 * 		.load() // will perform both loads (http get on json files) parallely (in the same time)
+		 * 		.log();  // will print a concatened array of loadeds stuffs.
 		 * 
 		 * @method parallele
 		 * @chainable
