@@ -110,6 +110,7 @@ function(require)
 				forceNextQueueItem(handler, deep.chain.val(handler), null);
 		})
 		.fail(function (error) {
+			console.log("deep start chain error on load object : ", error, " - rethrow ? ", handler.rethrow);
 			forceNextQueueItem(handler, null, error);
 		});
 		return handler;
@@ -403,7 +404,8 @@ function(require)
 	 */
 	var DeepHandler = function(options)
 	{
-		this.rethrow = deep.rethrow;
+		options = options || {};
+		this.rethrow = (typeof options.rethrow !== "undefined")?options.rethrow:deep.rethrow;
 		this.positions = [];
 		this.context = deep.context;
 		options = options || {};
