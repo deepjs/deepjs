@@ -14,6 +14,7 @@ define(function(require){
 	var compose = require("./deep-compose");
 	/**
 	 * @class utils
+	 * @namespace deep
 	 */
 	var utils = {};
 
@@ -252,8 +253,10 @@ define(function(require){
 
 	utils.setValueByPath = function setValueByPath(object, path, value, pathDelimiter)
 	{
+		if(path[0] == "/" || path.substring(0,1) == "./")
+			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && parts[0] == "")
+		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
 			parts.shift();
 		var tmp = object;
 		while(parts.length>1)
@@ -268,8 +271,10 @@ define(function(require){
 
 	utils.retrieveValueByPath = function retrieveValueByPath(object, path, pathDelimiter)
 	{
+		if(path[0] == "/" || path.substring(0,1) == "./")
+			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && parts[0] == "")
+		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
 			parts.shift();
 		var tmp = object;
 		while(parts.length>1)
@@ -286,8 +291,10 @@ define(function(require){
 
 	utils.deletePropertyByPath = function deletePropertyByPath(object, path, pathDelimiter)
 	{
+		if(path[0] == "/" || path.substring(0,1) == "./")
+			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && parts[0] == "")
+		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
 			parts.shift();
 		var tmp = object;
 		while(parts.length>1)
@@ -304,8 +311,10 @@ define(function(require){
 	utils.retrieveSchemaByPath = function retrieveSchemaByPath(schema, path, pathDelimiter)
 	{
 		//console.log("retrieveSchemaByPath : ", schema, path);
+		if(path[0] == "/" || path.substring(0,1) == "./")
+			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && parts[0] == "")
+		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
 			parts.shift();
 		var tmp = schema;
 		while(parts.length>1)
@@ -459,8 +468,10 @@ define(function(require){
 
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function (schema, path, delimitter)
 	{
-		var parts = path.split(delimitter || ".");
-		if(parts[0] == "" || parts[0] == ".")
+		if(path[0] == "/" || path.substring(0,1) == "./")
+			delimitter = "/";
+		var parts = path.split(delimitter||".");
+		if(delimitter == "/" && (parts[0] == "" || parts[0] == "."))
 			parts.shift();
 		 // console.log("retrieveSchemaByPath : ", parts, schema);
 		var tmp = schema;

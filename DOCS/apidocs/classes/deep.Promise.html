@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DeepDeferred - deepjs Javascript Framework</title>
+    <title>deep.Promise - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,21 +41,51 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="../classes/Collider.html">Collider</a></li>
-            
                 <li><a href="../classes/deep.html">deep</a></li>
             
-                <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
+                <li><a href="../classes/deep.Chain.html">deep.Chain</a></li>
             
-                <li><a href="../classes/DeepDeferred.html">DeepDeferred</a></li>
+                <li><a href="../classes/deep.collider.html">deep.collider</a></li>
             
-                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
+                <li><a href="../classes/deep.collider.array.html">deep.collider.array</a></li>
             
-                <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
+                <li><a href="../classes/deep.collider.assert.html">deep.collider.assert</a></li>
             
-                <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+                <li><a href="../classes/deep.collider.object.html">deep.collider.object</a></li>
             
-                <li><a href="../classes/utils.html">utils</a></li>
+                <li><a href="../classes/deep.compose.html">deep.compose</a></li>
+            
+                <li><a href="../classes/deep.Composer.html">deep.Composer</a></li>
+            
+                <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
+            
+                <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
+            
+                <li><a href="../classes/deep.Query.html">deep.Query</a></li>
+            
+                <li><a href="../classes/deep.Role.html">deep.Role</a></li>
+            
+                <li><a href="../classes/deep.roles.html">deep.roles</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+            
+                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+            
+                <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
+            
+                <li><a href="../classes/deep.stores.instance.html">deep.stores.instance</a></li>
+            
+                <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
+            
+                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
+            
+                <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
+            
+                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
+            
+                <li><a href="../classes/deep.utils.html">deep.utils</a></li>
+            
+                <li><a href="../classes/deep.Validator.html">deep.Validator</a></li>
             
             </ul>
 
@@ -76,8 +106,6 @@
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
             
                 <li><a href="../modules/deep-stores.html">deep-stores</a></li>
-            
-                <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../modules/utils.html">utils</a></li>
             
@@ -116,7 +144,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>DeepDeferred Class</h1>
+                        <h1>deep.Promise Class</h1>
 <div class="box meta">
     
 
@@ -124,7 +152,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep.js.html#l2859"><code>deep.js:2859</code></a>
+            Defined in: <a href="../files/deep.js.html#l2985"><code>deep.js:2985</code></a>
         </div>
     
 
@@ -140,17 +168,27 @@
 
 
 <div class="box intro">
-    <p>A deep implementation of Deferred object (see promise on web)</p>
+    <p>a deep implementation of Promise (see web for Promise)</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_DeepDeferred" class="method item">
-    <h3 class="name"><code>DeepDeferred</code></h3>
+        <div id="method_deep.Promise" class="method item">
+    <h3 class="name"><code>deep.Promise</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>deferred</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -178,7 +216,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2859"><code>deep.js:2859</code></a>
+        <a href="../files/deep.js.html#l2985"><code>deep.js:2985</code></a>
         
         </p>
 
@@ -192,6 +230,29 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">deferred</code>
+                        <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -225,13 +286,6 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_cancel">cancel</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
                                 <a href="#method_done">done</a>
 
                                 
@@ -240,20 +294,6 @@
                         
                             <li class="index-item method">
                                 <a href="#method_fail">fail</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_reject">reject</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_resolve">resolve</a>
 
                                 
                                 
@@ -282,110 +322,6 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_cancel" class="method item">
-    <h3 class="name"><code>cancel</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>reason</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l2918"><code>deep.js:2918</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>cancel the Deferred and so the associated promise</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">reason</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the cancel reason object injected in promise</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>:
-                    
-                    this
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
                     <div id="method_done" class="method item">
     <h3 class="name"><code>done</code></h3>
 
@@ -405,7 +341,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>
+            <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>
         </span>
     
 
@@ -432,7 +368,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2942"><code>deep.js:2942</code></a>
+        <a href="../files/deep.js.html#l3013"><code>deep.js:3013</code></a>
         
         </p>
 
@@ -478,7 +414,7 @@
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>:
+                        <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>:
                     
                     this
                 
@@ -509,7 +445,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>
+            <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>
         </span>
     
 
@@ -536,7 +472,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2951"><code>deep.js:2951</code></a>
+        <a href="../files/deep.js.html#l3069"><code>deep.js:3069</code></a>
         
         </p>
 
@@ -582,215 +518,7 @@
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>:
-                    
-                    this
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_reject" class="method item">
-    <h3 class="name"><code>reject</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>argument</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l2902"><code>deep.js:2902</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>reject the Deferred and so the associated promise</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">argument</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the rejected object injected in promise</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>:
-                    
-                    this
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_resolve" class="method item">
-    <h3 class="name"><code>resolve</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>argument</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l2880"><code>deep.js:2880</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>resolve the Deferred and so the associated promise</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">argument</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the resolved object injected in promise</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>:
+                        <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>:
                     
                     this
                 
@@ -827,7 +555,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>
+            <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>
         </span>
     
 
@@ -854,7 +582,7 @@
             
         
         
-        <a href="../files/deep.js.html#l2932"><code>deep.js:2932</code></a>
+        <a href="../files/deep.js.html#l3127"><code>deep.js:3127</code></a>
         
         </p>
 
@@ -915,7 +643,7 @@
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepDeferred.html" class="crosslink">DeepDeferred</a></span>:
+                        <span class="type"><a href="../classes/deep.Deferred.html" class="crosslink">deep.Deferred</a></span>:
                     
                     this
                 

@@ -1,14 +1,29 @@
 YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
-        "Collider",
-        "DeepDecorator",
-        "DeepDeferred",
-        "DeepHandler",
-        "DeepPromise",
-        "DeepQuery",
         "deep",
-        "utils"
+        "deep.Chain",
+        "deep.Composer",
+        "deep.Deferred",
+        "deep.Promise",
+        "deep.Query",
+        "deep.Role",
+        "deep.Validator",
+        "deep.collider",
+        "deep.collider.array",
+        "deep.collider.assert",
+        "deep.collider.object",
+        "deep.compose",
+        "deep.roles",
+        "deep.stores",
+        "deep.stores.Array",
+        "deep.stores.Object",
+        "deep.stores.Store",
+        "deep.stores.aspect",
+        "deep.stores.instance",
+        "deep.stores.js",
+        "deep.stores.queryThis",
+        "deep.utils"
     ],
     "modules": [
         "deep",
@@ -19,7 +34,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "deep-rql",
         "deep-schema",
         "deep-stores",
-        "deep.stores",
         "utils"
     ],
     "allModules": [
@@ -45,7 +59,8 @@ YUI.add("yuidoc-meta", function(Y) {
         },
         {
             "displayName": "deep-roles",
-            "name": "deep-roles"
+            "name": "deep-roles",
+            "description": "Just a namespace : where default and custom roles are mainly stored."
         },
         {
             "displayName": "deep-rql",
@@ -59,12 +74,8 @@ YUI.add("yuidoc-meta", function(Y) {
         },
         {
             "displayName": "deep-stores",
-            "name": "deep-stores"
-        },
-        {
-            "displayName": "deep.stores",
-            "name": "deep.stores",
-            "description": "how manage collections and objects as http styled stores"
+            "name": "deep-stores",
+            "description": "how manage collections and objects as http styled stores\n\nOne interface for all stores."
         },
         {
             "displayName": "utils",

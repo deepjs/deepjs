@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DeepHandler - deepjs Javascript Framework</title>
+    <title>deep.Chain - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,21 +41,51 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="../classes/Collider.html">Collider</a></li>
-            
                 <li><a href="../classes/deep.html">deep</a></li>
             
-                <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
+                <li><a href="../classes/deep.Chain.html">deep.Chain</a></li>
             
-                <li><a href="../classes/DeepDeferred.html">DeepDeferred</a></li>
+                <li><a href="../classes/deep.collider.html">deep.collider</a></li>
             
-                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
+                <li><a href="../classes/deep.collider.array.html">deep.collider.array</a></li>
             
-                <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
+                <li><a href="../classes/deep.collider.assert.html">deep.collider.assert</a></li>
             
-                <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+                <li><a href="../classes/deep.collider.object.html">deep.collider.object</a></li>
             
-                <li><a href="../classes/utils.html">utils</a></li>
+                <li><a href="../classes/deep.compose.html">deep.compose</a></li>
+            
+                <li><a href="../classes/deep.Composer.html">deep.Composer</a></li>
+            
+                <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
+            
+                <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
+            
+                <li><a href="../classes/deep.Query.html">deep.Query</a></li>
+            
+                <li><a href="../classes/deep.Role.html">deep.Role</a></li>
+            
+                <li><a href="../classes/deep.roles.html">deep.roles</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+            
+                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+            
+                <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
+            
+                <li><a href="../classes/deep.stores.instance.html">deep.stores.instance</a></li>
+            
+                <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
+            
+                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
+            
+                <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
+            
+                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
+            
+                <li><a href="../classes/deep.utils.html">deep.utils</a></li>
+            
+                <li><a href="../classes/deep.Validator.html">deep.Validator</a></li>
             
             </ul>
 
@@ -76,8 +106,6 @@
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
             
                 <li><a href="../modules/deep-stores.html">deep-stores</a></li>
-            
-                <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../modules/utils.html">utils</a></li>
             
@@ -116,7 +144,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>DeepHandler Class</h1>
+                        <h1>deep.Chain Class</h1>
 <div class="box meta">
     
 
@@ -124,13 +152,14 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep.js.html#l397"><code>deep.js:397</code></a>
+            Defined in: <a href="../files/deep.js.html#l416"><code>deep.js:416</code></a>
         </div>
     
 
     
         
-            Module: <a href="../modules/deep.html">deep</a>
+            Module: <a href="../modules/deep-roles.html">deep-roles</a><br>
+            Parent Module: <a href="../modules/deep.html">deep</a>
         
     
 
@@ -146,8 +175,8 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_DeepHandler" class="method item">
-    <h3 class="name"><code>DeepHandler</code></h3>
+        <div id="method_deep.Chain" class="method item">
+    <h3 class="name"><code>deep.Chain</code></h3>
 
     
         <div class="args">
@@ -194,7 +223,7 @@
             
         
         
-        <a href="../files/deep.js.html#l397"><code>deep.js:397</code></a>
+        <a href="../files/deep.js.html#l416"><code>deep.js:416</code></a>
         
         </p>
 
@@ -517,6 +546,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_role">role</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_root">root</a>
 
                                 
@@ -567,6 +603,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_setByPath">setByPath</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_store">store</a>
 
                                 
                                 
@@ -676,7 +719,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">type</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -698,6 +741,8 @@
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -705,7 +750,7 @@
             
         
         
-        <a href="../files/deep.js.html#l812"><code>deep.js:812</code></a>
+        <a href="../files/deep.js.html#l833"><code>deep.js:833</code></a>
         
         </p>
 
@@ -733,7 +778,7 @@ If no name is provided : go back to last position (if any)</p>
                 <li class="param">
                     
                         <code class="param-name">name</code>
-                        <span class="type">Object</span>
+                        <span class="type">String</span>
                     
 
                     
@@ -771,7 +816,7 @@ If no name is provided : go back to last position (if any)</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">type</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                 
             </div>
@@ -801,7 +846,7 @@ If no name is provided : go back to last position (if any)</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -823,6 +868,8 @@ If no name is provided : go back to last position (if any)</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -830,7 +877,7 @@ If no name is provided : go back to last position (if any)</p>
             
         
         
-        <a href="../files/deep.js.html#l1194"><code>deep.js:1194</code></a>
+        <a href="../files/deep.js.html#l1214"><code>deep.js:1214</code></a>
         
         </p>
 
@@ -879,7 +926,7 @@ If no name is provided : go back to last position (if any)</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -920,6 +967,8 @@ If no name is provided : go back to last position (if any)</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -927,7 +976,7 @@ If no name is provided : go back to last position (if any)</p>
             
         
         
-        <a href="../files/deep.js.html#l429"><code>deep.js:429</code></a>
+        <a href="../files/deep.js.html#l450"><code>deep.js:450</code></a>
         
         </p>
 
@@ -982,7 +1031,7 @@ transparent : not relevant</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1006,6 +1055,8 @@ transparent : not relevant</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1013,7 +1064,7 @@ transparent : not relevant</p>
             
         
         
-        <a href="../files/deep.js.html#l541"><code>deep.js:541</code></a>
+        <a href="../files/deep.js.html#l562"><code>deep.js:562</code></a>
         
         </p>
 
@@ -1063,7 +1114,7 @@ transparent : not relevant</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -1136,6 +1187,8 @@ transparent : not relevant</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1143,7 +1196,7 @@ transparent : not relevant</p>
             
         
         
-        <a href="../files/deep.js.html#l500"><code>deep.js:500</code></a>
+        <a href="../files/deep.js.html#l521"><code>deep.js:521</code></a>
         
         </p>
 
@@ -1221,7 +1274,7 @@ synch</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1243,6 +1296,8 @@ synch</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1250,7 +1305,7 @@ synch</p>
             
         
         
-        <a href="../files/deep.js.html#l474"><code>deep.js:474</code></a>
+        <a href="../files/deep.js.html#l495"><code>deep.js:495</code></a>
         
         </p>
 
@@ -1299,8 +1354,9 @@ transparent true</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
+                    the chain
                 
             </div>
         </div>
@@ -1329,7 +1385,7 @@ transparent true</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1351,6 +1407,8 @@ transparent true</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1358,7 +1416,7 @@ transparent true</p>
             
         
         
-        <a href="../files/deep.js.html#l2447"><code>deep.js:2447</code></a>
+        <a href="../files/deep.js.html#l2466"><code>deep.js:2466</code></a>
         
         </p>
 
@@ -1405,7 +1463,7 @@ see interpretation for simple case</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -1445,7 +1503,7 @@ see interpretation for simple case</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1467,6 +1525,8 @@ see interpretation for simple case</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1474,7 +1534,7 @@ see interpretation for simple case</p>
             
         
         
-        <a href="../files/deep.js.html#l2284"><code>deep.js:2284</code></a>
+        <a href="../files/deep.js.html#l2302"><code>deep.js:2302</code></a>
         
         </p>
 
@@ -1524,7 +1584,7 @@ see interpretation for simple case</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -1555,7 +1615,7 @@ see interpretation for simple case</p>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1577,6 +1637,8 @@ see interpretation for simple case</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1584,7 +1646,7 @@ see interpretation for simple case</p>
             
         
         
-        <a href="../files/deep.js.html#l2254"><code>deep.js:2254</code></a>
+        <a href="../files/deep.js.html#l2272"><code>deep.js:2272</code></a>
         
         </p>
 
@@ -1632,7 +1694,7 @@ see interpretation for simple case</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -1663,7 +1725,7 @@ see interpretation for simple case</p>
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1685,6 +1747,8 @@ see interpretation for simple case</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1692,7 +1756,7 @@ see interpretation for simple case</p>
             
         
         
-        <a href="../files/deep.js.html#l622"><code>deep.js:622</code></a>
+        <a href="../files/deep.js.html#l643"><code>deep.js:643</code></a>
         
         </p>
 
@@ -1748,7 +1812,8 @@ the brancher is the brancher function that create clone of the chain to produce 
             <div class="returns-description">
                 
                     
-                    Deephandler
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
                 
             </div>
         </div>
@@ -1777,7 +1842,7 @@ the brancher is the brancher function that create clone of the chain to produce 
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1799,6 +1864,8 @@ the brancher is the brancher function that create clone of the chain to produce 
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1806,7 +1873,7 @@ the brancher is the brancher function that create clone of the chain to produce 
             
         
         
-        <a href="../files/deep.js.html#l2066"><code>deep.js:2066</code></a>
+        <a href="../files/deep.js.html#l2084"><code>deep.js:2084</code></a>
         
         </p>
 
@@ -1817,12 +1884,11 @@ the brancher is the brancher function that create clone of the chain to produce 
     </div>
 
     <div class="description">
-        <p>will passe as argument each entries to callback.
+        <p>will pass each entries to callback as argument .
  callback could return promise. the chain will wait any promise before continuing.</p>
 
-<pre class="code prettyprint"><code>Chain Success injection : the results of callback calls (resolved if promises)
-Chain Error injection : the errors of callback calls (rejected if promises)
-</code></pre>
+<p>Chain Success injection : the results of callback calls (resolved if promises)
+ Chain Error injection : the errors of callback calls (rejected if promises)</p>
     </div>
 
     
@@ -1857,7 +1923,7 @@ Chain Error injection : the errors of callback calls (rejected if promises)
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -1894,7 +1960,7 @@ Chain Error injection : the errors of callback calls (rejected if promises)
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -1916,6 +1982,8 @@ Chain Error injection : the errors of callback calls (rejected if promises)
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -1923,7 +1991,7 @@ Chain Error injection : the errors of callback calls (rejected if promises)
             
         
         
-        <a href="../files/deep.js.html#l1818"><code>deep.js:1818</code></a>
+        <a href="../files/deep.js.html#l1838"><code>deep.js:1838</code></a>
         
         </p>
 
@@ -1988,7 +2056,7 @@ Chain Error injection : the unvalid report
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -2025,7 +2093,7 @@ Chain Error injection : the unvalid report
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2047,6 +2115,8 @@ Chain Error injection : the unvalid report
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2054,7 +2124,7 @@ Chain Error injection : the unvalid report
             
         
         
-        <a href="../files/deep.js.html#l1672"><code>deep.js:1672</code></a>
+        <a href="../files/deep.js.html#l1692"><code>deep.js:1692</code></a>
         
         </p>
 
@@ -2125,7 +2195,7 @@ function could retruen promise.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     the current chain handler (this)
                 
@@ -2156,7 +2226,7 @@ function could retruen promise.</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepPromise.html" class="crosslink">DeepPromise</a></span>
+            <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>
         </span>
     
 
@@ -2178,6 +2248,8 @@ function could retruen promise.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2185,7 +2257,7 @@ function could retruen promise.</p>
             
         
         
-        <a href="../files/deep.js.html#l1403"><code>deep.js:1403</code></a>
+        <a href="../files/deep.js.html#l1423"><code>deep.js:1423</code></a>
         
         </p>
 
@@ -2234,7 +2306,7 @@ function could retruen promise.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepPromise.html" class="crosslink">DeepPromise</a></span>:
+                        <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>:
                     
                     a promise
                 
@@ -2265,7 +2337,7 @@ function could retruen promise.</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepPromise.html" class="crosslink">DeepPromise</a></span>
+            <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>
         </span>
     
 
@@ -2287,6 +2359,8 @@ function could retruen promise.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2294,7 +2368,7 @@ function could retruen promise.</p>
             
         
         
-        <a href="../files/deep.js.html#l1369"><code>deep.js:1369</code></a>
+        <a href="../files/deep.js.html#l1389"><code>deep.js:1389</code></a>
         
         </p>
 
@@ -2343,7 +2417,7 @@ function could retruen promise.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepPromise.html" class="crosslink">DeepPromise</a></span>:
+                        <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>:
                     
                     a promise
                 
@@ -2374,7 +2448,7 @@ function could retruen promise.</p>
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2396,6 +2470,8 @@ function could retruen promise.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2403,7 +2479,7 @@ function could retruen promise.</p>
             
         
         
-        <a href="../files/deep.js.html#l675"><code>deep.js:675</code></a>
+        <a href="../files/deep.js.html#l696"><code>deep.js:696</code></a>
         
         </p>
 
@@ -2459,7 +2535,8 @@ the brancher is the brancher function that create clone of the chain to produce 
             <div class="returns-description">
                 
                     
-                    Deephandler
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
                 
             </div>
         </div>
@@ -2478,7 +2555,7 @@ the brancher is the brancher function that create clone of the chain to produce 
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2500,6 +2577,8 @@ the brancher is the brancher function that create clone of the chain to produce 
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2507,7 +2586,7 @@ the brancher is the brancher function that create clone of the chain to produce 
             
         
         
-        <a href="../files/deep.js.html#l858"><code>deep.js:858</code></a>
+        <a href="../files/deep.js.html#l879"><code>deep.js:879</code></a>
         
         </p>
 
@@ -2520,8 +2599,7 @@ the brancher is the brancher function that create clone of the chain to produce 
     <div class="description">
         <p>keep only the first chain entries. remove all others</p>
 
-<p>asynch
-inject selected entry value as chain success</p>
+<p>inject selected entry value as chain success</p>
     </div>
 
     
@@ -2533,7 +2611,8 @@ inject selected entry value as chain success</p>
             <div class="returns-description">
                 
                     
-                    DeepHandler
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
                 
             </div>
         </div>
@@ -2552,7 +2631,7 @@ inject selected entry value as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2576,6 +2655,8 @@ inject selected entry value as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2583,7 +2664,7 @@ inject selected entry value as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l1458"><code>deep.js:1458</code></a>
+        <a href="../files/deep.js.html#l1478"><code>deep.js:1478</code></a>
         
         </p>
 
@@ -2609,7 +2690,7 @@ Errors injected : any flatten error</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -2654,11 +2735,8 @@ deep({})
       second:true,
    a:true,
    b:true
-</code></pre>
-
-<p>});</p>
-
-<pre class="code prettyprint"><code>deep({
+});
+</code></pre><pre class="code prettyprint"><code>deep({
     sub:{
         backgrounds:[b],
         obj:{
@@ -2670,15 +2748,14 @@ deep({})
 .query("/sub")
 .run("myFunc")
 .query("./obj")
- .equal({
+.equal({
    first:true,
       second:true,
       third:true,
    a:true,
    b:true
+});
 </code></pre>
-
-<p>});</p>
             </div>
         </div>
     
@@ -2704,7 +2781,7 @@ deep({})
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2726,6 +2803,8 @@ deep({})
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2733,7 +2812,7 @@ deep({})
             
         
         
-        <a href="../files/deep.js.html#l2496"><code>deep.js:2496</code></a>
+        <a href="../files/deep.js.html#l2515"><code>deep.js:2515</code></a>
         
         </p>
 
@@ -2779,7 +2858,7 @@ deep({})
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -2817,7 +2896,7 @@ deep({})
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2839,6 +2918,8 @@ deep({})
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2846,7 +2927,7 @@ deep({})
             
         
         
-        <a href="../files/deep.js.html#l879"><code>deep.js:879</code></a>
+        <a href="../files/deep.js.html#l900"><code>deep.js:900</code></a>
         
         </p>
 
@@ -2859,8 +2940,7 @@ deep({})
     <div class="description">
         <p>keep only the last chain entries. remove all others</p>
 
-<p>asynch
-inject selected entry value as chain success</p>
+<p>inject selected entry value as chain success</p>
     </div>
 
     
@@ -2872,7 +2952,8 @@ inject selected entry value as chain success</p>
             <div class="returns-description">
                 
                     
-                    DeepHandler
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
                 
             </div>
         </div>
@@ -2891,13 +2972,13 @@ inject selected entry value as chain success</p>
             
                 <li class="arg">
                     
-                        <code>(optional)</code>
+                        <code>request</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>(optional)</code>
+                        <code>context</code>
                     
                 </li>
             
@@ -2907,7 +2988,7 @@ inject selected entry value as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -2929,6 +3010,8 @@ inject selected entry value as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -2936,7 +3019,7 @@ inject selected entry value as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l2344"><code>deep.js:2344</code></a>
+        <a href="../files/deep.js.html#l2363"><code>deep.js:2363</code></a>
         
         </p>
 
@@ -2966,14 +3049,14 @@ Chain success injection : array of loaded content.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">(optional)</code>
+                        <code class="param-name">request</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>request</p>
+                        <p>(optional)</p>
                     </div>
 
                     
@@ -2981,14 +3064,14 @@ Chain success injection : array of loaded content.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">(optional)</code>
+                        <code class="param-name">context</code>
                         <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>context the context to interpret strings</p>
+                        <p>(optional) the context to interpret strings</p>
                     </div>
 
                     
@@ -3005,7 +3088,7 @@ Chain success injection : array of loaded content.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -3026,7 +3109,7 @@ Chain success injection : array of loaded content.</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -3048,6 +3131,8 @@ Chain success injection : array of loaded content.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3055,7 +3140,7 @@ Chain success injection : array of loaded content.</p>
             
         
         
-        <a href="../files/deep.js.html#l1937"><code>deep.js:1937</code></a>
+        <a href="../files/deep.js.html#l1957"><code>deep.js:1957</code></a>
         
         </p>
 
@@ -3069,8 +3154,7 @@ Chain success injection : array of loaded content.</p>
         <p>log any provided arguments.
  If no arguments provided : will log current success or error state.</p>
 
-<p>asynch
- transparent true</p>
+<p>transparent true</p>
     </div>
 
     
@@ -3082,7 +3166,7 @@ Chain success injection : array of loaded content.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -3119,7 +3203,7 @@ Chain success injection : array of loaded content.</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -3141,6 +3225,8 @@ Chain success injection : array of loaded content.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3148,7 +3234,7 @@ Chain success injection : array of loaded content.</p>
             
         
         
-        <a href="../files/deep.js.html#l1979"><code>deep.js:1979</code></a>
+        <a href="../files/deep.js.html#l1998"><code>deep.js:1998</code></a>
         
         </p>
 
@@ -3163,8 +3249,7 @@ Chain success injection : array of loaded content.</p>
 
 <p>full option means print full entry in place of just entry.value
  pretty option means print pretty json (indented)
-asynch
- transparent true</p>
+transparent true</p>
     </div>
 
     
@@ -3191,13 +3276,13 @@ asynch
                 <li class="param">
                     
                         <code class="param-name">options</code>
-                        <span class="type">Full:true | False, pretty:true | False</span>
+                        <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>(optional) : an object</p>
+                        <p>(optional) could contain : 'full':true|false, 'pretty':true|false</p>
                     </div>
 
                     
@@ -3214,7 +3299,7 @@ asynch
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -3263,7 +3348,7 @@ asynch
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -3285,6 +3370,8 @@ asynch
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3292,7 +3379,7 @@ asynch
             
         
         
-        <a href="../files/deep.js.html#l2695"><code>deep.js:2695</code></a>
+        <a href="../files/deep.js.html#l2714"><code>deep.js:2714</code></a>
         
         </p>
 
@@ -3386,7 +3473,7 @@ Objects could be retrievables.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -3447,7 +3534,7 @@ Objects could be retrievables.</p>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler | Array</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>
         </span>
     
 
@@ -3469,6 +3556,8 @@ Objects could be retrievables.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3476,7 +3565,7 @@ Objects could be retrievables.</p>
             
         
         
-        <a href="../files/deep.js.html#l2140"><code>deep.js:2140</code></a>
+        <a href="../files/deep.js.html#l2158"><code>deep.js:2158</code></a>
         
         </p>
 
@@ -3526,7 +3615,7 @@ Objects could be retrievables.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler | Array</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>:
                     
                     this or entries
                 
@@ -3557,7 +3646,7 @@ Objects could be retrievables.</p>
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -3579,6 +3668,8 @@ Objects could be retrievables.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3586,7 +3677,7 @@ Objects could be retrievables.</p>
             
         
         
-        <a href="../files/deep.js.html#l900"><code>deep.js:900</code></a>
+        <a href="../files/deep.js.html#l920"><code>deep.js:920</code></a>
         
         </p>
 
@@ -3636,7 +3727,8 @@ Objects could be retrievables.</p>
             <div class="returns-description">
                 
                     
-                    DeepHandler
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
                 
             </div>
         </div>
@@ -3665,7 +3757,7 @@ Objects could be retrievables.</p>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler | Array</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>
         </span>
     
 
@@ -3687,6 +3779,8 @@ Objects could be retrievables.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3694,7 +3788,7 @@ Objects could be retrievables.</p>
             
         
         
-        <a href="../files/deep.js.html#l2176"><code>deep.js:2176</code></a>
+        <a href="../files/deep.js.html#l2194"><code>deep.js:2194</code></a>
         
         </p>
 
@@ -3743,7 +3837,7 @@ transparent true</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler | Array</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>:
                     
                     this or paths
                 
@@ -3780,7 +3874,7 @@ transparent true</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -3800,6 +3894,8 @@ transparent true</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3807,7 +3903,7 @@ transparent true</p>
             
         
         
-        <a href="../files/deep.js.html#l787"><code>deep.js:787</code></a>
+        <a href="../files/deep.js.html#l808"><code>deep.js:808</code></a>
         
         </p>
 
@@ -3875,7 +3971,7 @@ transparent true
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -3912,7 +4008,7 @@ transparent true
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -3934,6 +4030,8 @@ transparent true
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -3941,7 +4039,7 @@ transparent true
             
         
         
-        <a href="../files/deep.js.html#l954"><code>deep.js:954</code></a>
+        <a href="../files/deep.js.html#l974"><code>deep.js:974</code></a>
         
         </p>
 
@@ -4004,7 +4102,7 @@ transparent true
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this (chain handler)
                 
@@ -4041,7 +4139,7 @@ transparent true
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4063,6 +4161,8 @@ transparent true
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4070,7 +4170,7 @@ transparent true
             
         
         
-        <a href="../files/deep.js.html#l743"><code>deep.js:743</code></a>
+        <a href="../files/deep.js.html#l764"><code>deep.js:764</code></a>
         
         </p>
 
@@ -4144,7 +4244,7 @@ transparent true
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -4210,6 +4310,8 @@ deep([0,1,2,3,4,5])
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4217,7 +4319,7 @@ deep([0,1,2,3,4,5])
             
         
         
-        <a href="../files/deep.js.html#l520"><code>deep.js:520</code></a>
+        <a href="../files/deep.js.html#l541"><code>deep.js:541</code></a>
         
         </p>
 
@@ -4295,7 +4397,7 @@ synch</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4317,6 +4419,8 @@ synch</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4324,7 +4428,7 @@ synch</p>
             
         
         
-        <a href="../files/deep.js.html#l1290"><code>deep.js:1290</code></a>
+        <a href="../files/deep.js.html#l1310"><code>deep.js:1310</code></a>
         
         </p>
 
@@ -4370,7 +4474,7 @@ synch</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -4462,7 +4566,7 @@ deep(obj, schema)
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4484,6 +4588,8 @@ deep(obj, schema)
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4491,7 +4597,7 @@ deep(obj, schema)
             
         
         
-        <a href="../files/deep.js.html#l1229"><code>deep.js:1229</code></a>
+        <a href="../files/deep.js.html#l1249"><code>deep.js:1249</code></a>
         
         </p>
 
@@ -4569,7 +4675,7 @@ deep(obj, schema)
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -4618,7 +4724,7 @@ deep(a)
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4640,6 +4746,8 @@ deep(a)
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4647,7 +4755,7 @@ deep(a)
             
         
         
-        <a href="../files/deep.js.html#l454"><code>deep.js:454</code></a>
+        <a href="../files/deep.js.html#l475"><code>deep.js:475</code></a>
         
         </p>
 
@@ -4672,9 +4780,113 @@ deep(a)
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_role" class="method item">
+    <h3 class="name"><code>role</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>arguments</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-roles.js.html#l45"><code>deep-roles.js:45</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">arguments</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>a list or arguments</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
+                    the chain hanlder
                 
             </div>
         </div>
@@ -4709,7 +4921,7 @@ deep(a)
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4731,6 +4943,8 @@ deep(a)
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4738,7 +4952,7 @@ deep(a)
             
         
         
-        <a href="../files/deep.js.html#l930"><code>deep.js:930</code></a>
+        <a href="../files/deep.js.html#l950"><code>deep.js:950</code></a>
         
         </p>
 
@@ -4799,7 +5013,9 @@ deep(a)
             <div class="returns-description">
                 
                     
-                    [DeepHandler] this
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
+                    this
                 
             </div>
         </div>
@@ -4834,7 +5050,7 @@ deep(a)
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4856,6 +5072,8 @@ deep(a)
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4863,7 +5081,7 @@ deep(a)
             
         
         
-        <a href="../files/deep.js.html#l1617"><code>deep.js:1617</code></a>
+        <a href="../files/deep.js.html#l1637"><code>deep.js:1637</code></a>
         
         </p>
 
@@ -4934,7 +5152,7 @@ function could retrun promise.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     the current chain handler (this)
                 
@@ -4965,7 +5183,7 @@ function could retrun promise.</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -4987,6 +5205,8 @@ function could retrun promise.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -4994,7 +5214,7 @@ function could retrun promise.</p>
             
         
         
-        <a href="../files/deep.js.html#l1016"><code>deep.js:1016</code></a>
+        <a href="../files/deep.js.html#l1036"><code>deep.js:1036</code></a>
         
         </p>
 
@@ -5041,7 +5261,7 @@ inject entries shemas as chain success</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this (chain handler)
                 
@@ -5072,7 +5292,7 @@ inject entries shemas as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -5094,6 +5314,8 @@ inject entries shemas as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5101,7 +5323,7 @@ inject entries shemas as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l1085"><code>deep.js:1085</code></a>
+        <a href="../files/deep.js.html#l1105"><code>deep.js:1105</code></a>
         
         </p>
 
@@ -5149,7 +5371,7 @@ inject entries shemas as chain success</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this (chain handler)
                 
@@ -5180,7 +5402,7 @@ inject entries shemas as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler | Array</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>
         </span>
     
 
@@ -5202,6 +5424,8 @@ inject entries shemas as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5209,7 +5433,7 @@ inject entries shemas as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l2214"><code>deep.js:2214</code></a>
+        <a href="../files/deep.js.html#l2232"><code>deep.js:2232</code></a>
         
         </p>
 
@@ -5259,7 +5483,7 @@ inject entries shemas as chain success</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler | Array</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>:
                     
                     this or schemas
                 
@@ -5290,7 +5514,7 @@ inject entries shemas as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -5312,6 +5536,8 @@ inject entries shemas as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5319,7 +5545,7 @@ inject entries shemas as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l1047"><code>deep.js:1047</code></a>
+        <a href="../files/deep.js.html#l1067"><code>deep.js:1067</code></a>
         
         </p>
 
@@ -5366,7 +5592,7 @@ inject entries shemas as chain success</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this (chain handler)
                 
@@ -5397,7 +5623,7 @@ inject entries shemas as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -5419,6 +5645,8 @@ inject entries shemas as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5426,7 +5654,7 @@ inject entries shemas as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l990"><code>deep.js:990</code></a>
+        <a href="../files/deep.js.html#l1010"><code>deep.js:1010</code></a>
         
         </p>
 
@@ -5476,7 +5704,7 @@ transparent false</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -5531,6 +5759,8 @@ transparent false</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5538,7 +5768,7 @@ transparent false</p>
             
         
         
-        <a href="../files/deep.js.html#l1127"><code>deep.js:1127</code></a>
+        <a href="../files/deep.js.html#l1147"><code>deep.js:1147</code></a>
         
         </p>
 
@@ -5601,6 +5831,112 @@ inject setted values as chain success</p>
 </div>
 
                 
+                    <div id="method_store" class="method item">
+    <h3 class="name"><code>store</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>name</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deep-stores.html">deep-stores</a> module.</p>
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-stores.js.html#l57"><code>deep-stores.js:57</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>set chain with a certain store. If no store founded : throw an error.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">name</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the name of the store to select</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
+                    the chain to manage selected store. Inject chain's values as success object.
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_then" class="method item">
     <h3 class="name"><code>then</code></h3>
 
@@ -5626,7 +5962,7 @@ inject setted values as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -5648,6 +5984,8 @@ inject setted values as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5655,7 +5993,7 @@ inject setted values as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l723"><code>deep.js:723</code></a>
+        <a href="../files/deep.js.html#l744"><code>deep.js:744</code></a>
         
         </p>
 
@@ -5719,7 +6057,7 @@ inject setted values as chain success</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -5756,7 +6094,7 @@ inject setted values as chain success</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -5778,6 +6116,8 @@ inject setted values as chain success</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5785,7 +6125,7 @@ inject setted values as chain success</p>
             
         
         
-        <a href="../files/deep.js.html#l1572"><code>deep.js:1572</code></a>
+        <a href="../files/deep.js.html#l1592"><code>deep.js:1592</code></a>
         
         </p>
 
@@ -5856,7 +6196,7 @@ function could return promise.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     the current chain handler (this)
                 
@@ -5887,7 +6227,7 @@ function could return promise.</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -5909,6 +6249,8 @@ function could return promise.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -5916,7 +6258,7 @@ function could return promise.</p>
             
         
         
-        <a href="../files/deep.js.html#l1711"><code>deep.js:1711</code></a>
+        <a href="../files/deep.js.html#l1731"><code>deep.js:1731</code></a>
         
         </p>
 
@@ -5977,7 +6319,7 @@ Chain Error Injection : the treatments errors</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -6008,7 +6350,7 @@ Chain Error Injection : the treatments errors</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -6030,6 +6372,8 @@ Chain Error Injection : the treatments errors</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -6037,7 +6381,7 @@ Chain Error Injection : the treatments errors</p>
             
         
         
-        <a href="../files/deep.js.html#l1159"><code>deep.js:1159</code></a>
+        <a href="../files/deep.js.html#l1179"><code>deep.js:1179</code></a>
         
         </p>
 
@@ -6086,7 +6430,7 @@ inject entries values as chain success.</p>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -6117,7 +6461,7 @@ inject entries values as chain success.</p>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler | entry.value</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | entry.value</span>
         </span>
     
 
@@ -6139,6 +6483,8 @@ inject entries values as chain success.</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -6146,7 +6492,7 @@ inject entries values as chain success.</p>
             
         
         
-        <a href="../files/deep.js.html#l2028"><code>deep.js:2028</code></a>
+        <a href="../files/deep.js.html#l2046"><code>deep.js:2046</code></a>
         
         </p>
 
@@ -6195,7 +6541,7 @@ transparent true</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler | entry.value</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | entry.value</span>:
                     
                     this or val
                 
@@ -6226,7 +6572,7 @@ transparent true</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -6248,6 +6594,8 @@ transparent true</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -6255,7 +6603,7 @@ transparent true</p>
             
         
         
-        <a href="../files/deep.js.html#l1879"><code>deep.js:1879</code></a>
+        <a href="../files/deep.js.html#l1899"><code>deep.js:1899</code></a>
         
         </p>
 
@@ -6305,7 +6653,7 @@ Chain Error injection : the unvalid report
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     [description]
                 
@@ -6336,7 +6684,7 @@ Chain Error injection : the unvalid report
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler | Array</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>
         </span>
     
 
@@ -6358,6 +6706,8 @@ Chain Error injection : the unvalid report
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -6365,7 +6715,7 @@ Chain Error injection : the unvalid report
             
         
         
-        <a href="../files/deep.js.html#l2101"><code>deep.js:2101</code></a>
+        <a href="../files/deep.js.html#l2119"><code>deep.js:2119</code></a>
         
         </p>
 
@@ -6414,7 +6764,7 @@ transparent true</p>
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler | Array</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a> | Array</span>:
                     
                     this or values
                 
@@ -6451,7 +6801,7 @@ transparent true</p>
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -6473,6 +6823,8 @@ transparent true</p>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -6480,7 +6832,7 @@ transparent true</p>
             
         
         
-        <a href="../files/deep.js.html#l1765"><code>deep.js:1765</code></a>
+        <a href="../files/deep.js.html#l1785"><code>deep.js:1785</code></a>
         
         </p>
 
@@ -6553,7 +6905,7 @@ Chain Error injection : the unvalid report</p></li>
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/DeepHandler.html" class="crosslink">DeepHandler</a></span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                     this
                 
@@ -6584,7 +6936,7 @@ Chain Error injection : the unvalid report</p></li>
 
     
         <span class="returns-inline">
-            <span class="type">Deephandler</span>
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
         </span>
     
 
@@ -6606,6 +6958,8 @@ Chain Error injection : the unvalid report</p></li>
         
             
                 
+                    <p>Provided by the <a href="../modules/deep.html">deep</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -6613,7 +6967,7 @@ Chain Error injection : the unvalid report</p></li>
             
         
         
-        <a href="../files/deep.js.html#l591"><code>deep.js:591</code></a>
+        <a href="../files/deep.js.html#l612"><code>deep.js:612</code></a>
         
         </p>
 
@@ -6640,7 +6994,7 @@ transparent false
                 <li class="param">
                     
                         <code class="param-name">prom</code>
-                        <span class="type">Promise</span>
+                        <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>
                     
 
                     
@@ -6663,7 +7017,7 @@ transparent false
             <div class="returns-description">
                 
                     
-                        <span class="type">Deephandler</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
                 
             </div>

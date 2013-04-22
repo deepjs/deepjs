@@ -29,7 +29,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 }
 
-define(["require","./utils", './ie-hacks', "./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose"],
+define(["require","./utils", './ie-hacks',"./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose", "./deep-stores"],
 function(require)
 {
 	// console.log("Deep init");
@@ -66,7 +66,7 @@ function(require)
 	 * @param  {Object} obj an object (or retrievable string) or an array of objects to start chain. will wait if there is promise
 	 * @param  {Object} schema (optional) a schema for entries. could be a retrievable
 	 * @param  {Object} options (optional) an option object. could contain : rethrow:true|false
-	 * @return {DeepHandler} a deep handler that hold object(s)
+	 * @return {deep.Chain} a deep handler that hold object(s)
 	 */
 	deep = function (obj, schema, options)
 	{
@@ -81,7 +81,7 @@ function(require)
 			alls.push(deep.get(schema));
 		else if(schema)
 			alls.push(schema);
-		var handler = new DeepHandler(options);
+		var handler = new deep.Chain(options);
 		handler.running = true;
 		deep.all(alls)
 		.done(function (results) {
@@ -96,7 +96,7 @@ function(require)
 				handler._entries = deep.query(obj, "./*", { resultType:"full", schema:schema });
 				return forceNextQueueItem(handler, deep.chain.values(handler), null);
 			}
-			else if(obj instanceof DeepHandler)
+			else if(obj instanceof deep.Chain)
 				handler._entries = [].concat(obj._entries);
 			else if(typeof obj === 'object' && obj && obj._isDQ_NODE_)
 				handler._entries = [obj];
@@ -134,14 +134,19 @@ function(require)
 	 * perform a deep-schema validation
 	 * @static
 	 * @method validate
-	 * @type {Function}
+	 * @param object the object to validate
+	 * @param schema the schema 
+	 * @return {deep.validate.Report} the validation report
 	 */
 	deep.validate = Validator.validate;
 	/**
-	 * perform a deep-schema partial validation
+	 * perform a deep-schema partial validation (only on certain field)
 	 * @static
 	 * @method partialValidation
-	 * @type {Function}
+	 * @param object the object to validate
+	 * @param fields the array of properties paths to validate
+	 * @param schema the schema 
+	 * @return {deep.validate.Report} the validation report
 	 */
 	deep.partialValidation = Validator.partialValidation;
 	/**
@@ -159,17 +164,29 @@ function(require)
 	 */
 	deep.isNode = (typeof process !== 'undefined' && process.versions && process.versions.node);
 	/**
-	 * perform a deep-rql query
+	 * perform a (synched) deep-rql filter on array
+	 * @example
+	 * 
+	 * 		deep.rql(["a","b","c"], "=a"); // return  ["a"]
+	 * 		
 	 * @static
 	 * @method rql
-	 * @type {Function}
+	 * @param {Array} array  the array to filter
+	 * @param {String} rqlFilter the rql filter to apply
+	 * @return {Array} the result aray
 	 */
-	deep.rql = require("./deep-rql");
+	deep.rql = require("./deep-rql").query;
 	/**
-	 * perform a deep-query query
+	 * perform a (synched) deep-query query
+	 * @example 
+	 *
+	 * 		deep.query({ hello:"world", test:1 }, "/*?=world"); // will return ["world"]
+	 * 
 	 * @method query
+	 * @param {Object} object any object to query
+	 * @param {String} query the query
 	 * @static
-	 * @type {Function}
+	 * @return {Array} the result aray
 	 */
 	deep.query = Querier.query;
 	/**
@@ -190,11 +207,12 @@ function(require)
 	 * shortcut for utils.interpret
 	 * @static
 	 * @method interpret
-	 * @type {Function}
+	 * @param {String} string the string to interpret
+	 * @param {Object} context the context injected for interpretation
+	 * @return {String} the result
 	 */
 	deep.interpret = utils.interpret;
 	deep.context = null;
-
 	deep.request = DeepRequest;
 
 	//_____________________________________________________________________ local (private) functions
@@ -386,7 +404,7 @@ function(require)
 		var newRes = [];
 		if(cloneValues)
 			newRes = newRes.concat(handler._entries);
-		var newHandler = new DeepHandler({
+		var newHandler = new deep.Chain({
 			_entries:newRes,
 			result: handler.reports.result,
 			failure: handler.reports.failure
@@ -397,12 +415,13 @@ function(require)
 	//_________________________________________________________________________________________
 	/**
 	 * Deep Chain Handler  : manage asynch and synch in one chain
-	 * @class DeepHandler
+	 * @class Chain
+	 * @namespace deep
 	 * @constructor
 	 * @param {Object} obj    [description]
 	 * @param {Object} schema [description]
 	 */
-	var DeepHandler = function(options)
+	deep.Chain = function(options)
 	{
 		options = options || {};
 		this.rethrow = (typeof options.rethrow !== "undefined")?options.rethrow:deep.rethrow;
@@ -420,8 +439,8 @@ function(require)
 			failure:options.failure || null
 		};
 	};
-	deep.Handler = DeepHandler;
-	DeepHandler.prototype = {
+	//deep.Chain = deep.Chain;
+	deep.Chain.prototype = {
 		querier:null,
 		synch:true,
 		_entries:null,
@@ -460,7 +479,7 @@ function(require)
 		 * 
 		 * @chainable
 		 * @method  reverse
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		*/
 		reverse:function () {
 			var self = this;
@@ -482,7 +501,7 @@ function(require)
 		 * @method  catchError
 		 * @chainable
 		 * @param {boolean} catchIt if true : catch all future chain error. (true by default) 
-		 * @return {DeepHandler}
+		 * @return {deep.Chain} the chain
 		*/
 		catchError:function (catchIt) {
 			var self = this;
@@ -567,7 +586,7 @@ function(require)
 		 * @async
 		 * @chainable
 		 * @param   {Function} func the callback that will receive the brancher (see above)
-		 * @return  {DeepHandler} this
+		 * @return  {deep.Chain} this
 		 */
 		branches:function ( func )
 		{
@@ -597,9 +616,9 @@ function(require)
 		 *	transparent false
 		 * 
 		 * @method  when
-		 * @param  {Promise} prom the promise to waiting for
+		 * @param  {deep.Promise} prom the promise to waiting for
 		 * @chainable
-		 * @return {Deephandler}
+		 * @return {deep.Chain}
 		 */
 		when:function(prom)
 		{
@@ -636,7 +655,7 @@ function(require)
 		 * @method  done
 		 * @chainable
 		 * @param  callback the calback function to handle success
-		 * @return Deephandler
+		 * @return {deep.Chain}
 		 */
 		done : function(callBack)
 		{
@@ -689,7 +708,7 @@ function(require)
 		 * @method  fail
 		 * @chainable
 		 * @param  callback the calback function to handle error
-		 * @return Deephandler
+		 * @return {deep.Chain}
 		 */
 		fail:function (callBack)
 		{
@@ -731,7 +750,7 @@ function(require)
 		 * @param  successCallBack the calback function to handle success
 		 * @chainable
 		 * @param  errorCallBack the calback function to handle error
-		 * @return {Deephandler} this
+		 * @return {deep.Chain} this
 		 */
 		then:function (successCallBack, errorCallBack)
 		{
@@ -770,7 +789,7 @@ function(require)
 		 * @param  start the index of range start
 		 * @param  end the index of range end
 		 * @chainable
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		range : function (start, end)
 		{
@@ -798,7 +817,7 @@ function(require)
 		 * @method  position
 		 * @param  name the name of position (its id/label)
 		 * @param  options optional object (no options for the moment)
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		position : function  (name, options)
 		{
@@ -821,9 +840,9 @@ function(require)
 		 * 
 		 * @method  back
 		 * @chainable
-		 * @param   name the name of the last position asked
-		 * @param  	options   (optional - no options for the moment)
-		 * @return {[type]}
+		 * @param  {String} name the name of the last position asked
+		 * @param   {Object}	options   (optional - no options for the moment)
+		 * @return {deep.Chain}
 		 */
 		back : function  (name, options)
 		{
@@ -860,12 +879,12 @@ function(require)
 		/**
 		 * keep only the first chain entries. remove all others
 		 *
-		 * asynch
+		 * 
 		 * inject selected entry value as chain success
 		 * 
 		 * @chainable
 		 * @method  first
-		 * @return DeepHandler
+		 * @return {deep.Chain}
 		 */
 		first : function  ()
 		{
@@ -881,12 +900,11 @@ function(require)
 		/**
 		 * keep only the last chain entries. remove all others
 		 *
-		 * asynch
 		 * inject selected entry value as chain success
 		 * 
 		 * @chainable
 		 * @method  last
-		 * @return DeepHandler
+		 * @return {deep.Chain}
 		 */
 		last : function  ()
 		{
@@ -909,7 +927,7 @@ function(require)
 		 * @method  parents
 		 * @chainable
 		 * @param boolean errorIfEmpty : if true and no parents was selected : throw an error 
-		 * @return DeepHandler
+		 * @return {deep.Chain}
 		 */
 		parents : function (errorIfEmpty)
 		{
@@ -935,7 +953,7 @@ function(require)
 		 * @chainable
 		 * @param  object the object to produce entries  (could be a retrievable string - e.g. "json::myobject.json" - see retrievable doc)
 		 * @param  schema the schema of the object  (could be a retrievable string - e.g. "json::myobject.json" - see retrievable doc)
-		 * @return [DeepHandler] this
+		 * @return {deep.Chain} this
 		 */
 		root:function (object, schema, options)
 		{
@@ -963,7 +981,7 @@ function(require)
 		 * @chainable
 		 * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
 		 * @param  {boolean} errorIfEmpty : if true : throw an error if query return nothing
-		 * @return {DeepHandler} this (chain handler)
+		 * @return {deep.Chain} this (chain handler)
 		 */
 		query : function(q, errorIfEmpty)
 		{
@@ -999,7 +1017,7 @@ function(require)
 		 * @method  select
 		 * @chainable
 		 * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		select : function(q)
 		{
@@ -1021,7 +1039,7 @@ function(require)
 		 * @method  schema
 		 * @chainable
 		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
-		 * @return {DeepHandler} this (chain handler)
+		 * @return {deep.Chain} this (chain handler)
 		 */
 		schema : function(schema)
 		{
@@ -1052,7 +1070,7 @@ function(require)
 		 * @method  schemaUp
 		 * @chainable
 		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
-		 * @return {DeepHandler} this (chain handler)
+		 * @return {deep.Chain} this (chain handler)
 		 */
 		schemaUp : function(schema, metaSchema)
 		{
@@ -1093,7 +1111,7 @@ function(require)
 		 * @method  schemaBottom
 		 * @chainable
 		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
-		 * @return {DeepHandler} this (chain handler)
+		 * @return {deep.Chain} this (chain handler)
 		 */
 		schemaBottom : function(schema, metaSchema)
 		{
@@ -1167,7 +1185,7 @@ function(require)
 		 * @method  up
 		 * @chainable
 		 * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		up : function()
 		{
@@ -1202,7 +1220,7 @@ function(require)
 		 * @method  bottom
 		 * @chainable
 		 * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		bottom : function()
 		{
@@ -1262,7 +1280,7 @@ function(require)
 		 * @param  {object} by  any value to assign (could be a retrievable string)
 		 * @chainable
 		 * @param  {object} options (optional) : it is the options object for the deep.get which will eventually retrieve the 'by' object (see deep.get)
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		replace : function (what, by, options)
 		{
@@ -1341,7 +1359,7 @@ function(require)
 		 * @chainable
 		 * @method  remove
 		 * @param  {string} what a query to select properties to replace 
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		remove : function (what)
 		{
@@ -1377,7 +1395,7 @@ function(require)
 		
 		 * @private
 		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-		 * @return {DeepPromise} a promise
+		 * @return {deep.Promise} a promise
 		 */
 		extendsChilds : function(entry)
 		{
@@ -1410,7 +1428,7 @@ function(require)
 		 * @method  extendsBackgrounds
 		 * @private
 		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-		 * @return {DeepPromise} a promise
+		 * @return {deep.Promise} a promise
 		 */
 		extendsBackgrounds:function (entry)
 		{
@@ -1495,8 +1513,8 @@ function(require)
    		second:true,
         a:true,
         b:true
-    });
-
+	});
+	@example
 	deep({
 	    sub:{
 	        backgrounds:[b],
@@ -1509,18 +1527,18 @@ function(require)
 	.query("/sub")
 	.run("myFunc")
 	.query("./obj")
-	 .equal({
+	.equal({
     	first:true,
    		second:true,
    		third:true,
         a:true,
         b:true
-    });
+	});
 
 		 * @chainable
 		 * @async
 		 * @method  flatten
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		flatten : function()
 		{
@@ -1586,7 +1604,7 @@ function(require)
 		 * @chainable
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
-		 * @return {DeepHandler}  the current chain handler (this)
+		 * @return {deep.Chain}  the current chain handler (this)
 		 */
 		transform : function (transformer)
 		{
@@ -1630,7 +1648,7 @@ function(require)
 		 * @chainable
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
-		 * @return {DeepHandler}  the current chain handler (this)
+		 * @return {deep.Chain}  the current chain handler (this)
 		 */
 		run : function (funcRef, args)
 		{
@@ -1687,7 +1705,7 @@ function(require)
 		 * @chainable
 		 * @param  {Function} func any function that need to be apply on each chain entry
 		 * @param  {Array} args the arguments to pass to 'func'
-		 * @return {DeepHandler}  the current chain handler (this)
+		 * @return {deep.Chain}  the current chain handler (this)
 		 */
 		exec : function (func, args)
 		{
@@ -1731,7 +1749,7 @@ function(require)
 		 * @method  treat
 		 * @param  {object} treatment
 		 * @chainable
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		treat: function(treatment) {
 			var self = this;
@@ -1782,7 +1800,7 @@ function(require)
 		 * @param  {Object} obj      the object to test equality
 		 * @param  {Function} callBack optional : any callBack to manage the report. Could return a promise.
 		 * @chainable
-		 * @return {DeepHandler}     this
+		 * @return {deep.Chain}     this
 		 */
 		valuesEqual : function(obj, callBack)
 		{
@@ -1828,7 +1846,7 @@ function(require)
 		 * @param  {*} obj      the object to test
 		 * @param  {Function}	optional. callBack a callBack to manage report
 		 * @chainable
-		 * @return {DeepHandler}        this
+		 * @return {deep.Chain}        this
 		 */
 		equal : function(obj, callBack)
 		{
@@ -1887,7 +1905,7 @@ function(require)
 		 * @method  validate
 		 * @param  {Object} options [description]
 		 * @chainable
-		 * @return {DeepHandler}         [description]
+		 * @return {deep.Chain}         [description]
 		 */
 		validate:function(options)
 		{
@@ -1941,11 +1959,10 @@ function(require)
 		 * log any provided arguments.
 		 * If no arguments provided : will log current success or error state.
 		 *
-		 * asynch
 		 * transparent true
 		 * 
 		 * @method  log
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 * @chainable
 		 */
 		log:function ()
@@ -1985,14 +2002,13 @@ function(require)
 		 * full option means print full entry in place of just entry.value
 		 * pretty option means print pretty json (indented)
 		 * 
-		 * asynch
 		 * transparent true
 		 *
 		 * @method  logValues
 		 * @chainable
 		 * @param title (optional) the title you want
-		 * @param options (optional) : an object { full:true|false, pretty:true|false }
-		 * @return {DeepHandler} this
+		 * @param options (optional) could contain : 'full':true|false, 'pretty':true|false 
+		 * @return {deep.Chain} this
 		 */
 		logValues:function (title, options)
 		{
@@ -2038,7 +2054,7 @@ function(require)
 		 * @method  val
 		 * @param callBack
 		 * @chainable
-		 * @return {Deephandler|entry.value} this or val
+		 * @return {deep.Chain|entry.value} this or val
 		 */
 		val:function  (callBack)
 		{
@@ -2067,17 +2083,17 @@ function(require)
 		},
 		/**
 		 *
-		 * will passe as argument each entries to callback.
+		 * will pass each entries to callback as argument .
 		 * callback could return promise. the chain will wait any promise before continuing.
 		 *
 		 *
-		 *	Chain Success injection : the results of callback calls (resolved if promises)
-		 *	Chain Error injection : the errors of callback calls (rejected if promises)
+		 * Chain Success injection : the results of callback calls (resolved if promises)
+		 * Chain Error injection : the errors of callback calls (rejected if promises)
 		 * 
 		 * @method  each
 		 * @chainable
 		 * @param callBack
-		 * @return {Deephandler} this
+		 * @return {deep.Chain} this
 		 */
 		each:function  (callBack)
 		{
@@ -2112,7 +2128,7 @@ function(require)
 		 * @method  values
 		 * @chainable
 		 * @param callBack
-		 * @return {Deephandler|Array} this or values
+		 * @return {deep.Chain|Array} this or values
 		 */
 		values:function  (callBack)
 		{
@@ -2150,7 +2166,7 @@ function(require)
 		 * @method  nodes
 		 * @chainable
 		 * @param callBack
-		 * @return {Deephandler|Array} this or entries
+		 * @return {deep.Chain|Array} this or entries
 		 */
 		nodes:function  (callBack)
 		{
@@ -2186,7 +2202,7 @@ function(require)
 		 * @chainable
 		 * @method  paths
 		 * @param callBack
-		 * @return {Deephandler|Array} this or paths
+		 * @return {deep.Chain|Array} this or paths
 		 */
 		paths:function  (callBack)
 		{
@@ -2224,7 +2240,7 @@ function(require)
 		 * @chainable
 		 * @method  schemas
 		 * @param callBack
-		 * @return {Deephandler|Array} this or schemas
+		 * @return {deep.Chain|Array} this or schemas
 		 */
 		schemas:function  (callBack)
 		{
@@ -2262,7 +2278,7 @@ function(require)
 		 * @chainable
 		 * @method delay
 		 * @param  {number} ms
-		 * @return {Deephandler} this
+		 * @return {deep.Chain} this
 		 */
 		delay:function (ms)
 		{
@@ -2293,7 +2309,7 @@ function(require)
 		 * @method deepLoad
 		 * @param  {object} context (optional) a context to interpret strings before retrieving
 		 * @chainable
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		deepLoad:function(context)
 		{
@@ -2358,10 +2374,10 @@ function(require)
 		 * Chain success injection : array of loaded content.
 		 * 	
 		 * @method load
-		 * @param  {string} (optional) request
-		 * @param  {object} (optional) context the context to interpret strings
+		 * @param  {string} request (optional) 
+		 * @param  {object} context (optional) the context to interpret strings
 		 * @chainable
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		load:function (request, context)
 		{
@@ -2460,7 +2476,7 @@ function(require)
 		 * @method deepInterpret
 		 * @chainable
 		 * @param  {object} context the oebjct to inject in strings
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		deepInterpret:function(context)
 		{
@@ -2512,7 +2528,7 @@ function(require)
 		 * @method interpret
 		 * @chainable
 		 * @param  {object} context the context to inject in strings
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		interpret:function(context)
 		{
@@ -2732,7 +2748,7 @@ function(require)
 		 * @param  {string} localKey  the name of the localKey to match with Collection items
 		 * @param  {string} foreignKey  the name of the foreignKey to match with current entries
 		 * @param  {string} whereToStore the path where save map result in each entries
-		 * @return {DeepHandler} this
+		 * @return {deep.Chain} this
 		 */
 		mapOn: function(what, localKey, foreignKey, whereToStore)
 		{
@@ -2799,6 +2815,7 @@ function(require)
 
 	deep.chain = {
 		nextQueueItem:nextQueueItem,
+		forceNextQueueItem:forceNextQueueItem,
 		addInQueue:addInQueue,
 		stringify:function (handler, options)
 		{
@@ -2861,18 +2878,21 @@ function(require)
 
 	/**
 	 * A deep implementation of Deferred object (see promise on web)
-	 * @class DeepDeferred
+	 * @namespace deep
+	 * @class Deferred
 	 * @constructor
 	 */
-	var DeepDeferred = function ()
+	deep.Deferred = function ()
 	{
+		if (!(this instanceof deep.Deferred)) return new deep.Deferred();
 		this.context = deep.context;
 		this.running = true;
 		this.queue = [];
-		this.promise = new DeepPromise(this);
+		this.promise = new deep.Promise(this);
+		return this;
 	};
 
-	DeepDeferred.prototype = {
+	deep.Deferred.prototype = {
 		context:null,
 		promise:null,
 		rejected:false,
@@ -2884,7 +2904,7 @@ function(require)
 		 * resolve the Deferred and so the associated promise
 		 * @method resolve
 		 * @param  {Object} argument the resolved object injected in promise
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		resolve:function (argument)
 		{
@@ -2906,7 +2926,7 @@ function(require)
 		 * reject the Deferred and so the associated promise
 		 * @method reject
 		 * @param  {Object} argument the rejected object injected in promise
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		reject:function (argument)
 		{
@@ -2922,7 +2942,7 @@ function(require)
 		 * cancel the Deferred and so the associated promise
 		 * @method cancel
 		 * @param  {Object} reason the cancel reason object injected in promise
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		cancel:function (reason)
 		{
@@ -2937,7 +2957,7 @@ function(require)
 		 * @method then
 		 * @param  {Function} sc successHandler
 		 * @param  {Function} ec errorhandler
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		then:function (sc,ec) {
 			this.promise.then(s,e);
@@ -2946,7 +2966,7 @@ function(require)
 		 * add .done callback handler in promise chain
 		 * @method done
 		 * @param  {Function} argument successHandler
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		done:function (argument) {
 			this.promise.done(argument);
@@ -2955,7 +2975,7 @@ function(require)
 		 * add .fail callback handler in promise chain
 		 * @method fail
 		 * @param  {Function} argument successHandler
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		fail:function (argument) {
 			this.promise.fail(argument);
@@ -2964,11 +2984,12 @@ function(require)
 	//________________________________________________________ PROMISES
 	/**
 	 * a deep implementation of Promise (see web for Promise) 
-	 * @class DeepPromise
+	 * @namespace deep
+	 * @class Promise
 	 * @constructor
-	 * @param {DeepDeferred} deferred
+	 * @param {deep.Deferred} deferred
 	 */
-	var DeepPromise = function (deferred)
+	deep.Promise = function (deferred)
 	{
 		this.running = true;
 		if(deferred)
@@ -2982,7 +3003,7 @@ function(require)
 			this.queue = [];
 		}
 	};
-	DeepPromise.prototype = {
+	deep.Promise.prototype = {
 		rejected:false,
 		resolved:false,
 		canceled:false,
@@ -2993,7 +3014,7 @@ function(require)
 		 * add .done callback handler in promise chain
 		 * @method done
 		 * @param  {Function} argument successHandler
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		done:function (callBack)
 		{
@@ -3010,7 +3031,7 @@ function(require)
 					return;
 				}
 				var r = callBack(s);
-				if(r && (r instanceof DeepHandler || r._isBRANCHES_))
+				if(r && (r instanceof deep.Chain || r._isBRANCHES_))
 					r = deep.promise(r);
 				if(r && typeof r.then === 'function')
 					r.done(function (argument)
@@ -3049,7 +3070,7 @@ function(require)
 		 * add .fail callback handler in promise chain
 		 * @method fail
 		 * @param  {Function} argument successHandler
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		fail:function (callBack)
 		{
@@ -3065,7 +3086,7 @@ function(require)
 					return;
 				}
 				var r = callBack(e);
-				if(r && (r instanceof DeepHandler || r._isBRANCHES_))
+				if(r && (r instanceof deep.Chain || r._isBRANCHES_))
 					r = deep.when(r);
 				if(r && typeof r.then === 'function')
 					r.done(function (argument)
@@ -3108,7 +3129,7 @@ function(require)
 		 * @method then
 		 * @param  {Function} sc successHandler
 		 * @param  {Function} ec errorhandler
-		 * @return {DeepDeferred} this
+		 * @return {deep.Deferred} this
 		 */
 		then:function (successCallBack, errorCallBack)
 		{
@@ -3195,7 +3216,7 @@ function(require)
 	function createImmediatePromise(result)
 	{
 		//console.log("deep.createImmediatePromise : ", result instanceof Error)
-		var prom = new DeepPromise();
+		var prom = new deep.Promise();
 		prom.running = false;
 		if(result instanceof Error)
 		{
@@ -3215,7 +3236,7 @@ function(require)
 	 * @static 
 	 * @method promise
 	 * @param  {Object} arg  an object on when create a promise
-	 * @return {DeepPromise} a promise
+	 * @return {deep.Promise} a promise
 	 */
 	deep.promise = function(arg)
 	{
@@ -3224,16 +3245,16 @@ function(require)
 			return createImmediatePromise(arg);
 		if(arg._isBRANCHES_)		// chain.branches case
 			return deep.all(arg.branches);
-		if(arg instanceof DeepHandler)
+		if(arg instanceof deep.Chain)
 		{
-			//console.log("DEEP promise with deephandler", arg.running);
+			//console.log("DEEP promise with deep.Chain", arg.running);
 			//if(arg.rejected)
-				//throw new Error("error : deep.promise : DeepHandler has already been rejected.");
+				//throw new Error("error : deep.promise : deep.Chain has already been rejected.");
 			//if(arg.running) // need to wait rejection or success
 			//{
 				var def = deep.Deferred();
 				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
-					//console.log("deep.promise of DeepHandler : added error")
+					//console.log("deep.promise of deep.Chain : added error")
 					def.reject(error);
 				});
 				arg.done(function (success) { // simply chain done handler in deep chain
@@ -3243,7 +3264,7 @@ function(require)
 							def.reject(error);
 						})
 						.done(function (success) {
-							console.log("deep.promise of DeepHandler : done : error ?", success instanceof Error );
+							console.log("deep.promise of deep.Chain : done : error ?", success instanceof Error );
 							def.resolve(success);
 						});
 					else
@@ -3268,11 +3289,11 @@ function(require)
 	 * @static 
 	 * @method when
 	 * @param  {Object} arg an object to waiting for
-	 * @return {DeepPromise} a promise
+	 * @return {deep.Promise} a promise
 	 */
 	deep.when = function (arg)
 	{
-		if(arg instanceof DeepHandler)
+		if(arg instanceof deep.Chain)
 			return deep.promise(arg);
 		if(arg && typeof arg.then === 'function')
 			return arg;
@@ -3285,7 +3306,7 @@ function(require)
 	 * @static 
 	 * @method all
 	 * @param  {Object} arg an array of objects to waiting for
-	 * @return {DeepPromise} a promise
+	 * @return {deep.Promise} a promise
 	 */
 	deep.all = function()
 	{
@@ -3339,11 +3360,14 @@ function(require)
 	promise.when = deep.when;
 	promise.promise = deep.promise;
 	promise.all = deep.all;
-	deep.Deferred = promise.Deferred = function (){
+	/*deep.Deferred = promise.Deferred = function (){
 		return new DeepDeferred();
-	};
+	};*/
 	//______________________________________
-	deep.DeepPromise = DeepPromise;
+	//deep.Promise = deep.Promise;
+
+	deep.handlers = {};
+	deep.handlers.decorations = {};
 	//________________________________________________________ DEEP CHAIN UTILITIES
 
 	/**
@@ -3353,7 +3377,7 @@ function(require)
 	 * @method sequence
 	 * @param  {String} funcs an array of functions to execute sequentially
 	 * @param  {Object} args (optional) some args to pass to first functions
-	 * @return {DeepHandler} a handler that hold result 
+	 * @return {deep.Chain} a handler that hold result 
 	 */
 	deep.sequence = function (funcs, args)
 	{
@@ -3391,474 +3415,7 @@ function(require)
 		return deep.promise(def);
 	};
 
-	//_______________________________________________________________________________ STORES
-
-	/**
-	 *
-	 * how manage collections and objects as http styled stores
-	 * 
-	 * @submodule deep.stores
-	 */
-	deep.stores = {};
-	deep.handlers = {};
-	deep.handlers.decorations = {};
-	deep.store = function (name, definer, options)
-	{
-		options = options || {};
-		var store = null;
-		if(!definer)
-		{
-			if(!deep.stores[name])
-				throw new Error("deep.store(name) : no store found with : ", name);
-			return deep.stores[name];
-		}
-		else if(definer instanceof Array)
-			store = deep.stores[name] = deep.store.ArrayStore(definer, options);
-		else if(definer instanceof deep.store.DeepStore)
-			store = deep.stores[name] = definer.create(name, options);
-		else store = deep.stores[name] = deep.store.ObjectStore(definer, options);
-		store.name = name;
-		store.options = options;
-		return store;
-	};
-	deep.Handler.prototype.store = function (argument)
-	{
-		var self = this;
-		var store = null;
-		if(typeof argument === 'string')
-		{
-			if(!deep.stores[argument])
-				throw new Error("no store found with : ",argument);
-			store = deep.stores[argument];
-		}
-		else
-			store = argument;
-		var func = function (s,e) {
-			//console.log("chain.store : set store : ", store.name);
-			self._store = store;
-			deep.chain.position(self, store.name);
-			forceNextQueueItem(self, s, e);
-		};
-		deep.handlers.decorations.store(store, self);
-		addInQueue.apply(this,[func]);
-		return self;
-	};
-	deep.handlers.decorations.store = function (store, handler) {
-		//console.log("store decoration");
-		deep.utils.up({
-			_store : deep.collider.replace(store),
-
-			get : deep.compose
-			.condition(typeof store.get === "function")
-			.createIfNecessary()
-			.replace(function (id, options) {
-				var self = this;
-				if(id == "?" || !id)
-					id = "";
-
-				var func = function (s,e) {
-					self._store.get(id, options)
-					.done(function (success) {
-						//console.log("deep(...).store : get : success : ", success);
-						if(success instanceof Array)
-							self._entries = deep(success).nodes();
-						else
-							self._entries = [deep.Querier.createRootNode( success )];
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				addInQueue.apply(this,[func]);
-				self.range = deep.Handler.range;
-				return self;
-			}),
-
-			post : deep.compose
-			.condition(typeof store.post === "function")
-			.createIfNecessary()
-			.replace(function (object, id, options) {
-				var self = this;
-				var func = function (s,e)
-				{
-					self._store.post(object || deep.chain.val(self),id, options)
-					.done(function (success) {
-						self._entries = [deep.Querier.createRootNode(success)];
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						console.log("deeo.chain.store.post : post failed : ", error);
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-
-			put : deep.compose
-			.condition(typeof store.put === "function")
-			.createIfNecessary()
-			.replace(function (object, options) {
-				var self = this;
-				//console.log("deep.chain.put : add in chain : ", object, id);
-				var func = function (s,e) {
-					//console.log("deep.chain.put : ", object, id);
-					self._store.put(object  || deep.chain.val(self),id, options)
-					.done(function (success) {
-						self._entries = [deep.Querier.createRootNode(success)];
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-
-			patch : deep.compose
-			.condition(typeof store.patch === "function")
-			.createIfNecessary()
-			.replace(function (object, id, options) {
-				var self = this;
-				var func = function (s,e) {
-					self._store.patch(object  || deep.chain.val(self),id, options)
-					.done(function (success) {
-						self._entries = [deep.Querier.createRootNode(success)];
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-
-			del : deep.compose
-			.condition(typeof store.del === "function")
-			.createIfNecessary()
-			.replace(function (id, options) {
-				var self = this;
-				var func = function (s,e) {
-					var val = deep.chain.val(self);
-					self._store.del(id || val.id, options)
-					.done(function (success) {
-						self._entries = [deep.Querier.createRootNode(success)];
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-
-			rpc : deep.compose
-			.condition(typeof store.rpc === "function")
-			.createIfNecessary()
-			.replace(function (method, body, uri, options) {
-				var self = this;
-				var func = function (s,e) {
-					self._store.rpc(method, body, uri, options)
-					.done(function (success) {
-						self._entries = [deep.Querier.createRootNode(success)];
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-
-			range : deep.compose
-			.condition(typeof store.range === "function")
-			.createIfNecessary()
-			.replace(function (arg1, arg2, uri, options) {
-				var self = this;
-				var func = function (s,e) {
-					self._store.range(arg1, arg2, uri, options)
-					.done(function (success) {
-						self._entries = deep(success.results).nodes();
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			}),
-
-			bulk : deep.compose
-			.condition(typeof store.bulk === "function")
-			.createIfNecessary()
-			.replace(function (arr, uri, options) {
-				var self = this;
-				var func = function (s,e) {
-					self._store.bulk(arr, uri, options)
-					.done(function (success) {
-						self._entries = deep(success).nodes();
-						forceNextQueueItem(self, success, null);
-					})
-					.fail(function (error) {
-						forceNextQueueItem(self, null, error);
-					});
-				};
-				self.range = deep.Handler.range;
-				addInQueue.apply(this,[func]);
-				return self;
-			})
-		}, handler);
-		return handler;
-	};
-
-	deep.store.DeepStore = function () {};
-	deep.store.DeepStore.prototype = {};
-
-	deep.store.ArrayStore = function (arr, options) {
-		var store = new deep.store.DeepStore();
-		options = options || {};
-		var stock = {
-			collection:arr
-		};
-		store.get = function (id) {
-			if(id === "")
-				id = "?";
-			if( id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
-				return deep(stock).query("collection/*"+id).store( this);
-			return deep(stock).query("./collection/*?id="+id).store(this);
-		};
-		store.put = function (object, id) {
-			id = id || object.id;
-			if(options.schema)
-				deep(object)
-				.validate(options.schema)
-				.fail(function (error) {
-					object = error;
-				})
-				.root(stock)
-				.replace("./collection/*?id="+id, object);
-			else
-				deep(stock)
-				.replace("./collection/*?id="+id, object);
-			return deep(object).store(this);
-		};
-		store.post = function (object, id) {
-			id = id || object.id;
-			if(!id)
-				object.id = id = new Date().valueOf(); // mongo styled id
-			if(options.schema)
-				deep(object)
-				.validate(options.schema)
-				.done(function (report) {
-					arr.push(object);
-				})
-				.fail(function (error) {
-					object = error;
-				});
-			else
-				arr.push(object);
-			return deep(object).store(this);
-		};
-		store.del = function (id) {
-			return deep(stock).remove("./collection/*?id="+id).store(this);
-		};
-		store.patch = function (object, id) {
-			return deep(stock).query("./collection/*?id="+id).up(object).store(this);
-		};
-		store.range = function (start, end) {
-			return deep(stock.collection).range(start,end).store(this);
-		};
-		return store;
-	};
-
-	deep.store.ObjectStore = function (obj, options)
-	{
-		var store = new deep.store.DeepStore();
-		options = options || {};
-		store.get = function (id)
-		{
-			if(id[0] == "." || id[0] == "/")
-				return deep(obj).query(id).store(this);
-			return deep(obj).query("./"+id).store(this);
-		};
-		store.put = function (object, query)
-		{
-			console.log("ObjectStore.put : ", object, query);
-			deep(obj)
-			.setByPath(query, object);
-			return deep(object).store(this);
-		};
-		store.post = function (object, path)
-		{
-			if(options.schema)
-				deep(object)
-				.validate(options.schema)
-				.fail(function (error) {
-					object = error;
-				})
-				.root(obj)
-				.setByPath(path, object);
-			else
-				deep(obj)
-				.setByPath(path, object);
-			return deep(object).store(this);
-		};
-		store.del = function (id)
-		{
-			var res = [];
-			if(id[0] == "." || id[0] == "/")
-				deep(obj).remove(id)
-				.done(function (removed)
-				{
-					res = removed;
-				});
-			else
-				deep(obj).remove("./"+id)
-				.done(function (removed)
-				{
-					res = removed;
-				});
-			return deep(res).store(this);
-		};
-		store.patch = function (object, id)
-		{
-			if(id[0] == "." || id[0] == "/")
-				return deep(obj).query(id).up(object).store(this);
-			return deep(obj).query("./"+id).up(object).store(this);
-		};
-		return store;
-	};
-
-
-	/**
-	 * retrieve request (if string in retrievable format) (e.g. "json::test.json")
-	 * perform an http get
-	 * if request is not a string : will just return request
-	 * @for deep
-	 * @static 
-	 * @method get
-	 * @param  {String} request a string to retrieve
-	 * @param  {Object} options (optional)
-	 * @return {DeepHandler} a handler that hold result 
-	 */
-	deep.get = function  (request, options)
-	{
-		if(typeof request !== "string")
-			return request;
-		var infos = deep.parseRequest(request);
-		if(!infos.store)
-			if(!infos.protocole)
-				return request;
-			else
-				return new Error("no store found with : ", request);
-		if(infos.queryThis)
-			return infos.store.get(infos, options);
-		if(infos.method )
-		{
-			if(infos.method !== "range" || !infos.store.range)
-				return deep(new Error("store doesn't contain method : ",request));
-			var splitted = infos.uri.split("?");
-			var rangePart = splitted.shift();
-			var query = splitted.shift() || "";
-			if(query !== "" && query[0] !== "?")
-				query = "?"+query;
-			var rn = rangePart.split(",");
-			var start = parseInt(rn[0], 10);
-			var end = parseInt(rn[1], 10);
-			return infos.store[infos.method](start, end, query, options);
-		}
-		else
-			return infos.store.get(infos.uri, options);
-	};
-	/**
-	 * retrieve an array of retrievable strings (e.g. "json::test.json")
-	 * if request is not a string : will just return request
-	 * @for deep
-	 * @static 
-	 * @method getAll
-	 * @param  {String} requests a array of strings to retrieve
-	 * @param  {Object} options (optional)
-	 * @return {DeepHandler} a handler that hold result 
-	 */
-	deep.getAll = function  (requests, options)
-	{
-		var alls = [];
-		requests.forEach(function (request) {
-			alls.push(deep.get(request,options));
-		});
-		return deep.all(alls);
-	};
-
-	deep.parseRequest = function (request) {
-		var protoIndex = request.indexOf("::");
-		var protoc = null;
-		var uri = request;
-		var store = null;
-		var method = null;
-		if(protoIndex > -1)
-		{
-			protoc = request.substring(0,protoIndex);
-			var subprotoc = protoc.split(".");
-			if(subprotoc.length > 1)
-			{
-				protoc = subprotoc.shift();
-				method = subprotoc.shift();
-			}
-			uri = request.substring(protoIndex+2);
-		}
-		//console.log("parseRequest : protoc : ", protoc, " - uri : ", uri);
-		var queryThis = false;
-		if(request[0] == '#' || protoc == "first" || protoc == "last" || protoc == "this")
-		{
-			store = deep.stores.queryThis;
-			queryThis = true;
-		}
-		else if(!protoc)
-		{
-			//console.log("no protocole : try extension");
-			for( var i in deep.stores )
-			{
-				var storez = deep.stores[i];
-				if(!storez.extensions)
-					continue;
-				for(var j =0; j < storez.extensions.length; ++j)
-				{
-					var extension = storez.extensions[j];
-					if(uri.match(extension))
-					{
-						store = storez;
-						break;
-					}
-				}
-				if(store)
-					break;
-			}
-		}
-		else
-			store = deep.stores[protoc];
-		var res = {
-			request:request,
-			queryThis:queryThis,
-			store:store,
-			protocole:protoc,
-			method:method,
-			uri:uri
-		};
-		//console.log("deep.parseRequest : results : ", res);
-		return res;
-	};
+	
 
 	//__________________________________________________________________ TREATMENTS
 
@@ -3932,70 +3489,9 @@ function(require)
 		});
 	};
 
-	//__________________________________________________________________________ CORE STORES
-	deep.stores.queryThis = {
-		get:function (request, options) {
-			//console.log("deep.stores.queryThis : ", request)
-			options = options || {};
-			var root = options.root;
-			var basePath = options.basePath;
-			var infos = request;
-			if(typeof infos === 'string')
-				infos = deep.parseRequest(infos);
-			if(infos.uri[0] == '#')
-				infos.uri = infos.uri.substring(1);
-			var res = null;
-			if(root._isDQ_NODE_)
-				res = Querier.query(root, infos.uri, { keepCache:false });
-			else
-			{
-				basePath = basePath || '';
-				if(basePath !== '' && infos.uri.substring(0,3) == "../")
-					infos.uri = ((basePath[basePath.length-1] != "/")?(basePath+"/"):basePath)+infos.uri;
-				res = Querier.query(root, infos.uri, { keepCache:false });
-			}
-			if(res)
-				switch(infos.protocole)
-				{
-					case "first" :
-						res = res[0] || null;
-						break;
-					case "last" :
-						res = res[res.length-1] || null;
-						break;
-				}
-			//if(infos.protocole == "first")
-			//	console.log("QUERY THIS : "+request + " - base path : "+basePath)//, " - results : ", JSON.stringify(res, null, ' '));
-			return res;
-		}
-	};
+	var stores = require( "deep/deep-stores" )(deep);
 
-	deep.stores.instance = {
-		get:function (id, options) {
-			var cl = require(id);
-			//console.log("DeepRequest.instance : ", cl);
-			if(typeof cl === 'function' && cl.prototype)
-				return deep(new cl());
-			console.log("DeepRequest : could not instanciate : "+JSON.stringify(info));
-			throw new Error("DeepRequest : could not instanciate : "+JSON.stringify(info));
-		}
-	};
-	deep.stores.aspect = {
-		get:function (id, options) {
-			return deep(require(id)).then(function(res){
-				return res.aspect;
-			}, function(res){
-				return res;
-			});
-		}
-	};
-	deep.stores.js = {
-		get:function (id, options) {
-			return deep(require(id));
-		}
-	};
-
-
+	
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________

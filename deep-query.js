@@ -174,10 +174,11 @@ define(function defineDeepQuery(require)
 	var QueryError = Error;
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
 
-/**
- * @class DeepQuery
- * @constructor
- */
+	/**
+	 * @class Query
+	 * @namespace deep
+	 * @constructor
+	 */
 	var DQ = function(){}
 
 	DQ.prototype.analyseEreg = function analyseEreg(path, parts)
@@ -221,6 +222,7 @@ define(function defineDeepQuery(require)
 	}		
 /**
  * analyse path and return parsed paths objects
+ * @method analyse
  * @param  {String} path
  * @return {Array} parsed paths
  */

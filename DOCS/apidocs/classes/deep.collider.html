@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DeepQuery - deepjs Javascript Framework</title>
+    <title>deep.collider - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,21 +41,51 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="../classes/Collider.html">Collider</a></li>
-            
                 <li><a href="../classes/deep.html">deep</a></li>
             
-                <li><a href="../classes/DeepDecorator.html">DeepDecorator</a></li>
+                <li><a href="../classes/deep.Chain.html">deep.Chain</a></li>
             
-                <li><a href="../classes/DeepDeferred.html">DeepDeferred</a></li>
+                <li><a href="../classes/deep.collider.html">deep.collider</a></li>
             
-                <li><a href="../classes/DeepHandler.html">DeepHandler</a></li>
+                <li><a href="../classes/deep.collider.array.html">deep.collider.array</a></li>
             
-                <li><a href="../classes/DeepPromise.html">DeepPromise</a></li>
+                <li><a href="../classes/deep.collider.assert.html">deep.collider.assert</a></li>
             
-                <li><a href="../classes/DeepQuery.html">DeepQuery</a></li>
+                <li><a href="../classes/deep.collider.object.html">deep.collider.object</a></li>
             
-                <li><a href="../classes/utils.html">utils</a></li>
+                <li><a href="../classes/deep.compose.html">deep.compose</a></li>
+            
+                <li><a href="../classes/deep.Composer.html">deep.Composer</a></li>
+            
+                <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
+            
+                <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
+            
+                <li><a href="../classes/deep.Query.html">deep.Query</a></li>
+            
+                <li><a href="../classes/deep.Role.html">deep.Role</a></li>
+            
+                <li><a href="../classes/deep.roles.html">deep.roles</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+            
+                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+            
+                <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
+            
+                <li><a href="../classes/deep.stores.instance.html">deep.stores.instance</a></li>
+            
+                <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
+            
+                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
+            
+                <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
+            
+                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
+            
+                <li><a href="../classes/deep.utils.html">deep.utils</a></li>
+            
+                <li><a href="../classes/deep.Validator.html">deep.Validator</a></li>
             
             </ul>
 
@@ -76,8 +106,6 @@
                 <li><a href="../modules/deep-schema.html">deep-schema</a></li>
             
                 <li><a href="../modules/deep-stores.html">deep-stores</a></li>
-            
-                <li><a href="../modules/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../modules/utils.html">utils</a></li>
             
@@ -116,21 +144,17 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>DeepQuery Class</h1>
+                        <h1>deep.collider Class</h1>
 <div class="box meta">
     
 
     
 
     
-        <div class="foundat">
-            Defined in: <a href="../files/deep-query.js.html#l177"><code>deep-query.js:177</code></a>
-        </div>
-    
 
     
         
-            Module: <a href="../modules/deep-query.html">deep-query</a><br>
+            Module: <a href="../modules/deep-collider.html">deep-collider</a><br>
             Parent Module: <a href="../modules/deep.html">deep</a>
         
     
@@ -144,63 +168,6 @@
     
 </div>
 
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_DeepQuery" class="method item">
-    <h3 class="name"><code>DeepQuery</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-query.js.html#l177"><code>deep-query.js:177</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-    </div>
 
 
 <div id="classdocs" class="tabview">
@@ -226,14 +193,7 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_createEntry">createEntry</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_createRootNode">createRootNode</a>
+                                <a href="#method_around">around</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -242,14 +202,52 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_query">query</a>
+                                <a href="#method_copyTo">copyTo</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_query">query</a>
+                                <a href="#method_log">log</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_remove">remove</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_replace">replace</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_validate">validate</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_wrap">wrap</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -273,8 +271,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_createEntry" class="method item">
-    <h3 class="name"><code>createEntry</code></h3>
+                    <div id="method_around" class="method item">
+    <h3 class="name"><code>around</code></h3>
 
     
         <div class="args">
@@ -282,13 +280,7 @@
             
                 <li class="arg">
                     
-                        <code>key</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>ancestor</code>
+                        <code>wrapper</code>
                     
                 </li>
             
@@ -298,131 +290,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">type</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-query.js.html#l444"><code>deep-query.js:444</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>create a DeepQuery entry that hold info of objet node (path, value, ancestor, etc)</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">key</code>
-                        <span class="type">type</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">ancestor</code>
-                        <span class="type">type</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">type</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_createRootNode" class="method item">
-    <h3 class="name"><code>createRootNode</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>obj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>schema</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Object</span>
+            <span class="type">Function</span>
         </span>
     
 
@@ -451,7 +319,7 @@
             
         
         
-        <a href="../files/deep-query.js.html#l834"><code>deep-query.js:834</code></a>
+        <a href="../files/deep-collider.js.html#l71"><code>deep-collider.js:71</code></a>
         
         </p>
 
@@ -462,7 +330,7 @@
     </div>
 
     <div class="description">
-        <p>create a root DeepQuery node</p>
+        <p>simply wrap collided value by wrapper function</p>
     </div>
 
     
@@ -473,8 +341,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">obj</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">wrapper</code>
+                        <span class="type">Function</span>
                     
 
                     
@@ -485,6 +353,477 @@
 
                     
                 </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Function</span>:
+                    
+                    the collider
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_copyTo" class="method item">
+    <h3 class="name"><code>copyTo</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>object</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>path</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-collider.js.html#l55"><code>deep-collider.js:55</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>copy collided value somewhere</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">object</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>where copy value</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">path</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>a dot delimitted path in object where copy value</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Function</span>:
+                    
+                    the collider
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_log" class="method item">
+    <h3 class="name"><code>log</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-collider.js.html#l101"><code>deep-collider.js:101</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>log collided value</p>
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Function</span>:
+                    
+                    the collider
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_remove" class="method item">
+    <h3 class="name"><code>remove</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-collider.js.html#l134"><code>deep-collider.js:134</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>remove collided value</p>
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Function</span>:
+                    
+                    the collider
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_replace" class="method item">
+    <h3 class="name"><code>replace</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>newValue</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-collider.js.html#l85"><code>deep-collider.js:85</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>replace collided value by new one</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">newValue</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the value to assign</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Function</span>:
+                    
+                    the collider
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_validate" class="method item">
+    <h3 class="name"><code>validate</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>schema</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-collider.js.html#l116"><code>deep-collider.js:116</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>validate collided value with provided schema.
+throw an error with report if not valid.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
             
                 <li class="param">
                     
@@ -512,9 +851,9 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">Object</span>:
+                        <span class="type">Function</span>:
                     
-                    a DeepQuery root node
+                    the collider
                 
             </div>
         </div>
@@ -524,8 +863,8 @@
 </div>
 
                 
-                    <div id="method_query" class="method item">
-    <h3 class="name"><code>query</code></h3>
+                    <div id="method_wrap" class="method item">
+    <h3 class="name"><code>wrap</code></h3>
 
     
         <div class="args">
@@ -533,19 +872,13 @@
             
                 <li class="arg">
                     
-                        <code>obj</code>
+                        <code>wrapper</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>q</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>options</code>
+                        <code>wrapped</code>
                     
                 </li>
             
@@ -555,153 +888,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-query.js.html#l731"><code>deep-query.js:731</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>perform the query on object</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">obj</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>any object to query on</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">q</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the query</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>(optional) :  options : resultType:"full" when you want to get the array of nodes results, not only the values results.</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    an array of results (maybe empty)
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_query" class="method item">
-    <h3 class="name"><code>query</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>root</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>path</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>options</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
+            <span class="type">Function</span>
         </span>
     
 
@@ -730,7 +917,7 @@
             
         
         
-        <a href="../files/deep-query.js.html#l818"><code>deep-query.js:818</code></a>
+        <a href="../files/deep-collider.js.html#l40"><code>deep-collider.js:40</code></a>
         
         </p>
 
@@ -741,7 +928,7 @@
     </div>
 
     <div class="description">
-        <p>perform the query (static access of query method)</p>
+        <p>wrap wrapped function with wrapper function. wrapped will receive ollided value as argument.</p>
     </div>
 
     
@@ -752,8 +939,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">root</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">wrapper</code>
+                        <span class="type">Function</span>
                     
 
                     
@@ -767,23 +954,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">path</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">wrapped</code>
+                        <span class="type">Function</span>
                     
 
                     
@@ -806,9 +978,9 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">Array</span>:
+                        <span class="type">Function</span>:
                     
-                    results
+                    the wrapper
                 
             </div>
         </div>

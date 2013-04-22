@@ -162,11 +162,17 @@ define(function(require, exports, module){
 	// console.log("Deep-compose init");
 
 	/**
-	 * @class DeepDecorator
+	 *Not intended to be used directly.
+	 *
+	 * Use deep.compose... in place.
+	 * 
+	 * @class Composer
+	 * @namespace deep
+	 * @private
 	 * @constructor
 	 * @param {Array} stack stack of functions to chain
 	 */
-	var DeepDecorator = function (stack) {
+	var Composer = function (stack) {
 		this.stack = stack || [];
 	};
 
@@ -235,7 +241,7 @@ define(function(require, exports, module){
 			return promise.promise(def);
 		};
 	}
-	DeepDecorator.prototype = {
+	Composer.prototype = {
 		/**
 		 * 	If it returns something, it will be injected as argument(s) in next function.
 			If it return nothing, th original arguments are injected in next function.
@@ -305,7 +311,7 @@ define(function(require, exports, module){
 		 * @method around
 		 * @chainable
 		 * @param  {Function} wrapper a fonction to wrap the collided one
-		 * @return {DeepDecorator} this
+		 * @return {Composer} this
 		 */
 		around : function (wrapper)
 		{
@@ -345,7 +351,7 @@ define(function(require, exports, module){
 		@method after
 		@chainable
 		@param {Function} argument the function to execute AFTER the collided one
-		@return {DeepDecorator} this
+		@return {Composer} this
 		*/
 		after : function (argument)
 		{
@@ -361,7 +367,7 @@ define(function(require, exports, module){
 		 * @method fail
 		 * @chainable
 		 * @param  {Function} fn
-		 * @return {DeepDecorator} this
+		 * @return {Composer} this
 		 */
 		fail : function (fn)
 		{
@@ -392,7 +398,7 @@ define(function(require, exports, module){
 		 * @method replace
 		 * @chainable
 		 * @param  {Function} argument
-		 * @return {DeepDecorator} this
+		 * @return {Composer} this
 		 */
 		replace : function (argument)
 		{
@@ -458,9 +464,10 @@ define(function(require, exports, module){
 			return this;
 		}
 	};
+
 	var createStart = function (decorator)
 	{
-		decorator = decorator || new DeepDecorator();
+		decorator = decorator || new Composer();
 		var start = function () {
 			if(!decorator.createIfNecessary)
 				throw new Error("Decorator not applied ! (start)");
@@ -506,11 +513,18 @@ define(function(require, exports, module){
 		return start;
 	};
 
+	/**
+	 * @namespace deep
+	 * @class compose
+	 * @static
+	 * @param  {[type]} decorator
+	 * @return {[type]}
+	 */
 	var compose = {
-		Decorator:DeepDecorator,
+		Decorator:Composer,
 		cloneStart:function (start) {
 			var newStack = start.decorator.stack.concat([]);
-			var nd = new DeepDecorator(newStack);
+			var nd = new Composer(newStack);
 			nd.ifExists = start.decorator.ifExists;
 			nd.createIfNecessary = start.decorator.createIfNecessary;
 			return createStart(nd);
@@ -524,69 +538,136 @@ define(function(require, exports, module){
 			});
 			return fin;
 		},
+		/**
+		 * @method createIfNecessary
+		 * @chainable
+		 * @static
+		 * @return {compose} starter
+		 */
 		createIfNecessary : function ()
 		{
 			var start = createStart();
 			start.decorator.createIfNecessary = true;
 			return start;
 		},
+		/**
+		 * @method ifExists
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		ifExists : function ()
 		{
 			var start = createStart();
 			start.decorator.ifExists = true;
 			return start;
 		},
+		/**
+		 * @method condition
+		 * @static
+		 * @chainable
+		 * @param argument a boolean expression or a function to call and give a boolean
+		 * @return {compose} starter
+		 */
 		condition:function (argument) {
 			var start = createStart();
 			start.decorator.condition = argument;
 			return start;
 		},
+		/**
+		 * @method up
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		up : function (bottom, up)
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
-				throw new Error("DeepDecorator.collide : you could only apply function together");
-			if(!up.decorator || !(up.decorator instanceof DeepDecorator))
+				throw new Error("Composer.collide : you could only apply function together");
+			if(!up.decorator || !(up.decorator instanceof Composer))
 				return up;
-			if(bottom.decorator && bottom.decorator instanceof DeepDecorator)
+			if(bottom.decorator && bottom.decorator instanceof Composer)
 			{
 				bottom.decorator.stack = bottom.decorator.stack.concat(up.decorator.stack);
 				return bottom;
 			}
 			return compose.wrap(bottom,up.decorator);
 		},
+		/**
+		 * @method bottom
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		bottom : function (bottom, up)
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
-				throw new Error("DeepDecorator.collide : you could only apply function together");
-			if(!up.decorator || !(up.decorator instanceof DeepDecorator))
+				throw new Error("Composer.collide : you could only apply function together");
+			if(!up.decorator || !(up.decorator instanceof Composer))
 				return up;
-			if(bottom.decorator && bottom.decorator instanceof DeepDecorator)
+			if(bottom.decorator && bottom.decorator instanceof Composer)
 			{
 				up.decorator.stack = bottom.decorator.stack.concat(up.decorator.stack);
 				return up;
 			}
 			return compose.wrap(bottom,up.decorator);
 		},
+		/**
+		 * @method around
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		around : function (argument)
 		{
 			return createStart().around(argument);
 		},
+		/**
+		 * @method after
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		after : function (argument)
 		{
 			return createStart().after(argument);
 		},
+		/**
+		 * @method before
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		before : function (argument)
 		{
 			return createStart().before(argument);
 		},
+		/**
+		 * @method fail
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		fail : function (argument)
 		{
 			return createStart().fail(argument);
 		},
+		/**
+		 * @method parallele
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		parallele : function (argument)
 		{
 			return createStart().parallele(argument);
 		},
+		/**
+		 * @method replace
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
 		replace : function (argument)
 		{
 			return createStart().replace(argument);

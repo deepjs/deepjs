@@ -31,13 +31,16 @@ define(function(require)
 {
 	/**
 	 * the collider interface
-	 * @class Collider
+	 * @namespace deep
+	 * @class collider
+	 * @static
 	 */
 
 	return {
 		/**
 		 * wrap wrapped function with wrapper function. wrapped will receive ollided value as argument.
 		 * @method wrap
+	 	 * @static
 		 * @param  {Function} wrapper
 		 * @param  {Function} wrapped
 		 * @return {Function} the wrapper
@@ -52,6 +55,7 @@ define(function(require)
 		/**
 		 * copy collided value somewhere
 		 * @method copyTo
+	 	 * @static
 		 * @param  {Object} object where copy value
 		 * @param  {String} path a dot delimitted path in object where copy value
 		 * @return {Function} the collider
@@ -67,6 +71,7 @@ define(function(require)
 		/**
 		 * simply wrap collided value by wrapper function
 		 * @method around
+	 	 * @static
 		 * @param  {Function} wrapper
 		 * @return {Function} the collider
 		 */
@@ -80,6 +85,7 @@ define(function(require)
 		/**
 		 * replace collided value by new one
 		 * @method replace
+	 	 * @static
 		 * @param  {Object} newValue the value to assign
 		 * @return {Function} the collider
 		 */
@@ -95,6 +101,7 @@ define(function(require)
 		/**
 		 * log collided value
 		 * @method log
+	 	 * @static
 		 * @return {Function} the collider
 		 */
 		log:function(){
@@ -110,6 +117,7 @@ define(function(require)
 		 * validate collided value with provided schema.
 		 * throw an error with report if not valid.
 		 * @method validate
+	 	 * @static
 		 * @param  {Object} schema
 		 * @return {Function} the collider
 		 */
@@ -125,6 +133,7 @@ define(function(require)
 		},
 		/**
 		 * remove collided value
+	 	 * @static
 		 * @method remove
 		 * @return {Function} the collider
 		 */
@@ -138,13 +147,14 @@ define(function(require)
 			return a;
 		},
 		/**
-		 * @category assertions
-		 * @type {Object}
+		 * @for collider
+		 * @class deep.collider.assert
 		 */
 		assert:{
 			/**
 			 * assert is true on collided value. 
 			 * @method isTrue
+	 		 * @static
 			 * @return {Function} the collider
 			 */
 			isTrue:function(){
@@ -166,6 +176,7 @@ define(function(require)
 			/**
 			 * test equality (deep-equal) with collided value
 			 * @param  {Object} equalTo the object to test
+	 		 * @static
 			 * @return {Function} te collider
 			 */
 			equal:function(equalTo){
@@ -191,13 +202,14 @@ define(function(require)
 			}
 		},
 		/**
-		 * @category array
-		 * @type {Object}
+		 * @for collider
+		 * @class deep.collider.array
 		 */
 		array:{
 			/**
 			 * reverse collided array
 		 	* @method reverse
+		 	* @static
 			 * @return {Function} the collider
 			 */
 			reverse:function(){
@@ -211,6 +223,7 @@ define(function(require)
 			},
 			/**
 			 * remove value in array
+		 	* @static
 		 	 * @method remove
 			 * @return {Function} the collider
 			 */
@@ -235,6 +248,10 @@ define(function(require)
 		},
 		number:{
 		},
+		/**
+		 * @for collider
+		 * @class deep.collider.object
+		 */
 		object:{
 			merge:function merge(newObject, overwrite, schema){
 				var a = function(oldObject){

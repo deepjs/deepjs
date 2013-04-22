@@ -294,6 +294,12 @@ function(require){
 		return res;
 	}
 
+
+	/**
+	 * @class Validator
+	 * @namespace deep
+	 * @constructor
+	 */
 	var Validator = function(){};
 
 	var getType = Validator.prototype.getType = function (value){
@@ -304,6 +310,7 @@ function(require){
 			return 'object';
 		return null;
 	}
+
 
 	Validator.prototype.convertStringTo = function (value, type){
 
@@ -407,6 +414,11 @@ function(require){
 	Validator.prototype.validate = function validate(value, schema, options){
 		//console.log("validate ___________________")
 
+		if(options && options.partial)
+		{
+			options.fieldsToCheck = deep.query(value, ".//*").paths();
+			return this.partialValidation(value, schema, options);
+		}
 		this.rootValue = value;
 		this.errors = [];
 		this.errorsMap = {};
