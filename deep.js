@@ -71,6 +71,8 @@ function(require)
 	deep = function (obj, schema, options)
 	{
 		var alls = [];
+		try{
+
 		if(obj instanceof Array)
 			alls.push(deep.all(obj));
 		else if(typeof obj === 'string')
@@ -113,6 +115,15 @@ function(require)
 			console.log("deep start chain error on load object : ", error, " - rethrow ? ", handler.rethrow);
 			forceNextQueueItem(handler, null, error);
 		});
+		}
+		catch(e)
+		{
+			console.log("deep start chain : throw when waiting entries : rethrow : ",handler.rethrow);
+			if(handler.rethrow)
+				throw e;
+			else
+				forceNextQueueItem(handler, null, e);
+		}
 		return handler;
 	};
 	/**
@@ -265,12 +276,10 @@ function(require)
 		return prom;
 	}
 
-
-
 	function nextQueueItem(result, failure )
 	{
 		//console.log("nextQueueItem ", this.running, " - ", this.callQueue, result, failure);
-		if(this.running || this.rejected)
+		if(this.running)
 			return;
 		this.running = true;
 		var self = this;
@@ -324,16 +333,29 @@ function(require)
 					//console.log("failure : next isThen");
 					next(result,failure);
 				}
-				/*else // PASSIVE TRANSPARENCY : SKIP CURRENT handle
+				else // PASSIVE TRANSPARENCY : SKIP CURRENT handle
 				{
+					//console.log("chain has already been rejected and your hande will be ignored.")
+					if(this._doingEnd)
+					{
+						this.reject(failure);
+						return;
+					}
+					this.doingEnd = true;
+					
+					while(!(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_))
+					{
+						this.callQueue.shift();
+						next = this.callQueue[0];
+					}
 					self.running = false;
 					nextQueueItem.apply(self, [result, failure]);
-				}*/
-				else if(!this.rejected)
+				}
+				/*else if(!this.rejected)
 				{
 					//console.log("failure : no more Then : reject");
 					this.reject(failure);
-				}
+				}*/
 			}
 			catch(e)
 			{
@@ -341,13 +363,14 @@ function(require)
 				console.error(msg, e);
 				if(self.rethrow)
 					throw e;
-				setTimeout(function(){
+				//setTimeout(function(){
 					self.running = false;
 					nextQueueItem.apply(self, [null, e]);
-				}, 1);
+				//}, 1);
 			}
 			finally{
-				if(previousContext !== this.context){
+				if(previousContext !== this.context)
+				{
 					if(this.context && this.context.suspend){
 						this.context.suspend();
 					}
@@ -363,15 +386,15 @@ function(require)
 			this.running = false;
 			if(failure && !this.rejected )
 			{
-				if(!this.waitingRejection)
+				/*if(!this.waitingRejection)
 				{
-					this.waitingRejection = true;
-					setTimeout(function(){
+					//this.waitingRejection = true;
+					//setTimeout(function(){
 						self.running = false;
 						nextQueueItem.apply(self, [result, failure]);
-					}, 1);
+				//	}, 2);
 				}
-				else
+				else*/
 					this.reject(failure);
 			}
 		}
@@ -384,6 +407,8 @@ function(require)
 	}
 	function addInQueue(func)
 	{
+		if(this._listened && !func._isTHEN_ && !func._isTRANSPARENT_ && !func._isPUSH_HANDLER_TO_ )
+			throw new Error("you couldn't add anymore handler to this chain : someone listening it. "+JSON.stringify(deep.chain.values(this)));
 		// console.log("add in queue : ", func);
 		var last = this.callQueue[this.callQueue.length-1];
 		if(func._isPUSH_HANDLER_TO_ && !this.initialised)
@@ -442,6 +467,7 @@ function(require)
 	//deep.Chain = deep.Chain;
 	deep.Chain.prototype = {
 		querier:null,
+		_listened:false,
 		synch:true,
 		_entries:null,
 		callQueue:null,
@@ -550,7 +576,7 @@ function(require)
 		 */
 		reject:function (reason)  // not chainable
 		{
-			//console.log("deep chain reject : reason : ", reason);
+			console.log("deep chain reject : reason : ", reason);
 			if(this.rejected)
 				throw  new Error("deep chain has already been rejected! ");
 			this.reports.failure = reason;
@@ -3252,6 +3278,7 @@ function(require)
 				//throw new Error("error : deep.promise : deep.Chain has already been rejected.");
 			//if(arg.running) // need to wait rejection or success
 			//{
+				arg._listened = true;
 				var def = deep.Deferred();
 				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
 					//console.log("deep.promise of deep.Chain : added error")
@@ -3293,11 +3320,17 @@ function(require)
 	 */
 	deep.when = function (arg)
 	{
-		if(arg instanceof deep.Chain)
+		try{
+			if(arg instanceof deep.Chain)
+				return deep.promise(arg);
+			if(arg && typeof arg.then === 'function')
+				return arg;
 			return deep.promise(arg);
-		if(arg && typeof arg.then === 'function')
-			return arg;
-		return deep.promise(arg);
+		}
+		catch(e){
+			console.log("deep.when : catch error : ",e);
+			throw e;
+		}
 	};
 
 	/**
@@ -3320,6 +3353,7 @@ function(require)
 		var c = 0, d = -1;
 		var res = [];
 		var rejected = false;
+		try{
 		arr.forEach(function (a){
 			var i = d +1;
 			if(!a || !a.then)
@@ -3354,6 +3388,12 @@ function(require)
 				});
 			d++;
 		});
+		}
+		catch(e)
+		{
+			console.log("deep.all : catch error : ",e);
+			throw e;
+		}
 		return deep.promise(def);
 	};
 
