@@ -338,12 +338,13 @@ function(require)
 					//console.log("chain has already been rejected and your hande will be ignored.")
 					if(this._doingEnd)
 					{
-						this.reject(failure);
+						if(!this.rejected)
+							this.reject(failure);
 						return;
 					}
 					this.doingEnd = true;
 					
-					while(!(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_))
+					while(next && !(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_))
 					{
 						this.callQueue.shift();
 						next = this.callQueue[0];
