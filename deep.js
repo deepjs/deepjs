@@ -360,7 +360,7 @@ function(require)
 			}
 			catch(e)
 			{
-				var msg = "Internal chain error : rethrow ? "+ self.rethrow;
+				//var msg = "Internal chain error : rethrow ? "+ self.rethrow;
 				console.error(msg, e);
 				if(self.rethrow)
 					throw e;
@@ -577,7 +577,7 @@ function(require)
 		 */
 		reject:function (reason)  // not chainable
 		{
-			console.log("deep chain reject : reason : ", reason);
+			//console.log("deep chain reject : reason : ", reason);
 			if(this.rejected)
 				throw  new Error("deep chain has already been rejected! ");
 			this.reports.failure = reason;
