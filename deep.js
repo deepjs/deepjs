@@ -112,13 +112,13 @@ function(require)
 				forceNextQueueItem(handler, deep.chain.val(handler), null);
 		})
 		.fail(function (error) {
-			console.log("deep start chain error on load object : ", error, " - rethrow ? ", handler.rethrow);
+			//console.log("deep start chain error on load object : ", error, " - rethrow ? ", handler.rethrow);
 			forceNextQueueItem(handler, null, error);
 		});
 		}
 		catch(e)
 		{
-			console.log("deep start chain : throw when waiting entries : rethrow : ",handler.rethrow);
+			//console.log("deep start chain : throw when waiting entries : rethrow : ",handler.rethrow);
 			if(handler.rethrow)
 				throw e;
 			else
