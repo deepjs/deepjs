@@ -98,11 +98,9 @@ function(require)
 				handler._entries = deep.query(obj, "./*", { resultType:"full", schema:schema });
 				return forceNextQueueItem(handler, deep.chain.values(handler), null);
 			}
-			else if(obj instanceof deep.Chain)
-				handler._entries = [].concat(obj._entries);
-			else if(typeof obj === 'object' && obj && obj._isDQ_NODE_)
+			else if(obj && obj._isDQ_NODE_)
 				handler._entries = [obj];
-			else if(typeof obj === 'object' && obj && obj._deep_entry)
+			else if(obj && obj._deep_entry)
 				handler._entries = [obj._deep_entry];
 			else
 				handler._entries = [Querier.createRootNode(obj, schema)];
@@ -360,7 +358,7 @@ function(require)
 			}
 			catch(e)
 			{
-				//var msg = "Internal chain error : rethrow ? "+ self.rethrow;
+				var msg = "Internal chain error : rethrow ? "+ self.rethrow;
 				console.error(msg, e);
 				if(self.rethrow)
 					throw e;
