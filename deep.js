@@ -359,7 +359,7 @@ function(require)
 			catch(e)
 			{
 				var msg = "Internal chain error : rethrow ? "+ self.rethrow;
-				console.error(msg, e);
+				//console.error(msg, e);
 				if(self.rethrow)
 					throw e;
 				//setTimeout(function(){
@@ -3212,7 +3212,7 @@ function(require)
 			catch(e)
 			{
 				var msg = "Internal deep.promise error : ";
-				console.error(msg, e);
+				//console.error(msg, e);
 				if(deep.rethrow)
 					throw e;
 				setTimeout(function(){
@@ -3290,7 +3290,7 @@ function(require)
 							def.reject(error);
 						})
 						.done(function (success) {
-							console.log("deep.promise of deep.Chain : done : error ?", success instanceof Error );
+							//console.log("deep.promise of deep.Chain : done : error ?", success instanceof Error );
 							def.resolve(success);
 						});
 					else
