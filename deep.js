@@ -25,11 +25,10 @@ options:
 */
 
 if(typeof define !== 'function')
-{
 	var define = require('amdefine')(module);
-}
 
-define(["require","./utils", './ie-hacks',"./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose", "./deep-stores"],
+
+define(["require","./utils", './ie-hacks',"./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose", "./deep-stores", "./deep-promise"],
 function(require)
 {
 	// console.log("Deep init");
@@ -43,7 +42,6 @@ function(require)
 	var Validator = require("./deep-schema");
 	var DeepRequest = require("./deep-request");
 	var utils = require("./utils");
-	var promise = require("./promise");
 	var Querier = require("./deep-query");
 	var deepCompose = require("./deep-compose");
 
@@ -71,6 +69,7 @@ function(require)
 	deep = function (obj, schema, options)
 	{
 		var alls = [];
+		var root = obj;
 		try{
 
 		if(obj instanceof Array)
@@ -87,10 +86,10 @@ function(require)
 		handler.running = true;
 		deep.all(alls)
 		.done(function (results) {
+			handler.initialised = true;
 			obj = results.shift();
 			if(schema)
 				schema = results.shift();
-			handler.initialised = true;
 			if(obj instanceof Array)
 			{
 				if(schema && schema.type !== "array")
@@ -111,11 +110,13 @@ function(require)
 		})
 		.fail(function (error) {
 			//console.log("deep start chain error on load object : ", error, " - rethrow ? ", handler.rethrow);
+			handler.initialised = true;
 			forceNextQueueItem(handler, null, error);
 		});
 		}
 		catch(e)
 		{
+			handler.initialised = true;
 			//console.log("deep start chain : throw when waiting entries : rethrow : ",handler.rethrow);
 			if(handler.rethrow)
 				throw e;
@@ -333,28 +334,21 @@ function(require)
 				}
 				else // PASSIVE TRANSPARENCY : SKIP CURRENT handle
 				{
-					//console.log("chain has already been rejected and your hande will be ignored.")
+					//console.log("chain still have error : but no more then familly handlers to manage it. check next then failly group")
 					if(this._doingEnd)
 					{
-						if(!this.rejected)
-							this.reject(failure);
+						this.callQueue = [];
+						forceNextQueueItem(self, result, failure);
 						return;
 					}
 					this.doingEnd = true;
-					
 					while(next && !(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_))
 					{
 						this.callQueue.shift();
 						next = this.callQueue[0];
 					}
-					self.running = false;
-					nextQueueItem.apply(self, [result, failure]);
+					forceNextQueueItem(self, result, failure);
 				}
-				/*else if(!this.rejected)
-				{
-					//console.log("failure : no more Then : reject");
-					this.reject(failure);
-				}*/
 			}
 			catch(e)
 			{
@@ -362,10 +356,8 @@ function(require)
 				//console.error(msg, e);
 				if(self.rethrow)
 					throw e;
-				//setTimeout(function(){
-					self.running = false;
-					nextQueueItem.apply(self, [null, e]);
-				//}, 1);
+				self.running = false;
+				nextQueueItem.apply(self, [null, e]);
 			}
 			finally{
 				if(previousContext !== this.context)
@@ -383,19 +375,14 @@ function(require)
 		else
 		{
 			this.running = false;
-			if(failure && !this.rejected )
+			if(this._listened && !this.deferred.rejected && !this.deferred.resolved && !this.deferred.canceled)
 			{
-				/*if(!this.waitingRejection)
-				{
-					//this.waitingRejection = true;
-					//setTimeout(function(){
-						self.running = false;
-						nextQueueItem.apply(self, [result, failure]);
-				//	}, 2);
-				}
-				else*/
+				if(failure)	
 					this.reject(failure);
+				else
+					this.resolve(result);
 			}
+			
 		}
 	}
 	function forceNextQueueItem(handler, s, e)
@@ -429,10 +416,12 @@ function(require)
 		if(cloneValues)
 			newRes = newRes.concat(handler._entries);
 		var newHandler = new deep.Chain({
+			rethrow:handler.rethrow,
 			_entries:newRes,
 			result: handler.reports.result,
 			failure: handler.reports.failure
 		});
+		newHandler.initialised = true;
 		return newHandler;
 	}
 
@@ -490,7 +479,8 @@ function(require)
 						this.branches = [];
 					var cloned = cloneHandler(self, true);
 					this.branches.push(cloned);
-					forceNextQueueItem(cloned,self.reports.result, self.reports.failure);
+					cloned.running = false;
+					//forceNextQueueItem(cloned,self.reports.result, self.reports.failure);
 					return cloned;
 				},
 				_isBRANCHES_:true
@@ -556,7 +546,7 @@ function(require)
 		cancel:function (reason)  // not chainable
 		{
 			//console.log("_________________________________________ CHAIN CANCELATION")
-			if(this.rejected)
+			if(this.deferred.rejected || this.deferred.resolved || this.deferred.canceled)
 				throw  new Error("deep chain could not be canceled : it has already been rejected! ");
 			var queue = this.callQueue;
 			this.callQueue = [];
@@ -564,24 +554,42 @@ function(require)
 			this.deferred.cancel(reason);
 		},
 		/**
-		 * reject chain. 
+		 * reject chain for listeners. 
 		 *
 		 * end of chain
-		 * synch
 		 *
 		 * @method  reject
-		 * @param  {*} reason the reason of the chain cancelation (any string or object)
+		 * @param  {*} reason the reason of the chain rejection (any string or object - the last error of the chain)
 		 * @return nothing
 		 */
 		reject:function (reason)  // not chainable
 		{
-			//console.log("deep chain reject : reason : ", reason);
-			if(this.rejected)
-				throw  new Error("deep chain has already been rejected! ");
+			if(this.deferred.rejected || this.deferred.resolved || this.deferred.canceled)
+				throw  new Error("deep chain REJECTION error : chain has already been ended! ");
+		//	console.log("deep chain reject : reason : ", reason);
 			this.reports.failure = reason;
 			this.rejected = true;
 			this.callQueue = [];
 			this.deferred.reject(reason);
+		},
+		/**
+		 * resolve chain for listeners. 
+		 *
+		 * end of chain
+		 *
+		 * @method  resolve
+		 * @param  {*} reason the last success of the chain or any string or object
+		 * @return nothing
+		 */
+		resolve:function (reason)  // not chainable
+		{
+			//console.log("deep chain reslove : reason : ", reason);
+			if(this.deferred.rejected || this.deferred.resolved || this.deferred.canceled)
+				throw  new Error("deep chain resolution error : has already been ended! : reason : ", reason);
+			this.reports.result = reason;
+			this.resolved = true;
+			this.callQueue = [];
+			this.deferred.resolve(reason);
 		},
 		//_____________________________________________________________  BRANCHES
 		/**
@@ -618,7 +626,8 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				deep.when(func(cloneHandler(self,true).brancher())).then(function (success)
+				deep.when(func(cloneHandler(self,true).brancher()))
+				.then(function (success)
 				{
 					self.running = false;
 					nextQueueItem.apply(self, [success, null]);
@@ -2680,12 +2689,38 @@ function(require)
 		},
 
 		//____________________________________________________   IF familly
-
+		resolveIf : function(totest)
+		{
+			var self = this;
+			function func(){
+				return function(s,e){
+					if(typeof totest === 'function')
+						deep.when(totest()).then(function (res) {
+							if(res)
+								self.resolve(res);
+							else
+							{
+								self.running = false;
+								nextQueueItem.apply(self, [res, null]);
+							}
+						});
+					else if(totest)
+						self.resolve(totest);
+					else
+					{
+						self.running = false;
+						nextQueueItem.apply(self, [s, e]);
+					}
+				};
+			}
+			addInQueue.apply(this,[func()]);
+			return self;
+		},
 		rejectIf : function(totest)
 		{
 			var self = this;
 			function func(){
-				return function(){
+				return function(s,e){
 					if(typeof totest === 'function')
 						deep.when(totest()).then(function (res) {
 							if(res)
@@ -2701,7 +2736,7 @@ function(require)
 					else
 					{
 						self.running = false;
-						nextQueueItem.apply(self, [totest, null]);
+						nextQueueItem.apply(self, [s, e]);
 					}
 				};
 			}
@@ -2711,8 +2746,8 @@ function(require)
 		cancelIf : function(totest)
 		{
 			var self = this;
-			function func(){
-				return function(){
+			function func(s,e){
+				return function(s,e){
 					if(typeof totest === 'function')
 						deep.when(totest()).then(function (res) {
 							if(res)
@@ -2728,7 +2763,7 @@ function(require)
 					else
 					{
 						self.running = false;
-						nextQueueItem.apply(self, [totest, null]);
+						nextQueueItem.apply(self, [s, e]);
 					}
 				};
 			}
@@ -2817,7 +2852,7 @@ function(require)
 						parsed.uri += "&"+constrain;
 					else
 						parsed.uri += "?"+constrain;
-					console.log("mapOn : parsedUri with constrains : ",parsed.uri);
+					//console.log("mapOn : parsedUri with constrains : ",parsed.uri);
 					if(parsed.store !== null)
 					{
 						deep(parsed.store.get(parsed.uri)).done(function (results) {
@@ -2833,6 +2868,19 @@ function(require)
 			};
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;
+		},
+		/**
+		 * return a promise for the chain.
+		 * @return {deep.Promise}
+		 */
+		promise:function () {
+			this._listened = true;
+			if(this.initialised && this.callQueue.length === 0 && !this.running && !this.deferred.rejected && !this.deferred.resolved && !this.deferred.canceled)
+				if(this.reports.failure)
+					this.reject(this.reports.failure);
+				else
+					this.resolve(this.reports.result);
+			return this.deferred.promise();
 		}
 	};
 
@@ -2899,511 +2947,7 @@ function(require)
 	};
 	
 
-	//_____________________________________________________________________ DEFERRED
-
-	/**
-	 * A deep implementation of Deferred object (see promise on web)
-	 * @namespace deep
-	 * @class Deferred
-	 * @constructor
-	 */
-	deep.Deferred = function ()
-	{
-		if (!(this instanceof deep.Deferred)) return new deep.Deferred();
-		this.context = deep.context;
-		this.running = true;
-		this.queue = [];
-		this.promise = new deep.Promise(this);
-		return this;
-	};
-
-	deep.Deferred.prototype = {
-		context:null,
-		promise:null,
-		rejected:false,
-		resolved:false,
-		canceled:false,
-		result:null,
-		failure:null,
-		/**
-		 * resolve the Deferred and so the associated promise
-		 * @method resolve
-		 * @param  {Object} argument the resolved object injected in promise
-		 * @return {deep.Deferred} this
-		 */
-		resolve:function (argument)
-		{
-			if(this.rejected || this.resolved || this.canceled)
-				throw new Error("DeepDeferred (resolve) has already been resolved !");
-			this.promise.result = this.result = argument;
-			this.promise.running = false;
-			if(argument instanceof Error)
-			{
-				this.rejected = this.promise.rejected = true;
-				nextPromiseHandler.apply(this.promise, [null, argument]);
-			}
-			else{
-				this.resolved = this.promise.resolved = true;
-				nextPromiseHandler.apply(this.promise, [argument, null]);
-			}
-		},
-		/**
-		 * reject the Deferred and so the associated promise
-		 * @method reject
-		 * @param  {Object} argument the rejected object injected in promise
-		 * @return {deep.Deferred} this
-		 */
-		reject:function (argument)
-		{
-			//console.log("DeepDeferred.reject");
-			if(this.rejected || this.resolved || this.canceled)
-				throw new Error("DeepDeferred (reject) has already been rejected !");
-			this.promise.failure = this.failure = argument;
-			this.rejected = this.promise.rejected = true;
-			this.promise.running = false;
-			nextPromiseHandler.apply(this.promise, [null, argument]);
-		},
-		/**
-		 * cancel the Deferred and so the associated promise
-		 * @method cancel
-		 * @param  {Object} reason the cancel reason object injected in promise
-		 * @return {deep.Deferred} this
-		 */
-		cancel:function (reason)
-		{
-			// console.log("DeepDeferred.cancel");
-			if(this.rejected || this.resolved || this.canceled)
-				throw new Error("DeepDeferred (cancel) has already been canceled !");
-			this.canceled = this.promise.canceled = true;
-			this.promise.queue = [];
-		},
-		/**
-		 * add .done and .fail in promise chain.
-		 * @method then
-		 * @param  {Function} sc successHandler
-		 * @param  {Function} ec errorhandler
-		 * @return {deep.Deferred} this
-		 */
-		then:function (sc,ec) {
-			this.promise.then(s,e);
-		},
-		/**
-		 * add .done callback handler in promise chain
-		 * @method done
-		 * @param  {Function} argument successHandler
-		 * @return {deep.Deferred} this
-		 */
-		done:function (argument) {
-			this.promise.done(argument);
-		},
-		/**
-		 * add .fail callback handler in promise chain
-		 * @method fail
-		 * @param  {Function} argument successHandler
-		 * @return {deep.Deferred} this
-		 */
-		fail:function (argument) {
-			this.promise.fail(argument);
-		}
-	};
-	//________________________________________________________ PROMISES
-	/**
-	 * a deep implementation of Promise (see web for Promise) 
-	 * @namespace deep
-	 * @class Promise
-	 * @constructor
-	 * @param {deep.Deferred} deferred
-	 */
-	deep.Promise = function (deferred)
-	{
-		this.running = true;
-		if(deferred)
-		{
-			this.context = deferred.context;
-			this.queue = deferred.queue;
-		}
-		else
-		{
-			this.context = deep.context;
-			this.queue = [];
-		}
-	};
-	deep.Promise.prototype = {
-		rejected:false,
-		resolved:false,
-		canceled:false,
-		synch:false,
-		result:null,
-		failure:null,
-		/**
-		 * add .done callback handler in promise chain
-		 * @method done
-		 * @param  {Function} argument successHandler
-		 * @return {deep.Deferred} this
-		 */
-		done:function (callBack)
-		{
-			//console.log("add done in defInterface : ", this.rejected, this.resolved, this.running)
-			var self = this;
-			var	func = function(s,e)
-			{
-				//console.log("deep.promise.done : ",s,e)
-				if(e || !callBack || s instanceof Error)
-				{
-					//console.log("deep.promise.done : but error : ",e)
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, e]);
-					return;
-				}
-				var r = callBack(s);
-				if(r && (r instanceof deep.Chain || r._isBRANCHES_))
-					r = deep.promise(r);
-				if(r && typeof r.then === 'function')
-					r.done(function (argument)
-					{
-						if(typeof argument === 'undefined')
-							argument = s;
-						self.running = false;
-						nextPromiseHandler.apply(self, [(argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextPromiseHandler.apply(self, [null, error]);
-					});
-				else if(typeof r === 'undefined')
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, e]);
-				}
-				else if(r instanceof Error)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, r]);
-				}
-				else
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [r, null]);
-				}
-			};
-			this.queue.push(func);
-			if((this.resolved || this.rejected) && !this.running)
-				nextPromiseHandler.apply(this);
-			return self;
-		},
-		/**
-		 * add .fail callback handler in promise chain
-		 * @method fail
-		 * @param  {Function} argument successHandler
-		 * @return {deep.Deferred} this
-		 */
-		fail:function (callBack)
-		{
-			var self = this;
-			//console.log("add fail in defInterface")
-			var func = function(s,e)
-			{
-				//console.log("deep.promise.fail : ",s,e)
-				if((e === null || typeof e === 'undefined') || !callBack)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, null]);
-					return;
-				}
-				var r = callBack(e);
-				if(r && (r instanceof deep.Chain || r._isBRANCHES_))
-					r = deep.when(r);
-				if(r && typeof r.then === 'function')
-					r.done(function (argument)
-					{
-						self.running = false;
-						if(typeof argument === 'undefined')
-							nextPromiseHandler.apply(self, [null, e]);
-						else if(argument instanceof Error)
-							nextPromiseHandler.apply(self, [null, argument]);
-						else
-							nextPromiseHandler.apply(self, [argument, null]);
-					})
-					.fail(function (error) {
-						self.running = false;
-						nextPromiseHandler.apply(self, [null, error]);
-					});
-				else if(typeof r === 'undefined')
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, e]);
-				}
-				else if(r instanceof Error)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, r]);
-				}
-				else
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [r, null]);
-				}
-			};
-			this.queue.push(func);
-			if((this.resolved || this.rejected) && !this.running)
-				nextPromiseHandler.apply(this);
-			return self;
-		},
-		/**
-		 * add .done and .fail in promise chain.
-		 * @method then
-		 * @param  {Function} sc successHandler
-		 * @param  {Function} ec errorhandler
-		 * @return {deep.Deferred} this
-		 */
-		then:function (successCallBack, errorCallBack)
-		{
-			var self = this;
-			if(successCallBack)
-				this.done(successCallBack);
-			if(errorCallBack)
-				this.fail(errorCallBack);
-			if((this.resolved || this.rejected)  && !this.running)
-				nextPromiseHandler.apply(this);
-			return self;
-		}
-	};
-	function nextPromiseHandler(result, failure )
-	{
-		//console.log("nextPromiseHandler ", this.running, " - ", this.queue, result, failure);
-		if(this.running)
-			return;
-		this.running = true;
-		var self = this;
-		if((typeof failure === 'undefined' || failure === null) && (typeof result === 'undefined' || result === null))
-		{
-			failure = this.failure;
-			result = this.result;
-		}
-		else
-		{
-			this.failure = failure;
-			this.result = result;
-		}
-
-		if(result instanceof Error)
-		{
-			//console.log("nextPromiseHandler : result is error : ",result)
-			this.failure = failure = result;
-			this.result = result = null;
-		}
-		if(this.queue.length>0)
-		{
-			var previousContext = deep.context;
-			try{
-				if(previousContext !== this.context)
-				{
-					if(previousContext && previousContext.suspend)
-						previousContext.suspend();
-					deep.context = this.context;
-					if(this.context && this.context.resume)
-						this.context.resume();
-				}
-
-				//console.log("newQueueThen . will try next item : ",this.queue, result, failure)
-				var next = this.queue.shift();
-				next(result,failure);
-			}
-			catch(e)
-			{
-				var msg = "Internal deep.promise error : ";
-				//console.error(msg, e);
-				if(deep.rethrow)
-					throw e;
-				setTimeout(function(){
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, e]);
-				}, 1);
-			}
-			finally{
-				if(previousContext !== this.context){
-					if(this.context && this.context.suspend){
-						this.context.suspend();
-					}
-					if(previousContext && previousContext.resume){
-						previousContext.resume();
-					}
-					deep.context = previousContext;
-				}
-			}
-		}
-		else
-		{
-			//console.log("stopping run");
-			this.running = false;
-		}
-	}
-	function createImmediatePromise(result)
-	{
-		//console.log("deep.createImmediatePromise : ", result instanceof Error)
-		var prom = new deep.Promise();
-		prom.running = false;
-		if(result instanceof Error)
-		{
-			prom.rejected = true;
-			prom.failure = result;
-		}
-		else
-		{	prom.resolved = true;
-			prom.result = result;
-		}
-		return prom;
-	}
-
-	/**
-	 * 
-	 * @for deep
-	 * @static 
-	 * @method promise
-	 * @param  {Object} arg  an object on when create a promise
-	 * @return {deep.Promise} a promise
-	 */
-	deep.promise = function(arg)
-	{
-		//console.log("deep.promise : ", arg)
-		if(typeof arg === "undefined" || arg === null)
-			return createImmediatePromise(arg);
-		if(arg._isBRANCHES_)		// chain.branches case
-			return deep.all(arg.branches);
-		if(arg instanceof deep.Chain)
-		{
-			//console.log("DEEP promise with deep.Chain", arg.running);
-			//if(arg.rejected)
-				//throw new Error("error : deep.promise : deep.Chain has already been rejected.");
-			//if(arg.running) // need to wait rejection or success
-			//{
-				arg._listened = true;
-				var def = deep.Deferred();
-				arg.deferred.fail(function (error) {  // register rejection on deep chain deferred.
-					//console.log("deep.promise of deep.Chain : added error")
-					def.reject(error);
-				});
-				arg.done(function (success) { // simply chain done handler in deep chain
-					if(success && success.then)
-						deep.when(success)
-						.fail(function (error) {
-							def.reject(error);
-						})
-						.done(function (success) {
-							//console.log("deep.promise of deep.Chain : done : error ?", success instanceof Error );
-							def.resolve(success);
-						});
-					else
-						def.resolve(success);
-				});
-				return def.promise;
-			//}
-			//return arg; // nothing to wait : chain will act as immediate promise
-		}
-		if(typeof arg.promise === "function" )  // jquery deferred case
-			return arg.promise();
-		if(arg.promise)			// deep and promised-io deferred case
-			return arg.promise;
-		if(typeof arg.then === 'function')		//any promise compliant object
-			return arg;
-		return createImmediatePromise(arg);
-	};
-
-	/**
-	 * return a promise that will be fullfilled when arg are ready (resolve or immediat)
-	 * @for deep
-	 * @static 
-	 * @method when
-	 * @param  {Object} arg an object to waiting for
-	 * @return {deep.Promise} a promise
-	 */
-	deep.when = function (arg)
-	{
-		try{
-			if(arg instanceof deep.Chain)
-				return deep.promise(arg);
-			if(arg && typeof arg.then === 'function')
-				return arg;
-			return deep.promise(arg);
-		}
-		catch(e){
-			console.log("deep.when : catch error : ",e);
-			throw e;
-		}
-	};
-
-	/**
-	 * return a promise that will be fullfilled when all args are ready (resolve or immediat)
-	 * @for deep
-	 * @static 
-	 * @method all
-	 * @param  {Object} arg an array of objects to waiting for
-	 * @return {deep.Promise} a promise
-	 */
-	deep.all = function()
-	{
-		var arr = [];
-		for(var i in arguments)
-			arr = arr.concat(arguments[i]);
-		if(arr.length === 0)
-			return deep.when([]);
-		var def = deep.Deferred();
-		var count = arr.length;
-		var c = 0, d = -1;
-		var res = [];
-		var rejected = false;
-		try{
-		arr.forEach(function (a){
-			var i = d +1;
-			if(!a || !a.then)
-			{
-				if(a instanceof Error)
-				{
-					rejected = true;
-					if(!def.rejected && !def.resolved && !def.canceled)
-						def.reject(a);
-					return;
-				}
-				res[i] = a;
-				c++;
-				if(c == count)
-					def.resolve(res);
-			}
-			else
-				deep.when(a).then(function(r){
-					if(r instanceof Error)
-					{
-						if(!def.rejected && !def.resolved && !def.canceled)
-							def.reject(r);
-						return;
-					}
-					res[i] = r;
-					c++;
-					if(c == count)
-						def.resolve(res);
-				}, function (error){
-					if(!def.rejected && !def.resolved && !def.canceled)
-						def.reject(error);
-				});
-			d++;
-		});
-		}
-		catch(e)
-		{
-			console.log("deep.all : catch error : ",e);
-			throw e;
-		}
-		return deep.promise(def);
-	};
-
-	promise.when = deep.when;
-	promise.promise = deep.promise;
-	promise.all = deep.all;
-	/*deep.Deferred = promise.Deferred = function (){
-		return new DeepDeferred();
-	};*/
 	//______________________________________
-	//deep.Promise = deep.Promise;
 
 	deep.handlers = {};
 	deep.handlers.decorations = {};
@@ -3498,7 +3042,8 @@ function(require)
 				acceptQueryThis: true
 			}));
 		}
-		return deep.all(objs)
+		return deep
+		.all(objs)
 		.done(function(results) {
 			var what = (self.what) ? results.shift() : context;
 			if (what._isDQ_NODE_) what = what.value;
@@ -3530,8 +3075,13 @@ function(require)
 
 	var stores = require( "deep/deep-stores" )(deep);
 
-	
+	var deepPromises = require("deep/deep-promise")(deep);
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________
 });
+
+
+
+
+
