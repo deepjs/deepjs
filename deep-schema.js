@@ -263,8 +263,8 @@ if(typeof define !== 'function')
 	var swig = require("swig");
 	var isNode = true;
 }	
-define(["require", "./utils", "./promise"],
-function(require){
+define(["require", "./utils", "./promise", "./deep-query"],
+function(require, utils, promise, Querier){
 
 	if(isNode)
 	{	swig.init({
@@ -278,9 +278,6 @@ function(require){
 		});
 	}
 
-
-	var utils = require("./utils");
-	var promise = require("./promise");
 	function findPatternProperties(name, patterns)
 	{
 		var res = [];

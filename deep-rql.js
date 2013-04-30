@@ -17,12 +17,9 @@ add distinct(testPropertyPath)
 add merge()
 add backgrounds()  :  do object extension with deep-extender + schema
 
-
-
 add _ancestor (any ancestor)
 add _brothers  (any brothers)
 
-! TEST ALL operations !
 
 */ 
 define(function defineJsonQuery(require){
