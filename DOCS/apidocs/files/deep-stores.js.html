@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/deep.Composer.html">deep.Composer</a></li>
             
+                <li><a href="../classes/deep.deep.html">deep.deep</a></li>
+            
                 <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
             
                 <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
@@ -155,6 +157,42 @@
  *
  * @module deep
  * @submodule deep-stores
+ * @example simple
+ *
+ * 		deep({ id:1, title:&quot;hello&quot; })
+ *   	.store(&quot;mystore&quot;)
+ *    	.put()
+ *     	.done(function (puttedObject) {
+ *	     	// do something 
+ *	    });
+ *
+ * @example simple 2
+ *
+ * 		deep
+ * 		.store(&quot;json&quot;)
+ * 		.get(&quot;/campaign/12&quot;)
+ * 		.up({
+ * 			title:&quot;my new title&quot;
+ * 		})
+ * 		.put()
+ * 		.done(function (argument) {
+ * 			//...
+ *   	})
+ *   	.log();
+ *
+ * @example simple 3
+ *
+ * 		deep
+ * 		.store(&quot;json&quot;)
+ * 		.create(&quot;campaign&quot;, &quot;/campaign/&quot;);
+ *
+ * 		....
+ *
+ * 		deep(&quot;campaign::12&quot;)
+ * 		.done(function (camp) {
+ *		 	....
+ *		});
+ * 
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
  */
 if(typeof define !== &#x27;function&#x27;)
@@ -180,6 +218,18 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 
 		/**
 		 * create a custom store or start chain with a certain store
+		 * @example
+		 *
+		 * deep.store(&quot;json&quot;).get(&quot;/campaign/&quot;).log();
+		 *
+		 * @example
+		 *
+		 * deep.store(&quot;json&quot;).create(&quot;campaign&quot;, &quot;/campaign/&quot;);
+		 * ...
+		 * ...
+		 * deep.store(&quot;campaign&quot;).get(&quot;?&quot;).log()
+		 *
+		 * 
 		 * @for deep
 		 * @method store
 		 * @static
@@ -206,6 +256,10 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 
 		/**
 		 * set chain with a certain store. If no store founded : throw an error.
+		 * @example 
+		 *
+		 * 	deep(myObject).store(&quot;campaign&quot;).post().log();
+		 * 
 		 * @for deep.Chain
 		 * @method store
 		 * @param {String} name the name of the store to select
@@ -227,12 +281,13 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				//console.log(&quot;chain.store : set store : &quot;, store.name);
 				self._store = store;
 				deep.chain.position(self, store.name);
-				deep.chain.forceNextQueueItem(self, deep.chain.values(self), null);
+				deep.chain.forceNextQueueItem(self, s, e);
 			};
 			deep.handlers.decorations.store(store, self);
 			deep.chain.addInQueue.apply(this,[func]);
 			return self;
 		};
+		//_________________________________________________________________ dee.Chain wrapper store API
 		deep.handlers.decorations.store = function (store, handler) {
 			//console.log(&quot;store decoration&quot;);
 			deep.utils.up({
@@ -518,7 +573,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				if(!id)
 					throw new Error(&quot;deep.stores.Array need id on patch&quot;);
 				var schema = options.schema || this.schema;
-				if(schema &amp;&amp; !)
+				if(schema)
 				{
 					var report = deep.validate(object, schema, { partial:true });
 					if(!report.valid)
@@ -552,9 +607,10 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			options = options || {};
 			store.schema = options.schema || {};
 			/**
+			 * 
 			 * @method get
-			 * @param  {[type]} id
-			 * @return {[type]}
+			 * @param  {String} id
+			 * @return {deep.Chain} depending on first argument : return an object or an array of objects
 			 */
 			store.get = function (id)
 			{
@@ -594,7 +650,8 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				else
 					deep(obj)
 					.setByPath(path, object);
-				return deep(object).store(this);
+				return deep(object)
+					.store(this);
 			};
 			/**
 			 * @method del

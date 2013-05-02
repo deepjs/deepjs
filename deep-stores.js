@@ -5,6 +5,42 @@
  *
  * @module deep
  * @submodule deep-stores
+ * @example simple
+ *
+ * 		deep({ id:1, title:"hello" })
+ *   	.store("mystore")
+ *    	.put()
+ *     	.done(function (puttedObject) {
+ *	     	// do something 
+ *	    });
+ *
+ * @example simple 2
+ *
+ * 		deep
+ * 		.store("json")
+ * 		.get("/campaign/12")
+ * 		.up({
+ * 			title:"my new title"
+ * 		})
+ * 		.put()
+ * 		.done(function (argument) {
+ * 			//...
+ *   	})
+ *   	.log();
+ *
+ * @example simple 3
+ *
+ * 		deep
+ * 		.store("json")
+ * 		.create("campaign", "/campaign/");
+ *
+ * 		....
+ *
+ * 		deep("campaign::12")
+ * 		.done(function (camp) {
+ *		 	....
+ *		});
+ * 
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 if(typeof define !== 'function')
@@ -30,6 +66,18 @@ define(["require", "deep/deep"],function(require)
 
 		/**
 		 * create a custom store or start chain with a certain store
+		 * @example
+		 *
+		 * deep.store("json").get("/campaign/").log();
+		 *
+		 * @example
+		 *
+		 * deep.store("json").create("campaign", "/campaign/");
+		 * ...
+		 * ...
+		 * deep.store("campaign").get("?").log()
+		 *
+		 * 
 		 * @for deep
 		 * @method store
 		 * @static
@@ -56,6 +104,10 @@ define(["require", "deep/deep"],function(require)
 
 		/**
 		 * set chain with a certain store. If no store founded : throw an error.
+		 * @example 
+		 *
+		 * 	deep(myObject).store("campaign").post().log();
+		 * 
 		 * @for deep.Chain
 		 * @method store
 		 * @param {String} name the name of the store to select
@@ -83,6 +135,7 @@ define(["require", "deep/deep"],function(require)
 			deep.chain.addInQueue.apply(this,[func]);
 			return self;
 		};
+		//_________________________________________________________________ dee.Chain wrapper store API
 		deep.handlers.decorations.store = function (store, handler) {
 			//console.log("store decoration");
 			deep.utils.up({
@@ -96,14 +149,22 @@ define(["require", "deep/deep"],function(require)
 					if(id == "?" || !id)
 						id = "";
 
+					var schema = null;
+					if(typeof self._store.schema === 'function')
+						schema = self._store.schema("get");
+					else if(typeof self._store.schema === 'object')
+						schema = self._store.schema;
+
 					var func = function (s,e) {
-						self._store.get(id, options)
+						self
+						._store
+						.get(id, options)
 						.done(function (success) {
 							//console.log("deep(...).store : get : success : ", success);
 							if(success instanceof Array)
-								self._entries = deep(success).nodes();
+								self._entries = deep(success, schema, {uri:id}).nodes();
 							else
-								self._entries = [deep.Querier.createRootNode( success )];
+								self._entries = [deep.Querier.createRootNode( success, schema, {uri:id})];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -122,7 +183,9 @@ define(["require", "deep/deep"],function(require)
 					var self = this;
 					var func = function (s,e)
 					{
-						self._store.post(object || deep.chain.val(self),id, options)
+						self
+						._store
+						.post(object || deep.chain.val(self),id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -145,7 +208,9 @@ define(["require", "deep/deep"],function(require)
 					//console.log("deep.chain.put : add in chain : ", object, id);
 					var func = function (s,e) {
 						//console.log("deep.chain.put : ", object, id);
-						self._store.put(object  || deep.chain.val(self),id, options)
+						self
+						._store
+						.put(object  || deep.chain.val(self),id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -165,7 +230,9 @@ define(["require", "deep/deep"],function(require)
 				.replace(function (object, id, options) {
 					var self = this;
 					var func = function (s,e) {
-						self._store.patch(object  || deep.chain.val(self),id, options)
+						self
+						._store
+						.patch(object  || deep.chain.val(self),id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -186,7 +253,9 @@ define(["require", "deep/deep"],function(require)
 					var self = this;
 					var func = function (s,e) {
 						var val = deep.chain.val(self);
-						self._store.del(id || val.id, options)
+						self
+						._store
+						.del(id || val.id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -402,9 +471,10 @@ define(["require", "deep/deep"],function(require)
 			options = options || {};
 			store.schema = options.schema || {};
 			/**
+			 * 
 			 * @method get
-			 * @param  {[type]} id
-			 * @return {[type]}
+			 * @param  {String} id
+			 * @return {deep.Chain} depending on first argument : return an object or an array of objects
 			 */
 			store.get = function (id)
 			{
@@ -444,7 +514,8 @@ define(["require", "deep/deep"],function(require)
 				else
 					deep(obj)
 					.setByPath(path, object);
-				return deep(object).store(this);
+				return deep(object)
+					.store(this);
 			};
 			/**
 			 * @method del

@@ -14,6 +14,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "deep.collider.assert",
         "deep.collider.object",
         "deep.compose",
+        "deep.deep",
         "deep.roles",
         "deep.stores",
         "deep.stores.Array",

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>deep - deepjs Javascript Framework</title>
+    <title>deep.deep - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -146,16 +146,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>deep Class</h1>
+                        <h1>deep.deep Class</h1>
 <div class="box meta">
     
 
     
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/deep.js.html#l55"><code>deep.js:55</code></a>
-        </div>
     
 
     
@@ -170,14 +166,123 @@
 
 
 <div class="box intro">
-    <p>Start of deep chain</p>
+    
 </div>
 
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_deep" class="method item">
-    <h3 class="name"><code>deep</code></h3>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_all">all</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_get">get</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getAll">getAll</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_parseRequest">parseRequest</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_promise">promise</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sequence">sequence</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_store">store</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_when">when</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_all" class="method item">
+    <h3 class="name"><code>all</code></h3>
 
     
         <div class="args">
@@ -185,13 +290,113 @@
             
                 <li class="arg">
                     
-                        <code>obj</code>
+                        <code>arg</code>
                     
                 </li>
             
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-promise.js.html#l399"><code>deep-promise.js:399</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>return a promise that will be fullfilled when all args are ready (resolve or immediat)</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">arg</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an array of objects to waiting for</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>:
+                    
+                    a promise
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_get" class="method item">
+    <h3 class="name"><code>get</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
                 <li class="arg">
                     
-                        <code>schema</code>
+                        <code>request</code>
                     
                 </li>
             
@@ -218,6 +423,8 @@
     
 
     
+        <span class="flag static">static</span>
+    
 
     
 
@@ -227,6 +434,8 @@
         
             
                 
+                    <p>Provided by the <a href="../modules/deep-stores.html">deep-stores</a> module.</p>
+                
                 <p>
                 
                 Defined in
@@ -234,7 +443,7 @@
             
         
         
-        <a href="../files/deep.js.html#l55"><code>deep.js:55</code></a>
+        <a href="../files/deep-stores.js.html#l542"><code>deep-stores.js:542</code></a>
         
         </p>
 
@@ -245,7 +454,9 @@
     </div>
 
     <div class="description">
-        
+        <p>retrieve request (if string in retrievable format) (e.g. "json::test.json")
+perform an http get
+if request is not a string : will just return request</p>
     </div>
 
     
@@ -256,29 +467,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">obj</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">request</code>
+                        <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>an object (or retrievable string) or an array of objects to start chain. will wait if there is promise</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">schema</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>(optional) a schema for entries. could be a retrievable</p>
+                        <p>a string to retrieve</p>
                     </div>
 
                     
@@ -293,7 +489,7 @@
                     
 
                     <div class="param-description">
-                        <p>(optional) an option object. could contain : rethrow:true|false</p>
+                        <p>(optional)</p>
                     </div>
 
                     
@@ -312,10 +508,539 @@
                     
                         <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
-                    a deep handler that hold object(s)
+                    a handler that hold result
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getAll" class="method item">
+    <h3 class="name"><code>getAll</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>requests</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deep-stores.html">deep-stores</a> module.</p>
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-stores.js.html#l582"><code>deep-stores.js:582</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>retrieve an array of retrievable strings (e.g. "json::test.json")
+if request is not a string : will just return request</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">requests</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>a array of strings to retrieve</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>(optional)</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
+                    a handler that hold result
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_parseRequest" class="method item">
+    <h3 class="name"><code>parseRequest</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>request</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deep-stores.html">deep-stores</a> module.</p>
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-stores.js.html#l601"><code>deep-stores.js:601</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>parse 'retrievable' string request (e.g. "json::test.json")</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">request</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    infos an object containing parsing result
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_promise" class="method item">
+    <h3 class="name"><code>promise</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>arg</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-promise.js.html#l368"><code>deep-promise.js:368</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">arg</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an object on when create a promise</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>:
+                    
+                    a promise
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_sequence" class="method item">
+    <h3 class="name"><code>sequence</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>funcs</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>args</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep.js.html#l2956"><code>deep.js:2956</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>execute array of funcs sequencially</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">funcs</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an array of functions to execute sequentially</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">args</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>(optional) some args to pass to first functions</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                    
+                    a handler that hold result
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_store" class="method item">
+    <h3 class="name"><code>store</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deep-stores.html">deep-stores</a> module.</p>
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-stores.js.html#l67"><code>deep-stores.js:67</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>create a custom store or start chain with a certain store</p>
+    </div>
+
+    
+
     
 
     
@@ -323,165 +1048,18 @@
             <h4>Example:</h4>
 
             <div class="example-content">
-                <pre class="code prettyprint"><code>    deep("./json/simple.json").logValues("simple.json : ");
-</code></pre>
+                <p>deep.store("json").get("/campaign/").log();</p><p>deep.store("json").create("campaign", "/campaign/");
+...
+...
+deep.store("campaign").get("?").log()</p>
             </div>
         </div>
     
 </div>
 
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_interpret">interpret</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_partialValidation">partialValidation</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_query">query</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_rql">rql</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_validate">validate</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties">
-                        
-                            <li class="index-item property">
-                                <a href="#property_collider">collider</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_compose">compose</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_isNode">isNode</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_Querier">Querier</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_rethrow">rethrow</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_utils">utils</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-
-            
-        </div>
-
-        
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
                 
-                    <div id="method_interpret" class="method item">
-    <h3 class="name"><code>interpret</code></h3>
+                    <div id="method_when" class="method item">
+    <h3 class="name"><code>when</code></h3>
 
     
         <div class="args">
@@ -489,13 +1067,7 @@
             
                 <li class="arg">
                     
-                        <code>string</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>context</code>
+                        <code>arg</code>
                     
                 </li>
             
@@ -505,7 +1077,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">String</span>
+            <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>
         </span>
     
 
@@ -534,7 +1106,7 @@
             
         
         
-        <a href="../files/deep.js.html#l216"><code>deep.js:216</code></a>
+        <a href="../files/deep-promise.js.html#l390"><code>deep-promise.js:390</code></a>
         
         </p>
 
@@ -545,7 +1117,7 @@
     </div>
 
     <div class="description">
-        <p>shortcut for utils.interpret</p>
+        <p>return a promise that will be fullfilled when arg are ready (resolve or immediat)</p>
     </div>
 
     
@@ -556,29 +1128,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">string</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the string to interpret</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">context</code>
+                        <code class="param-name">arg</code>
                         <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the context injected for interpretation</p>
+                        <p>an object to waiting for</p>
                     </div>
 
                     
@@ -595,556 +1152,9 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">String</span>:
+                        <span class="type"><a href="../classes/deep.Promise.html" class="crosslink">deep.Promise</a></span>:
                     
-                    the result
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_partialValidation" class="method item">
-    <h3 class="name"><code>partialValidation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>object</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>fields</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>schema</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">deep.validate.Report</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l152"><code>deep.js:152</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>perform a deep-schema partial validation (only on certain field)</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">object</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the object to validate</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">fields</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the array of properties paths to validate</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">schema</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the schema</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">deep.validate.Report</span>:
-                    
-                    the validation report
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_query" class="method item">
-    <h3 class="name"><code>query</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>object</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>query</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l189"><code>deep.js:189</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>perform a (synched) deep-query query</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">object</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>any object to query</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">query</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the query</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    the result aray
-                
-            </div>
-        </div>
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>    deep.query({ hello:"world", test:1 }, "/*?=world"); // will return ["world"]
-</code></pre>
-            </div>
-        </div>
-    
-</div>
-
-                
-                    <div id="method_rql" class="method item">
-    <h3 class="name"><code>rql</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>array</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>rqlFilter</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l176"><code>deep.js:176</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>perform a (synched) deep-rql filter on array</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">array</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the array to filter</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">rqlFilter</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the rql filter to apply</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    the result aray
-                
-            </div>
-        </div>
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>    deep.rql(["a","b","c"], "=a"); // return  ["a"]
-</code></pre>
-            </div>
-        </div>
-    
-</div>
-
-                
-                    <div id="method_validate" class="method item">
-    <h3 class="name"><code>validate</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>object</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>schema</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">deep.validate.Report</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l143"><code>deep.js:143</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>perform a deep-schema validation</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">object</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the object to validate</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">schema</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the schema</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">deep.validate.Report</span>:
-                    
-                    the validation report
+                    a promise
                 
             </div>
         </div>
@@ -1157,288 +1167,6 @@
             </div>
         
 
-        
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-
-                
-                    <div id="property_collider" class="property item">
-    <h3 class="name"><code>collider</code></h3>
-    <span class="type">Object</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l202"><code>deep.js:202</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>final namespace for deep/deep-collider</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_compose" class="property item">
-    <h3 class="name"><code>compose</code></h3>
-    <span class="type">Object</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l162"><code>deep.js:162</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>final namespace for deep/deep-compose</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_isNode" class="property item">
-    <h3 class="name"><code>isNode</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l169"><code>deep.js:169</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>are you on nodejs or not</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_Querier" class="property item">
-    <h3 class="name"><code>Querier</code></h3>
-    <span class="type">DeepQuery</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l209"><code>deep.js:209</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>final namespace for deep/deep-query</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_rethrow" class="property item">
-    <h3 class="name"><code>rethrow</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l128"><code>deep.js:128</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>rethrow any throw during chain execution.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_utils" class="property item">
-    <h3 class="name"><code>utils</code></h3>
-    <span class="type">Object</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep.js.html#l136"><code>deep.js:136</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>final namespace for deep/utils</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-            </div>
         
 
         
