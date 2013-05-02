@@ -908,45 +908,38 @@ define(function(require){
 
 	//_________________________________________________ HTTP RELATED
 
+	utils.parseJson = function (body) {
+		var b = "";
+		if(body.forEach)
+			body.forEach(function (bd) {
+				b += bd.toString();
+			});
+		else
+			b = body.toString();
+		var res = JSON.parse(b);
+		if (typeof res === 'string')
+			return JSON.parse(res);
+		return res;
+	}
+
 	utils.parseBody = function (body, headers) 
 	{
 		if(typeof body === 'undefined' || body == null)
 			return null;
 		var contentType = headers["content-type"] || headers["Content-Type"] || "application/json";
-		var contentType = contentType.split(";")[0];
+		contentType = contentType.split(";")[0];
 		switch(contentType)
 		{
 			case "application/json-rpc" : 
-				var b = "";
-				if(body.forEach)
-					body.forEach(function (bd) {
-						b += bd.toString();
-					});
-				else
-					b = body.toString();
-				return JSON.parse(b);
+				return utils.parseJson(body);
 				break;	
 
 			case "application/json" : 
-				var b = "";
-				if(body.forEach)
-					body.forEach(function (bd) {
-						b += bd.toString();
-					});
-				else
-					b = body.toString();
-				return JSON.parse(b);
+				return utils.parseJson(body);
 				break;	
 
 			case "application/javascript" :   // TODO : should be parsed by json-extended parser
-				var b = "";
-				if(body.forEach)
-					body.forEach(function (bd) {
-						b += bd.toString();
-					});
-				else
-					b = body.toString();
-				return JSON.parse(b);
+				return utils.parseJson(body);
 				break;	
 			default :
 				return body;
