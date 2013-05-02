@@ -919,7 +919,7 @@ define(function(require){
 		var res = JSON.parse(b);
 		if (typeof res === 'string')
 			return JSON.parse(b);
-		return b;
+		return res;
 	}
 
 	utils.parseBody = function (body, headers) 
