@@ -147,7 +147,7 @@ define(["require", "deep/deep"],function(require)
 						options = options || {};
 						var id = object.id || options.id;
 						//console.log("deep.chain.put : ", object, id);
-						self._store.put(object  || deep.chain.val(self),id, options)
+						self._store.put(object  || deep.chain.val(self), options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
