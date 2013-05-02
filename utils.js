@@ -918,7 +918,7 @@ define(function(require){
 			b = body.toString();
 		var res = JSON.parse(b);
 		if (typeof res === 'string')
-			return JSON.parse(b);
+			return JSON.parse(res);
 		return res;
 	}
 
