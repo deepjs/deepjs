@@ -144,6 +144,8 @@ define(["require", "deep/deep"],function(require)
 					var self = this;
 					//console.log("deep.chain.put : add in chain : ", object, id);
 					var func = function (s,e) {
+						options = options || {};
+						var id = object.id || options.id;
 						//console.log("deep.chain.put : ", object, id);
 						self._store.put(object  || deep.chain.val(self),id, options)
 						.done(function (success) {
