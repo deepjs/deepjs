@@ -154,8 +154,7 @@ define(["require", "deep/deep"], function (require){
 				if(e || !callBack || s instanceof Error)
 				{
 					//console.log("deep.promise.done : but error : ",e)
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, e]);
+					forceNextPromiseHandler(self, s, e);
 					return;
 				}
 				var r = callBack(s);
@@ -166,28 +165,17 @@ define(["require", "deep/deep"], function (require){
 					{
 						if(typeof argument === 'undefined')
 							argument = s;
-						self.running = false;
-						nextPromiseHandler.apply(self, [(argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null]);
+						forceNextPromiseHandler(self, (argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null);
 					})
 					.fail(function (error) {
-						self.running = false;
-						nextPromiseHandler.apply(self, [null, error]);
+						forceNextPromiseHandler(self, null, error);
 					});
 				else if(typeof r === 'undefined')
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, e]);
-				}
+					forceNextPromiseHandler(self, s, e);
 				else if(r instanceof Error)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, r]);
-				}
+					forceNextPromiseHandler(self, null, r);
 				else
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [r, null]);
-				}
+					forceNextPromiseHandler(self, r, null);
 			};
 			this.queue.push(func);
 			if((this.resolved || this.rejected) && !this.running)
@@ -209,8 +197,7 @@ define(["require", "deep/deep"], function (require){
 				//console.log("deep.promise.fail : ",s,e)
 				if((e === null || typeof e === 'undefined') || !callBack)
 				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, null]);
+					forceNextPromiseHandler(self, s, null);
 					return;
 				}
 				var r = callBack(e);
@@ -219,33 +206,22 @@ define(["require", "deep/deep"], function (require){
 				if(r && typeof r.then === 'function')
 					r.done(function (argument)
 					{
-						self.running = false;
 						if(typeof argument === 'undefined')
-							nextPromiseHandler.apply(self, [null, e]);
+							forceNextPromiseHandler(self, null, e);
 						else if(argument instanceof Error)
-							nextPromiseHandler.apply(self, [null, argument]);
+							forceNextPromiseHandler(self, null, argument);
 						else
-							nextPromiseHandler.apply(self, [argument, null]);
+							forceNextPromiseHandler(self, argument, null);
 					})
 					.fail(function (error) {
-						self.running = false;
-						nextPromiseHandler.apply(self, [null, error]);
+						forceNextPromiseHandler(self, null, error);
 					});
 				else if(typeof r === 'undefined')
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, e]);
-				}
+					forceNextPromiseHandler(self, null, e);
 				else if(r instanceof Error)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, r]);
-				}
+					forceNextPromiseHandler(self, null, r);
 				else
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [r, null]);
-				}
+					forceNextPromiseHandler(self, r, null);
 			};
 			this.queue.push(func);
 			if((this.resolved || this.rejected) && !this.running)
@@ -347,6 +323,12 @@ define(["require", "deep/deep"], function (require){
 			//console.log("stopping run");
 			this.running = false;
 		}
+	}
+	function forceNextPromiseHandler(handler, s, e)
+	{
+		//console.log("forceNextQueue Item : ", s,e)
+		handler.running = false;
+		nextPromiseHandler.apply(handler, [s, e]);
 	}
 	function createImmediatePromise(result)
 	{

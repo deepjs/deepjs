@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/deep.Composer.html">deep.Composer</a></li>
             
+                <li><a href="../classes/deep.deep.html">deep.deep</a></li>
+            
                 <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
             
                 <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
@@ -152,7 +154,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep-stores.js.html#l705"><code>deep-stores.js:705</code></a>
+            Defined in: <a href="../files/deep-stores.js.html#l760"><code>deep-stores.js:760</code></a>
         </div>
     
 
@@ -168,6 +170,46 @@
 </div>
 
 
+    <div class="example">
+        <h4>Example:</h4>
+        <div class="example-content">
+            <p>simple</p>
+
+<pre class="code prettyprint"><code>    deep({ id:1, title:"hello" })
+  .store("mystore")
+   .put()
+    .done(function (puttedObject) {
+        // do something 
+    });
+</code></pre><p>simple 2</p>
+
+<pre class="code prettyprint"><code>    deep
+    .store("json")
+    .get("/campaign/12")
+    .up({
+        title:"my new title"
+    })
+    .put()
+    .done(function (argument) {
+        //...
+  })
+  .log();
+</code></pre><p>simple 3</p>
+
+<pre class="code prettyprint"><code>    deep
+    .store("json")
+    .create("campaign", "/campaign/");
+
+    ....
+
+    deep("campaign::12")
+    .done(function (camp) {
+        ....
+    });
+</code></pre>
+        </div>
+    </div>
+
 
 <div class="yui3-g">
     <div class="yui3-u-1-2">
@@ -175,12 +217,6 @@
             <p>This module provides the following classes:</p>
 
             <ul class="module-classes">
-            
-                <li class="module-class">
-                    <a href="../classes/deep.html">
-                        deep
-                    </a>
-                </li>
             
                 <li class="module-class">
                     <a href="../classes/deep.stores.html">

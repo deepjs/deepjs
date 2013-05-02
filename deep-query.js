@@ -842,11 +842,13 @@ define(function defineDeepQuery(require)
 	 * @param  {Object} schema
 	 * @return {Object} a DeepQuery root node
 	 */
-	DQ.createRootNode = function (obj, schema) {
+	DQ.createRootNode = function (obj, schema, options) {
+		options = options || {};
 		return {
 				_isDQ_NODE_:true,
 				value:obj,
 				path:"/",
+				uri:options.uri || null,
 				key:null,
 				ancestor:null,
 				schema:schema || {},

@@ -322,15 +322,25 @@ function(require)
 				}
 				if(!failure)
 				{
+					var r = null;
 					if(typeof next === "object")
-						next.func(result,failure);
+						r = next.func(result,failure);
 					else
-						next(result,failure);
+						r = next(result,failure);
+					//console.log("next queue item : no failure : r : ",r);
+
+					if(typeof r !== 'undefined')
+					{
+						self.running = false;
+						return nextQueueItem.apply(self, r);
+					}	
 				}
 				else if(next._isTHEN_ ||  next._isTRANSPARENT_ || next._isPUSH_HANDLER_TO_)
 				{
 					//console.log("failure : next isThen");
-					next(result,failure);
+					var r = next(result,failure);
+					if(typeof r !== 'undefined')
+						return nextQueueItem.apply(self, r);
 				}
 				else // PASSIVE TRANSPARENCY : SKIP CURRENT handle
 				{
@@ -393,7 +403,8 @@ function(require)
 	}
 	function addInQueue(func)
 	{
-		if(this._listened && !func._isTHEN_ && !func._isTRANSPARENT_ && !func._isPUSH_HANDLER_TO_ )
+		//console.log("add in queue : oldQueue ", this.oldQueue, " - listened : ", this._listened)
+		if(!this.oldQueue && this._listened )
 			throw new Error("you couldn't add anymore handler to this chain : someone listening it. "+JSON.stringify(deep.chain.values(this)));
 		// console.log("add in queue : ", func);
 		var last = this.callQueue[this.callQueue.length-1];
@@ -550,6 +561,7 @@ function(require)
 				throw  new Error("deep chain could not be canceled : it has already been rejected! ");
 			var queue = this.callQueue;
 			this.callQueue = [];
+			this.oldQueue = null;
 			this.reports.cancel = reason;
 			this.deferred.cancel(reason);
 		},
@@ -569,7 +581,8 @@ function(require)
 		//	console.log("deep chain reject : reason : ", reason);
 			this.reports.failure = reason;
 			this.rejected = true;
-			this.callQueue = [];
+			this.callQueue =  [];
+			this.oldQueue = null;
 			this.deferred.reject(reason);
 		},
 		/**
@@ -589,6 +602,7 @@ function(require)
 			this.reports.result = reason;
 			this.resolved = true;
 			this.callQueue = [];
+			this.oldQueue = null;
 			this.deferred.resolve(reason);
 		},
 		//_____________________________________________________________  BRANCHES
@@ -626,7 +640,7 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				deep.when(func(cloneHandler(self,true).brancher()))
+				deep.when(func(self.brancher()))
 				.then(function (success)
 				{
 					self.running = false;
@@ -681,10 +695,9 @@ function(require)
 		 * 		success, handler, brancher
 		 *
 		 * the success is the success object produced by previous chain's handle
-		 * the handler is the chain handle itself
+		 * the handler is the chain handler itself
 		 * the brancher is the brancher function that create clone of the chain to produce chain branches
 		 * 
-		 *	asynch
 		 * 
 		 * @method  done
 		 * @chainable
@@ -698,30 +711,35 @@ function(require)
 			{
 				//console.log("deep.chain.done : ",s,e)
 				if(e || !callBack || s instanceof Error)
-				{
-					forceNextQueueItem(self, s, e);
-					return;
-				}
+					return [s, e];
 				self.oldQueue = self.callQueue;
 				self.callQueue = [];
 
-				deep.when(callBack(s, self, self.brancher())).then(function (argument) {
-					var error = null;
-					if(typeof argument === 'undefined')
-						argument = s;
-					else if(argument instanceof Error)
-					{
-						error = argument;
-						argument = null;
-					}
+				var a  = callBack(s, self, self.brancher());
+				if(a === self)
+				{
 					self.callQueue = self.callQueue.concat(self.oldQueue);
 					delete self.oldQueue;
-					forceNextQueueItem(self, argument, error);
-				}, function (error) {
-					self.callQueue = self.callQueue.concat(self.oldQueue);
-					delete self.oldQueue;
-					forceNextQueueItem(self, null, error);
-				});
+					return [s, e];
+				}
+				else
+					deep.when(a).then(function (argument) {
+						var error = null;
+						if(typeof argument === 'undefined')
+							argument = s;
+						else if(argument instanceof Error)
+						{
+							error = argument;
+							argument = null;
+						}
+						self.callQueue = self.callQueue.concat(self.oldQueue);
+						delete self.oldQueue;
+						return [argument, error];
+					}, function (error) {
+						self.callQueue = self.callQueue.concat(self.oldQueue);
+						delete self.oldQueue;
+						return [null, error];
+					});
 			};
 			func._isTHEN_ = true;
 			addInQueue.apply(this, [func]);
@@ -734,10 +752,9 @@ function(require)
 		 * 		error, handler, brancher
 		 *
 		 * the error is the success object produced by previous chain's handle
-		 * the handler is the chain handle itself
+		 * the handler is the chain handler itself
 		 * the brancher is the brancher function that create clone of the chain to produce chain branches
 		 * 
-		 *	asynch
 		 * 
 		 * @method  fail
 		 * @chainable
@@ -756,7 +773,15 @@ function(require)
 				}
 				self.oldQueue = self.callQueue;
 				self.callQueue = [];
-				deep.when(callBack(e, self, self.brancher())).then(function (argument) {
+				var a = callBack(e, self, self.brancher());
+				if(a === self)
+				{
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, s, e);
+				}
+				else
+				deep.when(a).then(function (argument) {
 					self.callQueue = self.callQueue.concat(self.oldQueue);
 					delete self.oldQueue;
 					if(typeof argument === 'undefined')

@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/deep.Composer.html">deep.Composer</a></li>
             
+                <li><a href="../classes/deep.deep.html">deep.deep</a></li>
+            
                 <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
             
                 <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
@@ -619,9 +621,9 @@ define(function(require){
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function (schema, path, delimitter)
 	{
 		if(path[0] == &quot;/&quot; || path.substring(0,1) == &quot;./&quot;)
-			pathDelimiter = &quot;/&quot;;
-		var parts = path.split(pathDelimiter||&quot;.&quot;);
-		if(pathDelimiter == &quot;/&quot; &amp;&amp; (parts[0] == &quot;&quot; || parts[0] == &quot;.&quot;))
+			delimitter = &quot;/&quot;;
+		var parts = path.split(delimitter||&quot;.&quot;);
+		if(delimitter == &quot;/&quot; &amp;&amp; (parts[0] == &quot;&quot; || parts[0] == &quot;.&quot;))
 			parts.shift();
 		 // console.log(&quot;retrieveSchemaByPath : &quot;, parts, schema);
 		var tmp = schema;
