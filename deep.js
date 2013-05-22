@@ -2374,13 +2374,12 @@ function(require)
 					//console.log("deepLoad : ", self)
 					self._entries.forEach(function (e) {
 						var strings = self.querier.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
-						console.log("deep load query result : ", strings)
+						//console.log("deep load query result : ", strings)
 						strings.forEach(function (toLoad) {
 
 							if(typeof toLoad.value === 'string')
 							{
-								console.log("deep.deepLoad : toLoad string : ", JSON.stringify(toLoad.value));
-
+								//console.log("deep.deepLoad : toLoad string : ", JSON.stringify(toLoad.value));
 								var val = toLoad.value;
 								if(context)
 									val = deep.interpret(toLoad.value, context);
@@ -2388,21 +2387,20 @@ function(require)
 							}
 							else if(typeof toLoad.value === 'function')
 							{
-								console.log("deep.deepLoad : toLoad function : ", JSON.stringify(toLoad.value));
+								//console.log("deep.deepLoad : toLoad function : ", JSON.stringify(toLoad.value));
 								promises.push(toLoad.value());
 							}	
 							else
 							{
-								console.log("deep.deepLoad : toLoad object : ", JSON.stringify(toLoad.value));
+								//console.log("deep.deepLoad : toLoad object : ", JSON.stringify(toLoad.value));
 								promises.push(toLoad.value);
-
 							}
 							paths.push(toLoad);
 						});
 					});
 					deep.all(promises)
 					.done(function (results) {
-						console.log("direct results of deepLoad : ", results);
+						//console.log("direct results of deepLoad : ", results);
 						var count = 0;
 						results.forEach(function  (r) {
 							var e = paths[count++];
