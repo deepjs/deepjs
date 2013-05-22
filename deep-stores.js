@@ -65,7 +65,7 @@ define(["require", "deep/deep"],function(require)
 			{
 				if(!stores[name])
 					throw new Error("no '"+name+"' store found in role : "+ role.name);
-				return deep(null).store(name);
+				return stores[name]; //deep(null).store(name);
 			}
 			else if(definer instanceof Array)
 				store = stores[name] = deep.store.ArrayStore(definer, options);
@@ -74,7 +74,7 @@ define(["require", "deep/deep"],function(require)
 			else store = stores[name] = deep.store.ObjectStore(definer, options);
 			store.name = name;
 			store.options = options;
-			return deep(null).store(name);
+			return store; //deep(null).store(name);
 		};
 
 		/**
