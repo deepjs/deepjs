@@ -255,6 +255,31 @@ The service could provids the list of known pathologies, and the subset have to 
 	validationError,
 	validator
  }
+
+
+ TODO : 
+
+ provide a schema handler which has : 
+ 	- removePrivates(obj)
+ 	- checkReadOnly(obj, old)
+	- sanitize(obj)
+	- validate(obj, ?old, schema)		// shortcut for checkReadOnly + report
+	- clean(obj)  		// shortcut for removePrivates + sanitize
+	- report(obj)
+	- checkUnicity()
+
+	+ provide deep.stores protocole : schema::myschema_uri   : get + "compilation" 
+
+==> same way in chain : 
+	- validate
+	- clean
+
+==> and 
+deep.sanitize(chain | obj, ?schema)
+deep.validate(chain | obj, ?schema)
+deep.clean(chain | obj, ?schema)
+...
+
  */
 
 if(typeof define !== 'function')
@@ -267,7 +292,8 @@ define(["require", "./utils", "./promise", "./deep-query"],
 function(require, utils, promise, Querier){
 
 	if(isNode)
-	{	swig.init({
+	{	
+		swig.init({
 			filters:{
 				join_coma:function (input) {
 					if(input instanceof Array)

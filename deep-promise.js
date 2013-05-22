@@ -138,6 +138,7 @@ define(["require", "deep/deep"], function (require){
 		synch:false,
 		result:null,
 		failure:null,
+		context:null,
 		/**
 		 * add .done callback handler in promise chain
 		 * @method done
@@ -399,6 +400,8 @@ define(["require", "deep/deep"], function (require){
 		var res = [];
 		var rejected = false;
 		arr.forEach(function (a){
+			if(def.rejected)
+				return;
 			var i = d +1;
 			if(!a || !a.then)
 			{
