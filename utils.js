@@ -18,6 +18,11 @@ define(function(require){
 	 */
 	var utils = {};
 
+	utils.rethrow = function (error) {
+		//console.log("ksss")
+		throw error;
+	}
+
 	// _______________________________________ swig related
 
 	/**
@@ -238,6 +243,30 @@ define(function(require){
 			res = obj;
 		return res;
 	}
+
+	utils.simpleCopy = function simpleCopy(obj)
+	{
+		if(obj instanceof Array)
+			return obj.concat([]);
+		if(obj && typeof obj === 'object')
+		{
+			if(obj instanceof RegExp)
+				return obj;
+			if(obj instanceof Date)
+				return new Date(obj.valueOf());
+			var res = {};
+			for(var i in obj)
+			{
+				if(i == "_deep_entry")
+					continue;
+				if(obj.hasOwnProperty(i))
+					res[i] = obj[i];
+			}
+			return res;
+		}
+		return obj;
+	}
+
 
 	utils.getObjectClass = function(obj) {
 	    if (obj && obj.constructor && obj.constructor.toString) {

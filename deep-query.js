@@ -163,6 +163,27 @@ Here's an example on how to query some JSON/object with deep-query:
 /+brothers
 
 	check if parent access give array if starting from items 		OK it does
+
+
+	REFACTORING : 
+
+		- store the uri of the object  in deep_node (maybe store base_uri in root node)
+			- if externals ressource : it means it's location
+				- in case of queries : uri = base_uri/id/path/to/prop
+			- if internal ressource : 
+				if root level has uri : use it as base_uri
+				if not : produce (auto) base uri for root level and use it as before
+
+
+		- when doing : 
+
+			deep("campaign::12").validate() or deep("campaign::?").validate()
+
+				==> will get schema from campaign before vaildation
+				
+			deep.stores("campaign").validate(obj)
+		
+
 */
 if(typeof define !== 'function'){
 	var define = require('amdefine')(module);

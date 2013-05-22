@@ -8,8 +8,7 @@ ____________________________________________
 CORE :
 
 
-DeepRequest : add jsonp capabilities (RequestFactory.jsonp() ?)
-Add uri option in json(s) load
+
 
 
 
@@ -17,6 +16,18 @@ Add uri option in json(s) load
 ____________________________________________________________________________________________________
 
 
+
+deep.stores : test and finalise
+	add store:: protocole
+	add jsonp capabilities (jsonp::...)
+
+Add uri option in json(s) load
+
+deep.roles : migrate from autobahn
+	add role:: protocole
+
+.done(s, handler, brancher)
+	test and finalise handler argument pattern
 
 
 	

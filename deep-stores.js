@@ -1,11 +1,27 @@
 /**
- * how manage collections and objects as http styled stores
+ * manage collections, objects and ressources as http styled stores.
  *
- * One interface for all stores.
+ * One interface for all stores/ressources.
  *
  * @module deep
  * @submodule deep-stores
  * @author Gilles Coomans <gilles.coomans@gmail.com>
+ */
+
+/*
+	TODO : 
+		stores : array
+		stores : object
+		+ add create function (more homogene with json create)
+
+STANDARD trans stores/facets (tout store/facet peut etre utilisé avec)
+	manager les readOnly + privates 
+	manager rpc + bulk 
+
+Ajouter deep-facets.js
+
+Add deep.store.Store.fetchRelation(name) based on schema links.
+
  */
 if(typeof define !== 'function')
 	var define = require('amdefine')(module);
@@ -38,20 +54,27 @@ define(["require", "deep/deep"],function(require)
 		{
 			options = options || {};
 			var store = null;
+			var stores = deep.stores;
+			var role = { name:"no role" };
+			if(deep.context && deep.context.role)
+			{
+				stores = deep.context.role.stores;
+				role = deep.context.role;
+			}
 			if(!definer)
 			{
-				if(!deep.stores[name])
-					throw new Error("deep.store(name) : no store found with : ", name);
-				return deep.stores[name];
+				if(!stores[name])
+					throw new Error("no '"+name+"' store found in role : "+ role.name);
+				return deep(null).store(name);
 			}
 			else if(definer instanceof Array)
-				store = deep.stores[name] = deep.store.ArrayStore(definer, options);
-			else if(definer instanceof deep.store.DeepStore)
-				store = deep.stores[name] = definer.create(name, options);
-			else store = deep.stores[name] = deep.store.ObjectStore(definer, options);
+				store = stores[name] = deep.store.ArrayStore(definer, options);
+			else if(definer instanceof deep.store.Store)
+				store = stores[name] = definer.create(name, options);
+			else store = stores[name] = deep.store.ObjectStore(definer, options);
 			store.name = name;
 			store.options = options;
-			return store;
+			return deep(null).store(name);
 		};
 
 		/**
@@ -64,29 +87,46 @@ define(["require", "deep/deep"],function(require)
 		deep.Chain.prototype.store = function (name)
 		{
 			var self = this;
-			var store = null;
-			if(typeof name === 'string')
-			{
-				if(!deep.stores[name])
-					throw new Error("no store found with : "+name);
-				store = deep.stores[name];
-			}
-			else
-				store = name;
+
 			var func = function (s,e) {
 				//console.log("chain.store : set store : ", store.name);
+				//			var store = null;
+				var stores = deep.stores;
+				var role = { name:"no role" };
+				if(self.context && self.context.role)
+				{
+					stores = self.context.role.stores;
+					role = self.context.role;
+				}	
+				if(typeof name === 'string')
+				{
+					if(!stores[name])
+						throw new Error("no '"+name+"' store found in role : "+ role.name);
+					store = stores[name];
+				}
+				else
+					store = name;
 				self._store = store;
 				deep.chain.position(self, store.name);
 				deep.chain.forceNextQueueItem(self, s, e);
 			};
-			deep.handlers.decorations.store(store, self);
+			deep.handlers.decorations.store({
+				get:function (argument) {},
+				patch:function (argument) {},
+				put:function (argument) {},
+				post:function (argument) {	},
+				del:function (argument) {	},
+				range:function (argument) {	},
+				rpc:function (argument) {},
+				bulk:function (argument) {}
+			}, self);
 			deep.chain.addInQueue.apply(this,[func]);
 			return self;
 		};
 		deep.handlers.decorations.store = function (store, handler) {
 			//console.log("store decoration");
 			deep.utils.up({
-				_store : deep.collider.replace(store),
+				//_store : deep.collider.replace(store),
 
 				get : deep.compose
 				.condition(typeof store.get === "function")
@@ -269,9 +309,9 @@ define(["require", "deep/deep"],function(require)
 		 * @class deep.stores.Store
 		 * @constructor
 		 */
-		deep.store.DeepStore = function () {};
-		deep.store.DeepStore.prototype = {
-			_deeo_store_:true
+		deep.store.Store = function () {};
+		deep.store.Store.prototype = {
+			_deep_store_:true
 		};
 
 		/**
@@ -281,8 +321,9 @@ define(["require", "deep/deep"],function(require)
 		 * @param {Array} arr a first array of objects to hold
 		 * @param {Object} options could contain 'schema'
 		 */
-		deep.store.ArrayStore = function (arr, options) {
-			var store = new deep.store.DeepStore();
+		deep.store.ArrayStore = function (arr, options) 
+		{
+			var store = new deep.store.Store();
 			options = options || {};
 			store.schema = options.schema || {};
 			var stock = {
@@ -295,10 +336,10 @@ define(["require", "deep/deep"],function(require)
 			 * @return {Object} the retrieved object
 			 */
 			store.get = function (id, options) {
-				if(id === "")
+				if(id === "" || !id || id === "*")
 					id = "?";
 				if( id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
-					return deep(stock).query("collection/*"+id).store( this);
+					return deep(stock).query("./collection/*"+id).store(this);
 				return deep(stock).query("./collection/*?id="+id).store(this);
 			};
 			/**
@@ -311,20 +352,18 @@ define(["require", "deep/deep"],function(require)
 				options = options || {};
 				var id = options.id || object.id;
 				if(!id)
-					throw new Error("Array store need id on put")
+					throw new Error("Array store need id on put");
 				var schema = options.schema || this.schema;
 				if(schema)
-					deep(object)
-					.validate(schema)
-					.fail(function (error) {
-						object = error;
-					})
+					return deep(object, schema)
+					.validate()
 					.root(stock)
-					.replace("./collection/*?id="+id, object);
+					.replace("./collection/*?id="+id, object)
+					.store(this);
 				else
-					deep(stock)
+					return deep(stock)
+					.store(this)
 					.replace("./collection/*?id="+id, object);
-				return deep(object).store(this);
 			};
 			/**
 			 * @method post
@@ -334,19 +373,18 @@ define(["require", "deep/deep"],function(require)
 			 */
 			store.post = function (object, options) {
 				options = options || {};
-				object.id = id = new Date().valueOf(); // mongo styled id
+				object.id = id = new Date().valueOf()+""; // mongo styled id
 				var schema = options.schema || this.schema;
 				if(schema)
-					deep(object)
+					return deep(object)
+					.store(this)
 					.validate(schema)
 					.done(function (report) {
 						arr.push(object);
-					})
-					.fail(function (error) {
-						object = error;
+						return object;
 					});
-				else
-					arr.push(object);
+				
+				arr.push(object);
 				return deep(object).store(this);
 			};
 			/**
@@ -370,13 +408,18 @@ define(["require", "deep/deep"],function(require)
 				if(!id)
 					throw new Error("deep.stores.Array need id on patch");
 				var schema = options.schema || this.schema;
-				if(schema)
-				{
-					var report = deep.validate(object, schema, { partial:true });
-					if(!report.valid)
-						throw new Error("412 : Precondition Failed : deep.stores.Array patch failed : "+JSON.stringify());
-				}	
-				return deep(stock).query("./collection/*?id="+id).up(object).store(this);
+				return deep(stock)
+				.query("./collection/*?id="+object.id)
+				.done(function (res) {
+					if(res.length == 0)
+						return new Error("ArrayStore.patch : no object found in collection with id : "+ object.id+". Aborting patch. Please post before");
+				})
+				.up(object)
+				.done(function (res) {
+					if(schema)
+						this.validate(schema);
+				})
+				.store(this);
 			};
 			/**
 			 * select a range in collection
@@ -400,7 +443,7 @@ define(["require", "deep/deep"],function(require)
 		 */
 		deep.store.ObjectStore = function (obj, options)
 		{
-			var store = new deep.store.DeepStore();
+			var store = new deep.store.Store();
 			options = options || {};
 			store.schema = options.schema || {};
 			/**
@@ -410,6 +453,7 @@ define(["require", "deep/deep"],function(require)
 			 */
 			store.get = function (id)
 			{
+				//if(id === "" || !id || id === "*")
 				if(id[0] == "." || id[0] == "/")
 					return deep(obj).query(id).store(this);
 				return deep(obj).query("./"+id).store(this);
@@ -696,7 +740,7 @@ define(["require", "deep/deep"],function(require)
 			 * @return {Object} the loaded aspect
 			 */
 			get:function (id, options) {
-				return deep(require(id)).then(function(res){
+				return deep.when(require(id)).then(function(res){
 					return res.aspect;
 				}, function(res){
 					return res;
@@ -720,6 +764,14 @@ define(["require", "deep/deep"],function(require)
 				return deep(require(id));
 			}
 		};
+
+
+		/*
+			TODO : add schema protocole : 
+
+				retrieve it and "compile" it ( produce cleans + validations methods )
+
+		 */
 
 		return deep;
 	}

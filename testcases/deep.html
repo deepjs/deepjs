@@ -1330,7 +1330,6 @@ var a = {};
 	.facet("login")	// select login facet
 	.post({ hello:"world" });
 
-	login.errorsBranch().
 
 	var route = login
 	.route("/campaigns/") // select campaigns route
@@ -1394,14 +1393,93 @@ var a = {};
 
 	*/
 
+//____________________________________________ ROLES
 
 
+var s = 0;
+var f = 0;
+var total = 8;
+var count = 0;
+var report = function(report)
+{
+    count++;
+    if(report.equal)
+        s++;
+    else
+        f++;
+    if(count == 8)
+    {   
+        console.info("FINAL : success : ",s,"/",total); 
+        console.info("FINAL : errors : ",f,"/",total);    
+    }
+    console.log("__________________ count : ",count);
+}
 
 
+deep(1)
+.delay(100)
+.done(function(s,h,b){
+    //console.log("current role (none) : ", deep.context.role);
+    deep(deep.context.role).equal(undefined, report);
+    return h.delay(4);
+})
+.role("public")
+.delay(100)
+.done(function(s,h,b){
+    deep(deep.context.role).query("./name").equal("public", report);
+    //console.log("current role (public) : ", deep.context.role);
+    return deep(1).delay(5).done(function(s,h,b){
+        deep(deep.context.role).query("./name").equal("public", report);
+       // console.log("current role (public 2) : ", deep.context.role)
+    })
+    .role("user")
+    .delay(10)
+    .done(function(s,h){
+        deep(deep.context.role).query("./name").equal("user", report);
+       // console.log("current role (user 3) : ",deep.context.role);
+    });
+})
+.done(function(s,h){
+   // console.log("current role (public 3) : ",deep.context.role);
+    deep(deep.context.role).query("./name").equal("public", report);
+    
+});
+
+deep.role("user").delay(90).done(function(s,h,b){
+    //console.log("current role (user) : ",deep.context.role);
+    deep(deep.context.role).query("./name").equal("user", report);
+    deep(1).delay(20).done(function(s,h,b){
+        deep(deep.context.role).query("./name").equal("user", report);
+       // console.log("current role (user 2) : ",deep.context.role)
+    });
+});
+
+deep(1).delay(100).done(function(s,h,b){
+    //console.log("current role (none 2) : ",deep.context.role);
+    deep(deep.context.role).equal(undefined, report);
+});
 
 
+//_______________________________   done handler argument pattern
+//
+//
+var d = deep(1)
+.delay(10)
+.done(function(s,h,b){
+    h.delay(4).log("hello");
+});
 
+d.log("after hello");
 
+deep.when(d)
+.done(function(){
+    console.log("end");
+    d.log(); // error : chain was ended
+});
+
+d.log(); // error : chain is listened
+
+//____________________________________________
 
 
 })();
