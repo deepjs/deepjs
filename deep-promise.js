@@ -264,7 +264,7 @@ define(["require", "deep/deep"], function (require){
 			return;
 		this.running = true;
 		var self = this;
-		if((typeof failure === 'undefined' || failure === null) && (typeof result === 'undefined' || result === null))
+		if((typeof failure === 'undefined') && (typeof result === 'undefined'))
 		{
 			failure = this.failure;
 			result = this.result;

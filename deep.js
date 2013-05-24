@@ -93,8 +93,13 @@ function(require)
 	 */
 	deep = function (obj, schema, options)
 	{
+		if(typeof obj === 'undefined')
+			obj = null;
+		if(obj && obj._deep_chain_ && obj.oldQueue)
+			return obj;
 		var alls = [];
 		var root = obj;
+		//console.log("start chain : ", obj )
 		try
 		{
 			var handler = new deep.Chain(options);
@@ -111,6 +116,7 @@ function(require)
 				alls.push(schema);
 			deep.all(alls)
 			.done(function (results) {
+				//console.log("start chain : when result :")
 				handler.initialised = true;
 				obj = results.shift();
 				if(schema)
@@ -313,7 +319,7 @@ function(require)
 			this.reports.failure = failure = result;
 			this.reports.result = result = null;
 		}
-		if((typeof failure === 'undefined' || failure === null) && (typeof result === 'undefined' || result === null))
+		if((typeof failure === 'undefined') && (typeof result === 'undefined'))
 		{
 			failure = this.reports.failure;
 			result = this.reports.result;
@@ -408,7 +414,6 @@ function(require)
 				else
 					this.resolve(result);
 			}
-			
 		}
 	}
 	function forceNextQueueItem(handler, s, e)
@@ -456,6 +461,7 @@ function(require)
 	{
 		options = options || {};
 		this.rethrow = (typeof options.rethrow !== "undefined")?options.rethrow:deep.rethrow;
+		this._deep_chain_ = true;
 		this.positions = [];
 		this.context = deep.context;
 		options = options || {};
@@ -647,17 +653,28 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				deep.when(func.apply(self, [self.brancher()]))
+				self.oldQueue = self.callQueue;
+				self.callQueue = [];
+				var a  = func.apply(self, [self.brancher()]);
+				if(a === self)
+				{
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					return [s,e];
+				}
+				deep.when(a)
 				.then(function (success)
 				{
-					self.running = false;
-					nextQueueItem.apply(self, [success, null]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, success, null)
 				},
 				function (error)
 				{
 					//console.error("error : deep.branches : ", error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, null, error)
 				});
 			};
 			addInQueue.apply(this, [create]);
@@ -678,21 +695,19 @@ function(require)
 		when:function(prom)
 		{
 			var self = this;
-			function func(){
-				return function(s,e){
-					deep.when(prom).then(function (datas) {
-						if(typeof datas === 'undefined')
-							datas = s;
-						self.running = false;
-						nextQueueItem.apply(self, [datas,null]);
-					}, function (e) {
-						//console.error("error : deep.chain.when : ", e);
-						self.running = false;
-						nextQueueItem.apply(self, [null,e]);
-					});
-				};
-			}
-			addInQueue.apply(this,[func()]);
+			var func = function(s,e){
+				deep.when(prom).then(function (datas) {
+					if(typeof datas === 'undefined')
+						datas = s;
+					self.running = false;
+					nextQueueItem.apply(self, [datas,null]);
+				}, function (e) {
+					//console.error("error : deep.chain.when : ", e);
+					self.running = false;
+					nextQueueItem.apply(self, [null,e]);
+				});
+			};
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2632,21 +2647,18 @@ function(require)
 		pushHandlerTo : function(array)
 		{
 			var self = this;
-			function func(){
-				var f = function(s,e)
+			var f = function(s,e)
+			{
+				// console.log("pushHandlerTo : init? ", self.initialised)
+				array.push(self);
+				if(self.initialised)
 				{
-					// console.log("pushHandlerTo : init? ", self.initialised)
-					array.push(self);
-					if(self.initialised)
-					{
-						self.running = false;
-						nextQueueItem.apply(self, [s, e]);
-					}
-				};
-				f._isPUSH_HANDLER_TO_ = true;
-				return f;
-			}
-			addInQueue.apply(this,[func()]);
+					self.running = false;
+					nextQueueItem.apply(self, [s, e]);
+				}
+			};
+			f._isPUSH_HANDLER_TO_ = true;
+			addInQueue.apply(this,[f]);
 			return this;
 		},
 
@@ -2729,6 +2741,8 @@ function(require)
 					var cloned = cloneHandler(self, true);
 					var foreigns = cloned.select("./"+localKey).join(",");
 					var constrain = foreignKey+"=in=("+foreigns+")";
+					if(parsed.uri === '!')
+						parsed.uri = "";
 					if(parsed.uri.match(/(\/\?)|^(\?)/gi))
 						parsed.uri += "&"+constrain;
 					else
@@ -2750,10 +2764,158 @@ function(require)
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;
 		},
-		relationMap:function () {
+
+		/**
+		 * retrieve relations described in schema links.
+		 *
+		 * Inject as success in chain an object that hold each relation, their result and the associated (parsed) request object
+		 *
+		 * 
+		 *
+		 * 
+		 * @method getRelations
+		 * @chainable
+		 * @example
+		 * 	var schema3 = {
+			    properties:{
+			        id:{ type:"string", required:false, indexed:true },
+			        label:{ type:"string" },
+			        plantId:{ type:"string" },
+			        userId:{ type:"string" }
+			    },
+			    links:[
+			        {
+			            href:"plant::{ plantId }",
+			            rel:"plant"
+			        },
+			        {
+			            href:"user::{ userId }",
+			            rel:"user"
+			        }
+			    ]
+			}
+			//____________________________
+			deep({ 
+			    plantId:"e1",
+			    userId:"e1",
+			    label:"hello"
+			}, schema3)
+			.getRelations("plant", "user")
+			.log();
+
+		 * @param a list of string arguments that gives which relation to retrieve 
+		 * @return {deep.Chain} this
+		 */
+		getRelations:function () {
 			var self = this;
+			var relations = Array.prototype.slice.apply(arguments);
 			var func = function (s,e) {
-				
+				self._entries.forEach(function(entry){
+					if(!entry.schema || !entry.schema.links)
+						return;
+					var alls  = [];
+					deep(entry.schema.links)
+					.query("./!?rel=in=("+relations.join(",")+")")
+					.each(function(relation){
+						var path = deep.interpret(relation.href, entry.value);
+						var parsed = deep.parseRequest(path);
+						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:{ relation:relation, request:parsed } }));
+					});
+					if(alls.length == 0)
+						return [s,e];
+					deep.all(alls)
+					.done(function(results){
+						var res = {};
+						results.forEach(function(r){
+							res[r.relation.rel] = r;
+						});
+						forceNextQueueItem(self, res, null);
+					})
+					.fail(function(error){
+						forceNextQueueItem(self, null, error);
+					})
+				});
+			}
+			deep.chain.addInQueue.apply(this, [func]);
+			return this;
+		},
+
+
+		/**
+		 * map relations in current entries values
+		 * 
+		 * @method mapRelations
+		 * @chainable 
+		 * @example 
+		 * 	var schema3 = {
+			    properties:{
+			        id:{ type:"string", required:false, indexed:true },
+			        label:{ type:"string" },
+			        plantId:{ type:"string" },
+			        userId:{ type:"string" }
+			    },
+			    links:[
+			        {
+			            href:"plant::{ plantId }",
+			            rel:"plant"
+			        },
+			        {
+			            href:"user::{ userId }",
+			            rel:"user"
+			        }
+			    ]
+			}
+		  	deep({ 
+			    plantId:"e1",
+			    userId:"e1",
+			    label:"hello"
+			}, schema3)
+			.mapRelations({
+			    user:"relations.user",
+			    plant:"relations.plant"
+			})
+			.logValues();
+		 * @param  {Object} map        the map (see examples)
+		 * @param  {String} delimitter (optional) the paths delimitter
+		 * @return {deep.Chain}       this
+		 */
+		mapRelations:function (map, delimitter) {
+			if(!delimitter)
+				delimitter = ".";
+			var self = this;
+			var relations = [];
+			for(var i in map)
+				relations.push(i);
+			//console.log("mapRelations :  relations : ", relations);
+			var func = function (s,e) {
+				self._entries.forEach(function(entry){
+					if(!entry.schema || !entry.schema.links)
+						return;
+					var alls  = [];
+					var count  = 0;
+					deep(entry.schema.links)
+					.query("./!?rel=in=("+relations.join(",")+")")
+					.each(function(relation){
+						//console.log("do map relations on : ", relation);
+						var path = deep.interpret(relation.href, entry.value);
+						alls.push(deep.get(path, { defaultProtocole:"json", wrap:{ path:map[relation.rel] } }));
+						count++;
+					});
+					if(alls.length == 0)
+						return [s,e];
+					deep.all(alls)
+					.done(function(results){
+						//console.log("mapRelations : results : ", results);
+						results.forEach(function(r){
+							//console.log("do : ", r, " - on : ", entry.value)
+							deep.utils.setValueByPath(entry.value, r.path, r.result, delimitter);
+						});
+						forceNextQueueItem(self, results, null);
+					})
+					.fail(function(error){
+						forceNextQueueItem(self, null, error);
+					})
+				});
 			}
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;

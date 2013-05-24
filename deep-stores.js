@@ -408,8 +408,13 @@ define(["require", "deep/deep"],function(require)
 			store.get = function (id, options) {
 				if(id === "" || !id || id === "*")
 					id = "?";
-				if( id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
+				//console.log("ArrayStore.get : ",id," - stock : ", stock)
+				if(typeof id === "string" &&  id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
 					return deep(stock).query("./collection/*"+id).store(this);
+				if(typeof id === "string")
+					return deep(stock).query("./collection/*?id=string:"+id).done(function(res){
+						return res.shift();
+					}).store(this);
 				return deep(stock).query("./collection/*?id="+id).done(function(res){
 					return res.shift();
 				}).store(this);
@@ -623,17 +628,21 @@ define(["require", "deep/deep"],function(require)
 		 */
 		deep.get = function  (request, options)
 		{
-			if(typeof request !== "string")
+			if(typeof request !== "string" && request && !request._deep_request_)
 				return request;
-			var infos = deep.parseRequest(request);
+			options = options || {};
+			var infos = request;
+			if(typeof infos === 'string')
+				infos = deep.parseRequest(request, options);
+			var res = null;
 			if(!infos.store)
 				if(!infos.protocole)
 					return request;
 				else
 					return new Error("no store found with : ", request);
 			if(infos.queryThis)
-				return infos.store.get(infos, options);
-			if(infos.method )
+				res = infos.store.get(infos, options);
+			else if(infos.method )
 			{
 				if(infos.method !== "range" || !infos.store.range)
 					return deep(new Error("store doesn't contain method : ",request));
@@ -645,10 +654,19 @@ define(["require", "deep/deep"],function(require)
 				var rn = rangePart.split(",");
 				var start = parseInt(rn[0], 10);
 				var end = parseInt(rn[1], 10);
-				return infos.store[infos.method](start, end, query, options);
+				res =  infos.store[infos.method](start, end, query, options);
 			}
 			else
-				return infos.store.get(infos.uri, options);
+				res = infos.store.get(infos.uri, options);
+			if(options.wrap)
+			{
+				return deep(res)
+				.done(function(res){
+					options.wrap.result = res;
+					return options.wrap;
+				})
+			}
+			return res;
 		};
 		/**
 		 * retrieve an array of retrievable strings (e.g. "json::test.json")
@@ -677,7 +695,7 @@ define(["require", "deep/deep"],function(require)
 		 * @param  {String} request
 		 * @return {Object} infos an object containing parsing result
 		 */
-		deep.parseRequest = function (request) {
+		deep.parseRequest = function (request, options) {
 			var protoIndex = request.indexOf("::");
 			var protoc = null;
 			var uri = request;
@@ -721,10 +739,16 @@ define(["require", "deep/deep"],function(require)
 					if(store)
 						break;
 				}
+				if(!store && options.defaultProtocole)
+				{
+					store = deep.stores[options.defaultProtocole];
+					protoc = options.defaultProtocole;
+				}	
 			}
 			else
 				store = deep.stores[protoc];
 			var res = {
+				_deep_request_:true,
 				request:request,
 				queryThis:queryThis,
 				store:store,
