@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -161,50 +163,154 @@
 if(typeof define !== &#x27;function&#x27;)
 	var define = require(&#x27;amdefine&#x27;)(module);
 
-define(function(require)
+define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 {
-	var deep = require(&quot;deep/deep&quot;);
+	return function(deep){
 
-	/**
-	 * Just a namespace : where default and custom roles are mainly stored. 
-	 * @class deep.roles
-	 * @static
-	 * @type {Object}
-	 */
-	deep.roles = {
-
-	}
-
-	/**
-	 * @class Role
-	 * @namespace deep
-	 * @constructor
-	 */
-	var DeepRole = function(){
-
-	}
-
-	DeepRole.prototype = {
 		/**
-		 * @property _deep_role
-		 * @private
-		 * @type {Boolean}
+		 * Just a namespace : where default and custom roles are mainly stored. 
+		 * @class deep.roles
+		 * @static
+		 * @type {Object}
 		 */
-		_deep_role_:true
+		deep.roles = {
 
+		}
+
+		/**
+		 * @class Role
+		 * @namespace deep
+		 * @constructor
+		 */
+		deep.Role = {
+			/**
+			 * @property _deep_role
+			 * @private
+			 * @type {Boolean}
+			 */
+			_deep_role_:true,
+			name:null,
+			initialised:false,
+			/**
+			 * just the place where stores are stored in this role
+			 * @type {Object}
+			 */
+			stores:{
+
+			},
+			/**
+			 * initialise the role. will forward init on stores.
+			 * @return {deep.Chain}  the chain that perform the init (to wait for)
+			 */
+			init:function () {
+				this.initialised = true;
+				return deep(this)
+				.query(&quot;./stores/*&quot;)
+				.run(&quot;init&quot;);
+			}
+		}
+
+		/**
+		 * a way to start a chain setted with a certain role
+		 * @param  {String} name the name of the roel to select
+		 * @return {deep.Chain} the chain setted with the role
+		 */
+		deep.role = function (name) {
+			return deep(null).role(name);
+		}
+
+		/**
+		 * select a role for any subsequent call for this chain (also inner call : see tutorials)
+		 * @for deep.Chain
+		 * @method role
+		 * @param  {String} name the role name
+		 * @return {deep.Chain} the chain hanlder with role setted in context. 
+		 */
+		deep.Chain.prototype.role = function () 
+		{
+			var self = this;
+			var roles = Array.prototype.slice.apply(arguments);
+			var joined = roles.join(&quot;.&quot;);
+
+			var finalise = function (role,s,e) {
+				var context = deep.context = deep.utils.simpleCopy(self.context);
+				self.context = context;
+				self.context.role = role;
+				if(self._store)
+					self._store = deep.store(self._store.name);
+				return [s,e];
+			}
+
+			deep._roles = deep._roles || {};
+
+			var func = function (s,e) 
+			{
+				try{
+					var ctrl = deep._roles[joined];
+					if(!ctrl)
+					{
+						if(console.flags[&quot;autobahn-roles-cache&quot;])
+							console.log(&quot;roles (&quot;,roles,&quot;) wasn&#x27;t in cache : create it&quot;);
+						var ctrl = {};
+						roles.forEach(function(e){
+							//console.log(&quot;applying role : &quot;, e)
+							if(deep.roles[e])
+								deep.utils.up(deep.roles[e], ctrl);
+							else
+								throw new Error(&quot;error while compiling roles : no role founded with : &quot;+e);
+						});
+						deep._roles[joined] = ctrl;
+						ctrl.name = joined;
+					}
+				}
+				catch(e){
+					if(e instanceof Error)
+						throw e;
+					throw new Error(&quot;error while compiling roles : &quot;+String(e));
+				}
+
+				if(!ctrl.initialised)
+				{
+					//console.log(&quot;CONTROLLER NOT LOADED : load it : &quot;, ctrl)
+					return deep(deep)
+					.catchError()
+					.query(&quot;./_roles/&quot;+joined)
+					.bottom(deep.Role)
+					.flatten()
+					.run(&quot;init&quot;)
+					.log(&quot;role &quot;+joined+&quot; : initalised...&quot;)
+					.done(function (success) {
+						return finalise(ctrl,s,e);
+					});
+				}
+				else
+					return finalise(ctrl,s,e);
+			}
+			//deep.handlers.decorations.role(role, self);
+			deep.chain.addInQueue.apply(this,[func]);
+ 			return self;
+		}
+
+/*
+		deep.store(&quot;role&quot;, {
+			_deep_store_:true,
+			get:function (id, options) {
+				return deep(null).role(id);
+			}
+		});
+*/
+		//_________ TESTS
+		deep(deep.roles).up({
+			&quot;public&quot;:{
+				name:&quot;public&quot;,
+				backgrounds:[deep.Role],
+				stores:deep.stores
+			}
+		})
+		.flatten();
+
+		return deep;
 	}
-
-	/**
-	 * @for deep.Chain
-	 * @method role
-	 * @param  {String*} arguments a list or arguments
-	 * @return {deep.Chain} the chain hanlder
-	 */
-	deep.Chain.prototype.role = function () {
-		
-	}
-
-	return deep;
 });
     </pre>
 </div>

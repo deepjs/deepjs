@@ -68,15 +68,12 @@ define(["require", "deep/deep"],function(require)
 		//_______________________________________________________________________________ STORES
 		//var deep = require("deep/deep");
 		var Querier = require("deep/deep-query");
-		/**
-		 *
-		 * 
-		 * @submodule deep-stores
-		 */
 		
 		/**
 		 * Just a namespace : where default and custom stores are mainly... stored. ;)
 		 * @class deep.stores
+		* @constructor
+		 * 
 		 */
 		deep.stores = {};
 
@@ -84,19 +81,18 @@ define(["require", "deep/deep"],function(require)
 		 * create a custom store or start chain with a certain store
 		 * @example
 		 *
-		 * deep.store("json").get("/campaign/").log();
+		 * 	deep.store("json").get("/campaign/").log();
 		 *
 		 * @example
 		 *
-		 * deep.store("json").create("campaign", "/campaign/");
-		 * ...
-		 * ...
-		 * deep.store("campaign").get("?").log()
+		 * 	deep.store("json").create("campaign", "/campaign/");
+		 *  ...
+		 *  ...
+		 *  deep.store("campaign").get("?").log()
 		 *
 		 * 
-		 * @for deep
-		 * @method store
-		 * @static
+		 * @class deep.store
+	 	 * @constructor
 		 */
 		deep.store = function (name, definer, options)
 		{
@@ -249,6 +245,7 @@ define(["require", "deep/deep"],function(require)
 					var self = this;
 					//console.log("deep.chain.put : add in chain : ", object, id);
 					var func = function (s,e) {
+						object = object || deep.chain.val(self);
 						options = options || {};
 						var id = object.id || options.id;
 						//console.log("deep.chain.put : ", object, id);
@@ -376,7 +373,7 @@ define(["require", "deep/deep"],function(require)
 		};
 		/**
 		 * Empty class : Just there to get instanceof working (be warning with iframe issue in that cases).
-		 * @class deep.stores.Store
+		 * @class deep.store.Store
 		 * @constructor
 		 */
 		deep.store.Store = function () {};
@@ -386,7 +383,7 @@ define(["require", "deep/deep"],function(require)
 
 		/**
 		 * A store based on simple array
-		 * @class deep.stores.Array
+		 * @class deep.store.Array
 		 * @constructor
 		 * @param {Array} arr a first array of objects to hold
 		 * @param {Object} options could contain 'schema'
@@ -411,13 +408,21 @@ define(["require", "deep/deep"],function(require)
 				//console.log("ArrayStore.get : ",id," - stock : ", stock)
 				if(typeof id === "string" &&  id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
 					return deep(stock).query("./collection/*"+id).store(this);
+
 				if(typeof id === "string")
-					return deep(stock).query("./collection/*?id=string:"+id).done(function(res){
+					return deep(stock)
+					.query("./collection/*?id=string:"+id)
+					.done(function(res){
 						return res.shift();
-					}).store(this);
-				return deep(stock).query("./collection/*?id="+id).done(function(res){
+					})
+					.store(this);
+				
+				return deep(stock)
+				.query("./collection/*?id="+id)
+				.done(function(res){
 					return res.shift();
-				}).store(this);
+				})
+				.store(this);
 			};
 			/**
 			 * @method put
@@ -436,11 +441,17 @@ define(["require", "deep/deep"],function(require)
 					.validate()
 					.root(stock)
 					.replace("./collection/*?id="+id, object)
+					.done(function(success){
+					    return success.shift().value;
+					})
 					.store(this);
 				else
 					return deep(stock)
-					.store(this)
-					.replace("./collection/*?id="+id, object);
+					.replace("./collection/*?id="+id, object)
+					.done(function(success){
+					    return success.shift().value;
+					})
+					.store(this);
 			};
 			/**
 			 * @method post
@@ -460,7 +471,8 @@ define(["require", "deep/deep"],function(require)
 					if(res.length > 0)
 						return new Error("deep.store.ArrayStore.post : An object has the same id before post : please put in place : object : ",object);
 					if(schema)
-						return deep(object).validate(schema)
+						return deep(object)
+						.validate(schema)
 						.done(function (report) {
 							stock.collection.push(object);
 							return object;
@@ -519,7 +531,7 @@ define(["require", "deep/deep"],function(require)
 
 		/**
 		 * A store based on simple object
-		 * @class deep.stores.Object
+		 * @class deep.store.Object
 		 * @constructor
 		 * @param {Object} obj the root object to hold
 		 * @param {Object} options could contain 'schema'

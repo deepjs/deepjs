@@ -17,14 +17,6 @@
 	}
 
 	var tests = [];
-	// 1
-	deep({
-	    msg:"hello { name }"
-	})
-	.pushHandlerTo(tests)
-	.deepInterpret({ name:"john" })
-	.equal({ msg:"hello john" }, report);
-
 
 	// 2
 	deep({

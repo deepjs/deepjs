@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>deep.stores.Array - deepjs Javascript Framework</title>
+    <title>deep.store.Object - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -146,7 +148,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>deep.stores.Array Class</h1>
+                        <h1>deep.store.Object Class</h1>
 <div class="box meta">
     
 
@@ -154,7 +156,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep-stores.js.html#l328"><code>deep-stores.js:328</code></a>
+            Defined in: <a href="../files/deep-stores.js.html#l532"><code>deep-stores.js:532</code></a>
         </div>
     
 
@@ -171,14 +173,14 @@
 
 
 <div class="box intro">
-    <p>A store based on simple array</p>
+    <p>A store based on simple object</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_deep.stores.Array" class="method item">
-    <h3 class="name"><code>deep.stores.Array</code></h3>
+        <div id="method_deep.store.Object" class="method item">
+    <h3 class="name"><code>deep.store.Object</code></h3>
 
     
         <div class="args">
@@ -186,7 +188,7 @@
             
                 <li class="arg">
                     
-                        <code>arr</code>
+                        <code>obj</code>
                     
                 </li>
             
@@ -225,7 +227,7 @@
             
         
         
-        <a href="../files/deep-stores.js.html#l328"><code>deep-stores.js:328</code></a>
+        <a href="../files/deep-stores.js.html#l532"><code>deep-stores.js:532</code></a>
         
         </p>
 
@@ -247,14 +249,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">arr</code>
-                        <span class="type">Array</span>
+                        <code class="param-name">obj</code>
+                        <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>a first array of objects to hold</p>
+                        <p>the root object to hold</p>
                     </div>
 
                     
@@ -344,13 +346,6 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_range">range</a>
-
-                                
-                                
-                            </li>
-                        
                     </ul>
                 </div>
             
@@ -380,19 +375,13 @@
                     
                 </li>
             
-                <li class="arg">
-                    
-                        <code>options</code>
-                    
-                </li>
-            
             </ul><span class="paren">)</span>
         </div>
     
 
     
         <span class="returns-inline">
-            <span class="type">Object</span>
+            <span class="type">type</span>
         </span>
     
 
@@ -419,7 +408,110 @@
             
         
         
-        <a href="../files/deep-stores.js.html#l403"><code>deep-stores.js:403</code></a>
+        <a href="../files/deep-stores.js.html#l592"><code>deep-stores.js:592</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">id</code>
+                        <span class="type">type</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">type</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_get" class="method item">
+    <h3 class="name"><code>get</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>id</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-stores.js.html#l544"><code>deep-stores.js:544</code></a>
         
         </p>
 
@@ -454,21 +546,6 @@
                     
                 </li>
             
-                <li class="param">
-                    
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>no options for the moment</p>
-                    </div>
-
-                    
-                </li>
-            
             </ul>
         </div>
     
@@ -480,134 +557,9 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">Object</span>:
+                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
                     
-                    the removed object
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_get" class="method item">
-    <h3 class="name"><code>get</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>id</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>options</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Object</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-stores.js.html#l342"><code>deep-stores.js:342</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">id</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the id of the object to retrieve. Could also be a (deep)query.</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>an options object (here there is no options)</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Object</span>:
-                    
-                    the retrieved object
+                    depending on first argument : return an object or an array of objects
                 
             </div>
         </div>
@@ -632,7 +584,7 @@
             
                 <li class="arg">
                     
-                        <code>options</code>
+                        <code>id</code>
                     
                 </li>
             
@@ -642,7 +594,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
+            <span class="type">type</span>
         </span>
     
 
@@ -669,7 +621,7 @@
             
         
         
-        <a href="../files/deep-stores.js.html#l412"><code>deep-stores.js:412</code></a>
+        <a href="../files/deep-stores.js.html#l614"><code>deep-stores.js:614</code></a>
         
         </p>
 
@@ -692,13 +644,13 @@
                 <li class="param">
                     
                         <code class="param-name">object</code>
-                        <span class="type">Object</span>
+                        <span class="type">type</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the update to apply to object</p>
+                         
                     </div>
 
                     
@@ -706,14 +658,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">id</code>
+                        <span class="type">type</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>could contain 'id'</p>
+                         
                     </div>
 
                     
@@ -730,9 +682,8 @@
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                        <span class="type">type</span>:
                     
-                    a chain that hold the patched object and has injected values as success object.
                 
             </div>
         </div>
@@ -757,7 +708,7 @@
             
                 <li class="arg">
                     
-                        <code>options</code>
+                        <code>path</code>
                     
                 </li>
             
@@ -767,7 +718,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">Object</span>
+            <span class="type">type</span>
         </span>
     
 
@@ -794,7 +745,7 @@
             
         
         
-        <a href="../files/deep-stores.js.html#l380"><code>deep-stores.js:380</code></a>
+        <a href="../files/deep-stores.js.html#l570"><code>deep-stores.js:570</code></a>
         
         </p>
 
@@ -817,7 +768,7 @@
                 <li class="param">
                     
                         <code class="param-name">object</code>
-                        <span class="type">Object</span>
+                        <span class="type">type</span>
                     
 
                     
@@ -831,14 +782,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">path</code>
+                        <span class="type">type</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>(optional)</p>
+                         
                     </div>
 
                     
@@ -855,9 +806,8 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">Object</span>:
+                        <span class="type">type</span>:
                     
-                    the inserted object (decorated with it's id)
                 
             </div>
         </div>
@@ -882,7 +832,7 @@
             
                 <li class="arg">
                     
-                        <code>options</code>
+                        <code>query</code>
                     
                 </li>
             
@@ -892,7 +842,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">Object</span>
+            <span class="type">type</span>
         </span>
     
 
@@ -919,7 +869,7 @@
             
         
         
-        <a href="../files/deep-stores.js.html#l355"><code>deep-stores.js:355</code></a>
+        <a href="../files/deep-stores.js.html#l557"><code>deep-stores.js:557</code></a>
         
         </p>
 
@@ -942,132 +892,7 @@
                 <li class="param">
                     
                         <code class="param-name">object</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the object to update</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>an options object : could contain 'id'</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Object</span>:
-                    
-                    the updated object
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_range" class="method item">
-    <h3 class="name"><code>range</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>start</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>end</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/deep-stores.js.html#l432"><code>deep-stores.js:432</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>select a range in collection</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">start</code>
-                        <span class="type">Number</span>
+                        <span class="type">type</span>
                     
 
                     
@@ -1081,8 +906,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">end</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">query</code>
+                        <span class="type">type</span>
                     
 
                     
@@ -1105,9 +930,8 @@
             <div class="returns-description">
                 
                     
-                        <span class="type"><a href="../classes/deep.Chain.html" class="crosslink">deep.Chain</a></span>:
+                        <span class="type">type</span>:
                     
-                    a chain that hold the selected range and has injected values as success object.
                 
             </div>
         </div>

@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -162,8 +164,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 
 	/**
 	 * A deep implementation of Deferred object (see promise on web)
-	 * @namespace deep
-	 * @class Deferred
+	 * @class deep.Deferred
 	 * @constructor
 	 */
 	deep.Deferred = function ()
@@ -256,7 +257,6 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 		 */
 		promise:function () {
 			var prom = new deep.Promise();
-			this.promises.push(prom);
 			if(this.resolved || this.rejected || this.canceled)
 			{
 				prom.rejected = this.rejected;
@@ -265,7 +265,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				prom.failure = this.failure;
 				prom.result = this.result;
 				prom.running = false;
+				return prom;
 			}
+			this.promises.push(prom);
 			return prom;
 		}
 	};
@@ -281,6 +283,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 		this.running = true;
 		this.context = deep.context;
 		this.queue = [];
+		this._deep_promise_ = true;
 	};
 	deep.Promise.prototype = {
 		_deep_promise_:true,
@@ -290,6 +293,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 		synch:false,
 		result:null,
 		failure:null,
+		context:null,
 		/**
 		 * add .done callback handler in promise chain
 		 * @method done
@@ -306,8 +310,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				if(e || !callBack || s instanceof Error)
 				{
 					//console.log(&quot;deep.promise.done : but error : &quot;,e)
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, e]);
+					forceNextPromiseHandler(self, s, e);
 					return;
 				}
 				var r = callBack(s);
@@ -318,31 +321,20 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 					{
 						if(typeof argument === &#x27;undefined&#x27;)
 							argument = s;
-						self.running = false;
-						nextPromiseHandler.apply(self, [(argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null]);
+						forceNextPromiseHandler(self, (argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null);
 					})
 					.fail(function (error) {
-						self.running = false;
-						nextPromiseHandler.apply(self, [null, error]);
+						forceNextPromiseHandler(self, null, error);
 					});
 				else if(typeof r === &#x27;undefined&#x27;)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, e]);
-				}
+					forceNextPromiseHandler(self, s, e);
 				else if(r instanceof Error)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, r]);
-				}
+					forceNextPromiseHandler(self, null, r);
 				else
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [r, null]);
-				}
+					forceNextPromiseHandler(self, r, null);
 			};
 			this.queue.push(func);
-			if((this.resolved || this.rejected) &amp;&amp; !this.running)
+			if((this.resolved || this.rejected))
 				nextPromiseHandler.apply(this);
 			return self;
 		},
@@ -361,8 +353,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				//console.log(&quot;deep.promise.fail : &quot;,s,e)
 				if((e === null || typeof e === &#x27;undefined&#x27;) || !callBack)
 				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [s, null]);
+					forceNextPromiseHandler(self, s, null);
 					return;
 				}
 				var r = callBack(e);
@@ -371,36 +362,25 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				if(r &amp;&amp; typeof r.then === &#x27;function&#x27;)
 					r.done(function (argument)
 					{
-						self.running = false;
 						if(typeof argument === &#x27;undefined&#x27;)
-							nextPromiseHandler.apply(self, [null, e]);
+							forceNextPromiseHandler(self, null, e);
 						else if(argument instanceof Error)
-							nextPromiseHandler.apply(self, [null, argument]);
+							forceNextPromiseHandler(self, null, argument);
 						else
-							nextPromiseHandler.apply(self, [argument, null]);
+							forceNextPromiseHandler(self, argument, null);
 					})
 					.fail(function (error) {
-						self.running = false;
-						nextPromiseHandler.apply(self, [null, error]);
+						forceNextPromiseHandler(self, null, error);
 					});
 				else if(typeof r === &#x27;undefined&#x27;)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, e]);
-				}
+					forceNextPromiseHandler(self, null, e);
 				else if(r instanceof Error)
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [null, r]);
-				}
+					forceNextPromiseHandler(self, null, r);
 				else
-				{
-					self.running = false;
-					nextPromiseHandler.apply(self, [r, null]);
-				}
+					forceNextPromiseHandler(self, r, null);
 			};
 			this.queue.push(func);
-			if((this.resolved || this.rejected) &amp;&amp; !this.running)
+			if((this.resolved || this.rejected))
 				nextPromiseHandler.apply(this);
 			return self;
 		},
@@ -418,7 +398,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				this.done(successCallBack);
 			if(errorCallBack)
 				this.fail(errorCallBack);
-			if((this.resolved || this.rejected)  &amp;&amp; !this.running)
+			if((this.resolved || this.rejected))
 				nextPromiseHandler.apply(this);
 			return self;
 		},
@@ -437,7 +417,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			return;
 		this.running = true;
 		var self = this;
-		if((typeof failure === &#x27;undefined&#x27; || failure === null) &amp;&amp; (typeof result === &#x27;undefined&#x27; || result === null))
+		if((typeof failure === &#x27;undefined&#x27;) &amp;&amp; (typeof result === &#x27;undefined&#x27;))
 		{
 			failure = this.failure;
 			result = this.result;
@@ -500,6 +480,12 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			this.running = false;
 		}
 	}
+	function forceNextPromiseHandler(handler, s, e)
+	{
+		//console.log(&quot;forceNextQueue Item : &quot;, s,e)
+		handler.running = false;
+		nextPromiseHandler.apply(handler, [s, e]);
+	}
 	function createImmediatePromise(result)
 	{
 		//console.log(&quot;deep.createImmediatePromise : &quot;, result instanceof Error)
@@ -532,10 +518,22 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			return createImmediatePromise(arg);
 		if(arg._isBRANCHES_)		// chain.branches case
 			return deep.all(arg.branches);
+
 		if(typeof arg.promise === &quot;function&quot; )  // deep.Deferred, deep.Chain and jquery deferred case
 			return arg.promise();
+		if(typeof arg.promise === &#x27;object&#x27;)
+			return arg.promise;
 		if(typeof arg.then === &#x27;function&#x27;)		//any promise compliant object
-			return arg;
+		{
+			//console.log(&quot;doing simple promise (no promise and then is present) on : &quot;, arg);
+			var def = deep.Deferred();
+			arg.then(function(s){
+				def.resolve(s);
+			}, function(e){
+				def.reject(e);
+			})
+			return def.promise();
+		}	
 		return createImmediatePromise(arg);
 	};
 
@@ -569,6 +567,8 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 		var res = [];
 		var rejected = false;
 		arr.forEach(function (a){
+			if(def.rejected)
+				return;
 			var i = d +1;
 			if(!a || !a.then)
 			{
