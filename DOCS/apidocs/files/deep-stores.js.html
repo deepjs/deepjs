@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -151,9 +153,9 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * how manage collections and objects as http styled stores
+ * manage collections, objects and ressources as http styled stores.
  *
- * One interface for all stores.
+ * One interface for all stores/ressources.
  *
  * @module deep
  * @submodule deep-stores
@@ -195,6 +197,22 @@
  * 
  * @author Gilles Coomans &lt;gilles.coomans@gmail.com&gt;
  */
+
+/*
+	TODO : 
+		stores : array
+		stores : object
+		+ add create function (more homogene with json create)
+
+STANDARD trans stores/facets (tout store/facet peut etre utilisé avec)
+	manager les readOnly + privates 
+	manager rpc + bulk 
+
+Ajouter deep-facets.js
+
+Add deep.store.Store.fetchRelation(name) based on schema links.
+
+ */
 if(typeof define !== &#x27;function&#x27;)
 	var define = require(&#x27;amdefine&#x27;)(module);
 
@@ -204,15 +222,12 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		//_______________________________________________________________________________ STORES
 		//var deep = require(&quot;deep/deep&quot;);
 		var Querier = require(&quot;deep/deep-query&quot;);
-		/**
-		 *
-		 * 
-		 * @submodule deep-stores
-		 */
 		
 		/**
 		 * Just a namespace : where default and custom stores are mainly... stored. ;)
 		 * @class deep.stores
+		* @constructor
+		 * 
 		 */
 		deep.stores = {};
 
@@ -220,38 +235,45 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 * create a custom store or start chain with a certain store
 		 * @example
 		 *
-		 * deep.store(&quot;json&quot;).get(&quot;/campaign/&quot;).log();
+		 * 	deep.store(&quot;json&quot;).get(&quot;/campaign/&quot;).log();
 		 *
 		 * @example
 		 *
-		 * deep.store(&quot;json&quot;).create(&quot;campaign&quot;, &quot;/campaign/&quot;);
-		 * ...
-		 * ...
-		 * deep.store(&quot;campaign&quot;).get(&quot;?&quot;).log()
+		 * 	deep.store(&quot;json&quot;).create(&quot;campaign&quot;, &quot;/campaign/&quot;);
+		 *  ...
+		 *  ...
+		 *  deep.store(&quot;campaign&quot;).get(&quot;?&quot;).log()
 		 *
 		 * 
-		 * @for deep
-		 * @method store
-		 * @static
+		 * @class deep.store
+	 	 * @constructor
 		 */
 		deep.store = function (name, definer, options)
 		{
 			options = options || {};
 			var store = null;
+			var stores = deep.stores;
+			var role = { name:&quot;no role&quot; };
+			if(deep.context &amp;&amp; deep.context.role)
+			{
+				stores = deep.context.role.stores;
+				role = deep.context.role;
+			}
 			if(!definer)
 			{
-				if(!deep.stores[name])
-					throw new Error(&quot;deep.store(name) : no store found with : &quot;, name);
-				return deep.stores[name];
+				if(!stores[name])
+					throw new Error(&quot;no &#x27;&quot;+name+&quot;&#x27; store found in role : &quot;+ role.name);
+				stores[name].name = name;
+				return stores[name]; //deep(null).store(name);
 			}
 			else if(definer instanceof Array)
-				store = deep.stores[name] = deep.store.ArrayStore(definer, options);
-			else if(definer instanceof deep.store.DeepStore)
-				store = deep.stores[name] = definer.create(name, options);
-			else store = deep.stores[name] = deep.store.ObjectStore(definer, options);
+				store = stores[name] = deep.store.ArrayStore(definer, options);
+			else if(definer instanceof deep.store.Store)
+				store = stores[name] = definer.create(name, options);
+			else store = stores[name] = deep.store.ObjectStore(definer, options);
 			store.name = name;
 			store.options = options;
-			return store;
+			return store; //deep(null).store(name);
 		};
 
 		/**
@@ -268,22 +290,40 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		deep.Chain.prototype.store = function (name)
 		{
 			var self = this;
-			var store = null;
-			if(typeof name === &#x27;string&#x27;)
-			{
-				if(!deep.stores[name])
-					throw new Error(&quot;no store found with : &quot;+name);
-				store = deep.stores[name];
-			}
-			else
-				store = name;
+
 			var func = function (s,e) {
 				//console.log(&quot;chain.store : set store : &quot;, store.name);
+				//			var store = null;
+				var stores = deep.stores;
+				var role = { name:&quot;no role&quot; };
+				if(self.context &amp;&amp; self.context.role)
+				{
+					stores = self.context.role.stores;
+					role = self.context.role;
+				}	
+				if(typeof name === &#x27;string&#x27;)
+				{
+					if(!stores[name])
+						throw new Error(&quot;no &#x27;&quot;+name+&quot;&#x27; store found in role : &quot;+ role.name);
+					store = stores[name];
+					store.name = name;
+				}
+				else
+					store = name;
 				self._store = store;
 				deep.chain.position(self, store.name);
 				deep.chain.forceNextQueueItem(self, s, e);
 			};
-			deep.handlers.decorations.store(store, self);
+			deep.handlers.decorations.store({
+				get:function (argument) {},
+				patch:function (argument) {},
+				put:function (argument) {},
+				post:function (argument) {	},
+				del:function (argument) {	},
+				range:function (argument) {	},
+				rpc:function (argument) {},
+				bulk:function (argument) {}
+			}, self);
 			deep.chain.addInQueue.apply(this,[func]);
 			return self;
 		};
@@ -291,7 +331,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		deep.handlers.decorations.store = function (store, handler) {
 			//console.log(&quot;store decoration&quot;);
 			deep.utils.up({
-				_store : deep.collider.replace(store),
+				//_store : deep.collider.replace(store),
 
 				get : deep.compose
 				.condition(typeof store.get === &quot;function&quot;)
@@ -301,14 +341,22 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					if(id == &quot;?&quot; || !id)
 						id = &quot;&quot;;
 
+					var schema = null;
+					if(typeof self._store.schema === &#x27;function&#x27;)
+						schema = self._store.schema(&quot;get&quot;);
+					else if(typeof self._store.schema === &#x27;object&#x27;)
+						schema = self._store.schema;
+
 					var func = function (s,e) {
-						self._store.get(id, options)
+						self
+						._store
+						.get(id, options)
 						.done(function (success) {
 							//console.log(&quot;deep(...).store : get : success : &quot;, success);
 							if(success instanceof Array)
-								self._entries = deep(success).nodes();
+								self._entries = deep(success, schema, {uri:id}).nodes();
 							else
-								self._entries = [deep.Querier.createRootNode( success )];
+								self._entries = [deep.Querier.createRootNode( success, schema, {uri:id})];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -327,7 +375,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					var self = this;
 					var func = function (s,e)
 					{
-						self._store.post(object || deep.chain.val(self),id, options)
+						self
+						._store
+						.post(object || deep.chain.val(self),id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -349,8 +399,12 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					var self = this;
 					//console.log(&quot;deep.chain.put : add in chain : &quot;, object, id);
 					var func = function (s,e) {
+						object = object || deep.chain.val(self);
+						options = options || {};
+						var id = object.id || options.id;
 						//console.log(&quot;deep.chain.put : &quot;, object, id);
-						self._store.put(object  || deep.chain.val(self),id, options)
+
+						self._store.put(object  || deep.chain.val(self), options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -370,7 +424,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				.replace(function (object, id, options) {
 					var self = this;
 					var func = function (s,e) {
-						self._store.patch(object  || deep.chain.val(self),id, options)
+						self
+						._store
+						.patch(object  || deep.chain.val(self),id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -391,7 +447,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					var self = this;
 					var func = function (s,e) {
 						var val = deep.chain.val(self);
-						self._store.del(id || val.id, options)
+						self
+						._store
+						.del(id || val.id, options)
 						.done(function (success) {
 							self._entries = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
@@ -469,23 +527,24 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		};
 		/**
 		 * Empty class : Just there to get instanceof working (be warning with iframe issue in that cases).
-		 * @class deep.stores.Store
+		 * @class deep.store.Store
 		 * @constructor
 		 */
-		deep.store.DeepStore = function () {};
-		deep.store.DeepStore.prototype = {
-			_deeo_store_:true
+		deep.store.Store = function () {};
+		deep.store.Store.prototype = {
+			_deep_store_:true
 		};
 
 		/**
 		 * A store based on simple array
-		 * @class deep.stores.Array
+		 * @class deep.store.Array
 		 * @constructor
 		 * @param {Array} arr a first array of objects to hold
 		 * @param {Object} options could contain &#x27;schema&#x27;
 		 */
-		deep.store.ArrayStore = function (arr, options) {
-			var store = new deep.store.DeepStore();
+		deep.store.ArrayStore = function (arr, options) 
+		{
+			var store = new deep.store.Store();
 			options = options || {};
 			store.schema = options.schema || {};
 			var stock = {
@@ -498,11 +557,26 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			 * @return {Object} the retrieved object
 			 */
 			store.get = function (id, options) {
-				if(id === &quot;&quot;)
+				if(id === &quot;&quot; || !id || id === &quot;*&quot;)
 					id = &quot;?&quot;;
-				if( id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
-					return deep(stock).query(&quot;collection/*&quot;+id).store( this);
-				return deep(stock).query(&quot;./collection/*?id=&quot;+id).store(this);
+				//console.log(&quot;ArrayStore.get : &quot;,id,&quot; - stock : &quot;, stock)
+				if(typeof id === &quot;string&quot; &amp;&amp;  id.match( /^((\.?\/)?\?)|^(\?)/gi ) )
+					return deep(stock).query(&quot;./collection/*&quot;+id).store(this);
+
+				if(typeof id === &quot;string&quot;)
+					return deep(stock)
+					.query(&quot;./collection/*?id=string:&quot;+id)
+					.done(function(res){
+						return res.shift();
+					})
+					.store(this);
+				
+				return deep(stock)
+				.query(&quot;./collection/*?id=&quot;+id)
+				.done(function(res){
+					return res.shift();
+				})
+				.store(this);
 			};
 			/**
 			 * @method put
@@ -514,20 +588,24 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				options = options || {};
 				var id = options.id || object.id;
 				if(!id)
-					throw new Error(&quot;Array store need id on put&quot;)
+					throw new Error(&quot;Array store need id on put&quot;);
 				var schema = options.schema || this.schema;
 				if(schema)
-					deep(object)
-					.validate(schema)
-					.fail(function (error) {
-						object = error;
-					})
+					return deep(object, schema)
+					.validate()
 					.root(stock)
-					.replace(&quot;./collection/*?id=&quot;+id, object);
+					.replace(&quot;./collection/*?id=&quot;+id, object)
+					.done(function(success){
+					    return success.shift().value;
+					})
+					.store(this);
 				else
-					deep(stock)
-					.replace(&quot;./collection/*?id=&quot;+id, object);
-				return deep(object).store(this);
+					return deep(stock)
+					.replace(&quot;./collection/*?id=&quot;+id, object)
+					.done(function(success){
+					    return success.shift().value;
+					})
+					.store(this);
 			};
 			/**
 			 * @method post
@@ -537,20 +615,26 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			 */
 			store.post = function (object, options) {
 				options = options || {};
-				object.id = id = new Date().valueOf(); // mongo styled id
+				if(!object.id)
+					object.id = id = new Date().valueOf()+&quot;&quot;; // mongo styled id
 				var schema = options.schema || this.schema;
-				if(schema)
-					deep(object)
-					.validate(schema)
-					.done(function (report) {
-						arr.push(object);
-					})
-					.fail(function (error) {
-						object = error;
-					});
-				else
-					arr.push(object);
-				return deep(object).store(this);
+
+				return deep(stock)
+				.query(&quot;./collection/*?id=&quot;+object.id)
+				.done(function(res){
+					if(res.length &gt; 0)
+						return new Error(&quot;deep.store.ArrayStore.post : An object has the same id before post : please put in place : object : &quot;,object);
+					if(schema)
+						return deep(object)
+						.validate(schema)
+						.done(function (report) {
+							stock.collection.push(object);
+							return object;
+						});
+					stock.collection.push(object);
+					return object;
+				})
+				.store(this);
 			};
 			/**
 			 * @method del
@@ -573,13 +657,18 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				if(!id)
 					throw new Error(&quot;deep.stores.Array need id on patch&quot;);
 				var schema = options.schema || this.schema;
-				if(schema)
-				{
-					var report = deep.validate(object, schema, { partial:true });
-					if(!report.valid)
-						throw new Error(&quot;412 : Precondition Failed : deep.stores.Array patch failed : &quot;+JSON.stringify());
-				}	
-				return deep(stock).query(&quot;./collection/*?id=&quot;+id).up(object).store(this);
+				return deep(stock)
+				.query(&quot;./collection/*?id=&quot;+object.id)
+				.done(function (res) {
+					if(res.length == 0)
+						return new Error(&quot;ArrayStore.patch : no object found in collection with id : &quot;+ object.id+&quot;. Aborting patch. Please post before&quot;);
+				})
+				.up(object)
+				.done(function (res) {
+					if(schema)
+						this.validate(schema);
+				})
+				.store(this);
 			};
 			/**
 			 * select a range in collection
@@ -596,14 +685,14 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 
 		/**
 		 * A store based on simple object
-		 * @class deep.stores.Object
+		 * @class deep.store.Object
 		 * @constructor
 		 * @param {Object} obj the root object to hold
 		 * @param {Object} options could contain &#x27;schema&#x27;
 		 */
 		deep.store.ObjectStore = function (obj, options)
 		{
-			var store = new deep.store.DeepStore();
+			var store = new deep.store.Store();
 			options = options || {};
 			store.schema = options.schema || {};
 			/**
@@ -614,6 +703,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			 */
 			store.get = function (id)
 			{
+				//if(id === &quot;&quot; || !id || id === &quot;*&quot;)
 				if(id[0] == &quot;.&quot; || id[0] == &quot;/&quot;)
 					return deep(obj).query(id).store(this);
 				return deep(obj).query(&quot;./&quot;+id).store(this);
@@ -704,17 +794,21 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 */
 		deep.get = function  (request, options)
 		{
-			if(typeof request !== &quot;string&quot;)
+			if(typeof request !== &quot;string&quot; &amp;&amp; request &amp;&amp; !request._deep_request_)
 				return request;
-			var infos = deep.parseRequest(request);
+			options = options || {};
+			var infos = request;
+			if(typeof infos === &#x27;string&#x27;)
+				infos = deep.parseRequest(request, options);
+			var res = null;
 			if(!infos.store)
 				if(!infos.protocole)
 					return request;
 				else
 					return new Error(&quot;no store found with : &quot;, request);
 			if(infos.queryThis)
-				return infos.store.get(infos, options);
-			if(infos.method )
+				res = infos.store.get(infos, options);
+			else if(infos.method )
 			{
 				if(infos.method !== &quot;range&quot; || !infos.store.range)
 					return deep(new Error(&quot;store doesn&#x27;t contain method : &quot;,request));
@@ -726,10 +820,19 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				var rn = rangePart.split(&quot;,&quot;);
 				var start = parseInt(rn[0], 10);
 				var end = parseInt(rn[1], 10);
-				return infos.store[infos.method](start, end, query, options);
+				res =  infos.store[infos.method](start, end, query, options);
 			}
 			else
-				return infos.store.get(infos.uri, options);
+				res = infos.store.get(infos.uri, options);
+			if(options.wrap)
+			{
+				return deep(res)
+				.done(function(res){
+					options.wrap.result = res;
+					return options.wrap;
+				})
+			}
+			return res;
 		};
 		/**
 		 * retrieve an array of retrievable strings (e.g. &quot;json::test.json&quot;)
@@ -758,7 +861,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 * @param  {String} request
 		 * @return {Object} infos an object containing parsing result
 		 */
-		deep.parseRequest = function (request) {
+		deep.parseRequest = function (request, options) {
 			var protoIndex = request.indexOf(&quot;::&quot;);
 			var protoc = null;
 			var uri = request;
@@ -802,10 +905,16 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					if(store)
 						break;
 				}
+				if(!store &amp;&amp; options.defaultProtocole)
+				{
+					store = deep.stores[options.defaultProtocole];
+					protoc = options.defaultProtocole;
+				}	
 			}
 			else
 				store = deep.stores[protoc];
 			var res = {
+				_deep_request_:true,
 				request:request,
 				queryThis:queryThis,
 				store:store,
@@ -901,7 +1010,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			 * @return {Object} the loaded aspect
 			 */
 			get:function (id, options) {
-				return deep(require(id)).then(function(res){
+				return deep.when(require(id)).then(function(res){
 					return res.aspect;
 				}, function(res){
 					return res;
@@ -925,6 +1034,14 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				return deep(require(id));
 			}
 		};
+
+
+		/*
+			TODO : add schema protocole : 
+
+				retrieve it and &quot;compile&quot; it ( produce cleans + validations methods )
+
+		 */
 
 		return deep;
 	}

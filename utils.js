@@ -292,7 +292,7 @@ define(function(require){
 		{
 			var part = parts.shift();
 			if(!tmp[part])
-				return null;
+				tmp[part] = {};
 			tmp = tmp[part];
 		}
 		return tmp[parts.shift()] = value;

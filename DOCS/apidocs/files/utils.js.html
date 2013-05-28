@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -169,6 +171,11 @@ define(function(require){
 	 * @namespace deep
 	 */
 	var utils = {};
+
+	utils.rethrow = function (error) {
+		//console.log(&quot;ksss&quot;)
+		throw error;
+	}
 
 	// _______________________________________ swig related
 
@@ -391,6 +398,30 @@ define(function(require){
 		return res;
 	}
 
+	utils.simpleCopy = function simpleCopy(obj)
+	{
+		if(obj instanceof Array)
+			return obj.concat([]);
+		if(obj &amp;&amp; typeof obj === &#x27;object&#x27;)
+		{
+			if(obj instanceof RegExp)
+				return obj;
+			if(obj instanceof Date)
+				return new Date(obj.valueOf());
+			var res = {};
+			for(var i in obj)
+			{
+				if(i == &quot;_deep_entry&quot;)
+					continue;
+				if(obj.hasOwnProperty(i))
+					res[i] = obj[i];
+			}
+			return res;
+		}
+		return obj;
+	}
+
+
 	utils.getObjectClass = function(obj) {
 	    if (obj &amp;&amp; obj.constructor &amp;&amp; obj.constructor.toString) {
 	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
@@ -415,7 +446,7 @@ define(function(require){
 		{
 			var part = parts.shift();
 			if(!tmp[part])
-				return null;
+				tmp[part] = {};
 			tmp = tmp[part];
 		}
 		return tmp[parts.shift()] = value;
@@ -1060,45 +1091,38 @@ define(function(require){
 
 	//_________________________________________________ HTTP RELATED
 
+	utils.parseJson = function (body) {
+		var b = &quot;&quot;;
+		if(body.forEach)
+			body.forEach(function (bd) {
+				b += bd.toString();
+			});
+		else
+			b = body.toString();
+		var res = JSON.parse(b);
+		if (typeof res === &#x27;string&#x27;)
+			return JSON.parse(res);
+		return res;
+	}
+
 	utils.parseBody = function (body, headers) 
 	{
 		if(typeof body === &#x27;undefined&#x27; || body == null)
 			return null;
 		var contentType = headers[&quot;content-type&quot;] || headers[&quot;Content-Type&quot;] || &quot;application/json&quot;;
-		var contentType = contentType.split(&quot;;&quot;)[0];
+		contentType = contentType.split(&quot;;&quot;)[0];
 		switch(contentType)
 		{
 			case &quot;application/json-rpc&quot; : 
-				var b = &quot;&quot;;
-				if(body.forEach)
-					body.forEach(function (bd) {
-						b += bd.toString();
-					});
-				else
-					b = body.toString();
-				return JSON.parse(b);
+				return utils.parseJson(body);
 				break;	
 
 			case &quot;application/json&quot; : 
-				var b = &quot;&quot;;
-				if(body.forEach)
-					body.forEach(function (bd) {
-						b += bd.toString();
-					});
-				else
-					b = body.toString();
-				return JSON.parse(b);
+				return utils.parseJson(body);
 				break;	
 
 			case &quot;application/javascript&quot; :   // TODO : should be parsed by json-extended parser
-				var b = &quot;&quot;;
-				if(body.forEach)
-					body.forEach(function (bd) {
-						b += bd.toString();
-					});
-				else
-					b = body.toString();
-				return JSON.parse(b);
+				return utils.parseJson(body);
 				break;	
 			default :
 				return body;

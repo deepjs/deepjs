@@ -93,10 +93,13 @@ function(require)
 	 */
 	deep = function (obj, schema, options)
 	{
-		if(typeof obj === "undefined")
+		if(typeof obj === 'undefined')
 			obj = null;
+		if(obj && obj._deep_chain_ && obj.oldQueue)
+			return obj;
 		var alls = [];
 		var root = obj;
+		//console.log("start chain : ", obj )
 		try
 		{
 			var handler = new deep.Chain(options);
@@ -113,6 +116,7 @@ function(require)
 				alls.push(schema);
 			deep.all(alls)
 			.done(function (results) {
+				//console.log("start chain : when result :")
 				handler.initialised = true;
 				obj = results.shift();
 				if(schema)
@@ -167,6 +171,12 @@ function(require)
 	 * @type {Object}
 	 */
 	deep.utils = utils;
+	/**
+	 * the deep schema validator
+	 * @static
+	 * @property Validator
+	 */
+	deep.Validator = Validator;
 	/**
 	 * perform a deep-schema validation
 	 * @static
@@ -315,7 +325,7 @@ function(require)
 			this.reports.failure = failure = result;
 			this.reports.result = result = null;
 		}
-		if((typeof failure === 'undefined' || failure === null) && (typeof result === 'undefined' || result === null))
+		if((typeof failure === 'undefined') && (typeof result === 'undefined'))
 		{
 			failure = this.reports.failure;
 			result = this.reports.result;
@@ -410,7 +420,6 @@ function(require)
 				else
 					this.resolve(result);
 			}
-			
 		}
 	}
 	function forceNextQueueItem(handler, s, e)
@@ -458,6 +467,7 @@ function(require)
 	{
 		options = options || {};
 		this.rethrow = (typeof options.rethrow !== "undefined")?options.rethrow:deep.rethrow;
+		this._deep_chain_ = true;
 		this.positions = [];
 		this.context = deep.context;
 		options = options || {};
@@ -649,17 +659,28 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				deep.when(func.apply(self, [self.brancher()]))
+				self.oldQueue = self.callQueue;
+				self.callQueue = [];
+				var a  = func.apply(self, [self.brancher()]);
+				if(a === self)
+				{
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					return [s,e];
+				}
+				deep.when(a)
 				.then(function (success)
 				{
-					self.running = false;
-					nextQueueItem.apply(self, [success, null]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, success, null)
 				},
 				function (error)
 				{
 					//console.error("error : deep.branches : ", error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					forceNextQueueItem(self, null, error)
 				});
 			};
 			addInQueue.apply(this, [create]);
@@ -680,21 +701,19 @@ function(require)
 		when:function(prom)
 		{
 			var self = this;
-			function func(){
-				return function(s,e){
-					deep.when(prom).then(function (datas) {
-						if(typeof datas === 'undefined')
-							datas = s;
-						self.running = false;
-						nextQueueItem.apply(self, [datas,null]);
-					}, function (e) {
-						//console.error("error : deep.chain.when : ", e);
-						self.running = false;
-						nextQueueItem.apply(self, [null,e]);
-					});
-				};
-			}
-			addInQueue.apply(this,[func()]);
+			var func = function(s,e){
+				deep.when(prom).then(function (datas) {
+					if(typeof datas === 'undefined')
+						datas = s;
+					self.running = false;
+					nextQueueItem.apply(self, [datas,null]);
+				}, function (e) {
+					//console.error("error : deep.chain.when : ", e);
+					self.running = false;
+					nextQueueItem.apply(self, [null,e]);
+				});
+			};
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -945,36 +964,7 @@ function(require)
 			return this;
 		},
 		//_________________________________________________________________________________________
-		/**
-		 * will pass each entries to callback as argument . same behaviours than classical Array.every.
-		 * callback could return promise. the chain will wait any promise before continuing.
-		 *
-		 * Chain Success injection : the results of callback calls (resolved if promises)
-		 * Chain Error injection : the errors of callback calls (rejected if promises)
-		 * 
-		 * @method  each
-		 * @chainable
-		 * @param callBack
-		 * @return {deep.Chain} this
-		 */
-		each:function  (callBack)
-		{
-			var self = this;
-			var func = function()
-			{
-				var alls = [];
-				self._entries.forEach(function(e){
-					alls.push(callBack(e.value));
-				});
-				deep.all(alls).then(function (results) {
-					forceNextQueueItem(self, results, null);
-				}, function (error) {
-					forceNextQueueItem(self, null, error);
-				});
-			};
-			addInQueue.apply(this,[func]);
-			return this;
-		},
+
 		/**
 		 * keep only the first chain entries. remove all others.
 		 * inject selected entry value as chain success.
@@ -1360,7 +1350,9 @@ function(require)
 				{
 					var replaced = [];
 					self._entries.forEach(function (r) {
-						self.querier.query(r, what, {resultType:"full"}).forEach(function(r){
+						//console.log("chain replace : ",what, " - in :  " , r.value)
+						self.querier.query(r.value, what, {resultType:"full"}).forEach(function(r){
+							//console.log("res query : ", r)
 							if(!r.ancestor)
 								return;
 							r.ancestor.value[r.key] = r.value = by;
@@ -1672,24 +1664,30 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				var alls = [];
-				self._entries.forEach(function(result){
-					alls.push(transformer(result.value));
-				});
-				deep.all(alls).done(function (loadeds)
-				{
+				deep(transformer)
+				.done(function  (transformer) {
+					var alls = [];
 					self._entries.forEach(function(result){
-						result.value = loadeds.shift();
-						if(result.ancestor)
-							result.ancestor[result.key] = result.value;
+						alls.push(transformer(result.value));
 					});
-					forceNextQueueItem(self, loadeds, null);
-				},
-				function (error)
-				{
-					console.error("error : deep.transform : ", error);
-					forceNextQueueItem(self, null, error);
-				});
+					deep.all(alls).done(function (loadeds)
+					{
+						var count = 0;
+						self._entries.forEach(function(result){
+							result.value = loadeds[count];
+							if(result.ancestor)
+								result.ancestor[result.key] = result.value;
+							count++;
+						});
+						forceNextQueueItem(self, loadeds, null);
+					},
+					function (error)
+					{
+						console.error("error : deep.transform : ", error);
+						forceNextQueueItem(self, null, error);
+					});
+				})
+				
 			};
 			addInQueue.apply(this,[func]);
 			return this;
@@ -1803,6 +1801,7 @@ function(require)
 		 * Chain Error Injection : the treatments errors
 		 * 
 		 * @method  treatAll
+		 * @deprecated see .val, .values, .each
 		 * @param  {object} treatment
 		 * @chainable
 		 * @return {deep.Chain} this
@@ -1848,6 +1847,7 @@ function(require)
 		 * Chain Error Injection : the treatments errors
 		 * 
 		 * @method  treatEach
+		 * @deprecated see .val, .values, .each
 		 * @param  {object} treatment
 		 * @chainable
 		 * @return {deep.Chain} this
@@ -1878,6 +1878,7 @@ function(require)
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;
 		},
+
 		//_______________________________________________________________ TESTS AND VALIDATIONS
 
 		/**
@@ -2142,7 +2143,7 @@ function(require)
 		 * transparent true
 		 * 
 		 * @method  val
-		 * @param callBack
+		 * @param callBack could be a retrievable (a String pointing something from store), or a Function, or a treatment (an Object - see treatments in doc)
 		 * @chainable
 		 * @return {deep.Chain|entry.value} this or val
 		 */
@@ -2151,17 +2152,28 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				var  a = self._entries[0]?self._entries[0].value:null;
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}, function (error) {
-					console.error("error : deep.values : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
+				deep(callBack)
+				.done(function (callBack) {
+					var  a = self._entries[0]?self._entries[0].value:null;
+					var r = null;
+					if(typeof callBack === 'object')
+						r = applyTreatment.apply(callBack, [a]);
+					else
+						r = callBack(a);
+					deep.when(r).then(function (argument) {
+						if(typeof argument === 'undefined')
+							argument = a;
+						console.log("val callBack res : ",argument);
+						forceNextQueueItem(self, argument, null);
+					}, function (error) {
+						//console.error("error : deep.val : ",error);
+						forceNextQueueItem(self, null, error);
+					});
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
+				})
+				
 			};
 			if(callBack)
 			{
@@ -2182,7 +2194,7 @@ function(require)
 		 * 
 		 * @method  values
 		 * @chainable
-		 * @param callBack
+		 * @param callBack could be a retrievable (a String pointing something from store), or a Function, or a treatment (an Object - see treatments in doc)
 		 * @return {deep.Chain|Array} this or values
 		 */
 		values:function  (callBack)
@@ -2190,16 +2202,25 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				var  a = deep.chain.values(self);
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}, function (error) {
-					console.error("error : deep.values : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
+				deep(callBack)
+				.done(function (callBack) {
+					var  a = deep.chain.values(self);
+					var r = null;
+					if(typeof callBack === 'object')
+						r = applyTreatment.apply(callBack, [a]);
+					else
+						r = callBack(a);
+					deep.when(callBack(a)).then(function (res) {
+						if(typeof res === "undefined")
+							res = a;
+						forceNextQueueItem(self, res, null)
+					}, function (error) {
+						console.error("error : deep.values : ",error);
+						forceNextQueueItem(self, null, error)
+					});
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
 				});
 			};
 			if(callBack)
@@ -2209,6 +2230,47 @@ function(require)
 			}
 			else
 				return deep.chain.values(this);
+		},
+		/**
+		 * will pass each entries to callback as argument . same behaviours than classical Array.each.
+		 * callback could return promise. the chain will wait any promise before continuing.
+		 *
+		 * Chain Success injection : the results of callback calls (resolved if promises)
+		 * Chain Error injection : the errors of callback calls (rejected if promises)
+		 * 
+		 * @method  each
+		 * @chainable
+		 * @param callBack could be a retrievable (a String pointing something from store), or a Function, or a treatment (an Object - see treatments in doc)
+		 * @return {deep.Chain} this
+		 */
+		each:function  (callBack)
+		{
+			var self = this;
+			var func = function()
+			{
+				deep(callBack)
+				.done(function (callBack) {
+					var alls = [];
+					if(typeof callBack === 'object')
+						self._entries.forEach(function(entry) {
+							alls.push(applyTreatment.apply(callBack, [entry.value]));
+						});
+					else
+						self._entries.forEach(function(e){
+							alls.push(callBack(e.value));
+						});
+					deep.all(alls).then(function (results) {
+						forceNextQueueItem(self, results, null);
+					}, function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
+				});
+			};
+			addInQueue.apply(this,[func]);
+			return this;
 		},
 		/**
 		 *
@@ -2246,82 +2308,7 @@ function(require)
 			else
 				return deep.chain.nodes(this);
 		},
-		/**
-		 *
-		 * if no callBack is present : just return the array of paths of entries. It's a chain end handle.
-		 * If callback is provided : the entries paths will be passed as argument to callback.
-		 * 		and so th chain could continue : the return of this handle is the deep handler.
-		 *
-		 * transparent true
-		 * 
-		 * @chainable
-		 * @method  paths
-		 * @param callBack
-		 * @return {deep.Chain|Array} this or paths
-		 */
-		paths:function  (callBack)
-		{
-			var self = this;
-			var func = function(s,e)
-			{
-				var  a = deep.chain.paths(self);
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}, function (error) {
-					console.error("error : deep.paths : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
-			};
-			if(callBack)
-			{
-				addInQueue.apply(this,[func]);
-				return this;
-			}
-			else
-				return deep.chain.paths(this);
-		},
-		/**
-		 *
-		 * if no callBack is present : just return the array of schemas of entries. It's a chain end handle.
-		 * If callback is provided : the entries schemas will be passed as argument to callback.
-		 * 		and so th chain could continue : the return of this handle is the deep handler.
-		 * 
-		 * transparent true
-		 * 
-		 * @chainable
-		 * @method  schemas
-		 * @param callBack
-		 * @return {deep.Chain|Array} this or schemas
-		 */
-		schemas:function  (callBack)
-		{
-			var self = this;
-			var func = function(s,e)
-			{
-				var  a = deep.chain.schemas(self);
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s,e]);
-				}, function (error) {
-					console.error("error : deep.schemas : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
-			};
-			if(callBack)
-			{
-				addInQueue.apply(this,[func]);
-				return this;
-			}
-			else
-				return deep.chain.schemas(this);
-		},
+
 		//___________________________________________________________ WAIT
 
 		/**
@@ -2530,7 +2517,7 @@ function(require)
 
 		//________________________________________________________________________ INTERPET STRINGS
 
-		/**
+		/*
 		 *
 		 * seek after any strings and try to interpret it with current context.
 		 *
@@ -2545,7 +2532,7 @@ function(require)
 		 * @param  {object} context the oebjct to inject in strings
 		 * @return {deep.Chain} this
 		 */
-		deepInterpret:function(context)
+		/*deepInterpret:function(context)
 		{
 			var self = this;
 			var func = function(){
@@ -2578,7 +2565,7 @@ function(require)
 			};
 			addInQueue.apply(this,[func]);
 			return this;
-		},
+		},*/
 		/**
 		 * will interpret entries values with context
 		 * @example  
@@ -2639,21 +2626,18 @@ function(require)
 		pushHandlerTo : function(array)
 		{
 			var self = this;
-			function func(){
-				var f = function(s,e)
+			var f = function(s,e)
+			{
+				// console.log("pushHandlerTo : init? ", self.initialised)
+				array.push(self);
+				if(self.initialised)
 				{
-					// console.log("pushHandlerTo : init? ", self.initialised)
-					array.push(self);
-					if(self.initialised)
-					{
-						self.running = false;
-						nextQueueItem.apply(self, [s, e]);
-					}
-				};
-				f._isPUSH_HANDLER_TO_ = true;
-				return f;
-			}
-			addInQueue.apply(this,[func()]);
+					self.running = false;
+					nextQueueItem.apply(self, [s, e]);
+				}
+			};
+			f._isPUSH_HANDLER_TO_ = true;
+			addInQueue.apply(this,[f]);
 			return this;
 		},
 
@@ -2736,6 +2720,8 @@ function(require)
 					var cloned = cloneHandler(self, true);
 					var foreigns = cloned.select("./"+localKey).join(",");
 					var constrain = foreignKey+"=in=("+foreigns+")";
+					if(parsed.uri === '!')
+						parsed.uri = "";
 					if(parsed.uri.match(/(\/\?)|^(\?)/gi))
 						parsed.uri += "&"+constrain;
 					else
@@ -2757,10 +2743,159 @@ function(require)
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;
 		},
-		relationMap:function () {
+
+		/**
+		 * retrieve relations described in schema links.
+		 *
+		 * Inject as success in chain an object that hold each relation, their result and the associated (parsed) request object
+		 *
+		 * 
+		 *
+		 * 
+		 * @method getRelations
+		 * @chainable
+		 * @example
+		 * 	var schema3 = {
+			    properties:{
+			        id:{ type:"string", required:false, indexed:true },
+			        label:{ type:"string" },
+			        plantId:{ type:"string" },
+			        userId:{ type:"string" }
+			    },
+			    links:[
+			        {
+			            href:"plant::{ plantId }",
+			            rel:"plant"
+			        },
+			        {
+			            href:"user::{ userId }",
+			            rel:"user"
+			        }
+			    ]
+			}
+			//____________________________
+			deep({ 
+			    plantId:"e1",
+			    userId:"e1",
+			    label:"hello"
+			}, schema3)
+			.getRelations("plant", "user")
+			.log();
+
+		 * @param a list of string arguments that gives which relation to retrieve 
+		 * @return {deep.Chain} this
+		 */
+		getRelations:function () {
 			var self = this;
+			var relations = Array.prototype.slice.apply(arguments);
 			var func = function (s,e) {
-				
+				self._entries.forEach(function(entry){
+					if(!entry.schema || !entry.schema.links)
+						return;
+					var alls  = [];
+					deep(entry.schema.links)
+					.query("./!?rel=in=("+relations.join(",")+")")
+					.each(function(relation){
+						var path = deep.interpret(relation.href, entry.value);
+						var parsed = deep.parseRequest(path);
+						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:{ relation:relation, request:parsed } }));
+					});
+					if(alls.length == 0)
+						return [s,e];
+					deep.all(alls)
+					.done(function(results){
+						var res = {};
+						results.forEach(function(r){
+							res[r.relation.rel] = r;
+						});
+						forceNextQueueItem(self, res, null);
+					})
+					.fail(function(error){
+						forceNextQueueItem(self, null, error);
+					})
+				});
+			}
+			deep.chain.addInQueue.apply(this, [func]);
+			return this;
+		},
+
+
+
+		/**
+		 * map relations in current entries values
+		 * 
+		 * @method mapRelations
+		 * @chainable 
+		 * @example 
+		 * 	var schema3 = {
+			    properties:{
+			        id:{ type:"string", required:false, indexed:true },
+			        label:{ type:"string" },
+			        plantId:{ type:"string" },
+			        userId:{ type:"string" }
+			    },
+			    links:[
+			        {
+			            href:"plant::{ plantId }",
+			            rel:"plant"
+			        },
+			        {
+			            href:"user::{ userId }",
+			            rel:"user"
+			        }
+			    ]
+			}
+		  	deep({ 
+			    plantId:"e1",
+			    userId:"e1",
+			    label:"hello"
+			}, schema3)
+			.mapRelations({
+			    user:"relations.user",
+			    plant:"relations.plant"
+			})
+			.logValues();
+		 * @param  {Object} map        the map (see examples)
+		 * @param  {String} delimitter (optional) the paths delimitter
+		 * @return {deep.Chain}       this
+		 */
+		mapRelations:function (map, delimitter) {
+			if(!delimitter)
+				delimitter = ".";
+			var self = this;
+			var relations = [];
+			for(var i in map)
+				relations.push(i);
+			//console.log("mapRelations :  relations : ", relations);
+			var func = function (s,e) {
+				self._entries.forEach(function(entry){
+					if(!entry.schema || !entry.schema.links)
+						return;
+					var alls  = [];
+					var count  = 0;
+					deep(entry.schema.links)
+					.query("./!?rel=in=("+relations.join(",")+")")
+					.each(function(relation){
+						//console.log("do map relations on : ", relation);
+						var path = deep.interpret(relation.href, entry.value);
+						alls.push(deep.get(path, { defaultProtocole:"json", wrap:{ path:map[relation.rel] } }));
+						count++;
+					});
+					if(alls.length == 0)
+						return [s,e];
+					deep.all(alls)
+					.done(function(results){
+						//console.log("mapRelations : results : ", results);
+						results.forEach(function(r){
+							//console.log("do : ", r, " - on : ", entry.value)
+							deep.utils.setValueByPath(entry.value, r.path, r.result, delimitter);
+						});
+						forceNextQueueItem(self, results, null);
+					})
+					.fail(function(error){
+						forceNextQueueItem(self, null, error);
+					})
+				});
 			}
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>deep-roles - deepjs Javascript Framework</title>
+    <title>deep.store - deepjs Javascript Framework</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -148,16 +148,23 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>deep-roles Module</h1>
-<div class="box clearfix meta">
+                        <h1>deep.store Class</h1>
+<div class="box meta">
     
 
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/deep.js.html#l458"><code>deep.js:458</code></a>
+            Defined in: <a href="../files/deep-stores.js.html#l80"><code>deep-stores.js:80</code></a>
         </div>
+    
+
+    
+        
+            Module: <a href="../modules/deep-stores.html">deep-stores</a><br>
+            Parent Module: <a href="../modules/deep.html">deep</a>
+        
     
 
     
@@ -166,41 +173,111 @@
 
 
 <div class="box intro">
-    <p>Just a namespace : where default and custom roles are mainly stored.</p>
+    <p>create a custom store or start chain with a certain store</p>
 </div>
 
 
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_deep.store" class="method item">
+    <h3 class="name"><code>deep.store</code></h3>
 
-<div class="yui3-g">
-    <div class="yui3-u-1-2">
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
         
-            <p>This module provides the following classes:</p>
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/deep-stores.js.html#l80"><code>deep-stores.js:80</code></a>
+        
+        </p>
 
-            <ul class="module-classes">
-            
-                <li class="module-class">
-                    <a href="../classes/deep.Chain.html">
-                        deep.Chain
-                    </a>
-                </li>
-            
-                <li class="module-class">
-                    <a href="../classes/deep.Role.html">
-                        deep.Role
-                    </a>
-                </li>
-            
-                <li class="module-class">
-                    <a href="../classes/deep.roles.html">
-                        deep.roles
-                    </a>
-                </li>
-            
-            </ul>
+
+        
+
         
     </div>
 
-    <div class="yui3-u-1-2">
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>deep.store("json").get("/campaign/").log();
+</code></pre><pre class="code prettyprint"><code>deep.store("json").create("campaign", "/campaign/");
+</code></pre>
+
+<p>...
+ ...
+ deep.store("campaign").get("?").log()</p>
+            </div>
+        </div>
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+
+            
+
+            
+
+            
+        </div>
+
+        
+
+        
+
+        
+
         
     </div>
 </div>

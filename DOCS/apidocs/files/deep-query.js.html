@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -315,6 +317,27 @@ Here&#x27;s an example on how to query some JSON/object with deep-query:
 /+brothers
 
 	check if parent access give array if starting from items 		OK it does
+
+
+	REFACTORING : 
+
+		- store the uri of the object  in deep_node (maybe store base_uri in root node)
+			- if externals ressource : it means it&#x27;s location
+				- in case of queries : uri = base_uri/id/path/to/prop
+			- if internal ressource : 
+				if root level has uri : use it as base_uri
+				if not : produce (auto) base uri for root level and use it as before
+
+
+		- when doing : 
+
+			deep(&quot;campaign::12&quot;).validate() or deep(&quot;campaign::?&quot;).validate()
+
+				==&gt; will get schema from campaign before vaildation
+				
+			deep.stores(&quot;campaign&quot;).validate(obj)
+		
+
 */
 if(typeof define !== &#x27;function&#x27;){
 	var define = require(&#x27;amdefine&#x27;)(module);
@@ -994,11 +1017,13 @@ define(function defineDeepQuery(require)
 	 * @param  {Object} schema
 	 * @return {Object} a DeepQuery root node
 	 */
-	DQ.createRootNode = function (obj, schema) {
+	DQ.createRootNode = function (obj, schema, options) {
+		options = options || {};
 		return {
 				_isDQ_NODE_:true,
 				value:obj,
 				path:&quot;/&quot;,
+				uri:options.uri || null,
 				key:null,
 				ancestor:null,
 				schema:schema || {},
