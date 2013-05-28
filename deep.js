@@ -93,6 +93,8 @@ function(require)
 	 */
 	deep = function (obj, schema, options)
 	{
+		if(typeof obj === "undefined")
+			obj = null;
 		var alls = [];
 		var root = obj;
 		try
@@ -1811,11 +1813,11 @@ function(require)
 			{
 				deep.when(deep.get(treatment))
 				.done(function(treatment){
-					console.log("treat getted : ", treatment)
+					//console.log("treat getted : ", treatment)
 					var prom = applyTreatment.apply(treatment, [deep.chain.values(self)]);
 					deep.when(prom)
 					.done(function(results) {
-						console.log("treatment results : ", results)
+						//console.log("treatment results : ", results)
 						forceNextQueueItem(self, results, null);
 					})
 					.fail(function(error) {
@@ -2020,13 +2022,18 @@ function(require)
 				});
 				
 				//console.log("validate is valid : ", report.valid);
-
+				if(!report.valid)
+				{
+					error = new Error();
+					error.report = report;
+					error.status = 412;
+				}
 				if(options.callBack)
 				{
 					deep.when(options.callBack(report))
 					.then(function (argument) {
 						report.callBackResponse = argument;
-						if(freport.valid)
+						if(report.valid)
 							forceNextQueueItem(self, report, null);
 						else
 							forceNextQueueItem(self, null, report);
