@@ -2158,7 +2158,7 @@ function(require)
 					deep.when(r).then(function (argument) {
 						if(typeof argument === 'undefined')
 							argument = a;
-						console.log("val callBack res : ",argument);
+						//console.log("val callBack res : ",argument);
 						forceNextQueueItem(self, argument, null);
 					}, function (error) {
 						//console.error("error : deep.val : ",error);
@@ -2583,10 +2583,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				console.log("deep.chain.interpret : context : ",context);
+				//console.log("deep.chain.interpret : context : ",context);
 				context = (typeof context === 'string')?deep.get(context):context;
 				deep(context).then(function (context) {
-					console.log("interpret: received context : ", context);
+					//console.log("interpret: received context : ", context);
 					var res = [];
 					self._entries.forEach(function (interpretable)
 					{
@@ -2599,7 +2599,7 @@ function(require)
 								interpretable.value = r;
 							else
 								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
-							console.log("deep.chain.interpret : res : ", r);
+							//console.log("deep.chain.interpret : res : ", r);
 						}
 						else
 							res.push(interpretable.value);
@@ -2607,7 +2607,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [res, null]);
 				}, function (error) {
-					console.error("error : deep.interpret : ", error);
+					//console.error("error : deep.interpret : ", error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
