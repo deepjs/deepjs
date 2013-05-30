@@ -1966,11 +1966,11 @@ function(require)
 			{
 				deep.when(deep.get(treatment))
 				.done(function(treatment){
-					console.log(&quot;treat getted : &quot;, treatment)
+					//console.log(&quot;treat getted : &quot;, treatment)
 					var prom = applyTreatment.apply(treatment, [deep.chain.values(self)]);
 					deep.when(prom)
 					.done(function(results) {
-						console.log(&quot;treatment results : &quot;, results)
+						//console.log(&quot;treatment results : &quot;, results)
 						forceNextQueueItem(self, results, null);
 					})
 					.fail(function(error) {
@@ -2177,13 +2177,18 @@ function(require)
 				});
 				
 				//console.log(&quot;validate is valid : &quot;, report.valid);
-
+				if(!report.valid)
+				{
+					error = new Error();
+					error.report = report;
+					error.status = 412;
+				}
 				if(options.callBack)
 				{
 					deep.when(options.callBack(report))
 					.then(function (argument) {
 						report.callBackResponse = argument;
-						if(freport.valid)
+						if(report.valid)
 							forceNextQueueItem(self, report, null);
 						else
 							forceNextQueueItem(self, null, report);
@@ -2312,7 +2317,7 @@ function(require)
 					deep.when(r).then(function (argument) {
 						if(typeof argument === &#x27;undefined&#x27;)
 							argument = a;
-						console.log(&quot;val callBack res : &quot;,argument);
+						//console.log(&quot;val callBack res : &quot;,argument);
 						forceNextQueueItem(self, argument, null);
 					}, function (error) {
 						//console.error(&quot;error : deep.val : &quot;,error);
@@ -2666,7 +2671,7 @@ function(require)
 
 		//________________________________________________________________________ INTERPET STRINGS
 
-		/*
+		/**
 		 *
 		 * seek after any strings and try to interpret it with current context.
 		 *
@@ -2737,10 +2742,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				console.log(&quot;deep.chain.interpret : context : &quot;,context);
+				//console.log(&quot;deep.chain.interpret : context : &quot;,context);
 				context = (typeof context === &#x27;string&#x27;)?deep.get(context):context;
 				deep(context).then(function (context) {
-					console.log(&quot;interpret: received context : &quot;, context);
+					//console.log(&quot;interpret: received context : &quot;, context);
 					var res = [];
 					self._entries.forEach(function (interpretable)
 					{
@@ -2753,7 +2758,7 @@ function(require)
 								interpretable.value = r;
 							else
 								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
-							console.log(&quot;deep.chain.interpret : res : &quot;, r);
+							//console.log(&quot;deep.chain.interpret : res : &quot;, r);
 						}
 						else
 							res.push(interpretable.value);
@@ -2761,7 +2766,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [res, null]);
 				}, function (error) {
-					console.error(&quot;error : deep.interpret : &quot;, error);
+					//console.error(&quot;error : deep.interpret : &quot;, error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
