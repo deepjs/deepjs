@@ -172,6 +172,12 @@ function(require)
 	 */
 	deep.utils = utils;
 	/**
+	 * the deep schema validator
+	 * @static
+	 * @property Validator
+	 */
+	deep.Validator = Validator;
+	/**
 	 * perform a deep-schema validation
 	 * @static
 	 * @method validate
@@ -958,36 +964,7 @@ function(require)
 			return this;
 		},
 		//_________________________________________________________________________________________
-		/**
-		 * will pass each entries to callback as argument . same behaviours than classical Array.every.
-		 * callback could return promise. the chain will wait any promise before continuing.
-		 *
-		 * Chain Success injection : the results of callback calls (resolved if promises)
-		 * Chain Error injection : the errors of callback calls (rejected if promises)
-		 * 
-		 * @method  each
-		 * @chainable
-		 * @param callBack
-		 * @return {deep.Chain} this
-		 */
-		each:function  (callBack)
-		{
-			var self = this;
-			var func = function()
-			{
-				var alls = [];
-				self._entries.forEach(function(e){
-					alls.push(callBack(e.value));
-				});
-				deep.all(alls).then(function (results) {
-					forceNextQueueItem(self, results, null);
-				}, function (error) {
-					forceNextQueueItem(self, null, error);
-				});
-			};
-			addInQueue.apply(this,[func]);
-			return this;
-		},
+
 		/**
 		 * keep only the first chain entries. remove all others.
 		 * inject selected entry value as chain success.
@@ -1373,7 +1350,9 @@ function(require)
 				{
 					var replaced = [];
 					self._entries.forEach(function (r) {
-						self.querier.query(r, what, {resultType:"full"}).forEach(function(r){
+						//console.log("chain replace : ",what, " - in :  " , r.value)
+						self.querier.query(r.value, what, {resultType:"full"}).forEach(function(r){
+							//console.log("res query : ", r)
 							if(!r.ancestor)
 								return;
 							r.ancestor.value[r.key] = r.value = by;
@@ -1685,24 +1664,30 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				var alls = [];
-				self._entries.forEach(function(result){
-					alls.push(transformer(result.value));
-				});
-				deep.all(alls).done(function (loadeds)
-				{
+				deep(transformer)
+				.done(function  (transformer) {
+					var alls = [];
 					self._entries.forEach(function(result){
-						result.value = loadeds.shift();
-						if(result.ancestor)
-							result.ancestor[result.key] = result.value;
+						alls.push(transformer(result.value));
 					});
-					forceNextQueueItem(self, loadeds, null);
-				},
-				function (error)
-				{
-					console.error("error : deep.transform : ", error);
-					forceNextQueueItem(self, null, error);
-				});
+					deep.all(alls).done(function (loadeds)
+					{
+						var count = 0;
+						self._entries.forEach(function(result){
+							result.value = loadeds[count];
+							if(result.ancestor)
+								result.ancestor[result.key] = result.value;
+							count++;
+						});
+						forceNextQueueItem(self, loadeds, null);
+					},
+					function (error)
+					{
+						console.error("error : deep.transform : ", error);
+						forceNextQueueItem(self, null, error);
+					});
+				})
+				
 			};
 			addInQueue.apply(this,[func]);
 			return this;
@@ -1816,6 +1801,7 @@ function(require)
 		 * Chain Error Injection : the treatments errors
 		 * 
 		 * @method  treatAll
+		 * @deprecated see .val, .values, .each
 		 * @param  {object} treatment
 		 * @chainable
 		 * @return {deep.Chain} this
@@ -1826,11 +1812,11 @@ function(require)
 			{
 				deep.when(deep.get(treatment))
 				.done(function(treatment){
-					console.log("treat getted : ", treatment)
+					//console.log("treat getted : ", treatment)
 					var prom = applyTreatment.apply(treatment, [deep.chain.values(self)]);
 					deep.when(prom)
 					.done(function(results) {
-						console.log("treatment results : ", results)
+						//console.log("treatment results : ", results)
 						forceNextQueueItem(self, results, null);
 					})
 					.fail(function(error) {
@@ -1861,6 +1847,7 @@ function(require)
 		 * Chain Error Injection : the treatments errors
 		 * 
 		 * @method  treatEach
+		 * @deprecated see .val, .values, .each
 		 * @param  {object} treatment
 		 * @chainable
 		 * @return {deep.Chain} this
@@ -1891,6 +1878,7 @@ function(require)
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;
 		},
+
 		//_______________________________________________________________ TESTS AND VALIDATIONS
 
 		/**
@@ -2035,13 +2023,18 @@ function(require)
 				});
 				
 				//console.log("validate is valid : ", report.valid);
-
+				if(!report.valid)
+				{
+					error = new Error();
+					error.report = report;
+					error.status = 412;
+				}
 				if(options.callBack)
 				{
 					deep.when(options.callBack(report))
 					.then(function (argument) {
 						report.callBackResponse = argument;
-						if(freport.valid)
+						if(report.valid)
 							forceNextQueueItem(self, report, null);
 						else
 							forceNextQueueItem(self, null, report);
@@ -2150,7 +2143,7 @@ function(require)
 		 * transparent true
 		 * 
 		 * @method  val
-		 * @param callBack
+		 * @param callBack could be a retrievable (a String pointing something from store), or a Function, or a treatment (an Object - see treatments in doc)
 		 * @chainable
 		 * @return {deep.Chain|entry.value} this or val
 		 */
@@ -2159,17 +2152,28 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				var  a = self._entries[0]?self._entries[0].value:null;
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}, function (error) {
-					console.error("error : deep.values : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
+				deep(callBack)
+				.done(function (callBack) {
+					var  a = self._entries[0]?self._entries[0].value:null;
+					var r = null;
+					if(typeof callBack === 'object')
+						r = applyTreatment.apply(callBack, [a]);
+					else
+						r = callBack(a);
+					deep.when(r).then(function (argument) {
+						if(typeof argument === 'undefined')
+							argument = a;
+						//console.log("val callBack res : ",argument);
+						forceNextQueueItem(self, argument, null);
+					}, function (error) {
+						//console.error("error : deep.val : ",error);
+						forceNextQueueItem(self, null, error);
+					});
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
+				})
+				
 			};
 			if(callBack)
 			{
@@ -2190,7 +2194,7 @@ function(require)
 		 * 
 		 * @method  values
 		 * @chainable
-		 * @param callBack
+		 * @param callBack could be a retrievable (a String pointing something from store), or a Function, or a treatment (an Object - see treatments in doc)
 		 * @return {deep.Chain|Array} this or values
 		 */
 		values:function  (callBack)
@@ -2198,16 +2202,25 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				var  a = deep.chain.values(self);
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}, function (error) {
-					console.error("error : deep.values : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
+				deep(callBack)
+				.done(function (callBack) {
+					var  a = deep.chain.values(self);
+					var r = null;
+					if(typeof callBack === 'object')
+						r = applyTreatment.apply(callBack, [a]);
+					else
+						r = callBack(a);
+					deep.when(callBack(a)).then(function (res) {
+						if(typeof res === "undefined")
+							res = a;
+						forceNextQueueItem(self, res, null)
+					}, function (error) {
+						console.error("error : deep.values : ",error);
+						forceNextQueueItem(self, null, error)
+					});
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
 				});
 			};
 			if(callBack)
@@ -2217,6 +2230,47 @@ function(require)
 			}
 			else
 				return deep.chain.values(this);
+		},
+		/**
+		 * will pass each entries to callback as argument . same behaviours than classical Array.each.
+		 * callback could return promise. the chain will wait any promise before continuing.
+		 *
+		 * Chain Success injection : the results of callback calls (resolved if promises)
+		 * Chain Error injection : the errors of callback calls (rejected if promises)
+		 * 
+		 * @method  each
+		 * @chainable
+		 * @param callBack could be a retrievable (a String pointing something from store), or a Function, or a treatment (an Object - see treatments in doc)
+		 * @return {deep.Chain} this
+		 */
+		each:function  (callBack)
+		{
+			var self = this;
+			var func = function()
+			{
+				deep(callBack)
+				.done(function (callBack) {
+					var alls = [];
+					if(typeof callBack === 'object')
+						self._entries.forEach(function(entry) {
+							alls.push(applyTreatment.apply(callBack, [entry.value]));
+						});
+					else
+						self._entries.forEach(function(e){
+							alls.push(callBack(e.value));
+						});
+					deep.all(alls).then(function (results) {
+						forceNextQueueItem(self, results, null);
+					}, function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
+				});
+			};
+			addInQueue.apply(this,[func]);
+			return this;
 		},
 		/**
 		 *
@@ -2254,82 +2308,7 @@ function(require)
 			else
 				return deep.chain.nodes(this);
 		},
-		/**
-		 *
-		 * if no callBack is present : just return the array of paths of entries. It's a chain end handle.
-		 * If callback is provided : the entries paths will be passed as argument to callback.
-		 * 		and so th chain could continue : the return of this handle is the deep handler.
-		 *
-		 * transparent true
-		 * 
-		 * @chainable
-		 * @method  paths
-		 * @param callBack
-		 * @return {deep.Chain|Array} this or paths
-		 */
-		paths:function  (callBack)
-		{
-			var self = this;
-			var func = function(s,e)
-			{
-				var  a = deep.chain.paths(self);
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}, function (error) {
-					console.error("error : deep.paths : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
-			};
-			if(callBack)
-			{
-				addInQueue.apply(this,[func]);
-				return this;
-			}
-			else
-				return deep.chain.paths(this);
-		},
-		/**
-		 *
-		 * if no callBack is present : just return the array of schemas of entries. It's a chain end handle.
-		 * If callback is provided : the entries schemas will be passed as argument to callback.
-		 * 		and so th chain could continue : the return of this handle is the deep handler.
-		 * 
-		 * transparent true
-		 * 
-		 * @chainable
-		 * @method  schemas
-		 * @param callBack
-		 * @return {deep.Chain|Array} this or schemas
-		 */
-		schemas:function  (callBack)
-		{
-			var self = this;
-			var func = function(s,e)
-			{
-				var  a = deep.chain.schemas(self);
-				deep.when(callBack(a)).then(function (argument) {
-					if(typeof argument === "undefined")
-						argument = a;
-					self.running = false;
-					nextQueueItem.apply(self, [s,e]);
-				}, function (error) {
-					console.error("error : deep.schemas : ",error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
-			};
-			if(callBack)
-			{
-				addInQueue.apply(this,[func]);
-				return this;
-			}
-			else
-				return deep.chain.schemas(this);
-		},
+
 		//___________________________________________________________ WAIT
 
 		/**
@@ -2538,7 +2517,7 @@ function(require)
 
 		//________________________________________________________________________ INTERPET STRINGS
 
-		/**
+		/*
 		 *
 		 * seek after any strings and try to interpret it with current context.
 		 *
@@ -2553,7 +2532,7 @@ function(require)
 		 * @param  {object} context the oebjct to inject in strings
 		 * @return {deep.Chain} this
 		 */
-		deepInterpret:function(context)
+		/*deepInterpret:function(context)
 		{
 			var self = this;
 			var func = function(){
@@ -2586,7 +2565,7 @@ function(require)
 			};
 			addInQueue.apply(this,[func]);
 			return this;
-		},
+		},*/
 		/**
 		 * will interpret entries values with context
 		 * @example  
@@ -2609,10 +2588,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				console.log("deep.chain.interpret : context : ",context);
+				//console.log("deep.chain.interpret : context : ",context);
 				context = (typeof context === 'string')?deep.get(context):context;
 				deep(context).then(function (context) {
-					console.log("interpret: received context : ", context);
+					//console.log("interpret: received context : ", context);
 					var res = [];
 					self._entries.forEach(function (interpretable)
 					{
@@ -2625,7 +2604,7 @@ function(require)
 								interpretable.value = r;
 							else
 								interpretable.ancestor.value[interpretable.key] = interpretable.value = r;
-							console.log("deep.chain.interpret : res : ", r);
+							//console.log("deep.chain.interpret : res : ", r);
 						}
 						else
 							res.push(interpretable.value);
@@ -2633,7 +2612,7 @@ function(require)
 					self.running = false;
 					nextQueueItem.apply(self, [res, null]);
 				}, function (error) {
-					console.error("error : deep.interpret : ", error);
+					//console.error("error : deep.interpret : ", error);
 					self.running = false;
 					nextQueueItem.apply(self, [null, error]);
 				});
@@ -2839,6 +2818,7 @@ function(require)
 			deep.chain.addInQueue.apply(this, [func]);
 			return this;
 		},
+
 
 
 		/**

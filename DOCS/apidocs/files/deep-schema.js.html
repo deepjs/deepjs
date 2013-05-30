@@ -69,9 +69,15 @@
             
                 <li><a href="../classes/deep.roles.html">deep.roles</a></li>
             
-                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
+                <li><a href="../classes/deep.store.html">deep.store</a></li>
             
-                <li><a href="../classes/deep.stores.Array.html">deep.stores.Array</a></li>
+                <li><a href="../classes/deep.store.Array.html">deep.store.Array</a></li>
+            
+                <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
+            
+                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+            
+                <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
                 <li><a href="../classes/deep.stores.aspect.html">deep.stores.aspect</a></li>
             
@@ -79,11 +85,7 @@
             
                 <li><a href="../classes/deep.stores.js.html">deep.stores.js</a></li>
             
-                <li><a href="../classes/deep.stores.Object.html">deep.stores.Object</a></li>
-            
                 <li><a href="../classes/deep.stores.queryThis.html">deep.stores.queryThis</a></li>
-            
-                <li><a href="../classes/deep.stores.Store.html">deep.stores.Store</a></li>
             
                 <li><a href="../classes/deep.utils.html">deep.utils</a></li>
             
@@ -407,6 +409,31 @@ The service could provids the list of known pathologies, and the subset have to 
 	validationError,
 	validator
  }
+
+
+ TODO : 
+
+ provide a schema handler which has : 
+ 	- removePrivates(obj)
+ 	- checkReadOnly(obj, old)
+	- sanitize(obj)
+	- validate(obj, ?old, schema)		// shortcut for checkReadOnly + report
+	- clean(obj)  		// shortcut for removePrivates + sanitize
+	- report(obj)
+	- checkUnicity()
+
+	+ provide deep.stores protocole : schema::myschema_uri   : get + &quot;compilation&quot; 
+
+==&gt; same way in chain : 
+	- validate
+	- clean
+
+==&gt; and 
+deep.sanitize(chain | obj, ?schema)
+deep.validate(chain | obj, ?schema)
+deep.clean(chain | obj, ?schema)
+...
+
  */
 
 if(typeof define !== &#x27;function&#x27;)
@@ -415,11 +442,12 @@ if(typeof define !== &#x27;function&#x27;)
 	var swig = require(&quot;swig&quot;);
 	var isNode = true;
 }	
-define([&quot;require&quot;, &quot;./utils&quot;, &quot;./promise&quot;],
-function(require){
+define([&quot;require&quot;, &quot;./utils&quot;, &quot;./promise&quot;, &quot;./deep-query&quot;],
+function(require, utils, promise, Querier){
 
 	if(isNode)
-	{	swig.init({
+	{	
+		swig.init({
 			filters:{
 				join_coma:function (input) {
 					if(input instanceof Array)
@@ -430,9 +458,6 @@ function(require){
 		});
 	}
 
-
-	var utils = require(&quot;./utils&quot;);
-	var promise = require(&quot;./promise&quot;);
 	function findPatternProperties(name, patterns)
 	{
 		var res = [];

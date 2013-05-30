@@ -16,10 +16,11 @@ YUI.add("yuidoc-meta", function(Y) {
         "deep.compose",
         "deep.deep",
         "deep.roles",
+        "deep.store",
+        "deep.store.Array",
+        "deep.store.Object",
+        "deep.store.Store",
         "deep.stores",
-        "deep.stores.Array",
-        "deep.stores.Object",
-        "deep.stores.Store",
         "deep.stores.aspect",
         "deep.stores.instance",
         "deep.stores.js",
@@ -76,7 +77,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "deep-stores",
             "name": "deep-stores",
-            "description": "how manage collections and objects as http styled stores\n\nOne interface for all stores."
+            "description": "manage collections, objects and ressources as http styled stores.\n\nOne interface for all stores/ressources."
         },
         {
             "displayName": "utils",

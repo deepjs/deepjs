@@ -10,8 +10,7 @@ define(["require", "deep/deep"], function (require){
 
 	/**
 	 * A deep implementation of Deferred object (see promise on web)
-	 * @namespace deep
-	 * @class Deferred
+	 * @class deep.Deferred
 	 * @constructor
 	 */
 	deep.Deferred = function ()
