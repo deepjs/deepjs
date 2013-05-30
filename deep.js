@@ -2517,7 +2517,7 @@ function(require)
 
 		//________________________________________________________________________ INTERPET STRINGS
 
-		/*
+		/**
 		 *
 		 * seek after any strings and try to interpret it with current context.
 		 *
