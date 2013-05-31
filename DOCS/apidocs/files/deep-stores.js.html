@@ -250,12 +250,14 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 */
 		deep.store = function (name, definer, options)
 		{
+			//console.log(&quot;deep.store : &quot;, name)
 			options = options || {};
 			var store = null;
 			var stores = deep.stores;
 			var role = { name:&quot;no role&quot; };
 			if(deep.context &amp;&amp; deep.context.role)
 			{
+				//console.log(&quot;deep.store got context.role : &quot;, role);
 				stores = deep.context.role.stores;
 				role = deep.context.role;
 			}
@@ -264,6 +266,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				if(!stores[name])
 					throw new Error(&quot;no &#x27;&quot;+name+&quot;&#x27; store found in role : &quot;+ role.name);
 				stores[name].name = name;
+				//console.log(&quot;deep.store will found : &quot;, name, &quot; - &quot;, stores[name])
 				return stores[name]; //deep(null).store(name);
 			}
 			else if(definer instanceof Array)
@@ -275,6 +278,28 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			store.options = options;
 			return store; //deep(null).store(name);
 		};
+
+
+		deep.store.extends = function(ancestor, name, options)
+		{
+			var stores = deep.stores;
+			var role = { name:&quot;no role&quot; };
+			if(deep.context &amp;&amp; deep.context.role)
+			{
+				stores = deep.context.role.stores;
+				role = deep.context.role;
+			}	
+			
+			var st = stores[ancestor];
+			if(!st)
+				throw new Error(&quot;no stores to extends found with : &quot;+ancestor+&quot;. Could not create : &quot;+name );
+
+			var store = stores[name] = new deep.store.Store();
+			store.name = name;
+			if(st.extends)
+				return st.extends(store, options);
+			return deep.utils.bottom(st, store);
+		}
 
 		/**
 		 * set chain with a certain store. If no store founded : throw an error.
@@ -383,7 +408,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
-							console.log(&quot;deeo.chain.store.post : post failed : &quot;, error);
+							//console.log(&quot;deeo.chain.store.post : post failed : &quot;, error);
 							deep.chain.forceNextQueueItem(self, null, error);
 						});
 					};
@@ -794,6 +819,8 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 */
 		deep.get = function  (request, options)
 		{
+			if(!request)
+				return request;
 			if(typeof request !== &quot;string&quot; &amp;&amp; request &amp;&amp; !request._deep_request_)
 				return request;
 			options = options || {};
@@ -801,26 +828,35 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			if(typeof infos === &#x27;string&#x27;)
 				infos = deep.parseRequest(request, options);
 			var res = null;
+			//console.log(&quot;deep.get : infos : &quot;, request);
 			if(!infos.store)
 				if(!infos.protocole)
 					return request;
 				else
-					return new Error(&quot;no store found with : &quot;, request);
+					return new Error(&quot;no store found with : &quot;+request);
 			if(infos.queryThis)
 				res = infos.store.get(infos, options);
 			else if(infos.method )
 			{
-				if(infos.method !== &quot;range&quot; || !infos.store.range)
-					return deep(new Error(&quot;store doesn&#x27;t contain method : &quot;,request));
-				var splitted = infos.uri.split(&quot;?&quot;);
-				var rangePart = splitted.shift();
-				var query = splitted.shift() || &quot;&quot;;
-				if(query !== &quot;&quot; &amp;&amp; query[0] !== &quot;?&quot;)
-					query = &quot;?&quot;+query;
-				var rn = rangePart.split(&quot;,&quot;);
-				var start = parseInt(rn[0], 10);
-				var end = parseInt(rn[1], 10);
-				res =  infos.store[infos.method](start, end, query, options);
+				switch(infos.method)
+				{
+					case &quot;range&quot; : 
+						if(!infos.store.range)
+							return deep(new Error(&quot;store doesn&#x27;t contain method : &quot;+request));
+						var splitted = infos.uri.split(&quot;?&quot;);
+						var rangePart = splitted.shift();
+						var query = splitted.shift() || &quot;&quot;;
+						if(query !== &quot;&quot; &amp;&amp; query[0] !== &quot;?&quot;)
+							query = &quot;?&quot;+query;
+						var rn = rangePart.split(&quot;,&quot;);
+						var start = parseInt(rn[0], 10);
+						var end = parseInt(rn[1], 10);
+						res =  infos.store[infos.method](start, end, query, options);
+						break;
+					default:
+						res = infos.store.get(infos.uri, options);
+				}
+				
 			}
 			else
 				res = infos.store.get(infos.uri, options);
@@ -861,7 +897,8 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 * @param  {String} request
 		 * @return {Object} infos an object containing parsing result
 		 */
-		deep.parseRequest = function (request, options) {
+		deep.parseRequest = function (request, options) 
+		{
 			var protoIndex = request.indexOf(&quot;::&quot;);
 			var protoc = null;
 			var uri = request;
@@ -879,6 +916,14 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				uri = request.substring(protoIndex+2);
 			}
 			//console.log(&quot;parseRequest : protoc : &quot;, protoc, &quot; - uri : &quot;, uri);
+			var stores = deep.stores;
+			var role = { name:&quot;no role&quot; };
+			if(deep.context &amp;&amp; deep.context.role)
+			{
+				//console.log(&quot;deep.store got context.role : &quot;, role);
+				stores = deep.context.role.stores;
+				role = deep.context.role;
+			}
 			var queryThis = false;
 			if(request[0] == &#x27;#&#x27; || protoc == &quot;first&quot; || protoc == &quot;last&quot; || protoc == &quot;this&quot;)
 			{
@@ -888,9 +933,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			else if(!protoc)
 			{
 				//console.log(&quot;no protocole : try extension&quot;);
-				for( var i in deep.stores )
+				for( var i in stores )
 				{
-					var storez = deep.stores[i];
+					var storez = stores[i];
 					if(!storez.extensions)
 						continue;
 					for(var j =0; j &lt; storez.extensions.length; ++j)
@@ -912,7 +957,8 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				}	
 			}
 			else
-				store = deep.stores[protoc];
+				store = stores[protoc] || stores[protoc+&quot;.&quot;+method];
+			//console.log(&quot;store : &quot;, store)
 			var res = {
 				_deep_request_:true,
 				request:request,

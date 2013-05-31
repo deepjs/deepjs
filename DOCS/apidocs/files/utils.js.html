@@ -1107,10 +1107,24 @@ define(function(require){
 
 	utils.parseBody = function (body, headers) 
 	{
+
 		if(typeof body === &#x27;undefined&#x27; || body == null)
 			return null;
+		var res = body;
+		if(res instanceof Array)
+		{
+			res = &quot;&quot;;
+			body.forEach(function(b){
+				res += b.toString();
+			})
+		}
+		body = res;
+
 		var contentType = headers[&quot;content-type&quot;] || headers[&quot;Content-Type&quot;] || &quot;application/json&quot;;
+
 		contentType = contentType.split(&quot;;&quot;)[0];
+		//console.log(&quot;deep.utils.parseBody : type : &quot;, contentType, &quot; - &quot;, body)
+		try{
 		switch(contentType)
 		{
 			case &quot;application/json-rpc&quot; : 
@@ -1126,6 +1140,10 @@ define(function(require){
 				break;	
 			default :
 				return body;
+		}
+		}
+		catch(e){
+			return new Error(&quot;error while parsing body : &quot;+JSON.stringify(e));
 		}
 	}
 

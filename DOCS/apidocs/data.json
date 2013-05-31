@@ -382,7 +382,7 @@
             "module": "deep",
             "namespace": "",
             "file": "deep-stores.js",
-            "line": 867,
+            "line": 913,
             "description": "manage collections, objects and ressources as http styled stores.\n\nOne interface for all stores/ressources.",
             "example": [
                 " simple\n\n\t\tdeep({ id:1, title:\"hello\" })\n  \t.store(\"mystore\")\n   \t.put()\n    \t.done(function (puttedObject) {\n\t     \t// do something \n\t    });",
@@ -695,7 +695,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 374,
+            "line": 399,
             "description": "Empty class : Just there to get instanceof working (be warning with iframe issue in that cases).",
             "is_constructor": 1
         },
@@ -711,7 +711,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 384,
+            "line": 409,
             "description": "A store based on simple array",
             "is_constructor": 1,
             "params": [
@@ -739,7 +739,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 532,
+            "line": 557,
             "description": "A store based on simple object",
             "is_constructor": 1,
             "params": [
@@ -767,7 +767,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 776,
+            "line": 822,
             "description": "the store to manage 'query this' approach. see query usage in object when flatten for example.\nnot intended to be used directly. use  \"this::./...\" || \"first::./...\" || \"last::\"./...\" somewhere in objects instead."
         },
         "deep.stores.instance": {
@@ -782,7 +782,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 824,
+            "line": 870,
             "description": "store to manage javascript instanciation with requirejs load.\nnot intended to be used directly. use deep.store(\"instance\") or \"instance::...js\" instead"
         },
         "deep.stores.aspect": {
@@ -797,7 +797,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 846,
+            "line": 892,
             "description": "store to manage javascript instanciation with requirejs load\nnot intended to be used directly. use deep.store(\"aspect\") or \"aspect::...js\" instead"
         },
         "deep.stores.js": {
@@ -812,7 +812,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 867,
+            "line": 913,
             "description": "store to manage requirejs module load\nnot intended to be used directly. use deep.store(\"js\") or \"js::...js\" instead"
         },
         "deep": {
@@ -1940,7 +1940,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 125,
+            "line": 150,
             "description": "set chain with a certain store. If no store founded : throw an error.",
             "example": [
                 " \n\n\tdeep(myObject).store(\"campaign\").post().log();"
@@ -1965,7 +1965,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 399,
+            "line": 424,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -1991,7 +1991,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 427,
+            "line": 452,
             "itemtype": "method",
             "name": "put",
             "params": [
@@ -2017,7 +2017,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 456,
+            "line": 481,
             "itemtype": "method",
             "name": "post",
             "params": [
@@ -2043,7 +2043,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 485,
+            "line": 510,
             "itemtype": "method",
             "name": "del",
             "params": [
@@ -2069,7 +2069,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 494,
+            "line": 519,
             "itemtype": "method",
             "name": "patch",
             "params": [
@@ -2095,7 +2095,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 519,
+            "line": 544,
             "description": "select a range in collection",
             "itemtype": "method",
             "name": "range",
@@ -2122,7 +2122,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 544,
+            "line": 569,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2143,7 +2143,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 557,
+            "line": 582,
             "itemtype": "method",
             "name": "put",
             "params": [
@@ -2169,7 +2169,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 570,
+            "line": 595,
             "itemtype": "method",
             "name": "post",
             "params": [
@@ -2195,7 +2195,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 592,
+            "line": 617,
             "itemtype": "method",
             "name": "del",
             "params": [
@@ -2216,7 +2216,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 614,
+            "line": 639,
             "itemtype": "method",
             "name": "patch",
             "params": [
@@ -2242,7 +2242,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 630,
+            "line": 655,
             "description": "retrieve request (if string in retrievable format) (e.g. \"json::test.json\")\nperform an http get\nif request is not a string : will just return request",
             "static": 1,
             "itemtype": "method",
@@ -2270,7 +2270,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 683,
+            "line": 719,
             "description": "retrieve an array of retrievable strings (e.g. \"json::test.json\")\nif request is not a string : will just return request",
             "static": 1,
             "itemtype": "method",
@@ -2298,7 +2298,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 702,
+            "line": 738,
             "description": "parse 'retrievable' string request (e.g. \"json::test.json\")",
             "itemtype": "method",
             "name": "parseRequest",
@@ -2321,7 +2321,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 782,
+            "line": 828,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2347,7 +2347,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 830,
+            "line": 876,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2373,7 +2373,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 852,
+            "line": 898,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2399,7 +2399,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 873,
+            "line": 919,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -3536,7 +3536,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2051,
+            "line": 2056,
             "description": "log any provided arguments.\n If no arguments provided : will log current success or error state.\n\n transparent true",
             "itemtype": "method",
             "name": "log",
@@ -3551,7 +3551,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2084,
+            "line": 2089,
             "description": "log current chain entries  with optional title\n\n full option means print full entry in place of just entry.value\n pretty option means print pretty json (indented)\ntransparent true",
             "itemtype": "method",
             "name": "logValues",
@@ -3576,7 +3576,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2132,
+            "line": 2137,
             "description": "if no callBack is present : just return the FIRST value of entries. It's a chain end handle.\n If callback is provided : the FIRST entry  value will be passed as argument to callback.\n \t\tand so th chain could continue : the return of this handle is the deep handler.\ntransparent true",
             "itemtype": "method",
             "name": "val",
@@ -3597,7 +3597,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2181,
+            "line": 2186,
             "description": "if no callBack is present : just return the array of values of entries. It's a chain end handle.\n If callback is provided : the entries values will be passed as argument to callback.\n \t\tand so th chain could continue : the return of this handle is the deep handler.\ntransparent true",
             "itemtype": "method",
             "name": "values",
@@ -3618,7 +3618,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2229,
+            "line": 2234,
             "description": "will pass each entries to callback as argument . same behaviours than classical Array.each.\ncallback could return promise. the chain will wait any promise before continuing.\n\nChain Success injection : the results of callback calls (resolved if promises)\nChain Error injection : the errors of callback calls (rejected if promises)",
             "itemtype": "method",
             "name": "each",
@@ -3639,7 +3639,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2270,
+            "line": 2275,
             "description": "if no callBack is present : just return the array of entries. It's a chain end handle.\n If callback is provided : the entries will be passed as argument to callback.\n \t\tand so th chain could continue : the return of this handle is the deep handler.\n \n transparent true",
             "itemtype": "method",
             "name": "nodes",
@@ -3660,7 +3660,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2309,
+            "line": 2314,
             "description": "will wait xxxx ms before contiuing chain\n\ntransparent true",
             "chainable": 1,
             "itemtype": "method",
@@ -3682,7 +3682,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2344,
+            "line": 2349,
             "description": "will seek in entries after any retrievable string OR executable functions : and will replace references by loaded/returned content.\n\nif context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.\n\nChain Success injection : array of loaded results",
             "itemtype": "method",
             "name": "deepLoad",
@@ -3704,7 +3704,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2412,
+            "line": 2417,
             "description": "if request is provided : \n \t\ttry to retrieve 'request' and replace entries values by loaded result\n \telse\n \t\twill try to retrieve any entry.value strings (will not seek deeply) and replace associated entries values by loaded result.\n \t\tOR if entry.value is an object : look if there is any .load() function in it. If so : fire it.\n \n if context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.\n \t(on request or entries values)\nChain success injection : array of loaded content.",
             "itemtype": "method",
             "name": "load",
@@ -3731,7 +3731,32 @@
         },
         {
             "file": "deep.js",
-            "line": 2564,
+            "line": 2520,
+            "description": "seek after any strings and try to interpret it with current context.\nsee interpretation for simple case",
+            "example": [
+                "\n \n \t\tdeep({ msg:\"hello { name }\" }).deepInterpret({ name:\"john\" }).logValues().equal({ msg:\"hello john\" });"
+            ],
+            "itemtype": "method",
+            "name": "deepInterpret",
+            "chainable": 1,
+            "params": [
+                {
+                    "name": "context",
+                    "description": "the oebjct to inject in strings",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "this",
+                "type": "deep.Chain"
+            },
+            "class": "deep.Chain",
+            "module": "deep",
+            "namespace": "deep"
+        },
+        {
+            "file": "deep.js",
+            "line": 2569,
             "description": "will interpret entries values with context",
             "example": [
                 "  \n\t \tdeep(\"hello { name }\").interpret({ name:\"john\" }).val();\n  \t//will provide \"hello john\".\n\t\tdeep({\n    \t\tmsg:\"hello { name }\"\n\t\t})\n\t\t.query(\"./msg\")\n\t\t.interpret({ name:\"john\" })\n\t\t.logValues()\n\t\t.equal(\"hello john\");"
@@ -3756,7 +3781,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2641,
+            "line": 2646,
             "description": "It's the way of performing a SQL JOIN like between two objects.\nObjects could be retrievables.\n\ntake current entries, seek after localKeys, use it to get 'what' with foreignKey=localKey, and finnaly store result at 'whereToStore' path in current entries values.",
             "example": [
                 "\n\n\tdeep([{ title:\"my title\", id:1}, { title:\"my title 2\", id:2}])\n\t.mapOn([\n\t    {itemId:1, value:true}, \n\t    {itemId:2, value:\"133\"}, \n\t    {itemId:2, value:\"hello\"}\n\t    ], \n\t    \"id\",\"itemId\",\"linkeds\")\n\t.valuesEqual([\n\t    {\n\t        title:\"my title\", \n\t        id:1, \n\t        linkeds:{itemId:1, value:true}\n\t    },\n\t    { \n\t        title:\"my title 2\", \n\t        id:2,\n\t        linkeds:[\n\t            {itemId:2, value:\"133\"},\n\t            { itemId:2, value:\"hello\"}\n\t        ]\n\t    }\n\t]);"
@@ -3796,7 +3821,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2742,
+            "line": 2747,
             "description": "retrieve relations described in schema links.\n\nInject as success in chain an object that hold each relation, their result and the associated (parsed) request object",
             "itemtype": "method",
             "name": "getRelations",
@@ -3820,7 +3845,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2819,
+            "line": 2824,
             "description": "map relations in current entries values",
             "itemtype": "method",
             "name": "mapRelations",
@@ -3850,7 +3875,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2898,
+            "line": 2903,
             "description": "return a promise for the chain.",
             "return": {
                 "description": "",
@@ -3862,7 +3887,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2987,
+            "line": 2992,
             "description": "execute array of funcs sequencially",
             "static": 1,
             "itemtype": "method",
@@ -3889,7 +3914,7 @@
         },
         {
             "file": "deep.js",
-            "line": 3036,
+            "line": 3041,
             "description": "apply treatment",
             "params": [
                 {
@@ -4127,11 +4152,11 @@
         },
         {
             "message": "Missing item type\nreturn a promise for the chain.",
-            "line": " deep.js:2898"
+            "line": " deep.js:2903"
         },
         {
             "message": "Missing item type\napply treatment",
-            "line": " deep.js:3036"
+            "line": " deep.js:3041"
         },
         {
             "message": "Missing item type",

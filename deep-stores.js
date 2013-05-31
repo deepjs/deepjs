@@ -706,7 +706,7 @@ define(["require", "deep/deep"],function(require)
 				res = infos.store.get(infos.uri, options);
 			if(options.wrap)
 			{
-				return deep(res)
+				return deep.when(res)
 				.done(function(res){
 					options.wrap.result = res;
 					return options.wrap;
