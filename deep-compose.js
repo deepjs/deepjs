@@ -195,9 +195,9 @@ define(function(require, exports, module){
 				if(!r.then)
 					return r;
 				promise.when(r)
-				.then(function (suc) {
+				.done(function (suc) {
 					def.resolve(suc);
-				}, function (error) {
+				}).fail(function (error) {
 					def.reject(error);
 				});
 			}
@@ -208,17 +208,19 @@ define(function(require, exports, module){
 					return r;
 				if(!r.then)
 					return r;
-				promise.when(r).then(function (suc) {
+				promise.when(r)
+				.done(function (suc) {
 					//	console.log("chain.second.promise.when : result : ", suc)
 					def.resolve(suc);
-				}, function (error) {
+				}).fail(function (error) {
 					def.reject(error);
 				});
 			}
 			else
 			{
 				//console.log("________________BEFORE promise.when___________");
-				promise.when(r).then(function (r)
+				promise.when(r)
+				.done(function (r)
 				{
 					//console.log("after : promise.when(first) res : ", r);
 					var argus = args ;
@@ -234,11 +236,11 @@ define(function(require, exports, module){
 					}, function (error) {
 						def.reject(error);
 					});
-				}, function (error) {
+				}).fail(function (error) {
 					def.reject(error);
 				});
 			}
-			return promise.promise(def);
+			return def.promise();
 		};
 	}
 	Composer.prototype = {

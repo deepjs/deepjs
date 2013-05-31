@@ -1,7 +1,9 @@
 <h2>deep core : </h2>
 <script type="text/javascript">
 	//console.log("deep-copy.html loaded : ");
+   
 (function(){
+    //console.profile("deep.compose"); //
 	var deep = require("deep/deep");
 	var utils = require("deep/utils");
 	var deepEqual = utils.deepEqual;
@@ -91,8 +93,10 @@ deep(c)
 .query("/res")
 .equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"], report);
 
-
+//console.profileEnd("deep.compose") //
 
 return	printReport("chain.query", success, failed, count);
 })();
+   
+
 </script>

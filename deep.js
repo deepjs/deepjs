@@ -91,7 +91,7 @@ function(require)
 	 * @param  {Object} options (optional) an option object. could contain : rethrow:true|false
 	 * @return {deep.Chain} a deep handler that hold object(s)
 	 */
-	deep = function (obj, schema, options)
+	deep = function deep(obj, schema, options)
 	{
 		if(typeof obj === 'undefined')
 			obj = null;
@@ -137,7 +137,7 @@ function(require)
 				if(handler._entries.length > 1)
 					forceNextQueueItem(handler, deep.chain.values(handler), null);
 				else
-					forceNextQueueItem(handler, deep.chain.val(handler), null);
+					forceNextQueueItem(handler, obj, null);
 			})
 			.fail(function (error) {
 				//console.log("deep start chain error on load object : ", error, " - rethrow ? ", handler.rethrow);
@@ -668,20 +668,25 @@ function(require)
 					delete self.oldQueue;
 					return [s,e];
 				}
-				deep.when(a)
-				.then(function (success)
+				var handleResponse = function (success)
 				{
 					self.callQueue = self.callQueue.concat(self.oldQueue);
 					delete self.oldQueue;
 					forceNextQueueItem(self, success, null)
-				},
-				function (error)
-				{
-					//console.error("error : deep.branches : ", error);
-					self.callQueue = self.callQueue.concat(self.oldQueue);
-					delete self.oldQueue;
-					forceNextQueueItem(self, null, error)
-				});
+				};
+
+				if(a && (a.then || a.promise))
+					deep.when(a)
+					.done(handleResponse)
+					.fail(function (error)
+					{
+						//console.error("error : deep.branches : ", error);
+						self.callQueue = self.callQueue.concat(self.oldQueue);
+						delete self.oldQueue;
+						forceNextQueueItem(self, null, error)
+					});
+				else
+					handleResponse(a);
 			};
 			addInQueue.apply(this, [create]);
 			return self;
@@ -702,15 +707,15 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				deep.when(prom).then(function (datas) {
+				deep.when(prom)
+				.done(function (datas) {
 					if(typeof datas === 'undefined')
 						datas = s;
-					self.running = false;
-					nextQueueItem.apply(self, [datas,null]);
-				}, function (e) {
+					forceNextQueueItem(self, datas, null)
+				})
+				.fail(function (e) {
 					//console.error("error : deep.chain.when : ", e);
-					self.running = false;
-					nextQueueItem.apply(self, [null,e]);
+					forceNextQueueItem(self, null, e)
 				});
 			};
 			addInQueue.apply(this,[func]);
@@ -749,27 +754,32 @@ function(require)
 					delete self.oldQueue;
 					return [s,e];
 				}
-				else
-					deep.when(a).then(function (argument) {
-						var error = null;
-						if(typeof argument === 'undefined')
-							argument = s;
-						else if(argument instanceof Error)
-						{
-							error = argument;
-							argument = null;
-						}
-						self.callQueue = self.callQueue.concat(self.oldQueue);
-						delete self.oldQueue;
-						//return [argument,error];
+				var handleResponse = function (argument) {
+					var error = null;
+					if(typeof argument === 'undefined')
+						argument = s;
+					else if(argument instanceof Error)
+					{
+						error = argument;
+						argument = null;
+					}
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					//return [argument,error];
 
-						forceNextQueueItem(self, argument, error);
-					}, function (error) {
+					forceNextQueueItem(self, argument, error);
+				};
+				if(a && (a.then || a.promise))
+					deep.when(a)
+					.done(handleResponse)
+					.fail(function (error) {
 						self.callQueue = self.callQueue.concat(self.oldQueue);
 						delete self.oldQueue;
 						//return [null,error];
 						forceNextQueueItem(self, null, error);
 					});
+				else
+					handleResponse(a);
 			};
 			func._isTHEN_ = true;
 			addInQueue.apply(this, [func]);
@@ -808,21 +818,26 @@ function(require)
 					delete self.oldQueue;
 					return [s,e];
 				}
-				else
-					deep.when(a).then(function (argument) {
-						self.callQueue = self.callQueue.concat(self.oldQueue);
-						delete self.oldQueue;
-						if(typeof argument === 'undefined')
-							forceNextQueueItem(self, null, e);
-						else if(argument instanceof Error)
-							forceNextQueueItem(self, null, argument);
-						else
-							forceNextQueueItem(self, argument, null);
-					}, function (error) {
+				var handleResponse = function (argument) {
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					if(typeof argument === 'undefined')
+						forceNextQueueItem(self, null, e);
+					else if(argument instanceof Error)
+						forceNextQueueItem(self, null, argument);
+					else
+						forceNextQueueItem(self, argument, null);
+				};
+				if(a && (a.then || a.promise))
+					deep.when(a)
+					.done(handlerResponse)
+					.fail(function (error) {
 						self.callQueue = self.callQueue.concat(self.oldQueue);
 						delete self.oldQueue;
 						forceNextQueueItem(self, null, error);
 					});
+				else
+					handleResponse(a);
 			};
 			func._isTHEN_ = true;
 			addInQueue.apply(this,[func]);
@@ -1478,7 +1493,7 @@ function(require)
 			function (error) {
 				deferred.reject(error);
 			});
-			return deep.promise(deferred);
+			return deferred.promise();
 		},
 		/**
 		 * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
@@ -1531,7 +1546,7 @@ function(require)
 					console.error("currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : "+JSON.stringify(extendeds));
 					deferred.reject(res);
 				});
-				return deep.promise(deferred);
+				return deferred.promise();
 			}
 			return [];
 		},
@@ -1664,7 +1679,7 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				deep(transformer)
+				deep.when(transformer)
 				.done(function  (transformer) {
 					var alls = [];
 					self._entries.forEach(function(result){
@@ -1687,7 +1702,9 @@ function(require)
 						forceNextQueueItem(self, null, error);
 					});
 				})
-				
+				.fail(function(error){
+					forceNextQueueItem(self, null, error);
+				});
 			};
 			addInQueue.apply(this,[func]);
 			return this;
@@ -2152,28 +2169,30 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				deep(callBack)
-				.done(function (callBack) {
+				var applyCallBack = function (callBack) {
 					var  a = self._entries[0]?self._entries[0].value:null;
-					var r = null;
-					if(typeof callBack === 'object')
-						r = applyTreatment.apply(callBack, [a]);
+					var r = callBack(a);
+					if(typeof r === 'undefined')
+						r = a;
+					if(r.promise || typeof r.then === 'function')
+						deep.when(r).then(function (argument) {
+							if(typeof argument === 'undefined')
+								argument = a;
+							forceNextQueueItem(self, argument, null);
+						}, function (error) {
+							forceNextQueueItem(self, null, error);
+						});
 					else
-						r = callBack(a);
-					deep.when(r).then(function (argument) {
-						if(typeof argument === 'undefined')
-							argument = a;
-						//console.log("val callBack res : ",argument);
-						forceNextQueueItem(self, argument, null);
-					}, function (error) {
-						//console.error("error : deep.val : ",error);
+						forceNextQueueItem(self, r, null);
+				}
+				if(typeof callBack !== 'function')
+					deep.when(callBack)
+					.done(applyCallBack)
+					.fail(function (error) {
 						forceNextQueueItem(self, null, error);
 					});
-				})
-				.fail(function (error) {
-					forceNextQueueItem(self, null, error);
-				})
-				
+				else
+					applyCallBack(callBack);
 			};
 			if(callBack)
 			{
@@ -2202,26 +2221,31 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				deep(callBack)
-				.done(function (callBack) {
+				var applyCallBack = function (callBack) {
 					var  a = deep.chain.values(self);
-					var r = null;
-					if(typeof callBack === 'object')
-						r = applyTreatment.apply(callBack, [a]);
+					var r = callBack(a);
+					if(typeof r === 'undefined')
+						r = a;
+					if(r.promise || typeof r.then === 'function')
+						deep.when(callBack(a)).then(function (res) {
+							if(typeof res === "undefined")
+								res = a;
+							forceNextQueueItem(self, res, null)
+						}, function (error) {
+							console.error("error : deep.values : ",error);
+							forceNextQueueItem(self, null, error)
+						});
 					else
-						r = callBack(a);
-					deep.when(callBack(a)).then(function (res) {
-						if(typeof res === "undefined")
-							res = a;
-						forceNextQueueItem(self, res, null)
-					}, function (error) {
-						console.error("error : deep.values : ",error);
-						forceNextQueueItem(self, null, error)
+						forceNextQueueItem(self, r, null);
+				}
+				if(typeof callBack !== 'undefined')
+					deep.when(callBack)
+					.done(applyCallBack)
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
 					});
-				})
-				.fail(function (error) {
-					forceNextQueueItem(self, null, error);
-				});
+				else
+					applyCallBack(callBack);
 			};
 			if(callBack)
 			{
@@ -2248,8 +2272,7 @@ function(require)
 			var self = this;
 			var func = function()
 			{
-				deep(callBack)
-				.done(function (callBack) {
+				var applyCallBack = function (callBack) {
 					var alls = [];
 					if(typeof callBack === 'object')
 						self._entries.forEach(function(entry) {
@@ -2264,10 +2287,15 @@ function(require)
 					}, function (error) {
 						forceNextQueueItem(self, null, error);
 					});
-				})
-				.fail(function (error) {
-					forceNextQueueItem(self, null, error);
-				});
+				};
+				if(typeof callBack !== 'function')
+					deep.when(callBack)
+					.done(applyCallBack)
+					.fail(function (error) {
+						forceNextQueueItem(self, null, error);
+					});
+				else
+					applyCallBack(callBack);
 			};
 			addInQueue.apply(this,[func]);
 			return this;
@@ -2361,57 +2389,52 @@ function(require)
 		deepLoad:function(context)
 		{
 			var self = this;
-			function func(){
-				return function(s,e){
-					var  paths = [];
-					var  promises = [];
-					//console.log("deepLoad : ", self)
-					self._entries.forEach(function (e) {
-						var strings = self.querier.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
-						//console.log("deep load query result : ", strings)
-						strings.forEach(function (toLoad) {
+			var func = function(s,e){
+				var  paths = [];
+				var  promises = [];
+				//console.log("deepLoad : ", self)
+				self._entries.forEach(function (e) {
+					var strings = self.querier.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
+					//console.log("deep load query result : ", strings)
+					strings.forEach(function (toLoad) {
 
-							if(typeof toLoad.value === 'string')
-							{
-								//console.log("deep.deepLoad : toLoad string : ", JSON.stringify(toLoad.value));
-								var val = toLoad.value;
-								if(context)
-									val = deep.interpret(toLoad.value, context);
-								promises.push(deep.get(val, {root:(toLoad.root)?toLoad.root.value:null, basePath:toLoad.path }));
-							}
-							else if(typeof toLoad.value === 'function')
-							{
-								//console.log("deep.deepLoad : toLoad function : ", JSON.stringify(toLoad.value));
-								promises.push(toLoad.value());
-							}	
-							else
-							{
-								//console.log("deep.deepLoad : toLoad object : ", JSON.stringify(toLoad.value));
-								promises.push(toLoad.value);
-							}
-							paths.push(toLoad);
-						});
+						if(typeof toLoad.value === 'string')
+						{
+							//console.log("deep.deepLoad : toLoad string : ", JSON.stringify(toLoad.value));
+							var val = toLoad.value;
+							if(context)
+								val = deep.interpret(toLoad.value, context);
+							promises.push(deep.get(val, {root:(toLoad.root)?toLoad.root.value:null, basePath:toLoad.path }));
+						}
+						else if(typeof toLoad.value === 'function')
+						{
+							//console.log("deep.deepLoad : toLoad function : ", JSON.stringify(toLoad.value));
+							promises.push(toLoad.value());
+						}	
+						else
+						{
+							//console.log("deep.deepLoad : toLoad object : ", JSON.stringify(toLoad.value));
+							promises.push(toLoad.value);
+						}
+						paths.push(toLoad);
 					});
-					deep.all(promises)
-					.done(function (results) {
-						//console.log("direct results of deepLoad : ", results);
-						var count = 0;
-						results.forEach(function  (r) {
-							var e = paths[count++];
-							if(e.ancestor)
-								e.ancestor.value[e.key] = e.value = r;
-						});
-						self.running = false;
-						nextQueueItem.apply(self, [ results, null ]);
-					})
-					.fail(function (error) {
-						console.error("error : deep.deepLoad : ", error);
-						self.running = false;
-						nextQueueItem.apply(self, [ null, error ]);
+				});
+				deep.all(promises)
+				.done(function (results) {
+					//console.log("direct results of deepLoad : ", results);
+					var count = 0;
+					results.forEach(function  (r) {
+						var e = paths[count++];
+						if(e.ancestor)
+							e.ancestor.value[e.key] = e.value = r;
 					});
-				};
-			}
-			addInQueue.apply(this,[func()]);
+					forceNextQueueItem(self, results, null );
+				})
+				.fail(function (error) {
+					forceNextQueueItem(self, null, error);
+				});
+			};
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2436,82 +2459,76 @@ function(require)
 		load:function (request, context)
 		{
 			var self = this;
-			function func(){
-				return function(){
-					var  paths = [];
-					var  promises = [];
-					//console.log("deep.load : ", deep.chain.stringify(self))
-					//console.log("deep.load : entries : ", self.entries)
-
+			var func =  function(){
+				var  paths = [];
+				var  promises = [];
+				//console.log("deep.load : ", deep.chain.stringify(self))
+				//console.log("deep.load : entries : ", self.entries)
+				if(request)
+				{
+					if(typeof request === "string")
+					{
+						if(context)
+							request = deep.interpret(request, context);
+						promises.push(deep.get(request));
+					}
+					if(typeof request === 'function')
+						promises.push(request());
+					else
+						promises.push(request);
+				}
+				else
+					self._entries.forEach(function (e) {
+						if(!e.value)
+							return;
+						if(e.value.load)
+							promises.push(callFunctionFromValue(e, "load"));
+						else if(typeof e.value === 'string')
+						{
+							var toLoad = e.value;
+							if(context)
+								toLoad = deep.interpret(toLoad, context);
+							promises.push(deep.get(toLoad, { root:(e.root)?e.root.value:e.value, basePath:e.path }));
+						}
+						else
+							promises.push(e.value);
+						paths.push(e);
+					});
+				deep.all(promises).then(
+				function (results) {
+					//console.log("deep.load results : ", results)
+					var count = 0;
 					if(request)
 					{
-						if(typeof request === "string")
-						{
-							if(context)
-								request = deep.interpret(request, context);
-							promises.push(deep.get(request));
-						}
-						if(typeof request === 'function')
-							promises.push(request());
-						else
-							promises.push(request);
+						//console.log("deep.load results from request : ", self._entries)
+						self._entries.forEach(function (entry) {
+							if(!entry.ancestor)
+								//throw new Error("You couldn't interpret root !");
+									entry.value = results[0];
+								else
+									entry.value = entry.ancestor.value[entry.key] = results[0];
+						});
 					}
 					else
-						self._entries.forEach(function (e) {
-							if(!e.value)
-								return;
-							if(e.value.load)
-								promises.push(callFunctionFromValue(e, "load"));
-							else if(typeof e.value === 'string')
+						results.forEach(function  (r) {
+							//console.log("deep.load results from inner : ", r)
+							var item = paths[count++];
+							if(!item.value.load)
 							{
-								var toLoad = e.value;
-								if(context)
-									toLoad = deep.interpret(toLoad, context);
-								promises.push(deep.get(toLoad, { root:(e.root)?e.root.value:e.value, basePath:e.path }));
+								if(!item.ancestor)
+								//throw new Error("You couldn't interpret root !");
+									item.value = r;
+								else
+									item.value = item.ancestor.value[item.key] = r;
 							}
-							else
-								promises.push(e.value);
-							paths.push(e);
 						});
-					deep.all(promises).then(
-					function (results) {
-						//console.log("deep.load results : ", results)
-						var count = 0;
-						if(request)
-						{
-							//console.log("deep.load results from request : ", self._entries)
-							self._entries.forEach(function (entry) {
-								if(!entry.ancestor)
-									//throw new Error("You couldn't interpret root !");
-										entry.value = results[0];
-									else
-										entry.value = entry.ancestor.value[entry.key] = results[0];
-							});
-						}
-						else
-							results.forEach(function  (r) {
-								//console.log("deep.load results from inner : ", r)
-								var item = paths[count++];
-								if(!item.value.load)
-								{
-									if(!item.ancestor)
-									//throw new Error("You couldn't interpret root !");
-										item.value = r;
-									else
-										item.value = item.ancestor.value[item.key] = r;
-								}
-							});
-						self.running = false;
-						nextQueueItem.apply(self, [results, null]);
-					},
-					function (error) {
-						console.error("deep.load errors : ", error);
-						self.running = false;
-						nextQueueItem.apply(self, [null, error]);
-					});
-				};
-			}
-			addInQueue.apply(this,[func()]);
+					forceNextQueueItem(self, results, null);
+				},
+				function (error) {
+					forceNextQueueItem(self, null, error);
+				});
+			};
+			addInQueue.apply(this,[func]);
 			return this;
 		},
 
@@ -2589,8 +2606,7 @@ function(require)
 			var self = this;
 			var func = function(){
 				//console.log("deep.chain.interpret : context : ",context);
-				context = (typeof context === 'string')?deep.get(context):context;
-				deep(context).then(function (context) {
+				var applyContext = function (context) {
 					//console.log("interpret: received context : ", context);
 					var res = [];
 					self._entries.forEach(function (interpretable)
@@ -2610,12 +2626,15 @@ function(require)
 							res.push(interpretable.value);
 					});
 					self.running = false;
-					nextQueueItem.apply(self, [res, null]);
-				}, function (error) {
-					//console.error("error : deep.interpret : ", error);
-					self.running = false;
-					nextQueueItem.apply(self, [null, error]);
-				});
+					forceNextQueueItem(self, res, null);
+				}
+				if(typeof context === 'string')
+					deep.when(deep.get(context)).then(applyContext, function (error) {
+						//console.error("error : deep.interpret : ", error);
+						forceNextQueueItem(self, null, error);
+					});
+				else 
+					applyContext(context);
 			};
 			addInQueue.apply(this,[func]);
 			return this;
@@ -2631,10 +2650,7 @@ function(require)
 				// console.log("pushHandlerTo : init? ", self.initialised)
 				array.push(self);
 				if(self.initialised)
-				{
-					self.running = false;
-					nextQueueItem.apply(self, [s, e]);
-				}
+					forceNextQueueItem(self, s, e);
 			};
 			f._isPUSH_HANDLER_TO_ = true;
 			addInQueue.apply(this,[f]);
@@ -2729,10 +2745,14 @@ function(require)
 					//console.log("mapOn : parsedUri with constrains : ",parsed.uri);
 					if(parsed.store !== null)
 					{
-						deep(parsed.store.get(parsed.uri)).done(function (results) {
+						deep.when(parsed.store.get(parsed.uri))
+						.done(function (results) {
 							results = [].concat(results);
 							doMap(results, localKey, foreignKey, whereToStore);
-						});
+						})
+						.fail(function (error) {
+							forceNextQueueItem(self, null, error);
+						})
 					}
 					else
 						forceNextQueueItem(self, null, new Error("deep.mapOn need array as 'what' : provided : "+ JSON.stringify(what)));
@@ -3031,7 +3051,7 @@ function(require)
 			});
 		};
 		doIt(current.apply(context, args));
-		return deep.promise(def);
+		return def.promise();
 	};
 
 	
