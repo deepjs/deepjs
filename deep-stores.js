@@ -98,6 +98,9 @@ define(["require", "deep/deep"],function(require)
 		{
 			//console.log("deep.store : ", name)
 			options = options || {};
+			if(!definer)
+				return deep({}).store(name);
+
 			var store = null;
 			var stores = deep.stores;
 			var role = { name:"no role" };
@@ -107,22 +110,14 @@ define(["require", "deep/deep"],function(require)
 				stores = deep.context.role.stores;
 				role = deep.context.role;
 			}
-			if(!definer)
-			{
-				if(!stores[name])
-					throw new Error("no '"+name+"' store found in role : "+ role.name);
-				stores[name].name = name;
-				//console.log("deep.store will found : ", name, " - ", stores[name])
-				return stores[name]; //deep(null).store(name);
-			}
-			else if(definer instanceof Array)
+			if(definer instanceof Array)
 				store = stores[name] = deep.store.ArrayStore(definer, options);
 			else if(definer instanceof deep.store.Store)
 				store = stores[name] = definer.create(name, options);
 			else store = stores[name] = deep.store.ObjectStore(definer, options);
 			store.name = name;
 			store.options = options;
-			return store; //deep(null).store(name);
+			return deep({}).store(name);
 		};
 
 
@@ -175,7 +170,10 @@ define(["require", "deep/deep"],function(require)
 				if(typeof name === 'string')
 				{
 					if(!stores[name])
-						throw new Error("no '"+name+"' store found in role : "+ role.name);
+						if(!role)
+							throw new Error("deep.store('"+name+"') : error : no store found");
+						else
+							throw new Error("deep.store('"+name+"') : error : no store found in role : "+ role.name);
 					store = stores[name];
 					store.name = name;
 				}

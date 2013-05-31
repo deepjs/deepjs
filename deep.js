@@ -2793,9 +2793,8 @@ function(require)
 					if(!entry.schema || !entry.schema.links)
 						return;
 					var alls  = [];
-					deep(entry.schema.links)
-					.query("./!?rel=in=("+relations.join(",")+")")
-					.each(function(relation){
+					deep.query(entry.schema.links, "./!?rel=in=("+relations.join(",")+")")
+					.forEach(function(relation){
 						var path = deep.interpret(relation.href, entry.value);
 						var parsed = deep.parseRequest(path);
 						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:{ relation:relation, request:parsed } }));
@@ -2873,9 +2872,8 @@ function(require)
 						return;
 					var alls  = [];
 					var count  = 0;
-					deep(entry.schema.links)
-					.query("./!?rel=in=("+relations.join(",")+")")
-					.each(function(relation){
+					deep.query(entry.schema.links, "./!?rel=in=("+relations.join(",")+")")
+					.forEach(function(relation){
 						//console.log("do map relations on : ", relation);
 						var path = deep.interpret(relation.href, entry.value);
 						alls.push(deep.get(path, { defaultProtocole:"json", wrap:{ path:map[relation.rel] } }));
