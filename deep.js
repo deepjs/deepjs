@@ -2171,7 +2171,11 @@ function(require)
 			{
 				var applyCallBack = function (callBack) {
 					var  a = self._entries[0]?self._entries[0].value:null;
-					var r = callBack(a);
+					var r = null;
+					if(typeof callBack === 'function')
+						r = callBack(a);
+					else
+						r = applyTreatment.apply(callBack, [a]);
 					if(typeof r === 'undefined')
 						r = a;
 					if(r.promise || typeof r.then === 'function')
@@ -2223,7 +2227,11 @@ function(require)
 			{
 				var applyCallBack = function (callBack) {
 					var  a = deep.chain.values(self);
-					var r = callBack(a);
+					var r = null;
+					if(typeof callBack === 'function')
+						r = callBack(a);
+					else
+						r = applyTreatment.apply(callBack, [a]);
 					if(typeof r === 'undefined')
 						r = a;
 					if(r.promise || typeof r.then === 'function')
