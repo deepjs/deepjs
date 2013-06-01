@@ -268,7 +268,7 @@ define(function(require){
 	}
 
 
-	utils.getObjectClass = function(obj) {
+	utils.getObjectClass = function getObjectClass(obj) {
 	    if (obj && obj.constructor && obj.constructor.toString) {
 	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
 	        if (arr && arr.length == 2) 
@@ -439,14 +439,14 @@ define(function(require){
 		return false;
 	}
 
-	utils.getJSPrimitiveType = function (obj)
+	utils.getJSPrimitiveType = function getJSPrimitiveType(obj)
 	{
 		if(obj instanceof Array)
 			return "array"
 		return typeof obj;
 	}
 
-	utils.deepEqual = function(a,b, ordered)
+	utils.deepEqual = function deepEqual(a,b, ordered)
 	{
 		if(ordered == undefined)
 			ordered = true;
@@ -495,7 +495,7 @@ define(function(require){
 	}
 	//var result = {};
 
-	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function (schema, path, delimitter)
+	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function retrieveFullSchemaByPath(schema, path, delimitter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			delimitter = "/";
@@ -618,7 +618,7 @@ define(function(require){
 		return arr;
 	}
 
-	var up = function (src, target, schema, parent, key) 
+	var up = function up(src, target, schema, parent, key) 
 	{
 		if( typeof src === 'undefined' )
 			return target;
@@ -761,7 +761,7 @@ define(function(require){
 		}
 	}
 
-	var bottom = function (src, target, schema, parent, key) 
+	var bottom = function bottom(src, target, schema, parent, key) 
 	{
 		 // console.log("utils.bottom : objects ", src, target)
 

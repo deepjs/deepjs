@@ -364,6 +364,7 @@ function(require)
 						r = next.func(result,failure);
 					else
 						r = next(result,failure);
+					//console.log("return from chain handler : ",r);
 					if(typeof r !== 'undefined')
 					{
 						this.running = false;
@@ -633,7 +634,7 @@ function(require)
 		 *  Inject function result in chain as success or error.
 		 *
 		 * 	@example
-		*	chain.branches( function(branches)
+		*	deep().branches( function(branches)
 		*	{
 		*		branches.branch().query(...).load().log()
 		*		branches.branch().query(...).post().log();
@@ -724,14 +725,7 @@ function(require)
 		/**
 		 * handle previous chain's handle success
 		 *
-		 * the callback receive 3 arguments : 
-		 * 		success, handler, brancher
-		 *
-		 * the success is the success object produced by previous chain's handle
-		 * the handler is the chain handler itself
-		 * the brancher is the brancher function that create clone of the chain to produce chain branches
-		 * 
-		 * 
+		 * the callback receive the success that is the success object produced by previous chain's handle
 		 * @method  done
 		 * @chainable
 		 * @param  callback the calback function to handle success
@@ -788,13 +782,7 @@ function(require)
 		/**
 		 * handle previous chain handle error
 		 *
-		 * the callback receive 3 arguments : 
-		 * 		error, handler, brancher
-		 *
-		 * the error is the success object produced by previous chain's handle
-		 * the handler is the chain handler itself
-		 * the brancher is the brancher function that create clone of the chain to produce chain branches
-		 * 
+		 * the callback receive the error that is the one produced by previous chain's handle
 		 * 
 		 * @method  fail
 		 * @chainable
@@ -2025,6 +2013,10 @@ function(require)
 		{
 			options = options || {};
 			var self = this;
+			var callBack = options.callBack;
+			if(typeof options === 'string')
+				callBack = options;
+
 
 			var func = function()
 			{
@@ -2046,21 +2038,27 @@ function(require)
 					error.report = report;
 					error.status = 412;
 				}
-				if(options.callBack)
+				if(callBack)
 				{
-					deep.when(options.callBack(report))
+
+					deep.when(callBack(report))
 					.then(function (argument) {
 						report.callBackResponse = argument;
+						//console.log("callBack response")
 						if(report.valid)
 							forceNextQueueItem(self, report, null);
 						else
-							forceNextQueueItem(self, null, report);
+							forceNextQueueItem(self, null, error);
 					}, function (error) {
 						forceNextQueueItem(self, null, error);
 					});
 				}
 				else if(report.valid)
+				{
+					//console.log("deep.validate : report valid and no callBack : ", report )
 					return [report, null];
+				}
+					
 				//console.log("report not valid : ", report)
 				return [null, report];
 			};
@@ -2816,30 +2814,28 @@ function(require)
 		getRelations:function () {
 			var self = this;
 			var relations = Array.prototype.slice.apply(arguments);
-			var func = function (s,e) {
+			var func = function (s,e) 
+			{
+				var alls  = [];
 				self._entries.forEach(function(entry){
 					if(!entry.schema || !entry.schema.links)
 						return;
-					var alls  = [];
-					deep.query(entry.schema.links, "./!?rel=in=("+relations.join(",")+")")
+					deep.query(entry.schema.links, "./*?rel=in=("+relations.join(",")+")")
 					.forEach(function(relation){
 						var path = deep.interpret(relation.href, entry.value);
 						var parsed = deep.parseRequest(path);
-						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:{ relation:relation, request:parsed } }));
+						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:{ relation:relation, request:parsed, entry:entry } }));
 					});
-					if(alls.length == 0)
-						return [s,e];
-					deep.all(alls)
-					.done(function(results){
-						var res = {};
-						results.forEach(function(r){
-							res[r.relation.rel] = r;
-						});
-						forceNextQueueItem(self, res, null);
-					})
-					.fail(function(error){
-						forceNextQueueItem(self, null, error);
-					})
+				});
+				if(alls.length == 0)
+					return [s,e];
+				deep.all(alls)
+				.done(function(results){
+					//console.log("get relations : ", results)
+					forceNextQueueItem(self, results, null);
+				})
+				.fail(function(error){
+					forceNextQueueItem(self, null, error);
 				});
 			}
 			deep.chain.addInQueue.apply(this, [func]);
@@ -2900,7 +2896,7 @@ function(require)
 						return;
 					var alls  = [];
 					var count  = 0;
-					deep.query(entry.schema.links, "./!?rel=in=("+relations.join(",")+")")
+					deep.query(entry.schema.links, "./*?rel=in=("+relations.join(",")+")")
 					.forEach(function(relation){
 						//console.log("do map relations on : ", relation);
 						var path = deep.interpret(relation.href, entry.value);

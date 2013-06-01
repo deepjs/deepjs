@@ -178,7 +178,7 @@ define(function(require, exports, module){
 
 	function chain(before, after)
 	{
-		return function () {
+		return function executeChain() {
 			var self = this;
 			var args = arguments;
 			var def = promise.Deferred();
@@ -273,9 +273,9 @@ define(function(require, exports, module){
 		 * @param  {Function} argument the function to execute BEFORE the collided one
 		 * @return {[type]}
 		 */
-		before : function (argument)
+		before : function before(argument)
 		{
-			var wrapper = function (previous)
+			var wrapper = function beforeWrapper(previous)
 			{
 				return chain(argument, previous);
 			};
@@ -315,9 +315,9 @@ define(function(require, exports, module){
 		 * @param  {Function} wrapper a fonction to wrap the collided one
 		 * @return {Composer} this
 		 */
-		around : function (wrapper)
+		around : function around(wrapper)
 		{
-			var func = function (previous)
+			var func = function aroundWrapper(previous)
 			{
 				return wrapper(previous);
 			};
@@ -355,9 +355,9 @@ define(function(require, exports, module){
 		@param {Function} argument the function to execute AFTER the collided one
 		@return {Composer} this
 		*/
-		after : function (argument)
+		after : function after(argument)
 		{
-			var wrapper = function (previous)
+			var wrapper = function afterWrapper(previous)
 			{
 				return chain(previous, argument);
 			};
@@ -371,9 +371,9 @@ define(function(require, exports, module){
 		 * @param  {Function} fn
 		 * @return {Composer} this
 		 */
-		fail : function (fn)
+		fail : function fail(fn)
 		{
-			var wrapper = function (previous)
+			var wrapper = function failWrapper(previous)
 			{
 				return function()
 				{
@@ -402,9 +402,9 @@ define(function(require, exports, module){
 		 * @param  {Function} argument
 		 * @return {Composer} this
 		 */
-		replace : function (argument)
+		replace : function replace(argument)
 		{
-			var wrapper = function (previous)
+			var wrapper = function replaceWrapper(previous)
 			{
 				return argument;
 			};
@@ -451,11 +451,11 @@ define(function(require, exports, module){
 		 * @param  {[type]} argument
 		 * @return {[type]}
 		 */
-		parallele : function (argument)
+		parallele : function parallele(argument)
 		{
 			var wrapper = function (previous)
 			{
-				return function ()
+				return function paralleleWrapper()
 				{
 					var args = arguments;
 					var promises = [argument.apply(this, args), previous.apply(this,args)];
@@ -470,45 +470,45 @@ define(function(require, exports, module){
 	var createStart = function (decorator)
 	{
 		decorator = decorator || new Composer();
-		var start = function () {
+		var start = function start() {
 			if(!decorator.createIfNecessary)
 				throw new Error("Decorator not applied ! (start)");
 			return compose.wrap(function(){}, decorator).apply(this, arguments);
 		};
 		start.decorator = decorator;
-		start.after = function (argument) {
+		start.after = function startAfter(argument) {
 			decorator.after(argument);
 			return start;
 		};
-		start.before = function (argument) {
+		start.before = function startBefore(argument) {
 			decorator.before(argument);
 			return start;
 		};
-		start.fail = function (argument) {
+		start.fail = function startFail(argument) {
 			decorator.fail(argument);
 			return start;
 		};
-		start.around = function (argument) {
+		start.around = function startAround(argument) {
 			decorator.around(argument);
 			return start;
 		};
-		start.parallele = function (argument) {
+		start.parallele = function startParallele(argument) {
 			decorator.parallele(argument);
 			return start;
 		};
-		start.replace = function (argument) {
+		start.replace = function startReplace(argument) {
 			decorator.replace(argument);
 			return start;
 		};
-		start.createIfNecessary = function (arg) {
+		start.createIfNecessary = function createIfNecessary(arg) {
 			start.decorator.createIfNecessary = (typeof arg === 'undefined')?true:arg;
 			return start;
 		};
-		start.ifExists = function (arg) {
+		start.ifExists = function ifExists(arg) {
 			start.decorator.ifExists = (typeof arg === 'undefined')?true:arg;
 			return start;
 		};
-		start.condition = function (arg) {
+		start.condition = function startCondition(arg) {
 			start.condition = arg;
 			return start;
 		};
@@ -524,14 +524,14 @@ define(function(require, exports, module){
 	 */
 	var compose = {
 		Decorator:Composer,
-		cloneStart:function (start) {
+		cloneStart:function cloneStart(start) {
 			var newStack = start.decorator.stack.concat([]);
 			var nd = new Composer(newStack);
 			nd.ifExists = start.decorator.ifExists;
 			nd.createIfNecessary = start.decorator.createIfNecessary;
 			return createStart(nd);
 		},
-		wrap:function (func, decorator)
+		wrap:function cWrap(func, decorator)
 		{
 			var fin = func;
 			decorator.stack.forEach(function (wrapper)
@@ -546,7 +546,7 @@ define(function(require, exports, module){
 		 * @static
 		 * @return {compose} starter
 		 */
-		createIfNecessary : function ()
+		createIfNecessary : function cCIN()
 		{
 			var start = createStart();
 			start.decorator.createIfNecessary = true;
@@ -558,7 +558,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		ifExists : function ()
+		ifExists : function cIE()
 		{
 			var start = createStart();
 			start.decorator.ifExists = true;
@@ -571,7 +571,7 @@ define(function(require, exports, module){
 		 * @param argument a boolean expression or a function to call and give a boolean
 		 * @return {compose} starter
 		 */
-		condition:function (argument) {
+		condition:function cCondition(argument) {
 			var start = createStart();
 			start.decorator.condition = argument;
 			return start;
@@ -582,7 +582,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		up : function (bottom, up)
+		up : function cUp(bottom, up)
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
 				throw new Error("Composer.collide : you could only apply function together");
@@ -601,7 +601,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		bottom : function (bottom, up)
+		bottom : function cBottom(bottom, up)
 		{
 			if(typeof up !== 'function' || typeof bottom !== 'function')
 				throw new Error("Composer.collide : you could only apply function together");
@@ -620,7 +620,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		around : function (argument)
+		around : function cAround(argument)
 		{
 			return createStart().around(argument);
 		},
@@ -630,7 +630,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		after : function (argument)
+		after : function cAfter(argument)
 		{
 			return createStart().after(argument);
 		},
@@ -640,7 +640,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		before : function (argument)
+		before : function cBefore(argument)
 		{
 			return createStart().before(argument);
 		},
@@ -650,7 +650,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		fail : function (argument)
+		fail : function cFail(argument)
 		{
 			return createStart().fail(argument);
 		},
@@ -660,7 +660,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		parallele : function (argument)
+		parallele : function cParallele(argument)
 		{
 			return createStart().parallele(argument);
 		},
@@ -670,7 +670,7 @@ define(function(require, exports, module){
 		 * @chainable
 		 * @return {compose} starter
 		 */
-		replace : function (argument)
+		replace : function cReplace(argument)
 		{
 			return createStart().replace(argument);
 		}

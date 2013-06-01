@@ -252,6 +252,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		{
 			//console.log(&quot;deep.store : &quot;, name)
 			options = options || {};
+			if(!definer)
+				return deep({}).store(name);
+
 			var store = null;
 			var stores = deep.stores;
 			var role = { name:&quot;no role&quot; };
@@ -261,22 +264,14 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				stores = deep.context.role.stores;
 				role = deep.context.role;
 			}
-			if(!definer)
-			{
-				if(!stores[name])
-					throw new Error(&quot;no &#x27;&quot;+name+&quot;&#x27; store found in role : &quot;+ role.name);
-				stores[name].name = name;
-				//console.log(&quot;deep.store will found : &quot;, name, &quot; - &quot;, stores[name])
-				return stores[name]; //deep(null).store(name);
-			}
-			else if(definer instanceof Array)
+			if(definer instanceof Array)
 				store = stores[name] = deep.store.ArrayStore(definer, options);
 			else if(definer instanceof deep.store.Store)
 				store = stores[name] = definer.create(name, options);
 			else store = stores[name] = deep.store.ObjectStore(definer, options);
 			store.name = name;
 			store.options = options;
-			return store; //deep(null).store(name);
+			return deep({}).store(name);
 		};
 
 
@@ -329,7 +324,10 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				if(typeof name === &#x27;string&#x27;)
 				{
 					if(!stores[name])
-						throw new Error(&quot;no &#x27;&quot;+name+&quot;&#x27; store found in role : &quot;+ role.name);
+						if(!role)
+							throw new Error(&quot;deep.store(&#x27;&quot;+name+&quot;&#x27;) : error : no store found&quot;);
+						else
+							throw new Error(&quot;deep.store(&#x27;&quot;+name+&quot;&#x27;) : error : no store found in role : &quot;+ role.name);
 					store = stores[name];
 					store.name = name;
 				}
@@ -862,7 +860,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				res = infos.store.get(infos.uri, options);
 			if(options.wrap)
 			{
-				return deep(res)
+				return deep.when(res)
 				.done(function(res){
 					options.wrap.result = res;
 					return options.wrap;

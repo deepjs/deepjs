@@ -275,7 +275,7 @@
             "module": "deep",
             "namespace": "",
             "file": "deep-compose.js",
-            "line": 516,
+            "line": 518,
             "description": "When you collide two functions together, you could use deep.compose to manage how collision is resolved.\n Keep in mind that if you collide a simple function (up) on a composition (chained or not) : it mean : simply overwrite the composition by the function.\n So if you apply a composition from bottom on a function, the composition will never b applied.\n If you collide two compositions : they will be merged to give a unique composition chain.",
             "example": [
                 "\n deep.compose : Chained Aspect Oriented Programming\n==========================\nSEE DOCS/deep.md for full doc\n\n\n\n## deep.compose.before( func )\n\nIf it returns something, it will be injected as argument(s) in next function.\nIf it return nothing, th original arguments are injected in next function.\nIf it returns a promise or a chain : it will wait until the resolution of the returned value.\nIf the returned object isn't a promise, the next function is executed immediately.\n\nex : \n\n\tvar base = {\n\t    myFunc:deep.compose.after(function(arg)\n\t    {\n\t        return arg + \" _ myfunc base\";\n\t    })\n\t}\n\n\tdeep(base)\n\t.bottom({\n\t    myFunc:function(arg){\n\t        return arg + \" _ myfunc from bottom\";\n\t    }\n\t});\n\n\tbase.myFunc(\"hello\");\n\n\n## deep.compose.after( func )\n\nIf the previous returns something, it will be injected as argument(s) in 'func'.\nIf the previous return nothing, th original arguments are injected in 'func'.\nIf the previous returns a promise or a chain : it will wait until the resolution of the returned value before executing 'func'.\nIf the previous returned object isn't a promise, 'func' is executed immediately.\n\nSame thing for returned object(s) from 'func' : it will be chained..\n\n\tex : \n\n\tvar base = {\n\t    myFunc:function(arg)\n\t    {\n\t        return arg + \" _ myfunc base\";\n\t    }\n\t}\n\n\tdeep(base)\n\t.up({\n\t    myFunc:deep.compose.after(function(arg){\n\t        return arg + \" _ myfunc from after\";\n\t    })\n\t});\n\n\tbase.myFunc(\"hello\");\n\n## deep.compose.around( func )\n\nhere you want to do your own wrapper.\nJuste provid a function that receive in argument the collided function (the one which is bottom),\nan which return the function that use this collided function.\n\n\tex : \n\n\tvar base = {\n\t\tmyFunc:function(arg)\n\t\t{\n\t\t\treturn arg + \" _ myfunc base\";\n\t\t}\n\t}\n\n\tdeep(base)\n\t.up({\n\t    myFunc:deep.compose.around(function(collidedMyFunc){\n\t    \treturn function(arg){\n\t    \t\treturn collidedMyFunc.apply(this, [arg + \" _ myfunc from around\"]);\n\t    \t}\n\t    })\n\t});\n\n\tbase.myFunc(\"hello\");\n\n\n## deep.compose.parallele( func )\n\nwhen you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)\nbefore firing eventual next composed function, you could use deep.compose.parallele( func )\n\nKeep in mind that the output of both functions will be injected as a single array argument in next composed function.\nBoth will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).\n\nSo as implies a foot print on the chaining (the forwarded arguments become an array) : \nIt has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.\n\nAn other point need to be clarify if you use deep(this).myChain()... in the composed function.\nAs you declare a new branch on this, you need to be careful if any other of the composed function (currently parallelised) do the same thing.\n\nYou'll maybe work on the same (sub)objects in the same time.\n\n## compositions chaining \n\nYou could do \n\tvar obj = {\n\t\tfunc:deep.compose.after(...).before(...).around(...)...\n\t}\nIt will wrap, in the order of writing, and immediately, the compositions themselves.\nYou got finally an unique function that is itself a composition (and so could be applied later an other functions).\n\nSo when you do : \n\ndeep.parallele(...).before(...) and deep.before(...).parallel(...)\n\nit does not give the same result of execution.\n\nIn first : you wrap the collided function with a parallele, and then you chain with a before.\nSo finally the execution will be : the before and then the parallelised call.\n\nIn second : you wrap the collided function with a before, and then wrap the whole in a parallele.\nSo the execution will be the parallelised call, but on one branche, there is two chained calls (the before and the collided function). \n\nKeep in mind that you WRAP FUNCTIONS, in the order of writing, and IMMEDIATELY.",
@@ -382,7 +382,7 @@
             "module": "deep",
             "namespace": "",
             "file": "deep-stores.js",
-            "line": 913,
+            "line": 911,
             "description": "manage collections, objects and ressources as http styled stores.\n\nOne interface for all stores/ressources.",
             "example": [
                 " simple\n\n\t\tdeep({ id:1, title:\"hello\" })\n  \t.store(\"mystore\")\n   \t.put()\n    \t.done(function (puttedObject) {\n\t     \t// do something \n\t    });",
@@ -502,7 +502,7 @@
             "submodule": "deep-compose",
             "namespace": "deep",
             "file": "deep-compose.js",
-            "line": 516,
+            "line": 518,
             "static": 1,
             "params": [
                 {
@@ -695,7 +695,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 399,
+            "line": 397,
             "description": "Empty class : Just there to get instanceof working (be warning with iframe issue in that cases).",
             "is_constructor": 1
         },
@@ -711,7 +711,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 409,
+            "line": 407,
             "description": "A store based on simple array",
             "is_constructor": 1,
             "params": [
@@ -739,7 +739,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 557,
+            "line": 555,
             "description": "A store based on simple object",
             "is_constructor": 1,
             "params": [
@@ -767,7 +767,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 822,
+            "line": 820,
             "description": "the store to manage 'query this' approach. see query usage in object when flatten for example.\nnot intended to be used directly. use  \"this::./...\" || \"first::./...\" || \"last::\"./...\" somewhere in objects instead."
         },
         "deep.stores.instance": {
@@ -782,7 +782,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 870,
+            "line": 868,
             "description": "store to manage javascript instanciation with requirejs load.\nnot intended to be used directly. use deep.store(\"instance\") or \"instance::...js\" instead"
         },
         "deep.stores.aspect": {
@@ -797,7 +797,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 892,
+            "line": 890,
             "description": "store to manage javascript instanciation with requirejs load\nnot intended to be used directly. use deep.store(\"aspect\") or \"aspect::...js\" instead"
         },
         "deep.stores.js": {
@@ -812,7 +812,7 @@
             "submodule": "deep-stores",
             "namespace": "deep",
             "file": "deep-stores.js",
-            "line": 913,
+            "line": 911,
             "description": "store to manage requirejs module load\nnot intended to be used directly. use deep.store(\"js\") or \"js::...js\" instead"
         },
         "deep": {
@@ -1126,7 +1126,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 245,
+            "line": 247,
             "description": "If it returns something, it will be injected as argument(s) in next function.\n\t\t\tIf it return nothing, th original arguments are injected in next function.\n\t\t\tIf it returns a promise or a chain : it will wait until the resolution of the returned value.\n\t\t\tIf the returned object isn't a promise, the next function is executed immediately.",
             "example": [
                 "\n\n\t\t\t\tvar base = {\n\t\t\t\t    myFunc:deep.compose.after(function(arg)\n\t\t\t\t    {\n\t\t\t\t        return arg + \" _ myfunc base\";\n\t\t\t\t    })\n\t\t\t\t}\n\n\t\t\t\tdeep(base)\n\t\t\t\t.bottom({\n\t\t\t\t    myFunc:function(arg){\n\t\t\t\t        return arg + \" _ myfunc from bottom\";\n\t\t\t\t    }\n\t\t\t\t});\n\n\t\t\t\tbase.myFunc(\"hello\"); // will log 'bottom' then 'base'"
@@ -1152,7 +1152,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 283,
+            "line": 285,
             "description": "chainable around composition\n\n here you want to do your own wrapper.\n Juste provid a function that receive in argument the collided function (the one which is bottom),\n an which return the function that use this collided function.",
             "example": [
                 "\n \t\tvar base = {\n\t\t\t\t\tmyFunc:function(arg)\n\t\t\t\t\t{\n\t\t\t\t\t\t\treturn arg + \" _ myfunc base\";\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tdeep(base)\n\t\t\t\t.up({\n\t\t\t\t    myFunc:deep.compose.around(function(collidedMyFunc){\n\t\t\t\t    \treturn function(arg){\n\t\t\t\t    \t\treturn collidedMyFunc.apply(this, [arg + \" _ myfunc from around\"]);\n\t\t\t\t    \t}\n\t\t\t\t    })\n\t\t\t\t});\n\n\t\t\t\tbase.myFunc(\"hello\");"
@@ -1178,7 +1178,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 325,
+            "line": 327,
             "description": "If the previous returns something, it will be injected as argument(s) in 'func'.\nIf the previous return nothing, th original arguments are injected in 'func'.\nIf the previous returns a promise or a chain : it will wait until the resolution of the returned value before executing 'func'.\nIf the previous returned object isn't a promise, 'func' is executed immediately.\n\nSame thing for returned object(s) from 'func' : it will be chained..",
             "example": [
                 "\n\n\tvar base = {\n\t    myFunc:function(arg)\n\t    {\n\t        return arg + \" _ myfunc base\";\n\t    }\n\t}\n\n\tdeep(base)\n\t.up({\n\t    myFunc:deep.compose.after(function(arg){\n\t        return arg + \" _ myfunc from after\";\n\t    })\n\t});\n\n\tbase.myFunc(\"hello\"); // will log 'base' before 'after'"
@@ -1204,7 +1204,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 365,
+            "line": 367,
             "description": "wrap collided function with fn and execute fn only if collided function return an error.",
             "itemtype": "method",
             "name": "fail",
@@ -1227,7 +1227,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 396,
+            "line": 398,
             "description": "replace collided function by this one",
             "itemtype": "method",
             "name": "replace",
@@ -1250,7 +1250,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 412,
+            "line": 414,
             "description": "execute collided function PARALLELY with provided function\n\nwhen you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)\nbefore firing eventual next composed function, you could use deep.compose.parallele( func )\n\nKeep in mind that the output of both functions will be injected as a single array argument in next composed function.\nBoth will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).\n\nSo as it implies that the forwarded arguments become an array : \nIt has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.",
             "example": [
                 "\n\n\t\tvar a = {\n\t\t\tload:function(){\n\t\t\t\treturn deep(\"json::myfile.json\")\n\t\t\t\t.done(function (success) {\n\t\t\t\t\t// do something\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\n\t\tdeep({\n\t\t\tload:deep.compose.parallele(function(){\n\t\t\t\treturn deep(\"json::myotherfile.json\")\n\t\t\t\t.done(function (success) {\n\t\t\t\t\t// do something\n\t\t\t\t});\n\t\t\t})\n\t\t})\n\t\t.bottom(a)\n\t\t.load() // will perform both loads (http get on json files) parallely (in the same time)\n\t\t.log();  // will print a concatened array of loadeds stuffs."
@@ -1276,7 +1276,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 541,
+            "line": 543,
             "itemtype": "method",
             "name": "createIfNecessary",
             "chainable": 1,
@@ -1292,7 +1292,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 553,
+            "line": 555,
             "itemtype": "method",
             "name": "ifExists",
             "static": 1,
@@ -1308,7 +1308,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 565,
+            "line": 567,
             "itemtype": "method",
             "name": "condition",
             "static": 1,
@@ -1330,7 +1330,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 577,
+            "line": 579,
             "itemtype": "method",
             "name": "up",
             "static": 1,
@@ -1346,7 +1346,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 596,
+            "line": 598,
             "itemtype": "method",
             "name": "bottom",
             "static": 1,
@@ -1362,7 +1362,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 615,
+            "line": 617,
             "itemtype": "method",
             "name": "around",
             "static": 1,
@@ -1378,7 +1378,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 625,
+            "line": 627,
             "itemtype": "method",
             "name": "after",
             "static": 1,
@@ -1394,7 +1394,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 635,
+            "line": 637,
             "itemtype": "method",
             "name": "before",
             "static": 1,
@@ -1410,7 +1410,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 645,
+            "line": 647,
             "itemtype": "method",
             "name": "fail",
             "static": 1,
@@ -1426,7 +1426,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 655,
+            "line": 657,
             "itemtype": "method",
             "name": "parallele",
             "static": 1,
@@ -1442,7 +1442,7 @@
         },
         {
             "file": "deep-compose.js",
-            "line": 665,
+            "line": 667,
             "itemtype": "method",
             "name": "replace",
             "static": 1,
@@ -1616,7 +1616,7 @@
         },
         {
             "file": "deep-promise.js",
-            "line": 352,
+            "line": 364,
             "static": 1,
             "itemtype": "method",
             "name": "promise",
@@ -1636,7 +1636,7 @@
         },
         {
             "file": "deep-promise.js",
-            "line": 386,
+            "line": 397,
             "description": "return a promise that will be fullfilled when arg are ready (resolve or immediat)",
             "static": 1,
             "itemtype": "method",
@@ -1658,7 +1658,7 @@
         },
         {
             "file": "deep-promise.js",
-            "line": 395,
+            "line": 406,
             "description": "return a promise that will be fullfilled when all args are ready (resolve or immediat)",
             "static": 1,
             "itemtype": "method",
@@ -1940,7 +1940,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 150,
+            "line": 145,
             "description": "set chain with a certain store. If no store founded : throw an error.",
             "example": [
                 " \n\n\tdeep(myObject).store(\"campaign\").post().log();"
@@ -1965,7 +1965,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 424,
+            "line": 422,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -1991,7 +1991,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 452,
+            "line": 450,
             "itemtype": "method",
             "name": "put",
             "params": [
@@ -2017,7 +2017,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 481,
+            "line": 479,
             "itemtype": "method",
             "name": "post",
             "params": [
@@ -2043,7 +2043,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 510,
+            "line": 508,
             "itemtype": "method",
             "name": "del",
             "params": [
@@ -2069,7 +2069,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 519,
+            "line": 517,
             "itemtype": "method",
             "name": "patch",
             "params": [
@@ -2095,7 +2095,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 544,
+            "line": 542,
             "description": "select a range in collection",
             "itemtype": "method",
             "name": "range",
@@ -2122,7 +2122,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 569,
+            "line": 567,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2143,7 +2143,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 582,
+            "line": 580,
             "itemtype": "method",
             "name": "put",
             "params": [
@@ -2169,7 +2169,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 595,
+            "line": 593,
             "itemtype": "method",
             "name": "post",
             "params": [
@@ -2195,7 +2195,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 617,
+            "line": 615,
             "itemtype": "method",
             "name": "del",
             "params": [
@@ -2216,7 +2216,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 639,
+            "line": 637,
             "itemtype": "method",
             "name": "patch",
             "params": [
@@ -2242,7 +2242,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 655,
+            "line": 653,
             "description": "retrieve request (if string in retrievable format) (e.g. \"json::test.json\")\nperform an http get\nif request is not a string : will just return request",
             "static": 1,
             "itemtype": "method",
@@ -2270,7 +2270,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 719,
+            "line": 717,
             "description": "retrieve an array of retrievable strings (e.g. \"json::test.json\")\nif request is not a string : will just return request",
             "static": 1,
             "itemtype": "method",
@@ -2298,7 +2298,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 738,
+            "line": 736,
             "description": "parse 'retrievable' string request (e.g. \"json::test.json\")",
             "itemtype": "method",
             "name": "parseRequest",
@@ -2321,7 +2321,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 828,
+            "line": 826,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2347,7 +2347,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 876,
+            "line": 874,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2373,7 +2373,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 898,
+            "line": 896,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2399,7 +2399,7 @@
         },
         {
             "file": "deep-stores.js",
-            "line": 919,
+            "line": 917,
             "itemtype": "method",
             "name": "get",
             "params": [
@@ -2780,7 +2780,7 @@
         },
         {
             "file": "deep.js",
-            "line": 690,
+            "line": 695,
             "description": "wait promise resolution or rejection before continuing chain\n\n\tasynch\n\ttransparent false",
             "itemtype": "method",
             "name": "when",
@@ -2802,7 +2802,7 @@
         },
         {
             "file": "deep.js",
-            "line": 719,
+            "line": 724,
             "description": "handle previous chain's handle success\n\nthe callback receive 3 arguments : \n\t\tsuccess, handler, brancher\n\nthe success is the success object produced by previous chain's handle\nthe handler is the chain handler itself\nthe brancher is the brancher function that create clone of the chain to produce chain branches",
             "itemtype": "method",
             "name": "done",
@@ -2823,7 +2823,7 @@
         },
         {
             "file": "deep.js",
-            "line": 778,
+            "line": 788,
             "description": "handle previous chain handle error\n\nthe callback receive 3 arguments : \n\t\terror, handler, brancher\n\nthe error is the success object produced by previous chain's handle\nthe handler is the chain handler itself\nthe brancher is the brancher function that create clone of the chain to produce chain branches",
             "itemtype": "method",
             "name": "fail",
@@ -2844,7 +2844,7 @@
         },
         {
             "file": "deep.js",
-            "line": 831,
+            "line": 846,
             "description": "handle previous chain handle success and error\n\n\tadd a .done and a .fail (orderedly) in chain with callbacks.",
             "itemtype": "method",
             "name": "then",
@@ -2869,7 +2869,7 @@
         },
         {
             "file": "deep.js",
-            "line": 851,
+            "line": 866,
             "description": "perform a range on chain entries : so will remove any chain entries of of range index.\n\n\tasynch\n\n\n inject a rangeObject as chain success : \n \t{\n \t\tstart:number,\n \t\tend:number,\n \t\ttotal:number,\n \t\tresults:Array,\n \t\thasNext:boolean,\n \t\thasPrevious:boolean\n \t}",
             "example": [
                 "\n\tdeep([0,1,2,3,4,5])\n\t.range(1,4)\n\t.valuesEqual([1,2,3,4]);\n\n\tdeep([0,1,2,3,4,5])\n\t.range(3,5)\n\t.valuesEqual([3,4,5]);"
@@ -2897,7 +2897,7 @@
         },
         {
             "file": "deep.js",
-            "line": 895,
+            "line": 910,
             "description": "save current chain position. it means that it will save\n\t- current entries \n\t- current success and errors\n\t- current store (if any) in private queue before continuing.\n\n\tasynch\n\ttransparent true",
             "itemtype": "method",
             "name": "position",
@@ -2921,7 +2921,7 @@
         },
         {
             "file": "deep.js",
-            "line": 920,
+            "line": 935,
             "description": "go back to a previously saved position (see .position).\nIf no name is provided : go back to last position (if any)\n\nthrow an error if no position founded.\n\ninject chain values as chain success",
             "itemtype": "method",
             "name": "back",
@@ -2948,7 +2948,7 @@
         },
         {
             "file": "deep.js",
-            "line": 968,
+            "line": 983,
             "description": "keep only the first chain entries. remove all others.\ninject selected entry value as chain success.",
             "chainable": 1,
             "itemtype": "method",
@@ -2963,7 +2963,7 @@
         },
         {
             "file": "deep.js",
-            "line": 986,
+            "line": 1001,
             "description": "keep only the last chain entries. remove all others\n\ninject selected entry value as chain success",
             "chainable": 1,
             "itemtype": "method",
@@ -2978,7 +2978,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1005,
+            "line": 1020,
             "description": "take current entries parents (if any) as new entries.\n\ninject new entries values as chain success.\n\nasynch",
             "itemtype": "method",
             "name": "parents",
@@ -2999,7 +2999,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1034,
+            "line": 1049,
             "description": "take object, shcema, options and create fresh chain entries from it. Same mecanism as new chain.",
             "itemtype": "method",
             "name": "root",
@@ -3024,7 +3024,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1058,
+            "line": 1073,
             "description": "Apply the query on EACH chain entries and concatened all the results to form new chain entries.\n\n\ninject queried results as chain success",
             "itemtype": "method",
             "name": "query",
@@ -3051,7 +3051,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1093,
+            "line": 1108,
             "description": "same as .query : but in place of holding queried entries : it return directly the query results.\nIs the synch version of the query handle.\n\nsynch true\ntransparent false",
             "itemtype": "method",
             "name": "select",
@@ -3073,7 +3073,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1119,
+            "line": 1134,
             "description": "set schema of all entries (purely assignation)\ninject entries shemas as chain success",
             "itemtype": "method",
             "name": "schema",
@@ -3095,7 +3095,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1148,
+            "line": 1163,
             "description": "apply provided schema on all entries schemas (.up application)\ninject entries shemas as chain success",
             "itemtype": "method",
             "name": "schemaUp",
@@ -3117,7 +3117,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1178,
+            "line": 1193,
             "description": "apply provided schema on all entries schemas (.bottom application)\n\ninject entries shemas as chain success",
             "itemtype": "method",
             "name": "schemaBottom",
@@ -3139,7 +3139,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1211,
+            "line": 1226,
             "description": "set entries properties by path.\n\nsynch\ninject setted values as chain success",
             "itemtype": "method",
             "name": "setByPath",
@@ -3162,7 +3162,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1241,
+            "line": 1256,
             "description": "apply arguments from UP on each entries : will merge objects and array together DEEPLY. see docs and examples.\n\nsynch\ninject entries values as chain success.",
             "itemtype": "method",
             "name": "up",
@@ -3183,7 +3183,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1275,
+            "line": 1290,
             "description": "apply arguments from BOTTOM on each entries : will merge objects and array together DEEPLY. see docs and examples.\n\n synch\n inject entries values as chain success.",
             "itemtype": "method",
             "name": "bottom",
@@ -3204,7 +3204,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1309,
+            "line": 1324,
             "description": "synch\n \n replace queried entries properties by new value and inject replaced properties as chain success.",
             "example": [
                 "\n\t\t \n\tvar a = {\n\t\taString : \"Hello\",\n\t\tanInt : 5,\n\t\tanArray : [\"1\",\"2\",\"3\"],\n\t\tanObject : {\n\t\t\tanArray : [\"4\",\"5\",\"6\"],\n\t\t\taString : \"World\"\n\t\t}\n\t}\n\tdeep(a)\n\t.replace(\"./anArray/1\",\"replaceString\")\n\t.equal({\n\t\taString : \"Hello\",\n\t\tanInt : 5,\n\t\tanArray : [\"1\",\"replaceString\",\"3\"],\n\t\tanObject : {\n\t\t\tanArray : [\"4\",\"5\",\"6\"],\n\t\t\taString : \"World\"\n\t\t}\n\t});"
@@ -3239,7 +3239,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1371,
+            "line": 1386,
             "description": "remove queried properties from entries and inject removed properties as chain success.",
             "example": [
                 "\n\tvar a = {\n\t\taString : \"Hello\",\n\t\tanInt : 5,\n\t\tanArray : [\"1\",\"2\",\"3\"],\n\t\tanObject : {\n\t\t\tanArray : [\"4\",\"5\",\"6\"],\n\t\t\taString : \"World\"\n\t\t}\n\t}\n\n\tdeep(a)\n\t.remove(\"./anArray/1\").log().valuesEqual([{\n\t\taString : \"Hello\",\n\t\tanInt : 5,\n\t\tanArray : [\"1\",\"3\"],\n\t\tanObject : {\n\t\t\tanArray : [\"4\",\"5\",\"6\"],\n\t\t\taString : \"World\"\n\t\t}\n\t}]);",
@@ -3265,7 +3265,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1449,
+            "line": 1464,
             "description": "will perform the backgrounds application on any backgrounds properties at any level\n\n\tnot intend to be call directly by programmer. use at your own risk. use .flatten instead.",
             "itemtype": "method",
             "name": "extendsChilds",
@@ -3288,7 +3288,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1483,
+            "line": 1498,
             "description": "will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.\n\n\tnot intend to be call directly by programmer. use at your own risk.  use .flatten instead.",
             "itemtype": "method",
             "name": "extendsBackgrounds",
@@ -3311,7 +3311,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1538,
+            "line": 1553,
             "description": "will perform FULL backgrounds application on chain entries. (see backgrounds documentation)\n\nSuccess injected : entries values\nErrors injected : any flatten error",
             "example": [
                 "\n\tvar a = {\n\t    obj:{\n\t    \tfirst:true\n\t    },\n\t    myFunc:function(){\n\t        console.log(\"base myFunc\");\n\t        this.obj.a = true;\n\t    }\n\t}\n\n\tvar b = {\n\t\tbackgrounds:[a],\n\t\tobj:{\n\t\t\tsecond:true\n\t\t},\n\t\tmyFunc:deep.compose.after(function()\n\t\t{\n\t\t\tconsole.log(\"myFunc of b : \", this)\n\t\t\tthis.obj.b = true;\n\t\t})\n\t}\n\n\tdeep({})\n\t.bottom(b)\n\t.flatten()\n\t.run(\"myFunc\")\n\t.query(\"./obj\")\n\t.equal({\n  \t\tfirst:true,\n  \t\tsecond:true,\n       a:true,\n       b:true\n\t});",
@@ -3331,7 +3331,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1646,
+            "line": 1661,
             "description": "transform : loop on entries, apply 'func' with 'args' on each entry : replace entries values with func result\nfunction could return promise.\n\n- loop on entries : true\n- chainable : true\n- transparent : false\n- promised management : true\n- success injected : the array of results of each call on func\n- error injected : any error returned (or produced) from a func call",
             "itemtype": "method",
             "name": "transform",
@@ -3358,7 +3358,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1695,
+            "line": 1712,
             "description": "run : loop on entries, apply 'func' with 'args' on each entry (entry become 'this' of func)\nfunction could retrun promise.\n\n- loop on entries : true\n- chainable : true\n- transparent : false\n- promised management : true\n- success injected : the array of results of each call on func\n- error injected : any error returned (or produced) from a func call",
             "itemtype": "method",
             "name": "run",
@@ -3385,7 +3385,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1748,
+            "line": 1765,
             "description": "exec :  call 'func' with 'args' (the 'this' of the function isn't modified)\nfunction could retruen promise.\n\n- loop on entries : false\n- chainable : true\n- transparent : false\n- promised management : true\n- success injected : the result of the call on func\n- error injected : any error returned (or produced) from func call",
             "itemtype": "method",
             "name": "exec",
@@ -3412,7 +3412,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1785,
+            "line": 1802,
             "description": "apply a 'treatments' on all chain entries at once (the array of entries values will be the context of the treatment). (renderables are treatments - see doc and example).\n\na treaments is an object that contains : {\n  what : (optional) object|retrievable_string a value to inject in 'how' function. if no 'what' is provided : inject the entry (the context) in 'how'\n\t how : a function to treat 'what' (simple function that have a single argument (what) and return its result),\n\t where: (optional) a function to send the results somewhere, return the descriptor of the sended ressource (see deep-ui : dom.apendTo for example),\n\t done : a callback function that will be called on treated entry (the context of the done) when treatment succeed\n\t fail : a callback function that will be called on treated entry (the context of the fail) when treatment failed\n}\n\nif entry contain a 'treat' function : will be called and provided treatment will be passed as argument\n\nKeep previous entries (maybe modified by treatment)\n\nChain Success Injection : the treatments results\nChain Error Injection : the treatments errors",
             "itemtype": "method",
             "name": "treatAll",
@@ -3436,7 +3436,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1831,
+            "line": 1848,
             "description": "apply a 'treatments' on chain entries (each entry will be the context of the treatment). (renderables are treatments - see doc and example).\n\na treaments is an object that contains : {\n  what : (optional) object|retrievable_string a value to inject in 'how' function. if no 'what' is provided : inject the entry (the context) in 'how'\n\t how : a function to treat 'what' (simple function that have a single argument (what) and return its result),\n\t where: (optional) a function to send the results somewhere, return the descriptor of the sended ressource (see deep-ui : dom.apendTo for example),\n\t done : a callback function that will be called on treated entry (the context of the done) when treatment succeed\n\t fail : a callback function that will be called on treated entry (the context of the fail) when treatment failed\n}\n\nif entry contain a 'treat' function : will be called and provided treatment will be passed as argument\n\nKeep previous entries (maybe modified by treatment)\n\nChain Success Injection : the treatments results\nChain Error Injection : the treatments errors",
             "itemtype": "method",
             "name": "treatEach",
@@ -3460,7 +3460,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1884,
+            "line": 1901,
             "description": "valuesEqual : test strict equality between the array of entries values and a provided array of value\n\n- loop on entries : false\n- chainable : true\n- transparent : false\n- promised management : true (on callBack)\n- success injected : the result of the callBack or the report if callback returned nothing\n- error injected : the report or any error returned (or produced) from callBack\n\n\n\tChain Success injection : the valid report\n\tChain Error injection : the unvalid report",
             "itemtype": "method",
             "name": "valuesEqual",
@@ -3487,7 +3487,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1935,
+            "line": 1952,
             "description": "equal test strict equality on each entry value against provided object\n\n\tChain Success injection : the valid report\n\tChain Error injection : the unvalid report",
             "itemtype": "method",
             "name": "equal",
@@ -3514,7 +3514,7 @@
         },
         {
             "file": "deep.js",
-            "line": 1996,
+            "line": 2013,
             "description": "validate apply validation\n\n\tChain Success injection : the valid report\n\tChain Error injection : the unvalid report",
             "itemtype": "method",
             "name": "validate",
@@ -3536,7 +3536,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2056,
+            "line": 2073,
             "description": "log any provided arguments.\n If no arguments provided : will log current success or error state.\n\n transparent true",
             "itemtype": "method",
             "name": "log",
@@ -3551,7 +3551,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2089,
+            "line": 2106,
             "description": "log current chain entries  with optional title\n\n full option means print full entry in place of just entry.value\n pretty option means print pretty json (indented)\ntransparent true",
             "itemtype": "method",
             "name": "logValues",
@@ -3576,7 +3576,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2137,
+            "line": 2154,
             "description": "if no callBack is present : just return the FIRST value of entries. It's a chain end handle.\n If callback is provided : the FIRST entry  value will be passed as argument to callback.\n \t\tand so th chain could continue : the return of this handle is the deep handler.\ntransparent true",
             "itemtype": "method",
             "name": "val",
@@ -3597,7 +3597,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2186,
+            "line": 2209,
             "description": "if no callBack is present : just return the array of values of entries. It's a chain end handle.\n If callback is provided : the entries values will be passed as argument to callback.\n \t\tand so th chain could continue : the return of this handle is the deep handler.\ntransparent true",
             "itemtype": "method",
             "name": "values",
@@ -3618,7 +3618,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2234,
+            "line": 2266,
             "description": "will pass each entries to callback as argument . same behaviours than classical Array.each.\ncallback could return promise. the chain will wait any promise before continuing.\n\nChain Success injection : the results of callback calls (resolved if promises)\nChain Error injection : the errors of callback calls (rejected if promises)",
             "itemtype": "method",
             "name": "each",
@@ -3639,7 +3639,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2275,
+            "line": 2311,
             "description": "if no callBack is present : just return the array of entries. It's a chain end handle.\n If callback is provided : the entries will be passed as argument to callback.\n \t\tand so th chain could continue : the return of this handle is the deep handler.\n \n transparent true",
             "itemtype": "method",
             "name": "nodes",
@@ -3660,7 +3660,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2314,
+            "line": 2350,
             "description": "will wait xxxx ms before contiuing chain\n\ntransparent true",
             "chainable": 1,
             "itemtype": "method",
@@ -3682,7 +3682,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2349,
+            "line": 2385,
             "description": "will seek in entries after any retrievable string OR executable functions : and will replace references by loaded/returned content.\n\nif context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.\n\nChain Success injection : array of loaded results",
             "itemtype": "method",
             "name": "deepLoad",
@@ -3704,7 +3704,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2417,
+            "line": 2448,
             "description": "if request is provided : \n \t\ttry to retrieve 'request' and replace entries values by loaded result\n \telse\n \t\twill try to retrieve any entry.value strings (will not seek deeply) and replace associated entries values by loaded result.\n \t\tOR if entry.value is an object : look if there is any .load() function in it. If so : fire it.\n \n if context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.\n \t(on request or entries values)\nChain success injection : array of loaded content.",
             "itemtype": "method",
             "name": "load",
@@ -3731,7 +3731,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2520,
+            "line": 2545,
             "description": "seek after any strings and try to interpret it with current context.\nsee interpretation for simple case",
             "example": [
                 "\n \n \t\tdeep({ msg:\"hello { name }\" }).deepInterpret({ name:\"john\" }).logValues().equal({ msg:\"hello john\" });"
@@ -3756,7 +3756,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2569,
+            "line": 2594,
             "description": "will interpret entries values with context",
             "example": [
                 "  \n\t \tdeep(\"hello { name }\").interpret({ name:\"john\" }).val();\n  \t//will provide \"hello john\".\n\t\tdeep({\n    \t\tmsg:\"hello { name }\"\n\t\t})\n\t\t.query(\"./msg\")\n\t\t.interpret({ name:\"john\" })\n\t\t.logValues()\n\t\t.equal(\"hello john\");"
@@ -3781,7 +3781,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2646,
+            "line": 2670,
             "description": "It's the way of performing a SQL JOIN like between two objects.\nObjects could be retrievables.\n\ntake current entries, seek after localKeys, use it to get 'what' with foreignKey=localKey, and finnaly store result at 'whereToStore' path in current entries values.",
             "example": [
                 "\n\n\tdeep([{ title:\"my title\", id:1}, { title:\"my title 2\", id:2}])\n\t.mapOn([\n\t    {itemId:1, value:true}, \n\t    {itemId:2, value:\"133\"}, \n\t    {itemId:2, value:\"hello\"}\n\t    ], \n\t    \"id\",\"itemId\",\"linkeds\")\n\t.valuesEqual([\n\t    {\n\t        title:\"my title\", \n\t        id:1, \n\t        linkeds:{itemId:1, value:true}\n\t    },\n\t    { \n\t        title:\"my title 2\", \n\t        id:2,\n\t        linkeds:[\n\t            {itemId:2, value:\"133\"},\n\t            { itemId:2, value:\"hello\"}\n\t        ]\n\t    }\n\t]);"
@@ -3821,7 +3821,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2747,
+            "line": 2775,
             "description": "retrieve relations described in schema links.\n\nInject as success in chain an object that hold each relation, their result and the associated (parsed) request object",
             "itemtype": "method",
             "name": "getRelations",
@@ -3845,7 +3845,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2824,
+            "line": 2851,
             "description": "map relations in current entries values",
             "itemtype": "method",
             "name": "mapRelations",
@@ -3875,7 +3875,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2903,
+            "line": 2929,
             "description": "return a promise for the chain.",
             "return": {
                 "description": "",
@@ -3887,7 +3887,7 @@
         },
         {
             "file": "deep.js",
-            "line": 2992,
+            "line": 3018,
             "description": "execute array of funcs sequencially",
             "static": 1,
             "itemtype": "method",
@@ -3914,7 +3914,7 @@
         },
         {
             "file": "deep.js",
-            "line": 3041,
+            "line": 3067,
             "description": "apply treatment",
             "params": [
                 {
@@ -4152,11 +4152,11 @@
         },
         {
             "message": "Missing item type\nreturn a promise for the chain.",
-            "line": " deep.js:2903"
+            "line": " deep.js:2929"
         },
         {
             "message": "Missing item type\napply treatment",
-            "line": " deep.js:3041"
+            "line": " deep.js:3067"
         },
         {
             "message": "Missing item type",

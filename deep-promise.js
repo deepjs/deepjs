@@ -37,7 +37,7 @@ define(["require", "deep/deep"], function (require){
 		 * @param  {Object} argument the resolved object injected in promise
 		 * @return {deep.Deferred} this
 		 */
-		resolve:function (argument)
+		resolve:function resolve(argument)
 		{
 			//console.log("deep.Deferred.resolve : ", argument);
 			if(this.rejected || this.resolved || this.canceled)
@@ -61,7 +61,7 @@ define(["require", "deep/deep"], function (require){
 		 * @param  {Object} argument the rejected object injected in promise
 		 * @return {deep.Deferred} this
 		 */
-		reject:function (argument)
+		reject:function reject(argument)
 		{
 		//	console.log("DeepDeferred.reject");
 			if(this.rejected || this.resolved || this.canceled)
@@ -84,7 +84,7 @@ define(["require", "deep/deep"], function (require){
 		 * @param  {Object} reason the cancel reason object injected in promise
 		 * @return {deep.Deferred} this
 		 */
-		cancel:function (reason)
+		cancel:function cancel(reason)
 		{
 			//console.log("DeepDeferred.cancel");
 			if(this.rejected || this.resolved || this.canceled)
@@ -101,7 +101,7 @@ define(["require", "deep/deep"], function (require){
 		 * @method promise
 		 * @return {deep.Promise}
 		 */
-		promise:function () {
+		promise:function defPromise() {
 			var prom = new deep.Promise();
 			if(this.resolved || this.rejected || this.canceled)
 			{
@@ -146,11 +146,11 @@ define(["require", "deep/deep"], function (require){
 		 * @param  {Function} argument successHandler
 		 * @return {deep.Deferred} this
 		 */
-		done:function (callBack)
+		done:function done(callBack)
 		{
 			//console.log("add done in defInterface : ", this.rejected, this.resolved, this.running)
 			var self = this;
-			var	func = function(s,e)
+			var	func = function runPromiseDone(s,e)
 			{
 				//console.log("deep.promise.done : ",s,e)
 				if(e || !callBack || s instanceof Error)
@@ -190,11 +190,11 @@ define(["require", "deep/deep"], function (require){
 		 * @param  {Function} argument successHandler
 		 * @return {deep.Deferred} this
 		 */
-		fail:function (callBack)
+		fail:function fail(callBack)
 		{
 			var self = this;
 			//console.log("add fail in defInterface")
-			var func = function(s,e)
+			var func = function runPromiseFail(s,e)
 			{
 				//console.log("deep.promise.fail : ",s,e)
 				if((e === null || typeof e === 'undefined') || !callBack)
@@ -237,7 +237,7 @@ define(["require", "deep/deep"], function (require){
 		 * @param  {Function} ec errorhandler
 		 * @return {deep.Deferred} this
 		 */
-		then:function (successCallBack, errorCallBack)
+		then:function then(successCallBack, errorCallBack)
 		{
 			var self = this;
 			if(successCallBack)
@@ -369,7 +369,7 @@ define(["require", "deep/deep"], function (require){
 	 * @param  {Object} arg  an object on when create a promise
 	 * @return {deep.Promise} a promise
 	 */
-	deep.promise = function(arg)
+	deep.promise = function promise(arg)
 	{
 		//console.log("deep.promise : ", arg)
 		if(typeof arg === "undefined" || arg === null)
@@ -411,7 +411,7 @@ define(["require", "deep/deep"], function (require){
 	 * @param  {Object} arg an array of objects to waiting for
 	 * @return {deep.Promise} a promise
 	 */
-	deep.all = function()
+	deep.all = function all()
 	{
 		var arr = [];
 		for(var i in arguments)

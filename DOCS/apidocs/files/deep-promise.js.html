@@ -317,13 +317,12 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				if(r &amp;&amp; (r instanceof deep.Chain || r._isBRANCHES_ || r.promise))
 					r = deep.promise(r);
 				if(r &amp;&amp; typeof r.then === &#x27;function&#x27;)
-					r.done(function (argument)
+					r.then(function (argument)
 					{
 						if(typeof argument === &#x27;undefined&#x27;)
 							argument = s;
 						forceNextPromiseHandler(self, (argument instanceof Error)?null:argument, (argument instanceof Error)?argument:null);
-					})
-					.fail(function (error) {
+					}, function (error) {
 						forceNextPromiseHandler(self, null, error);
 					});
 				else if(typeof r === &#x27;undefined&#x27;)
@@ -333,6 +332,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				else
 					forceNextPromiseHandler(self, r, null);
 			};
+			func._deep_done_ = true;
 			this.queue.push(func);
 			if((this.resolved || this.rejected))
 				nextPromiseHandler.apply(this);
@@ -360,7 +360,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				if(r &amp;&amp; (r instanceof deep.Chain || r._isBRANCHES_ || r.promise))
 					r = deep.when(r);
 				if(r &amp;&amp; typeof r.then === &#x27;function&#x27;)
-					r.done(function (argument)
+					r.then(function (argument)
 					{
 						if(typeof argument === &#x27;undefined&#x27;)
 							forceNextPromiseHandler(self, null, e);
@@ -368,8 +368,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 							forceNextPromiseHandler(self, null, argument);
 						else
 							forceNextPromiseHandler(self, argument, null);
-					})
-					.fail(function (error) {
+					},function (error) {
 						forceNextPromiseHandler(self, null, error);
 					});
 				else if(typeof r === &#x27;undefined&#x27;)
@@ -379,6 +378,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				else
 					forceNextPromiseHandler(self, r, null);
 			};
+			func._deep_fail_ = true;
 			this.queue.push(func);
 			if((this.resolved || this.rejected))
 				nextPromiseHandler.apply(this);
@@ -427,7 +427,6 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			this.failure = failure;
 			this.result = result;
 		}
-
 		if(result instanceof Error)
 		{
 			//console.log(&quot;nextPromiseHandler : result is error : &quot;,result)
@@ -438,6 +437,20 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 		{
 			var previousContext = deep.context;
 			try{
+
+				var next = this.queue.shift();
+				if(failure)
+					while(next &amp;&amp; next._deep_done_)
+						next = this.queue.shift();
+				else
+					while(next &amp;&amp; next._deep_fail_)
+						next = this.queue.shift();
+				if(!next)
+				{
+					this.running = false;
+					return;
+				}
+
 				if(previousContext !== this.context)
 				{
 					if(previousContext &amp;&amp; previousContext.suspend)
@@ -446,9 +459,8 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 					if(this.context &amp;&amp; this.context.resume)
 						this.context.resume();
 				}
-
 				//console.log(&quot;newQueueThen . will try next item : &quot;,this.queue, result, failure)
-				var next = this.queue.shift();
+				//console.log(&quot;next promise handler : &quot;, next)
 				next(result,failure);
 			}
 			catch(e)
@@ -462,14 +474,14 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 				nextPromiseHandler.apply(self, [null, e]);
 				//}, 1);
 			}
-			finally{
-				if(previousContext !== this.context){
-					if(this.context &amp;&amp; this.context.suspend){
+			finally
+			{
+				if(previousContext !== this.context)
+				{
+					if(this.context &amp;&amp; this.context.suspend)
 						this.context.suspend();
-					}
-					if(previousContext &amp;&amp; previousContext.resume){
+					if(previousContext &amp;&amp; previousContext.resume)
 						previousContext.resume();
-					}
 					deep.context = previousContext;
 				}
 			}
@@ -518,7 +530,6 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			return createImmediatePromise(arg);
 		if(arg._isBRANCHES_)		// chain.branches case
 			return deep.all(arg.branches);
-
 		if(typeof arg.promise === &quot;function&quot; )  // deep.Deferred, deep.Chain and jquery deferred case
 			return arg.promise();
 		if(typeof arg.promise === &#x27;object&#x27;)
@@ -560,7 +571,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 		for(var i in arguments)
 			arr = arr.concat(arguments[i]);
 		if(arr.length === 0)
-			return deep.when([]);
+			return createImmediatePromise([]);
 		var def = deep.Deferred();
 		var count = arr.length;
 		var c = 0, d = -1;
@@ -570,7 +581,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			if(def.rejected)
 				return;
 			var i = d +1;
-			if(!a || !a.then)
+			if(!a || (!a.then &amp;&amp; !a.promise))
 			{
 				if(a instanceof Error)
 				{
