@@ -201,7 +201,7 @@ define(function(require, exports, module){
 					def.reject(error);
 				});
 			}
-			else if(!r.then)
+			else if(r && !r.then)
 			{
 				r = after.apply(self,[r]);
 				if(typeof r === 'undefined')

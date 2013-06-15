@@ -8,7 +8,7 @@ ____________________________________________
 CORE :
 
 
-
+brancher need to be a deferred styled object (presence of promise())
 
 
 
@@ -16,18 +16,53 @@ CORE :
 ____________________________________________________________________________________________________
 
 
-
-deep.stores : test and finalise
+deep.stores : test all
 	add store:: protocole
 	add jsonp capabilities (jsonp::...)
 
-Add uri option in json(s) load
+	Add uri option in json(s) load
+
+	readOnly, serveSchema, manage privates + sanitisation as Option (need sanitizer lib)
+
+	rpc, bulk for local stores
+
+	jstorage / cookies
+
+
+	add metas informations in nodes
+
+
+deep.context
+	add chain handlers to modify context
+
 
 deep.roles : migrate from autobahn
 	add role:: protocole
 
-.done(s, handler, brancher)
-	test and finalise handler argument pattern
+	blinder la chose : pattern + closure pour encapsulation
+
+	intégrer app et stores etc avec deep.context
+
+Errors 
+	deep should return HTTP styled formatted errors (status, body)
 
 
+Deep Linking : 
+	work on pattern : finaluise it
+	implement routes in deep
+
+
+data binders : 
+	work on EditableHtml with schema
+
+	modularise binders
+
+
+deep sheet
 	
+//_________________
+
+deep-ui : add refresh in chain
+
+//_________________________
+

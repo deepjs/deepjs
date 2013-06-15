@@ -142,7 +142,8 @@ define(function(require){
 		return { value:res, rest:path.substring(count)};
 	}
 
-	function trim_words(theString, numWords, maxChar) {
+	function trim_words(theString, numWords, maxChar) 
+	{
 	    expString = theString.split(/\s+/,numWords);
 	    if(expString.length == 1)
 	    {
@@ -157,11 +158,9 @@ define(function(require){
 	    return theNewString;
 	}
 
-	utils.trimWords = function(string, numWords, maxChar){
-		var reg=new RegExp("<[^>]*>", "gi" );
-		var desc = string.replace(reg, "");
-		desc = trim_words(desc, numWords, maxChar);
-		return desc;
+	utils.trimWords = function(string, numWords, maxChar)
+	{
+		return trim_words(string.replace(/<[^>]*>/gi, ""), numWords, maxChar);
 	}
 
 	//_________________________________________________________________ OBJECTS/ARRAY RELATED
@@ -207,7 +206,8 @@ define(function(require){
 	 * @param  {Object|Primitive} obj
 	 * @return {Object|Primitive} the copied value/object/array
 	 */
-	utils.copy = function copy(obj){
+	utils.copy = function copy(obj)
+	{
 		var res = null;
 		if(obj instanceof Array)
 		{
@@ -266,8 +266,7 @@ define(function(require){
 		}
 		return obj;
 	}
-
-
+	
 	utils.getObjectClass = function getObjectClass(obj) {
 	    if (obj && obj.constructor && obj.constructor.toString) {
 	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
@@ -276,9 +275,6 @@ define(function(require){
 	    }
 	    return undefined;
 	}
-
-
-
 
 	utils.setValueByPath = function setValueByPath(object, path, value, pathDelimiter)
 	{
@@ -497,6 +493,8 @@ define(function(require){
 
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function retrieveFullSchemaByPath(schema, path, delimitter)
 	{
+		//console.log("rerieve full schema by path : ", schema, path, delimitter)
+		path = path+"";
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			delimitter = "/";
 		var parts = path.split(delimitter||".");
@@ -579,8 +577,8 @@ define(function(require){
 				mergeOn = (schema.collision.unique === true)?null:schema.collision.unique;
 		}	
 
-		if(!mergeOn)
-			return arr1.concat(arr2);
+		//if(!mergeOn)
+		//	return arr1.concat(arr2);
 
 		if(arr1 && arr1.length > 0)
 			arr = arr.concat(arr1);
@@ -590,8 +588,8 @@ define(function(require){
 				val = utils.retrieveValueByPath(a,mergeOn);
 			else if(a.uri)
 				val = a.uri;
-			else if(a.name)
-				val = a.name;
+			//else if(a.name)
+			//	val = a.name;
 			else if(a.id)
 				val = a.id;
 			if(val == null || val == undefined)
@@ -604,8 +602,8 @@ define(function(require){
 				val = utils.retrieveValueByPath(a,mergeOn);
 			else if(a.uri)
 				val = a.uri;
-			else if(a.name)
-				val = a.name;
+			//else if(a.name)
+			//	val = a.name;
 			else if(a.id)
 				val = a.id;
 			if(val == null || val == undefined)
@@ -628,8 +626,6 @@ define(function(require){
 				parent[key] = null;
 			return null;
 		}
-
-		
 		// console.log("deepUp : objects not nulls.")
 		var result = null;
 		var srcType = utils.getJSPrimitiveType(src);
@@ -833,7 +829,7 @@ define(function(require){
 				result = deepArrayFusion(src, target, schema);
 				if(parent && key)
 					parent[key] = result;
-				console.log("array fusion bottom rsult : ", result, parent, key, parent[key])
+				//console.log("array fusion bottom rsult : ", result, parent, key)
 				return result;
 				break;
 			case 'object' :
@@ -991,6 +987,62 @@ define(function(require){
 		catch(e){
 			return new Error("error while parsing body : "+JSON.stringify(e));
 		}
+	}
+
+	function parseUri (str) 
+	{
+		var	o   = parseUri.options,
+			m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+			uri = {},
+			i   = 14;
+		while (i--) 
+			uri[o.key[i]] = m[i] || "";
+		uri[o.q.name] = {};
+		uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+			if ($1) uri[o.q.name][$1] = $2;
+		});
+		return uri;
+	};
+
+	parseUri.options = {
+		strictMode: true,
+		key: ["href","protocol","host","userInfo","user","password","hostname","port","relative","pathname","directory","file","search","hash"],
+		q:   {
+			name:   "query",
+			parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+		},
+		parser: {
+			strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+			loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+		}
+	};
+
+	utils.parseURL = function(url)
+	{
+		var obj = parseUri(url);
+		if(obj.search)
+		    obj.search = "?"+obj.search;
+		obj.path = obj.pathname+obj.search;
+		return obj;
+	}
+
+	//_____________________________________________________  ERROR RELATED
+
+	utils.dumpError  =function(err) 
+	{
+		if (typeof err === 'object') 
+		{
+			if (err.message) 
+			  console.log('\nMessage: ' + err.message)
+			if (err.stack) 
+			{
+			  console.log('\nStacktrace:')
+			  console.log('====================')
+			  console.log(err.stack);
+			}
+		}
+		else 
+			console.log('dumpError :: argument is not an object');
 	}
 
 	return utils;	

@@ -9,7 +9,7 @@
 if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
-define(["require", "deep/deep"],function(require)
+define(["require"],function(require)
 {
 	return function(deep){
 
@@ -133,7 +133,7 @@ define(["require", "deep/deep"],function(require)
 					return finalise(ctrl,s,e);
 			}
 			//deep.handlers.decorations.role(role, self);
-			deep.chain.addInQueue.apply(this,[func]);
+			deep.chain.addInChain.apply(this,[func]);
  			return self;
 		}
 
@@ -155,6 +155,79 @@ define(["require", "deep/deep"],function(require)
 		})
 		.flatten();
 
+
+		// ______________________________________ MODER
+
+/*
+		//_________________________ Examples : 
+		//
+		smart = deep.ocm();
+		smart.addStores("store", "smart" {
+
+		}).flatten(); 			// add associate store capabilities on returned chain
+
+		smart.addObject("gui", {
+			"public":{
+				home:function () {
+					return deep("app::/views/home").load().refresh()
+				},
+				profile:function () {
+					// body...
+				}
+			}
+		}
+
+
+		deep("app::/views/home").refresh()
+
+		}).flatten();					// will return the moded object
+		smart.addObject("app", {
+			map:{},
+			views:{
+				home:{
+
+				},
+				profile:{
+
+				}
+			}
+		}).flatten();					// will return the moded object
+
+		smart.layer("store").up("js::smart-services/login");
+
+
+		// ==> after that
+
+		deep.forceModes("dev"); 
+		deep.mode("user"); // switch current general mode
+
+		// ...
+
+
+		smart("admin").gui.profile(); // start chain under 'admin' mode
+
+
+		smart().gui.profile(); // use current mode (i.e. 'user')
+		// equal : 
+		smart().app.views.profile.refresh();
+		// equal :
+		deep("app::/views/profile").refresh();
+
+
+		deep("push.campaign::1").log()
+		deep("store::smart.login").post({ ... }).log()
+		// equal
+		smart().store("login").post({ ... }).log()
+
+		//______________________ Examples END
+*/
+		
+
 		return deep;
 	}
 });
+
+
+
+
+

@@ -49,7 +49,7 @@
 			anArray : ["4","5","6"],
 			aString : "World"
 		}
-	}, report);
+	}).always(report);
 
 	deep(a)
 	.pushHandlerTo(tests)
@@ -62,7 +62,7 @@
 			anArray : ["4","5","6"],
 			aString : 12
 		}
-	}, report);
+	}).always(report);
 
 	deep.all(tests).then(function (argument) {
 		printReport("chain.replace : success ", success, tests.length-success, tests.length);

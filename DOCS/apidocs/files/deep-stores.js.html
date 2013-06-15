@@ -347,7 +347,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 				rpc:function (argument) {},
 				bulk:function (argument) {}
 			}, self);
-			deep.chain.addInQueue.apply(this,[func]);
+			deep.chain.addInChain.apply(this,[func]);
 			return self;
 		};
 		//_________________________________________________________________ dee.Chain wrapper store API
@@ -377,16 +377,16 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						.done(function (success) {
 							//console.log(&quot;deep(...).store : get : success : &quot;, success);
 							if(success instanceof Array)
-								self._entries = deep(success, schema, {uri:id}).nodes();
+								self._nodes = deep(success, schema, {uri:id}).nodes();
 							else
-								self._entries = [deep.Querier.createRootNode( success, schema, {uri:id})];
+								self._nodes = [deep.Querier.createRootNode( success, schema, {uri:id})];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
 							deep.chain.forceNextQueueItem(self, null, error);
 						});
 					};
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					self.range = deep.Chain.range;
 					return self;
 				}),
@@ -402,7 +402,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						._store
 						.post(object || deep.chain.val(self),id, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
+							self._nodes = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -411,7 +411,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
@@ -429,7 +429,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 
 						self._store.put(object  || deep.chain.val(self), options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
+							self._nodes = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -437,7 +437,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
@@ -451,7 +451,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						._store
 						.patch(object  || deep.chain.val(self),id, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
+							self._nodes = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -459,7 +459,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
@@ -474,7 +474,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						._store
 						.del(id || val.id, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
+							self._nodes = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -482,7 +482,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
@@ -494,7 +494,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					var func = function (s,e) {
 						self._store.rpc(method, body, uri, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
+							self._nodes = [deep.Querier.createRootNode(success)];
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -502,7 +502,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
@@ -514,7 +514,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					var func = function (s,e) {
 						self._store.range(arg1, arg2, uri, options)
 						.done(function (success) {
-							self._entries = deep(success.results).nodes();
+							self._nodes = deep(success.results).nodes();
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -522,7 +522,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
@@ -534,7 +534,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 					var func = function (s,e) {
 						self._store.bulk(arr, uri, options)
 						.done(function (success) {
-							self._entries = deep(success).nodes();
+							self._nodes = deep(success).nodes();
 							deep.chain.forceNextQueueItem(self, success, null);
 						})
 						.fail(function (error) {
@@ -542,7 +542,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				})
 			}, handler);

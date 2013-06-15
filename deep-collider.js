@@ -18,13 +18,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 /*
-
  * TODO : implement almost every operations, few are done. Will be made on-need.
-
-Remarque : 
-Almost totaly unusable for now... ;)
-But you could do it for us...;)
-
  */
 
 define(function(require)

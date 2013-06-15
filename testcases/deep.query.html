@@ -106,30 +106,30 @@ deep(datas).query("/store/[]").fail(console.log).valuesEqual([
 				{"category":"ride","col":"red","price":19.95},
 				{"category":"ride","col":"red","price":9.95},
 				{"category":"ride","col":"red","price":15.95}
-			],report);
+			]).always(report);
 
 
-deep(datas).query("/store/book/3/warehouse/stock").valuesEqual([12],report);
+deep(datas).query("/store/book/3/warehouse/stock").valuesEqual([12]).always(report);
 
 deep(datas).query("/store/[(glo.*),helmet]").valuesEqual([
 				{"category":"ride","col":"red","price":15.95},
 				{"category":"ride","col":"red","price":9.95}
-			],report);
+			]).always(report);
 
 
-deep(datas).query("/(store)/book/[0:2]?category=fiction").valuesEqual([{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99}],report);
+deep(datas).query("/(store)/book/[0:2]?category=fiction").valuesEqual([{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99}]).always(report);
 
 
-deep(datas).query( "/*/book/[2:3,0]?price=lt=10&isbn/price" ).valuesEqual( [8.99,8.95] ,report);
+deep(datas).query( "/*/book/[2:3,0]?price=lt=10&isbn/price" ).valuesEqual( [8.99,8.95] ).always(report);
 
-deep(datas).query( "/(.*)/book/?price=lt=10&category=fiction" ).valuesEqual( [
+deep(datas).query( "/(.*)/book/*?price=lt=10&category=fiction" ).valuesEqual( [
 			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
-			],report );
+			]).always(report);
 
 deep(datas).query( "/store//[:3]?warehouse.stock" ).valuesEqual( [
 			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},
 			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
-			],report );
+			]).always(report);
 
 deep(datas).query( "//?price=lt=18" ).valuesEqual( [ 
 			
@@ -138,18 +138,18 @@ deep(datas).query( "//?price=lt=18" ).valuesEqual( [
 			, {"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
 			, {"category":"ride","col":"red","price":9.95}
 			, {"category":"ride","col":"red","price":15.95}
-			] ,report);
+			] ).always(report);
 
 
-deep(datas).query( "//category?=in=(reference,ride)&sort(+)" ).valuesEqual( ["reference","reference","ride","ride","ride"] ,report);
-deep(datas).query( "//category?distinct()&sort(-)" ).valuesEqual( ["ride", "reference", "fiction"] ,report);
-deep(datas).query( "//price?=gt=10&sort(-)" ).valuesEqual( [22.99,19.95,18.95,15.95,12.99] ,report);
+deep(datas).query( "//category?=in=(reference,ride)&sort(+)" ).valuesEqual( ["reference","reference","ride","ride","ride"] ).always(report);
+deep(datas).query( "//category?distinct()&sort(-)" ).valuesEqual( ["ride", "reference", "fiction"] ).always(report);
+deep(datas).query( "//price?=gt=10&sort(-)" ).valuesEqual( [22.99,19.95,18.95,15.95,12.99] ).always(report);
 
-deep(datas).query( "//(^bo)/?price=lt=15" ).valuesEqual( [
+deep(datas).query( "//(^bo)/*?price=lt=15" ).valuesEqual( [
 			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},
 			{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},
 			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
-			],report );
+			]).always(report);
 
 
 deep(datas).query( "//?length=gt=4" ).valuesEqual( [
@@ -220,7 +220,7 @@ deep(datas).query( "//?length=gt=4" ).valuesEqual( [
   "The Lord of the Rings",
   "0-395-19395-8",
   "0-395-19395-8"
- ] ,report);
+ ] ).always(report);
 
 
 deep(datas).query( "//[@.length-1]" ).valuesEqual( [
@@ -238,7 +238,7 @@ deep(datas).query( "//[@.length-1]" ).valuesEqual( [
    "isbn": "0-395-19395-8",
    "quantity": 12
   }
- ] ,report).log("________________________________________");
+ ] ).always(report).log("________________________________________");
 
 //deep(datas).query("//length").valuesEqual([5,1], report).log("________________________________________");;
 
@@ -272,7 +272,7 @@ deep(datas).query("//[::2]").valuesEqual([
    "isbn": "0-395-19395-8",
    "quantity": 12
   }
- ],report).log("______________________________");
+ ]).always(report).log("______________________________");
 
 deep(datas).query("//?_schema.type=string").valuesEqual([
   "reference",
@@ -302,7 +302,7 @@ deep(datas).query("//?_schema.type=string").valuesEqual([
   "ride",
   "red",
   "0-395-19395-8"
- ],report);
+ ]).always(report);
 
 
 
@@ -320,7 +320,7 @@ deep(datas).query("//?_schema.type=number").valuesEqual([
 			15.95,
 			1234,
 			12
-			],report);
+			]).always(report);
 
 deep(datas).query("//?_schema.type=object").fail(console.log).log("__________________")
 //.query("./!?&isbn&quantity=eq=12").fail(console.log).log("__________________")
@@ -543,27 +543,27 @@ deep(datas).query("//?_schema.type=object").fail(console.log).log("_____________
    "isbn": "0-395-19395-8",
    "quantity": 12
   }
- ],report);
+ ]).always(report);
 
 
-deep(datas).query("//?isbn/?_schema.type=object").valuesEqual([
+deep(datas).query("//?isbn/*?_schema.type=object").valuesEqual([
 			{"stock":12}
 			, {"stock":0}
 			, {"stock":12}
-			],report);
+			]).always(report);
 			
 deep(datas).query("//?_schema.type=object&_parent.isbn").valuesEqual([
 			{"stock":12}
 			, {"stock":0}
 			, {"stock":12}
-			],report);
+			]).always(report);
 
 deep(datas).query("//?_schema.type=object&_parent.isbn/../!").valuesEqual( 
 			[
 			 {"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
 			, {"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
 			,{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
-			],report);
+			]).always(report);
 
 deep(datas).query("//?_schema.type=object/../!?isbn").valuesEqual(  
 			[
@@ -597,24 +597,24 @@ deep(datas).query("//?_schema.type=object/../!?isbn").valuesEqual(
     "stock": 12
    }
   }
- ],report)
+ ]).always(report)
 
 
-deep(datas).query("//?isbn/?_schema.type=object/../!").valuesEqual(  
+deep(datas).query("//?isbn/*?_schema.type=object/../!").valuesEqual(  
 			[
 			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
 			,{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
 			,{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
-			],report)
+			]).always(report)
 		
 deep(datas).query("//?_schema.type=array").valuesEqual(  
 			[
 			
 			 [{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],
 			 [{"isbn":"0-395-19395-8","quantity":12}]
-			],report);
+			]).always(report);
 
-		deep(datas).query("//?_schema.type=array/").valuesEqual( 
+		deep(datas).query("//?_schema.type=array/*").valuesEqual( 
 			[
 			 {"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
 			, {"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
@@ -622,7 +622,7 @@ deep(datas).query("//?_schema.type=array").valuesEqual(
 			, {"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
 			, {"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}
 			, {"isbn":"0-395-19395-8","quantity":12}
-			],report);
+			]).always(report);
 
 
 		deep(datas).query("//[:]").valuesEqual( 
@@ -633,8 +633,8 @@ deep(datas).query("//?_schema.type=array").valuesEqual(
 			, {"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
 			, {"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}
 			, {"isbn":"0-395-19395-8","quantity":12}
-			],report);
-		deep(datas).query("//?_schema.type=array/../").valuesEqual(  
+			]).always(report);
+		deep(datas).query("//?_schema.type=array/../*").valuesEqual(  
 			[
 			 [{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}]
 			 , {"category":"ride","col":"red","price":19.95}
@@ -643,14 +643,14 @@ deep(datas).query("//?_schema.type=array").valuesEqual(
 			, 1234
 			, [{"isbn":"0-395-19395-8","quantity":12}]
 			
-			],report);
+			]).always(report);
 
 		deep(datas).query("//?_schema.type=array/../!").valuesEqual(  
 			[
 			{"book":[{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}},{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],"bicycle":{"category":"ride","col":"red","price":19.95},"helmet":{"category":"ride","col":"red","price":9.95},"gloves":{"category":"ride","col":"red","price":15.95}}
 			, {"total":1234,"sell":[{"isbn":"0-395-19395-8","quantity":12}]}
 
-			],report);
+			]).always(report);
 
 
 deep(datas).query("//").valuesEqual(  
@@ -965,7 +965,7 @@ deep(datas).query("//").valuesEqual(
   },
   "0-395-19395-8",
   12
- ],report);
+ ]).always(report);
 
 
 return	printReport("chain.query", success, failed, count);

@@ -268,14 +268,17 @@ define(function defineDeepQuery(require)
 				rest = this.analyseRQL(rest,paths);
 		}
 		var self = this;
-		if(paths.length > 0 && paths[paths.length-1].slashes == "/")
+		/*if(paths.length > 0 && paths[paths.length-1].slashes == "/")
 			paths.push({
 				type:"selector",
-				value:"*",
+				value:"!",
 				handler:function (parent) {
+					if(parent)
+						return [parent];
+					return [];
 					return self.returnAllProps(parent);
 				}
-			})
+			})*/
 		if(console.flags && console.flags["deep-query"])
 		{
 			console.log("dq analayse : ", path)
@@ -504,7 +507,7 @@ define(function defineDeepQuery(require)
 			return null;
 		var obj = entry.value;
 		
-		if(typeof obj[key] !== 'undefined')
+		if(obj && typeof obj[key] !== 'undefined')
 			entry = this.createEntry(key, entry);
 		else
 			entry = null;
@@ -563,10 +566,22 @@ define(function defineDeepQuery(require)
 		{
 			if(parts.length > 1 && parts[parts.length-1].slashes == "//")
 				return path;
-			parts.push({
+			if(fromUnion)
+				parts.push({
 				type:"selector",
 				value:"*",
 				handler:function (parent) {
+					return self.returnAllProps(parent);
+				}
+			});
+			else
+			parts.push({
+				type:"selector",
+				value:"!",
+				handler:function (parent) {
+					if(parent)
+						return [parent];
+					return [];
 					return self.returnAllProps(parent);
 				}
 			});
@@ -581,8 +596,11 @@ define(function defineDeepQuery(require)
 				return path;
 			parts.push({
 				type:"selector",
-				value:"*",
+				value:"!",
 				handler:function (parent) {
+					if(parent)
+						return [parent];
+					return [];
 					return self.returnAllProps(parent);
 				}
 			});
@@ -620,7 +638,7 @@ define(function defineDeepQuery(require)
 		//console.log("analyseSelector : got string", string);
 		if(string == "*")
 		{	
-			if(parts[parts.length-1].slashes == "//")
+			if(parts.length > 0 && parts[parts.length-1].slashes == "//")
 				return path.substring(count);
 
 			parts.push({
@@ -761,11 +779,21 @@ define(function defineDeepQuery(require)
 	 * @param  {Object} options (optional) :  options : resultType:"full" when you want to get the array of nodes results, not only the values results.
 	 * @return {Array} an array of results (maybe empty)
 	 */
-	DQ.prototype.query = function (obj, q, options) 
+	DQ.prototype.query = function doDeepQuery(obj, q, options) 
 	{
 		if(typeof obj !== 'object')
 		{
 			return [];
+		}
+		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\.\.)/gi))
+		{
+			if(q[0] == ".")
+				q = q.substring(1);
+			//console.log("STRAIGHT QUERY : ",q)
+			var r = utils.retrieveValueByPath(obj, q, "/");
+			if(typeof r === 'undefined')
+				return [];
+			return r;
 		}
 		//console.log("DQ.query : ", obj, q, options)
 		options = options || {};

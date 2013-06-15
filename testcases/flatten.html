@@ -61,7 +61,7 @@
    		second:true,
         a:true,
         b:true
-    }, report);
+    }).always(report);
 
 	deep({
 	    sub:{
@@ -81,7 +81,7 @@
 	   		third:true,
 	        a:true,
 	        b:true
-	    }, report);
+	    }).always(report);
 	
 
 	return	printReport("chain.flatten", success, failed, count);

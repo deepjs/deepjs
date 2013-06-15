@@ -23,12 +23,14 @@
 	deep([0,1,2,3,4,5])
 	.pushHandlerTo(tests)
 	.range(1,4)
-	.valuesEqual([1,2,3,4], report);
+	.valuesEqual([1,2,3,4])
+	.always(report);
 
 	deep([0,1,2,3,4,5])
 	.pushHandlerTo(tests)
 	.range(3,5)
-	.valuesEqual([3,4,5], report);
+	.valuesEqual([3,4,5])
+	.always(report);
 
 	//________________________________________________________________________________________
 	deep.all(tests).then(function (argument) {

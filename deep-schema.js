@@ -1162,8 +1162,8 @@ function(require, utils, promise, Querier){
 			retrievable:{
 				test: function(value){ 
 					if((!value) && !schema.required)
-					return true;
-					return DeepRequest.isRetrievable(value).type != null; 
+						return true;
+					return (deep.parseRequest(value).store != null); 
 				},
 				error:"need to be in 'retrievable' format. (see deep/deep-request/isRetrievable())"
 			}

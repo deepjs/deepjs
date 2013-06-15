@@ -1,7 +1,7 @@
 if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
-define(["require", "deep/deep"], function (require){
+define(["require"], function (require){
 
 	return function(deep)
 	{
@@ -465,7 +465,7 @@ define(["require", "deep/deep"], function (require){
 	promise.when = deep.when;
 	promise.promise = deep.promise;
 	promise.all = deep.all;
-
+	promise.Deferred = deep.Deferred;
 	return deep;
 	}
 })

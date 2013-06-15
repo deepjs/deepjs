@@ -28,24 +28,24 @@ define(["require"], function (require)
 			var obj = results.shift();
 			if(schema)
 				schema = results.shift();
-			handler._entries = [];
+			handler._nodes = [];
 			if(obj instanceof DeepHandler)
 			{
 				deep.utils.chain.assertNoState(obj);
-				handler._entries = obj._entries.concat([]);
+				handler._nodes = obj._nodes.concat([]);
 				deep.utils.nextHandle(self, deep.utils.chain.values(), null, true);
 			}	
 			else if(obj instanceof Array)
 			{	
 				obj.forEach(function (o) 
 				{
-					handler._entries.push(Querier.createRootNode(o, schema || {})); // should check if dqNode or _deep_entry
+					handler._nodes.push(Querier.createRootNode(o, schema || {})); // should check if dqNode or _deep_entry
 				});
 				deep.utils.nextHandle(self, deep.utils.chain.values(), null, true);
 			}
 			else 
 			{
-				handler._entries.push(Querier.createRootNode(o, schema || {})); // should check if dqNode or _deep_entry
+				handler._nodes.push(Querier.createRootNode(o, schema || {})); // should check if dqNode or _deep_entry
 				deep.utils.nextHandle(self, deep.utils.chain.val(), null, true);
 			}	
 		})
@@ -93,7 +93,7 @@ define(["require"], function (require)
 			success:null,
 			cancel:null
 		};
-		this._entries = [];
+		this._nodes = [];
 	}
 
 	var PromiseHandler = {

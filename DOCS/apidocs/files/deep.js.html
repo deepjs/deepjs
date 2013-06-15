@@ -279,16 +279,16 @@ function(require)
 				{
 					if(schema &amp;&amp; schema.type !== &quot;array&quot;)
 						schema = { type:&quot;array&quot;, items:schema };
-					handler._entries = deep.query(obj, &quot;./*&quot;, { resultType:&quot;full&quot;, schema:schema });
+					handler._nodes = deep.query(obj, &quot;./*&quot;, { resultType:&quot;full&quot;, schema:schema });
 					return forceNextQueueItem(handler, deep.chain.values(handler), null);
 				}
 				else if(obj &amp;&amp; obj._isDQ_NODE_)
-					handler._entries = [obj];
+					handler._nodes = [obj];
 				else if(obj &amp;&amp; obj._deep_entry)
-					handler._entries = [obj._deep_entry];
+					handler._nodes = [obj._deep_entry];
 				else
-					handler._entries = [Querier.createRootNode(obj, schema)];
-				if(handler._entries.length &gt; 1)
+					handler._nodes = [Querier.createRootNode(obj, schema)];
+				if(handler._nodes.length &gt; 1)
 					forceNextQueueItem(handler, deep.chain.values(handler), null);
 				else
 					forceNextQueueItem(handler, obj, null);
@@ -581,7 +581,7 @@ function(require)
 		handler.running = false;
 		nextQueueItem.apply(handler, [s, e]);
 	}
-	function addInQueue(func)
+	function addInChain(func)
 	{
 		if(!this.oldQueue &amp;&amp; this._listened)
 			throw new Error(&quot;you couldn&#x27;t add anymore handler to this chain : someone listening it. &quot;+JSON.stringify(deep.chain.values(this)));
@@ -597,7 +597,7 @@ function(require)
 	{
 		var newRes = [];
 		if(cloneValues)
-			newRes = newRes.concat(handler._entries);
+			newRes = newRes.concat(handler._nodes);
 		var newHandler = new deep.Chain({
 			rethrow:handler.rethrow,
 			_entries:newRes,
@@ -627,7 +627,7 @@ function(require)
 		options = options || {};
 		this.querier = new Querier();
 		this.callQueue = [];
-		this._entries = options._entries || [];
+		this._nodes = options._nodes || [];
 		this.queries = [];
 		this.deferred = deep.Deferred();
 		this.rejected=false;
@@ -684,11 +684,11 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				self._entries.reverse();
+				self._nodes.reverse();
 				self.running = false;
 				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			};
-			addInQueue.apply(this, [create]);
+			addInChain.apply(this, [create]);
 			return self;
 		},
 		/**
@@ -713,7 +713,7 @@ function(require)
 				nextQueueItem.apply(self, [s, e]);
 			};
 			create._isTRANSPARENT_ = true;
-			addInQueue.apply(this, [create]);
+			addInChain.apply(this, [create]);
 			return self;
 		},
 		//_______________________________________________________________  CANCEL AND REJECT
@@ -842,7 +842,7 @@ function(require)
 				else
 					handleResponse(a);
 			};
-			addInQueue.apply(this, [create]);
+			addInChain.apply(this, [create]);
 			return self;
 		},
 		//______________________________________________________ PROMISE INTERFACE
@@ -872,7 +872,7 @@ function(require)
 					forceNextQueueItem(self, null, e)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -936,7 +936,7 @@ function(require)
 					handleResponse(a);
 			};
 			func._isTHEN_ = true;
-			addInQueue.apply(this, [func]);
+			addInChain.apply(this, [func]);
 			return self;
 		},
 		/**
@@ -994,7 +994,7 @@ function(require)
 					handleResponse(a);
 			};
 			func._isTHEN_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 		/**
@@ -1053,12 +1053,12 @@ function(require)
 			var func = function(s,e){
 				var rangeObject = null;
 				
-				rangeObject = utils.createRangeObject(start, end, self._entries.length);
-				self._entries = self._entries.slice(rangeObject.start, rangeObject.end+1);
+				rangeObject = utils.createRangeObject(start, end, self._nodes.length);
+				self._nodes = self._nodes.slice(rangeObject.start, rangeObject.end+1);
 				rangeObject.results = deep.chain.values(self);
 				forceNextQueueItem(self, rangeObject, null);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1083,7 +1083,7 @@ function(require)
 				self.running = false;
 				nextQueueItem.apply(self, [s,e]);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1124,12 +1124,12 @@ function(require)
 					position = self.positions[self.position.length-1];
 				if(!position)
 					throw new Error(&quot;chain handler error : no positions to go back with name : &quot;+name);
-				self._entries = position.entries;
+				self._nodes = position.entries;
 				self._store = position.store;
 				self.running = false;
 				nextQueueItem.apply(self, [deep.chain.values(self),null]);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		//_________________________________________________________________________________________
@@ -1146,10 +1146,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				self._entries = [self._entries[0]];
-				return [self._entries, null];
+				self._nodes = [self._nodes[0]];
+				return [self._nodes, null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1165,10 +1165,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				self._entries = [self._entries[self._entries.length-1]];
-				return [self._entries, null];
+				self._nodes = [self._nodes[self._nodes.length-1]];
+				return [self._nodes, null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1188,16 +1188,16 @@ function(require)
 			var self = this;
 			var func = function(){
 				var res = [];
-				self._entries.forEach(function (r) {
+				self._nodes.forEach(function (r) {
 					res.push(r.ancestor);
 				});
 				res = deep.utils.arrayUnique(res, &quot;path&quot;);
-				self._entries = res;
+				self._nodes = res;
 				if(res.length === 0 &amp;&amp; errorIfEmpty)
 					throw new Error(&quot;deep.parents could not gives empty results&quot;);
 				return [deep.chain.values(self), null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 		/**
@@ -1215,13 +1215,13 @@ function(require)
 			{
 				deep(object, schema)
 				.nodes(function (nodes) {
-					self._entries = nodes;
+					self._nodes = nodes;
 				})
 				.done(function (success) {
 					forceNextQueueItem(self, success, null);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1246,17 +1246,17 @@ function(require)
 			{
 				//console.log(&quot;do query : &quot;, q)
 				var res = [];
-				src._entries.forEach(function (r) {
+				src._nodes.forEach(function (r) {
 					q.forEach(function (qu) {
 						res = res.concat(src.querier.query(r, qu , {resultType:&quot;full&quot;}));
 					});
 				});
-				src._entries = res;
+				src._nodes = res;
 				if(res.length === 0 &amp;&amp; errorIfEmpty)
 					throw new Error(&quot;deep.query could not gives empty results&quot;);
 				return [deep.chain.values(src), null];
 			};
-			addInQueue.apply(src, [func]);
+			addInChain.apply(src, [func]);
 			return src;
 		},
 		/**
@@ -1277,7 +1277,7 @@ function(require)
 			if(!(q instanceof Array))
 				q = [q];
 			var res = [];
-			src._entries.forEach(function (r) {
+			src._nodes.forEach(function (r) {
 				q.forEach(function (qu) {
 					res = res.concat(src.querier.query(r, qu));
 				});
@@ -1302,7 +1302,7 @@ function(require)
 					//var schema = schemas.shift();
 					//var metaSchema = schemas.shift();
 					var alls = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						result.schema = schema;
 					});
 					forceNextQueueItem(self, schema, null);
@@ -1311,7 +1311,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1330,7 +1330,7 @@ function(require)
 				deep.when(deep.get(schema))
 				.done(function (schema) {
 					var alls = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						if(!result.schema)
 							result.schema = {};
 						alls.push(utils.up(schema, result.schema, metaSchema));
@@ -1341,7 +1341,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1363,7 +1363,7 @@ function(require)
 				deep.when(deep.get(schema))
 				.done(function (schema) {
 					var alls = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						if(!result.schema)
 							result.schema = {};
 						alls.push(utils.bottom(schema, result.schema, metaSchema));
@@ -1374,7 +1374,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1395,7 +1395,7 @@ function(require)
 				deep.when(deep.get(obj)).then(function (obj)
 				{
 					var res = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						res.push(utils.setValueByPath(result.value, path, obj, &#x27;/&#x27;));
 					});
 					forceNextQueueItem(self, res, null)
@@ -1404,7 +1404,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1425,7 +1425,7 @@ function(require)
 			var func = function(){
 				deep.when(deep.getAll(args)).then(function (objects)
 				{
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						objects.forEach(function (object) {
 							//console.log(&quot;deep.up : entry : &quot;, result, &quot; - to apply : &quot;, object)
 							utils.up(object, result.value, result.schema, result.ancestor?result.ancestor.value:null, result.key);
@@ -1438,7 +1438,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1460,7 +1460,7 @@ function(require)
 			var func = function(){
 				deep.when(deep.getAll(args)).then(function (objects)
 				{
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						objects.forEach(function (object) {
 							utils.bottom(object, result.value, result.schema, result.ancestor?result.ancestor.value:null, result.key);
 						});
@@ -1472,7 +1472,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1518,7 +1518,7 @@ function(require)
 				deep.when(deep.get(by, options)).then(function (by)
 				{
 					var replaced = [];
-					self._entries.forEach(function (r) {
+					self._nodes.forEach(function (r) {
 						//console.log(&quot;chain replace : &quot;,what, &quot; - in :  &quot; , r.value)
 						self.querier.query(r.value, what, {resultType:&quot;full&quot;}).forEach(function(r){
 							//console.log(&quot;res query : &quot;, r)
@@ -1534,7 +1534,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1596,7 +1596,7 @@ function(require)
 			var self = this;
 			var func = function(){
 				var removed = [];
-				self._entries.forEach(function (r) {
+				self._nodes.forEach(function (r) {
 					self.querier.query(r, what, {resultType:&quot;full&quot;}).forEach(function(r)
 					{
 						if(!r.ancestor)
@@ -1612,7 +1612,7 @@ function(require)
 				});
 				forceNextQueueItem(self, removed, null)
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1786,7 +1786,7 @@ function(require)
 			};
 			var func = function(){
 				var alls = [];
-				self._entries.forEach(function (result)
+				self._nodes.forEach(function (result)
 				{
 					count++;
 					if(typeof result.value.backgrounds !== &#x27;undefined&#x27; &amp;&amp; result.value.backgrounds !== null)
@@ -1805,10 +1805,10 @@ function(require)
 					else
 						doChilds(result);
 				});
-				if(self._entries.length === 0)
+				if(self._nodes.length === 0)
 					return [deep.chain.values(self), null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		//______________________________________________________________  RUNS
@@ -1836,13 +1836,13 @@ function(require)
 				deep.when(transformer)
 				.done(function  (transformer) {
 					var alls = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						alls.push(transformer(result.value));
 					});
 					deep.all(alls).done(function (loadeds)
 					{
 						var count = 0;
-						self._entries.forEach(function(result){
+						self._nodes.forEach(function(result){
 							result.value = loadeds[count];
 							if(result.ancestor)
 								result.ancestor[result.key] = result.value;
@@ -1860,7 +1860,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1885,7 +1885,7 @@ function(require)
 			args = args || [];
 			var create = function(s,e){
 				var alls = [];
-				self._entries.forEach(function(result){
+				self._nodes.forEach(function(result){
 					if(!funcRef)
 					{
 						if(typeof result.value != &quot;function&quot;)
@@ -1913,7 +1913,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[create]);
+			addInChain.apply(this,[create]);
 			return this;
 		},
 		/**
@@ -1950,7 +1950,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[create]);
+			addInChain.apply(this,[create]);
 			return this;
 		},
 		/**
@@ -1996,7 +1996,7 @@ function(require)
 				});
 				
 			};
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 		/**
@@ -2031,7 +2031,7 @@ function(require)
 				.done(function(treatment){
 					//console.log(&quot;treat getted : &quot;, treatment)
 					var alls = [];
-					self._entries.forEach(function(entry) {
+					self._nodes.forEach(function(entry) {
 						alls.push(applyTreatment.apply(treatment, [entry.value]));
 					});
 					
@@ -2046,7 +2046,7 @@ function(require)
 				});
 				
 			};
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 
@@ -2099,7 +2099,7 @@ function(require)
 					forceNextQueueItem(self, o, !o.equal);
 				}
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 
@@ -2121,10 +2121,10 @@ function(require)
 			// console.log(&quot;deep.equal chaining&quot;);
 			var self = this;
 			var func = function(){
-				//console.log(&quot;will do deep.equal : self : &quot;, self._entries)
+				//console.log(&quot;will do deep.equal : self : &quot;, self._nodes)
 				var res = [];
 				var errors = [];
-				self._entries.forEach(function(r){
+				self._nodes.forEach(function(r){
 					//console.log(&quot;deep.equal : r : &quot;,r);
 					var ok = utils.deepEqual(r.value, obj);
 					var o = {path:r.path, equal:ok, value:r.value, needed:obj};
@@ -2137,7 +2137,7 @@ function(require)
 						console.error(&quot;deep.equal : &quot;+o.equal+&quot; : &quot;, o);
 				});
 				var report = {
-					equal:(self._entries.length &gt; 0) &amp;&amp; (errors.length===0),
+					equal:(self._nodes.length &gt; 0) &amp;&amp; (errors.length===0),
 					reports:res
 				};
 				if(callBack)
@@ -2160,7 +2160,7 @@ function(require)
 						forceNextQueueItem(self, null, report);
 				}
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 
@@ -2186,7 +2186,7 @@ function(require)
 					valid:true,
 					reports:[]
 				};
-				self._entries.forEach(function (e) {
+				self._nodes.forEach(function (e) {
 					var rep = Validator.validate(e.value, schema || e.schema);
 					report.reports.push(rep);
 					if(!rep.valid)
@@ -2219,7 +2219,7 @@ function(require)
 				return [null, report];
 			};
 			func._name = &quot;deep.Chain.validate&quot;;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 
@@ -2254,7 +2254,7 @@ function(require)
 				forceNextQueueItem(self, s,e);
 			};
 			func._isTRANSPARENT_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2278,8 +2278,8 @@ function(require)
 			options = options || {};
 			var func = function(success, error)
 			{
-				console.log(title||&quot;deep.logValues : &quot;, &quot; (&quot;+self._entries.length+&quot; values)&quot;);
-				self._entries.forEach(function (e) {
+				console.log(title||&quot;deep.logValues : &quot;, &quot; (&quot;+self._nodes.length+&quot; values)&quot;);
+				self._nodes.forEach(function (e) {
 					var val = e;
 					var entry = null;
 					if(e.value)
@@ -2300,7 +2300,7 @@ function(require)
 				nextQueueItem.apply(self,[success, error]);
 			};
 			func._isTRANSPARENT_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		// ________________________________________ READ ENTRIES
@@ -2324,7 +2324,7 @@ function(require)
 			var func = function(s,e)
 			{
 				var applyCallBack = function (callBack) {
-					var  a = self._entries[0]?self._entries[0].value:null;
+					var  a = self._nodes[0]?self._nodes[0].value:null;
 					var r = null;
 					if(typeof callBack === &#x27;function&#x27;)
 						r = callBack(a);
@@ -2354,7 +2354,7 @@ function(require)
 			};
 			if(callBack)
 			{
-				addInQueue.apply(this,[func]);
+				addInChain.apply(this,[func]);
 				return this;
 			}
 			else
@@ -2411,7 +2411,7 @@ function(require)
 			};
 			if(callBack)
 			{
-				addInQueue.apply(this,[func]);
+				addInChain.apply(this,[func]);
 				return this;
 			}
 			else
@@ -2437,11 +2437,11 @@ function(require)
 				var applyCallBack = function (callBack) {
 					var alls = [];
 					if(typeof callBack === &#x27;object&#x27;)
-						self._entries.forEach(function(entry) {
+						self._nodes.forEach(function(entry) {
 							alls.push(applyTreatment.apply(callBack, [entry.value]));
 						});
 					else
-						self._entries.forEach(function(e){
+						self._nodes.forEach(function(e){
 							alls.push(callBack(e.value));
 						});
 					deep.all(alls).then(function (results) {
@@ -2459,7 +2459,7 @@ function(require)
 				else
 					applyCallBack(callBack);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2480,7 +2480,7 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				var  a = self._entries.concat([]);
+				var  a = self._nodes.concat([]);
 				deep.when(callBack(a)).then(function (argument) {
 					self.running = false;
 					nextQueueItem.apply(self, [s, e]);
@@ -2492,7 +2492,7 @@ function(require)
 			};
 			if(callBack)
 			{
-				addInQueue.apply(this,[func]);
+				addInChain.apply(this,[func]);
 				return this;
 			}
 			else
@@ -2531,7 +2531,7 @@ function(require)
 				}, ms);
 			}
 			func._isTRANSPARENT_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		//____________________________________________________________________  LOAD
@@ -2555,7 +2555,7 @@ function(require)
 				var  paths = [];
 				var  promises = [];
 				//console.log(&quot;deepLoad : &quot;, self)
-				self._entries.forEach(function (e) {
+				self._nodes.forEach(function (e) {
 					var strings = self.querier.query(e, &quot;.//*?or(_schema.type=string,_schema.type=function)&quot;, {resultType:&quot;full&quot;});
 					//console.log(&quot;deep load query result : &quot;, strings)
 					strings.forEach(function (toLoad) {
@@ -2596,7 +2596,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2640,7 +2640,7 @@ function(require)
 						promises.push(request);
 				}
 				else
-					self._entries.forEach(function (e) {
+					self._nodes.forEach(function (e) {
 						if(!e.value)
 							return;
 						if(e.value.load)
@@ -2662,8 +2662,8 @@ function(require)
 					var count = 0;
 					if(request)
 					{
-						//console.log(&quot;deep.load results from request : &quot;, self._entries)
-						self._entries.forEach(function (entry) {
+						//console.log(&quot;deep.load results from request : &quot;, self._nodes)
+						self._nodes.forEach(function (entry) {
 							if(!entry.ancestor)
 								//throw new Error(&quot;You couldn&#x27;t interpret root !&quot;);
 									entry.value = results[0];
@@ -2690,7 +2690,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 
@@ -2720,7 +2720,7 @@ function(require)
 				.done(function (context)
 				{
 					var res = [];
-					self._entries.forEach(function (e) {
+					self._nodes.forEach(function (e) {
 						var strings = self.querier.query(e, &quot;.//?_schema.type=string&quot;, {resultType:&quot;full&quot;});
 						strings.forEach(function (interpretable) {
 							var r = deep.interpret(interpretable.value, context);
@@ -2742,7 +2742,7 @@ function(require)
 					nextQueueItem.apply(self, [null, error]);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},*/
 		/**
@@ -2771,7 +2771,7 @@ function(require)
 				var applyContext = function (context) {
 					//console.log(&quot;interpret: received context : &quot;, context);
 					var res = [];
-					self._entries.forEach(function (interpretable)
+					self._nodes.forEach(function (interpretable)
 					{
 						if(typeof interpretable.value === &#x27;string&#x27;)
 						{
@@ -2798,7 +2798,7 @@ function(require)
 				else 
 					applyContext(context);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 
@@ -2815,7 +2815,7 @@ function(require)
 					forceNextQueueItem(self, s, e);
 			};
 			f._isPUSH_HANDLER_TO_ = true;
-			addInQueue.apply(this,[f]);
+			addInChain.apply(this,[f]);
 			return this;
 		},
 
@@ -2880,14 +2880,14 @@ function(require)
 					else
 						map[val] = w;
 				});
-				self._entries.forEach(function(entry) {
+				self._nodes.forEach(function(entry) {
 					if(map[entry.value[localKey]])
 						entry.value[whereToStore || localKey] = map[entry.value[localKey]];
 				});
 				forceNextQueueItem(self, deep.chain.values(self), null);
 			};
 			var func = function(s, e) {
-				if(self._entries.length === 0)
+				if(self._nodes.length === 0)
 				{
 					forceNextQueueItem(self, deep.chain.values(self), null);
 					return;
@@ -2922,7 +2922,7 @@ function(require)
 				else
 					doMap(what, localKey, foreignKey, whereToStore);
 			};
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 
@@ -2971,7 +2971,7 @@ function(require)
 			var self = this;
 			var relations = Array.prototype.slice.apply(arguments);
 			var func = function (s,e) {
-				self._entries.forEach(function(entry){
+				self._nodes.forEach(function(entry){
 					if(!entry.schema || !entry.schema.links)
 						return;
 					var alls  = [];
@@ -2996,7 +2996,7 @@ function(require)
 					})
 				});
 			}
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 
@@ -3049,7 +3049,7 @@ function(require)
 				relations.push(i);
 			//console.log(&quot;mapRelations :  relations : &quot;, relations);
 			var func = function (s,e) {
-				self._entries.forEach(function(entry){
+				self._nodes.forEach(function(entry){
 					if(!entry.schema || !entry.schema.links)
 						return;
 					var alls  = [];
@@ -3077,7 +3077,7 @@ function(require)
 					})
 				});
 			}
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 		/**
@@ -3100,12 +3100,12 @@ function(require)
 	deep.chain = {
 		nextQueueItem:nextQueueItem,
 		forceNextQueueItem:forceNextQueueItem,
-		addInQueue:addInQueue,
+		addInChain:addInChain,
 		stringify:function (handler, options)
 		{
 			options = options || {};
 			var res = &quot;&quot;;
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				if(options.pretty)
 					res += JSON.stringify(e.value, null, &#x27; &#x27;)+&quot;\n&quot;;
 				else
@@ -3119,34 +3119,34 @@ function(require)
 			return handler;
 		},
 		val:function (handler) {
-			if(handler._entries.length === 0)
+			if(handler._nodes.length === 0)
 				return undefined;
-			return handler._entries[0].value;
+			return handler._nodes[0].value;
 		},
 		values:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e.value);
 			});
 			return res;
 		},
 		nodes:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e);
 			});
 			return res;
 		},
 		paths:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e.paths);
 			});
 			return res;
 		},
 		schemas:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e.schema);
 			});
 			return res;
@@ -3155,7 +3155,7 @@ function(require)
 			options = options || {};
 			handler.positions.push({
 				name:name,
-				entries:handler._entries.concat([]),
+				entries:handler._nodes.concat([]),
 				store:handler._store,
 				queue:(options.restartChain)?handler.callQueue.concat([]):null
 			});

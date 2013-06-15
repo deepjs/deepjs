@@ -25,7 +25,7 @@
 	.pushHandlerTo(tests)
 	.query("./msg")
 	.interpret({ name:"john" })
-	.equal("hello john", report);
+	.equal("hello john").always(report);
 	
 
 	// 3
@@ -39,7 +39,7 @@
 
 	deep(d)
 	.pushHandlerTo(tests)
-	.equal("mystring 12", report);
+	.equal("mystring 12").always(report);
 
 	// report
 	deep.all(tests).then(function (argument) {

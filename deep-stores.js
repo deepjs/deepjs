@@ -59,10 +59,12 @@ Ajouter deep-facets.js
 Add deep.store.Store.fetchRelation(name) based on schema links.
 
  */
-if(typeof define !== 'function')
+if(typeof define !== 'function'){
 	var define = require('amdefine')(module);
+	var requirejs = require("requirejs");
+}
 
-define(["require", "deep/deep"],function(require)
+define(["require"],function(require)
 {
 	return function(deep){
 		//_______________________________________________________________________________ STORES
@@ -158,8 +160,8 @@ define(["require", "deep/deep"],function(require)
 			var self = this;
 
 			var func = function (s,e) {
-				//console.log("chain.store : set store : ", store.name);
-				//			var store = null;
+				// console.log("chain.store : set store : ", store.name);
+				// var store = null;
 				var stores = deep.stores;
 				var role = { name:"no role" };
 				if(self.context && self.context.role)
@@ -171,17 +173,16 @@ define(["require", "deep/deep"],function(require)
 				{
 					if(!stores[name])
 						if(!role)
-							throw new Error("deep.store('"+name+"') : error : no store found");
+							return deep.errors.Store("deep.store('"+name+"') : error : no store found");
 						else
-							throw new Error("deep.store('"+name+"') : error : no store found in role : "+ role.name);
+							return deep.errors.Store("deep.store('"+name+"') : error : no store found in role : "+ role.name);
 					store = stores[name];
 					store.name = name;
 				}
 				else
 					store = name;
-				self._store = store;
+				self._storeName = name;
 				deep.chain.position(self, store.name);
-				deep.chain.forceNextQueueItem(self, s, e);
 			};
 			deep.handlers.decorations.store({
 				get:function (argument) {},
@@ -193,7 +194,8 @@ define(["require", "deep/deep"],function(require)
 				rpc:function (argument) {},
 				bulk:function (argument) {}
 			}, self);
-			deep.chain.addInQueue.apply(this,[func]);
+
+			deep.chain.addInChain.apply(this,[func]);
 			return self;
 		};
 		//_________________________________________________________________ dee.Chain wrapper store API
@@ -203,9 +205,10 @@ define(["require", "deep/deep"],function(require)
 				//_store : deep.collider.replace(store),
 
 				get : deep.compose
-				.condition(typeof store.get === "function")
+				//.condition(typeof store.get === "function")
 				.createIfNecessary()
 				.replace(function (id, options) {
+					
 					var self = this;
 					if(id == "?" || !id)
 						id = "";
@@ -217,178 +220,159 @@ define(["require", "deep/deep"],function(require)
 						schema = self._store.schema;
 
 					var func = function (s,e) {
-						self
-						._store
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting get !");
+						return deep.store(self._storeName)
 						.get(id, options)
 						.done(function (success) {
 							//console.log("deep(...).store : get : success : ", success);
-							if(success instanceof Array)
-								self._entries = deep(success, schema, {uri:id}).nodes();
-							else
-								self._entries = [deep.Querier.createRootNode( success, schema, {uri:id})];
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode( success, schema, {uri:id})]
 						});
 					};
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					self.range = deep.Chain.range;
 					return self;
 				}),
 
 				post : deep.compose
-				.condition(typeof store.post === "function")
+				//.condition(typeof store.post === "function")
 				.createIfNecessary()
 				.replace(function (object, id, options) {
 					var self = this;
 					var func = function (s,e)
 					{
-						self
-						._store
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting post !");
+						var schema = null;
+						if(typeof self._store.schema === 'function')
+							schema = self._store.schema("post");
+						else if(typeof self._store.schema === 'object')
+							schema = self._store.schema;
+
+						return deep.store(self._storeName)
 						.post(object || deep.chain.val(self),id, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							//console.log("deeo.chain.store.post : post failed : ", error);
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
 				put : deep.compose
-				.condition(typeof store.put === "function")
+				//.condition(typeof store.put === "function")
 				.createIfNecessary()
 				.replace(function (object, options) {
 					var self = this;
 					//console.log("deep.chain.put : add in chain : ", object, id);
 					var func = function (s,e) {
-						object = object || deep.chain.val(self);
-						options = options || {};
-						var id = object.id || options.id;
-						//console.log("deep.chain.put : ", object, id);
-
-						self._store.put(object  || deep.chain.val(self), options)
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting put !");
+						return deep.store(self._storeName)
+						.put(object  || deep.chain.val(self), options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
 				patch : deep.compose
-				.condition(typeof store.patch === "function")
+				//.condition(typeof store.patch === "function")
 				.createIfNecessary()
 				.replace(function (object, id, options) {
 					var self = this;
-					var func = function (s,e) {
-						self
-						._store
+					var func = function (s,e) 
+					{
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting patch !");
+						return deep.store(self._storeName)
 						.patch(object  || deep.chain.val(self),id, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
 				del : deep.compose
-				.condition(typeof store.del === "function")
+				//.condition(typeof store.del === "function")
 				.createIfNecessary()
-				.replace(function (id, options) {
+				.replace(function (id, options) 
+				{
 					var self = this;
-					var func = function (s,e) {
+					var func = function (s,e) 
+					{
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting delete !");
 						var val = deep.chain.val(self);
-						self
-						._store
+						return deep.store(self._storeName)
 						.del(id || val.id, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
 				rpc : deep.compose
-				.condition(typeof store.rpc === "function")
+				//.condition(typeof store.rpc === "function")
 				.createIfNecessary()
 				.replace(function (method, body, uri, options) {
 					var self = this;
 					var func = function (s,e) {
-						self._store.rpc(method, body, uri, options)
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting rpc !");
+						return deep.store(self._storeName).rpc(method, body, uri, options)
 						.done(function (success) {
-							self._entries = [deep.Querier.createRootNode(success)];
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
 				range : deep.compose
-				.condition(typeof store.range === "function")
+				//.condition(typeof store.range === "function")
 				.createIfNecessary()
 				.replace(function (arg1, arg2, uri, options) {
 					var self = this;
 					var func = function (s,e) {
-						self._store.range(arg1, arg2, uri, options)
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting range !");
+						return deep.store(self._storeName).range(arg1, arg2, uri, options)
 						.done(function (success) {
-							self._entries = deep(success.results).nodes();
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				}),
 
 				bulk : deep.compose
-				.condition(typeof store.bulk === "function")
+				//.condition(typeof store.bulk === "function")
 				.createIfNecessary()
 				.replace(function (arr, uri, options) {
 					var self = this;
 					var func = function (s,e) {
-						self._store.bulk(arr, uri, options)
+						if(!self._storeName)
+							return deep.errors.Store("no store declared in chain. aborting bulk !");
+						return deep.store(self._storeName).bulk(arr, uri, options)
 						.done(function (success) {
-							self._entries = deep(success).nodes();
-							deep.chain.forceNextQueueItem(self, success, null);
-						})
-						.fail(function (error) {
-							deep.chain.forceNextQueueItem(self, null, error);
+							self._nodes = [deep.Querier.createRootNode(success)];
 						});
 					};
 					self.range = deep.Chain.range;
-					deep.chain.addInQueue.apply(this,[func]);
+					deep.chain.addInChain.apply(this,[func]);
 					return self;
 				})
 			}, handler);
@@ -482,7 +466,8 @@ define(["require", "deep/deep"],function(require)
 			 * @param  {Object} options (optional)
 			 * @return {Object} the inserted object (decorated with it's id)
 			 */
-			store.post = function (object, options) {
+			store.post = function (object, options) 
+			{
 				options = options || {};
 				if(!object.id)
 					object.id = id = new Date().valueOf()+""; // mongo styled id
@@ -708,7 +693,15 @@ define(["require", "deep/deep"],function(require)
 			{
 				return deep.when(res)
 				.done(function(res){
-					options.wrap.result = res;
+					if(options.wrap.result)
+					{
+						if(typeof options.wrap.result.push === 'function')
+							options.wrap.result.push(res);
+						else
+							options.wrap.result = [].concat(options.wrap.result);
+					}
+					else
+						options.wrap.result = res;
 					return options.wrap;
 				})
 			}
@@ -865,6 +858,43 @@ define(["require", "deep/deep"],function(require)
 			}
 		};
 
+
+
+
+		/**
+		 * store to manage requirejs module load
+		 * not intended to be used directly. use deep.store("js") or "js::...js" instead
+		 * @class deep.stores.js
+		 */
+		deep.stores.js = {
+			/**
+			 * @method get
+			 * @param  {String} id the path of the module to load
+			 * @param  {Object} options
+			 * @return {deep.Chain} the loaded module injected in a chain
+			 */
+			get:function (id, options) {
+				//console.log("deep.stores.js.get : ", id)
+				if(!id)
+					return deep(new Error("deep.store.js need id !!"));
+				var def = deep.Deferred();
+				try{
+					require([id], function(obj){
+						def.resolve(obj);
+					}, function(err){
+						//console.log("require get error : ", err);
+						def.reject(err);
+					});
+				}
+				catch(e)
+				{
+					//console.log("require get errors catched : ", e);
+					def.reject(e);
+				}
+				return deep(def.promise());
+			}
+		};
+
 		/**
 		 * store to manage javascript instanciation with requirejs load.
 		 * not intended to be used directly. use deep.store("instance") or "instance::...js" instead
@@ -878,12 +908,16 @@ define(["require", "deep/deep"],function(require)
 			 * @return {Object} the instanciated module
 			 */
 			get:function (id, options) {
-				var cl = require(id);
+				return deep.stores.js
+				.get(id, options)
+				.done(function(cl){
+					if(typeof cl === 'function' && cl.prototype)
+						this.root(new cl());
+					//console.log("deep.stores.instance  : could not instanciate : "+JSON.stringify(id));
+					return new Error("deep.stores.instance  : could not instanciate : "+JSON.stringify(id));
+				});
 				//console.log("DeepRequest.instance : ", cl);
-				if(typeof cl === 'function' && cl.prototype)
-					return deep(new cl());
-				console.log("DeepRequest : could not instanciate : "+JSON.stringify(info));
-				throw new Error("DeepRequest : could not instanciate : "+JSON.stringify(info));
+				
 			}
 		};
 
@@ -899,37 +933,24 @@ define(["require", "deep/deep"],function(require)
 			 * @param  {Object} options
 			 * @return {Object} the loaded aspect
 			 */
-			get:function (id, options) {
-				return deep.when(require(id)).then(function(res){
+			get:function (id, options) {		
+				return deep.stores.js
+				.get(id, options)
+				.done(function(res){
+					this.root(res.aspect);
 					return res.aspect;
-				}, function(res){
-					return res;
 				});
 			}
 		};
 
-		/**
-		 * store to manage requirejs module load
-		 * not intended to be used directly. use deep.store("js") or "js::...js" instead
-		 * @class deep.stores.js
-		 */
-		deep.stores.js = {
-			/**
-			 * @method get
-			 * @param  {String} id the path of the module to load
-			 * @param  {Object} options
-			 * @return {Object} the loaded module
-			 */
-			get:function (id, options) {
-				return deep(require(id));
-			}
-		};
 
 
 		/*
 			TODO : add schema protocole : 
 
 				retrieve it and "compile" it ( produce cleans + validations methods )
+
+				use LAZZY SCHEMA LOADING (only on demand) 
 
 		 */
 

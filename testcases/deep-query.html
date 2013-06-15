@@ -145,7 +145,7 @@
 		execute("/*/book/[2:3,0]?price=lt=10&isbn/price", 
 			[8.99,8.95]);
 		
-		execute("/(.*)/book/?price=lt=10&category=fiction", 
+		execute("/(.*)/book/*?price=lt=10&category=fiction", 
 			[
 			{"category":"fiction","author":"Herman Melville","title":"Moby Dick","isbn":"0-553-21311-3","price":8.99,"warehouse":{"stock":12}}
 			]);
@@ -173,7 +173,7 @@
 			["ride", "reference", "fiction"]);
 		execute("//price?=gt=10&sort(-)", 
 			[22.99,19.95,18.95,15.95,12.99]);
-		execute("//(^bo)/?price=lt=15", 
+		execute("//(^bo)/*?price=lt=15", 
 			[
 			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}},
 			{"category":"fiction","author":"Evelyn Waugh","isbn":"0-553-21311-4","title":"Sword of Honour","price":12.99},
@@ -291,7 +291,7 @@
 		interlude();
 
 
-		execute("//?isbn/?_schema.type=object", 
+		execute("//?isbn/*?_schema.type=object", 
 			[
 			{"stock":12}
 			, {"stock":0}
@@ -315,7 +315,7 @@
 			,{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}
 			,{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
 			]);
-		execute("//?isbn/?_schema.type=object/../!", 
+		execute("//?isbn/*?_schema.type=object/../!", 
 			[
 			{"category":"reference","author":"Nigel Rees","isbn":"0-553-21311-3","title":"Sayings of the Century","price":8.95,"warehouse":{"stock":12}}
 			,{"category":"reference","author":"Jean Meslier","isbn":"0-553-21311-3","title":"Profession curée","price":18.95,"warehouse":{"stock":0}}

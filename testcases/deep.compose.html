@@ -83,7 +83,7 @@ deep(b)
 .run()
 .query("/res")
 .logValues()
-.equal(["func1","func1_1", "func2","func2_2","func3","func3_3"], report);
+.equal(["func1","func1_1", "func2","func2_2","func3","func3_3"]).always(report);
 
 
 deep(c)
@@ -91,7 +91,7 @@ deep(c)
 .query("./(func.*)")
 .run()
 .query("/res")
-.equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"], report);
+.equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"]).always(report);
 
 //console.profileEnd("deep.compose") //
 

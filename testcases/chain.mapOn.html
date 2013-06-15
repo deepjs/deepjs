@@ -44,7 +44,8 @@ deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
             { itemId:2, value:"hello"}
         ]
     }
-], report);
+])
+.always(report);
 
 
 	deep.all(tests).then(function (argument) {

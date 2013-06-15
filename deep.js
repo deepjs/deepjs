@@ -53,7 +53,7 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 
-define(["require","./utils", './ie-hacks',"./deep-rql","./deep-request", "./deep-schema",  "./promise", "./deep-query", "./deep-compose", "./deep-stores", "./deep-promise"],
+define(["require","./utils", "./deep-rql", "./deep-schema",  "./promise", "./deep-query", "./deep-compose", "./deep-stores", "./deep-promise", "./deep-errors"],
 function(require)
 {
 	// console.log("Deep init");
@@ -65,7 +65,6 @@ function(require)
 		console.info = console.log;
 
 	var Validator = require("./deep-schema");
-	var DeepRequest = require("./deep-request");
 	var utils = require("./utils");
 	var Querier = require("./deep-query");
 	var deepCompose = require("./deep-compose");
@@ -104,9 +103,9 @@ function(require)
 		{
 			var handler = new deep.Chain(options);
 			handler.running = true;
-			if(obj instanceof Array)
-				alls.push(deep.all(obj));
-			else if(typeof obj === 'string')
+			//if(obj instanceof Array)
+			//	alls.push(deep.all(obj));
+			if(typeof obj === 'string')
 				alls.push(deep.get(obj));
 			else
 				alls.push(obj);
@@ -125,16 +124,17 @@ function(require)
 				{
 					if(schema && schema.type !== "array")
 						schema = { type:"array", items:schema };
-					handler._entries = deep.query(obj, "./*", { resultType:"full", schema:schema });
+					handler._nodes = deep.query(obj, "./*", { resultType:"full", schema:schema });
+					//console.log("result of strt with array : ", handler._nodes)
 					return forceNextQueueItem(handler, deep.chain.values(handler), null);
 				}
 				else if(obj && obj._isDQ_NODE_)
-					handler._entries = [obj];
+					handler._nodes = [obj];
 				else if(obj && obj._deep_entry)
-					handler._entries = [obj._deep_entry];
+					handler._nodes = [obj._deep_entry];
 				else
-					handler._entries = [Querier.createRootNode(obj, schema)];
-				if(handler._entries.length > 1)
+					handler._nodes = [Querier.createRootNode(obj, schema)];
+				if(handler._nodes.length > 1)
 					forceNextQueueItem(handler, deep.chain.values(handler), null);
 				else
 					forceNextQueueItem(handler, obj, null);
@@ -259,8 +259,28 @@ function(require)
 	 * @return {String} the result
 	 */
 	deep.interpret = utils.interpret;
+	/**
+	 * a magic context that follow promise context and switch automaticaly
+	 * @static
+	 * @method interpret
+	 * @param {String} string the string to interpret
+	 * @param {Object} context the context injected for interpretation
+	 * @return {String} the result
+	 */
 	deep.context = {};
-	deep.request = DeepRequest;
+
+	/**
+	 * where to place YOUR globals (deep does'nt have any globals)
+	 * @static
+	 * @method globals
+	 * @param {String} string the string to interpret
+	 * @param {Object} context the context injected for interpretation
+	 * @return {String} the result
+	 */
+	deep.globals = {};
+
+	var errors = require( "deep/deep-errors" )(deep);
+
 
 	//_____________________________________________________________________ local (private) functions
 
@@ -428,7 +448,7 @@ function(require)
 		handler.running = false;
 		nextQueueItem.apply(handler, [s, e]);
 	}
-	function addInQueue(func)
+	function addInChain(func)
 	{
 		if(!this.oldQueue && this._listened)
 			throw new Error("you couldn't add anymore handler to this chain : someone listening it. "+JSON.stringify(deep.chain.values(this)));
@@ -444,7 +464,7 @@ function(require)
 	{
 		var newRes = [];
 		if(cloneValues)
-			newRes = newRes.concat(handler._entries);
+			newRes = newRes.concat(handler._nodes);
 		var newHandler = new deep.Chain({
 			rethrow:handler.rethrow,
 			_entries:newRes,
@@ -471,10 +491,9 @@ function(require)
 		this._deep_chain_ = true;
 		this.positions = [];
 		this.context = deep.context;
-		options = options || {};
 		this.querier = new Querier();
 		this.callQueue = [];
-		this._entries = options._entries || [];
+		this._nodes = options._nodes || [];
 		this.queries = [];
 		this.deferred = deep.Deferred();
 		this.rejected=false;
@@ -531,11 +550,11 @@ function(require)
 			var self = this;
 			var create =  function(s,e)
 			{
-				self._entries.reverse();
+				self._nodes.reverse();
 				self.running = false;
 				nextQueueItem.apply(self, [deep.chain.values(self), null]);
 			};
-			addInQueue.apply(this, [create]);
+			addInChain.apply(this, [create]);
 			return self;
 		},
 		/**
@@ -560,7 +579,7 @@ function(require)
 				nextQueueItem.apply(self, [s, e]);
 			};
 			create._isTRANSPARENT_ = true;
-			addInQueue.apply(this, [create]);
+			addInChain.apply(this, [create]);
 			return self;
 		},
 		//_______________________________________________________________  CANCEL AND REJECT
@@ -676,7 +695,7 @@ function(require)
 					forceNextQueueItem(self, success, null)
 				};
 
-				if(a && (a.then || a.promise))
+				if(a && (a.then || a.promise || a._isBRANCHES_))
 					deep.when(a)
 					.done(handleResponse)
 					.fail(function (error)
@@ -689,7 +708,7 @@ function(require)
 				else
 					handleResponse(a);
 			};
-			addInQueue.apply(this, [create]);
+			addInChain.apply(this, [create]);
 			return self;
 		},
 		//______________________________________________________ PROMISE INTERFACE
@@ -719,7 +738,7 @@ function(require)
 					forceNextQueueItem(self, null, e)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -759,24 +778,21 @@ function(require)
 					}
 					self.callQueue = self.callQueue.concat(self.oldQueue);
 					delete self.oldQueue;
-					//return [argument,error];
-
 					forceNextQueueItem(self, argument, error);
 				};
-				if(a && (a.then || a.promise))
+				if(a && (a.then || a.promise || a._isBRANCHES_))
 					deep.when(a)
 					.done(handleResponse)
 					.fail(function (error) {
 						self.callQueue = self.callQueue.concat(self.oldQueue);
 						delete self.oldQueue;
-						//return [null,error];
 						forceNextQueueItem(self, null, error);
 					});
 				else
 					handleResponse(a);
 			};
 			func._isTHEN_ = true;
-			addInQueue.apply(this, [func]);
+			addInChain.apply(this, [func]);
 			return self;
 		},
 		/**
@@ -816,7 +832,7 @@ function(require)
 					else
 						forceNextQueueItem(self, argument, null);
 				};
-				if(a && (a.then || a.promise))
+				if(a && (a.then || a.promise || a._isBRANCHES_ ))
 					deep.when(a)
 					.done(handlerResponse)
 					.fail(function (error) {
@@ -828,7 +844,55 @@ function(require)
 					handleResponse(a);
 			};
 			func._isTHEN_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
+			return self;
+		},
+		/**
+		 * handle previous chain handle success AND error
+		 *
+		 * the callback receive both the success and the error that are (only one exists normally) produced by previous chain's handle
+		 * 
+		 * @method  always
+		 * @chainable
+		 * @param  callback the calback function to handle success and error
+		 * @return {deep.Chain}
+		 */
+		always:function (callBack)
+		{
+			var self = this;
+			var func = function(s,e)
+			{
+				
+				self.oldQueue = self.callQueue;
+				self.callQueue = [];
+				var a = callBack.apply(self, [s,e]);
+				if(a === self)
+				{
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					return [s,e];
+				}
+				var handleResponse = function (argument) {
+					self.callQueue = self.callQueue.concat(self.oldQueue);
+					delete self.oldQueue;
+					if(typeof argument === 'undefined')
+						forceNextQueueItem(self, s, e);
+					else
+						forceNextQueueItem(self, argument, null);
+				};
+				if(a && (a.then || a.promise || a._isBRANCHES_))
+					deep.when(a)
+					.done(handlerResponse)
+					.fail(function (error) {
+						self.callQueue = self.callQueue.concat(self.oldQueue);
+						delete self.oldQueue;
+						forceNextQueueItem(self, null, error);
+					});
+				else
+					handleResponse(a);
+			};
+			func._isTHEN_ = true;
+			addInChain.apply(this,[func]);
 			return self;
 		},
 		/**
@@ -887,12 +951,12 @@ function(require)
 			var func = function(s,e){
 				var rangeObject = null;
 				
-				rangeObject = utils.createRangeObject(start, end, self._entries.length);
-				self._entries = self._entries.slice(rangeObject.start, rangeObject.end+1);
+				rangeObject = utils.createRangeObject(start, end, self._nodes.length);
+				self._nodes = self._nodes.slice(rangeObject.start, rangeObject.end+1);
 				rangeObject.results = deep.chain.values(self);
 				forceNextQueueItem(self, rangeObject, null);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -914,10 +978,9 @@ function(require)
 			var self = this;
 			var func = function(s,e){
 				deep.chain.position(self, name, options);
-				self.running = false;
-				nextQueueItem.apply(self, [s,e]);
+				forceNextQueueItem(self, s, e)
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -958,12 +1021,12 @@ function(require)
 					position = self.positions[self.position.length-1];
 				if(!position)
 					throw new Error("chain handler error : no positions to go back with name : "+name);
-				self._entries = position.entries;
+				self._nodes = position.entries;
 				self._store = position.store;
 				self.running = false;
 				nextQueueItem.apply(self, [deep.chain.values(self),null]);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		//_________________________________________________________________________________________
@@ -980,10 +1043,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				self._entries = [self._entries[0]];
-				return [self._entries, null];
+				self._nodes = [self._nodes[0]];
+				return [self._nodes, null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -999,10 +1062,10 @@ function(require)
 		{
 			var self = this;
 			var func = function(){
-				self._entries = [self._entries[self._entries.length-1]];
-				return [self._entries, null];
+				self._nodes = [self._nodes[self._nodes.length-1]];
+				return [self._nodes, null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1022,16 +1085,16 @@ function(require)
 			var self = this;
 			var func = function(){
 				var res = [];
-				self._entries.forEach(function (r) {
+				self._nodes.forEach(function (r) {
 					res.push(r.ancestor);
 				});
 				res = deep.utils.arrayUnique(res, "path");
-				self._entries = res;
+				self._nodes = res;
 				if(res.length === 0 && errorIfEmpty)
 					throw new Error("deep.parents could not gives empty results");
 				return [deep.chain.values(self), null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 		/**
@@ -1049,13 +1112,13 @@ function(require)
 			{
 				deep(object, schema)
 				.nodes(function (nodes) {
-					self._entries = nodes;
+					self._nodes = nodes;
 				})
 				.done(function (success) {
 					forceNextQueueItem(self, success, null);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1072,26 +1135,52 @@ function(require)
 		 */
 		query : function(q, errorIfEmpty)
 		{
-			var src = this;
+			var self = this;
 			//src.queries.push(q);
 			if(!(q instanceof Array))
 				q = [q];
 			var func = function()
 			{
-				//console.log("do query : ", q)
 				var res = [];
-				src._entries.forEach(function (r) {
+				//
+				if(!self._queried)
+				{
 					q.forEach(function (qu) {
-						res = res.concat(src.querier.query(r, qu , {resultType:"full"}));
+						if(self._nodes.length > 1)
+						{
+							var values = self._nodes;
+							if(qu.match(/^(\.\/\*)/gi))
+								qu = "./*/value"+qu.substring(3);
+							else if(qu.match(/^(\/\*)/gi))
+								qu = "./*/value"+qu.substring(2);
+							else
+							{
+								if(qu.match(/^(\.\/)/gi) || qu.match(/^(\/)/gi))
+									values = deep.chain.values(self);
+							} 
+							res = res.concat(self.querier.query(values, qu, { resultType:"full" }));
+						}
+						else
+							res = res.concat(self.querier.query(self._nodes[0], qu, { resultType:"full" }));
 					});
-				});
-				src._entries = res;
+				}
+				else
+					self._nodes.forEach(function (r) {
+						q.forEach(function (qu) {
+							res = res.concat(self.querier.query(r, qu , {resultType:"full"}));
+						});
+					});
+				res = deep.utils.arrayUnique(res, "path");
+				self._nodes = res;
+				self._queried = true;
+
 				if(res.length === 0 && errorIfEmpty)
 					throw new Error("deep.query could not gives empty results");
-				return [deep.chain.values(src), null];
+
+				return [deep.chain.values(self), null];
 			};
-			addInQueue.apply(src, [func]);
-			return src;
+			addInChain.apply(self, [func]);
+			return self;
 		},
 		/**
 		 * same as .query : but in place of holding queried entries : it return directly the query results.
@@ -1111,7 +1200,7 @@ function(require)
 			if(!(q instanceof Array))
 				q = [q];
 			var res = [];
-			src._entries.forEach(function (r) {
+			src._nodes.forEach(function (r) {
 				q.forEach(function (qu) {
 					res = res.concat(src.querier.query(r, qu));
 				});
@@ -1119,98 +1208,6 @@ function(require)
 			return res;
 		},
 		//_________________________________________________________________    MODELISATION
-		/**
-		 * set schema of all entries (purely assignation)
-		 * inject entries shemas as chain success
-		 * @method  schema
-		 * @chainable
-		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
-		 * @return {deep.Chain} this (chain handler)
-		 */
-		schema : function(schema)
-		{
-			//metaSchema = metaSchema || deep.metaSchema || {};
-			var self = this;
-			var func = function(){
-				deep.when(deep.get(schema)).then(function (schema) {
-					//var schema = schemas.shift();
-					//var metaSchema = schemas.shift();
-					var alls = [];
-					self._entries.forEach(function(result){
-						result.schema = schema;
-					});
-					forceNextQueueItem(self, schema, null);
-				})
-				.fail(function (error) {
-					forceNextQueueItem(self, null, error);
-				});
-			};
-			addInQueue.apply(this,[func]);
-			return this;
-		},
-		/**
-		 * apply provided schema on all entries schemas (.up application)
-		 * inject entries shemas as chain success
-		 * @method  schemaUp
-		 * @chainable
-		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
-		 * @return {deep.Chain} this (chain handler)
-		 */
-		schemaUp : function(schema, metaSchema)
-		{
-			metaSchema = metaSchema || deep.metaSchema || {};
-			var self = this;
-			var func = function(){
-				deep.when(deep.get(schema))
-				.done(function (schema) {
-					var alls = [];
-					self._entries.forEach(function(result){
-						if(!result.schema)
-							result.schema = {};
-						alls.push(utils.up(schema, result.schema, metaSchema));
-					});
-					forceNextQueueItem(self, alls, null)
-				})
-				.fail(function (error) {
-					forceNextQueueItem(self, null, error)
-				});
-			};
-			addInQueue.apply(this,[func]);
-			return this;
-		},
-		/**
-		 * apply provided schema on all entries schemas (.bottom application)
-		 *
-		 * inject entries shemas as chain success
-		 *
-		 * 
-		 * @method  schemaBottom
-		 * @chainable
-		 * @param  {string|object} schema  could be a retrievable string (e.g. "json::myschema.json" - see retrievable doc)
-		 * @return {deep.Chain} this (chain handler)
-		 */
-		schemaBottom : function(schema, metaSchema)
-		{
-			metaSchema = metaSchema || deep.metaSchema || {};
-			var self = this;
-			var func = function(){
-				deep.when(deep.get(schema))
-				.done(function (schema) {
-					var alls = [];
-					self._entries.forEach(function(result){
-						if(!result.schema)
-							result.schema = {};
-						alls.push(utils.bottom(schema, result.schema, metaSchema));
-					});
-					forceNextQueueItem(self, alls, null)
-				})
-				.fail(function (error) {
-					forceNextQueueItem(self, null, error)
-				});
-			};
-			addInQueue.apply(this,[func]);
-			return this;
-		},
 		/**
 		 * set entries properties by path.
 		 *
@@ -1220,7 +1217,7 @@ function(require)
 		 * @method  setByPath
 		 * @chainable
 		 * @param {string} path  a slash delimitted path (e.g. "/my/property")
-		 * @param {object|primitive} obj the value to assign (could be a retrievable strings)
+		 * @param {object|primitive} obj the value to assign (could be a retrievable strings (see ressource pointer))
 		 */
 		setByPath : function(path, obj)
 		{
@@ -1229,7 +1226,7 @@ function(require)
 				deep.when(deep.get(obj)).then(function (obj)
 				{
 					var res = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						res.push(utils.setValueByPath(result.value, path, obj, '/'));
 					});
 					forceNextQueueItem(self, res, null)
@@ -1238,7 +1235,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1259,7 +1256,7 @@ function(require)
 			var func = function(){
 				deep.when(deep.getAll(args)).then(function (objects)
 				{
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						objects.forEach(function (object) {
 							//console.log("deep.up : entry : ", result, " - to apply : ", object)
 							utils.up(object, result.value, result.schema, result.ancestor?result.ancestor.value:null, result.key);
@@ -1272,7 +1269,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1294,7 +1291,7 @@ function(require)
 			var func = function(){
 				deep.when(deep.getAll(args)).then(function (objects)
 				{
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						objects.forEach(function (object) {
 							utils.bottom(object, result.value, result.schema, result.ancestor?result.ancestor.value:null, result.key);
 						});
@@ -1306,7 +1303,7 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1317,26 +1314,26 @@ function(require)
 		 *
 		 * @example
 		 
-	var a = {
-		aString : "Hello",
-		anInt : 5,
-		anArray : ["1","2","3"],
-		anObject : {
-			anArray : ["4","5","6"],
-			aString : "World"
-		}
-	}
-	deep(a)
-	.replace("./anArray/1","replaceString")
-	.equal({
-		aString : "Hello",
-		anInt : 5,
-		anArray : ["1","replaceString","3"],
-		anObject : {
-			anArray : ["4","5","6"],
-			aString : "World"
-		}
-	});
+			var a = {
+				aString : "Hello",
+				anInt : 5,
+				anArray : ["1","2","3"],
+				anObject : {
+					anArray : ["4","5","6"],
+					aString : "World"
+				}
+			}
+			deep(a)
+			.replace("./anArray/1","replaceString")
+			.equal({
+				aString : "Hello",
+				anInt : 5,
+				anArray : ["1","replaceString","3"],
+				anObject : {
+					anArray : ["4","5","6"],
+					aString : "World"
+				}
+			});
 
 		 * @method  replace
 		 * @param  {string} what a query to select properties to replace 
@@ -1352,7 +1349,7 @@ function(require)
 				deep.when(deep.get(by, options)).then(function (by)
 				{
 					var replaced = [];
-					self._entries.forEach(function (r) {
+					self._nodes.forEach(function (r) {
 						//console.log("chain replace : ",what, " - in :  " , r.value)
 						self.querier.query(r.value, what, {resultType:"full"}).forEach(function(r){
 							//console.log("res query : ", r)
@@ -1368,57 +1365,57 @@ function(require)
 					forceNextQueueItem(self, null, error)
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
 		 * 
 		 * remove queried properties from entries and inject removed properties as chain success.
 		 * @example
-	var a = {
-		aString : "Hello",
-		anInt : 5,
-		anArray : ["1","2","3"],
-		anObject : {
-			anArray : ["4","5","6"],
-			aString : "World"
-		}
-	}
+			var a = {
+				aString : "Hello",
+				anInt : 5,
+				anArray : ["1","2","3"],
+				anObject : {
+					anArray : ["4","5","6"],
+					aString : "World"
+				}
+			}
 
-	deep(a)
-	.remove("./anArray/1").log().valuesEqual([{
-		aString : "Hello",
-		anInt : 5,
-		anArray : ["1","3"],
-		anObject : {
-			anArray : ["4","5","6"],
-			aString : "World"
-		}
-	}]);
+			deep(a)
+			.remove("./anArray/1").log().valuesEqual([{
+				aString : "Hello",
+				anInt : 5,
+				anArray : ["1","3"],
+				anObject : {
+					anArray : ["4","5","6"],
+					aString : "World"
+				}
+			}]);
 
-	@example
+			@example
 
-	var obj = { 
-		email: 'test@test.com',
-		password: 'test54',
-	 	id: '51013dec530e96b112000001' 
-	}
-	 var schema = { 
-	 	properties: 
-		{ 
-		  	id: { type: 'string', required: false, minLength: 1 },
-		    email: { type: 'string', required: true, minLength: 1 },
-		    password: { type: 'string', required: true, "private": true } 
-		},
-	 	additionalProperties: false 
-	}
+			var obj = { 
+				email: 'test@test.com',
+				password: 'test54',
+			 	id: '51013dec530e96b112000001' 
+			}
+			 var schema = { 
+			 	properties: 
+				{ 
+				  	id: { type: 'string', required: false, minLength: 1 },
+				    email: { type: 'string', required: true, minLength: 1 },
+				    password: { type: 'string', required: true, "private": true } 
+				},
+			 	additionalProperties: false 
+			}
 
-	deep(obj, schema)
-	.remove(".//*?_schema.private=true")
-	.equal({ 
-		email: 'test@test.com',
-	 	id: '51013dec530e96b112000001' 
-	 });
+			deep(obj, schema)
+			.remove(".//*?_schema.private=true")
+			.equal({ 
+				email: 'test@test.com',
+			 	id: '51013dec530e96b112000001' 
+			 });
 
 		 * @chainable
 		 * @method  remove
@@ -1430,7 +1427,7 @@ function(require)
 			var self = this;
 			var func = function(){
 				var removed = [];
-				self._entries.forEach(function (r) {
+				self._nodes.forEach(function (r) {
 					self.querier.query(r, what, {resultType:"full"}).forEach(function(r)
 					{
 						if(!r.ancestor)
@@ -1446,7 +1443,7 @@ function(require)
 				});
 				forceNextQueueItem(self, removed, null)
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1609,29 +1606,34 @@ function(require)
 			var count = 0;
 			var doChilds = function(result)
 			{
+				//console.log("do childs")
 				deep.when(self.extendsChilds(result)).then(function () {
 					count--;
+					//console.log("do childs ends : count : ", count);
 					if(count === 0)
 						forceNextQueueItem(self, deep.chain.values(self), null);
 				}, function (error) {
-					console.error("error : deep.flatten : ",error);
+					//console.error("error : deep.flatten : ",error);
 					throw new Error("error : deep.flatten : "+error);
 				});
 			};
 			var func = function(){
 				var alls = [];
-				self._entries.forEach(function (result)
+				//console.log("execute flatten")
+				self._nodes.forEach(function (result)
 				{
 					count++;
 					if(typeof result.value.backgrounds !== 'undefined' && result.value.backgrounds !== null)
 					{
 						deep.when(self.extendsBackgrounds(result)).then(function(stack) {
+							//console.log("backgrounds extendeds")
+
 							var f = {};
 							stack.forEach(function(s){ f = utils.bottom(s, result.value, result.schema); delete s.backgrounds; });
 							delete result.value.backgrounds;
 							doChilds(result);
 						},function (error) {
-							console.error("error : deep.flatten : ", error);
+							//console.error("error : deep.flatten : ", error);
 							throw new Error("error : deep.flatten : "+error);
 						});
 						delete result.value.backgrounds;
@@ -1639,10 +1641,10 @@ function(require)
 					else
 						doChilds(result);
 				});
-				if(self._entries.length === 0)
+				if(self._nodes.length === 0)
 					return [deep.chain.values(self), null];
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		//______________________________________________________________  RUNS
@@ -1667,16 +1669,15 @@ function(require)
 		{
 			var self = this;
 			var func = function(s,e){
-				deep.when(transformer)
-				.done(function  (transformer) {
+				var applyTransformer = function  (transformer) {
 					var alls = [];
-					self._entries.forEach(function(result){
+					self._nodes.forEach(function(result){
 						alls.push(transformer(result.value));
 					});
 					deep.all(alls).done(function (loadeds)
 					{
 						var count = 0;
-						self._entries.forEach(function(result){
+						self._nodes.forEach(function(result){
 							result.value = loadeds[count];
 							if(result.ancestor)
 								result.ancestor[result.key] = result.value;
@@ -1689,12 +1690,17 @@ function(require)
 						console.error("error : deep.transform : ", error);
 						forceNextQueueItem(self, null, error);
 					});
-				})
-				.fail(function(error){
-					forceNextQueueItem(self, null, error);
-				});
+				}
+				if(typeof transformer === 'string')
+					deep.when(deep.get(transformer))
+					.done(applyTransformer)
+					.fail(function(error){
+						forceNextQueueItem(self, null, error);
+					});
+				else
+					applyTransformer(transformer);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -1719,7 +1725,7 @@ function(require)
 			args = args || [];
 			var create = function(s,e){
 				var alls = [];
-				self._entries.forEach(function(result){
+				self._nodes.forEach(function(result){
 					if(!funcRef)
 					{
 						if(typeof result.value != "function")
@@ -1747,7 +1753,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[create]);
+			addInChain.apply(this,[create]);
 			return this;
 		},
 		/**
@@ -1774,17 +1780,16 @@ function(require)
 			args = args || [];
 			var create = function()
 			{
-				deep.when(func.apply({}, args)).then(function (loadeds)
+				deep.when(func.apply({}, args)).done(function (loadeds)
 				{
 					forceNextQueueItem(self, loadeds, null);
-				},
-				function (error)
+				}).fail(function (error)
 				{
 					console.error("error : deep.exec : ", error);
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[create]);
+			addInChain.apply(this,[create]);
 			return this;
 		},
 		/**
@@ -1830,7 +1835,7 @@ function(require)
 				});
 				
 			};
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 		/**
@@ -1865,7 +1870,7 @@ function(require)
 				.done(function(treatment){
 					//console.log("treat getted : ", treatment)
 					var alls = [];
-					self._entries.forEach(function(entry) {
+					self._nodes.forEach(function(entry) {
 						alls.push(applyTreatment.apply(treatment, [entry.value]));
 					});
 					
@@ -1880,7 +1885,7 @@ function(require)
 				});
 				
 			};
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 
@@ -1906,7 +1911,7 @@ function(require)
 		 * @chainable
 		 * @return {deep.Chain}     this
 		 */
-		valuesEqual : function(obj, callBack)
+		valuesEqual : function(obj)
 		{
 			var self = this;
 			var func = function(){
@@ -1916,24 +1921,9 @@ function(require)
 					console.info("deep.valuesEqual : "+ JSON.stringify(o, null, ' '));
 				else
 					console.error("deep.valuesEqual : "+ JSON.stringify(o, null, ' '));
-
-				if(callBack)
-				{
-					deep.when(callBack(o)).then(function (argument) {
-						if(typeof argument === 'undefined')
-							argument = o;
-						forceNextQueueItem(self, argument, null);
-					}, function (error) {
-						forceNextQueueItem(self, o, error);
-					});
-				}
-				else
-				{
-					self.running = false;
-					forceNextQueueItem(self, o, !o.equal);
-				}
+				forceNextQueueItem(self, o, !o.equal);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 
@@ -1950,15 +1940,15 @@ function(require)
 		 * @chainable
 		 * @return {deep.Chain}        this
 		 */
-		equal : function(obj, callBack)
+		equal : function(obj)
 		{
 			// console.log("deep.equal chaining");
 			var self = this;
 			var func = function(){
-				//console.log("will do deep.equal : self : ", self._entries)
+				//console.log("will do deep.equal : self : ", self._nodes)
 				var res = [];
 				var errors = [];
-				self._entries.forEach(function(r){
+				self._nodes.forEach(function(r){
 					//console.log("deep.equal : r : ",r);
 					var ok = utils.deepEqual(r.value, obj);
 					var o = {path:r.path, equal:ok, value:r.value, needed:obj};
@@ -1971,99 +1961,80 @@ function(require)
 						console.error("deep.equal : "+o.equal+" : ", o);
 				});
 				var report = {
-					equal:(self._entries.length > 0) && (errors.length===0),
+					equal:(self._nodes.length > 0) && (errors.length===0),
 					reports:res
 				};
-				if(callBack)
-				{
-					deep.when(callBack(report)).then(function (argument) 
-					{
-						if(report.equal)
-							forceNextQueueItem(self, report, null);
-						else
-							forceNextQueueItem(self, null, report);
-					}, function (error) {
-						forceNextQueueItem(self, report, error);
-					});
-				}
+				if(report.equal)
+					forceNextQueueItem(self, report, null);
 				else
-				{
-					if(report.equal)
-						forceNextQueueItem(self, report, null);
-					else
-						forceNextQueueItem(self, null, report);
-				}
+					forceNextQueueItem(self, null, report);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return self;
 		},
 
 		/**
-		 * validate apply validation
+		 *  validate each chain entry against provided schema (if any) or against their own schemas (i.e. the entry schema) (if any).
+		 *  Provided schema could be a deep json pointer (e.g. json::/my/path/to/schema.json or user::schema.post)
 		 *
+		 * 
+		 *  
 		 *	Chain Success injection : the valid report
-		 *	Chain Error injection : the unvalid report
+		 *	Chain Error injection : an error, status 412, containing the unvalid report (or any errors from schema )
+		 *
+		 * @example
+		 *
+		 * 	deep(1,{ type:"numbder"}).validate().log();
+		 *
+		 * @example
+		 *
+		 * 	deep(1).validate({ type:"numbder"}).log();
+		 *
+		 * @example
+		 *
+		 * 	deep({ 
+		 * 		//...
+		 * 	}).validate("user::schema").log();
 		 * 
 		 * @method  validate
-		 * @param  {Object} options [description]
+		 * @parame {Object,String} schema (optional) a schema object or a schema reference (deep json pointer)
 		 * @chainable
-		 * @return {deep.Chain}         [description]
+		 * @return {deep.Chain}     this
 		 */
-		validate:function(schema, options)
+		validate:function(schema)
 		{
-			options = options || {};
 			var self = this;
-			var callBack = options.callBack;
-			if(typeof options === 'string')
-				callBack = options;
-
-
 			var func = function()
 			{
-				var report = {
-					valid:true,
-					reports:[]
-				};
-				self._entries.forEach(function (e) {
-					var rep = Validator.validate(e.value, schema || e.schema);
-					report.reports.push(rep);
-					if(!rep.valid)
-						report.valid = false;
-				});
-				
-				//console.log("validate is valid : ", report.valid);
-				if(!report.valid)
+				var runSchema = function(schema)
 				{
-					error = new Error();
-					error.report = report;
-					error.status = 412;
+					var report = {
+						valid:true,
+						reports:[]
+					};
+					self._nodes.forEach(function (e) {
+						var rep = Validator.validate(e.value, schema || e.schema || {});
+						report.reports.push(rep);
+						if(!rep.valid)
+							report.valid = false;
+					});
+					//console.log("validate is valid : ", report.valid);
+					if(report.valid)
+						forceNextQueueItem(self, report, null);
+					else
+						forceNextQueueItem(self, null, report);
 				}
-				if(callBack)
-				{
-
-					deep.when(callBack(report))
-					.then(function (argument) {
-						report.callBackResponse = argument;
-						//console.log("callBack response")
-						if(report.valid)
-							forceNextQueueItem(self, report, null);
-						else
-							forceNextQueueItem(self, null, error);
-					}, function (error) {
+				if(typeof schema === 'string')
+					deep.when(deep.get(schema))
+					.done(runSchema)
+					.fail(function(error){
 						forceNextQueueItem(self, null, error);
 					});
-				}
-				else if(report.valid)
-				{
-					//console.log("deep.validate : report valid and no callBack : ", report )
-					return [report, null];
-				}
-					
-				//console.log("report not valid : ", report)
-				return [null, report];
+				else
+					runSchema(schema)
 			};
 			func._name = "deep.Chain.validate";
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 
@@ -2098,7 +2069,7 @@ function(require)
 				forceNextQueueItem(self, s,e);
 			};
 			func._isTRANSPARENT_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2122,8 +2093,8 @@ function(require)
 			options = options || {};
 			var func = function(success, error)
 			{
-				console.log(title||"deep.logValues : ", " ("+self._entries.length+" values)");
-				self._entries.forEach(function (e) {
+				console.log(title||"deep.logValues : ", " ("+self._nodes.length+" values)");
+				self._nodes.forEach(function (e) {
 					var val = e;
 					var entry = null;
 					if(e.value)
@@ -2144,7 +2115,7 @@ function(require)
 				nextQueueItem.apply(self,[success, error]);
 			};
 			func._isTRANSPARENT_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		// ________________________________________ READ ENTRIES
@@ -2168,7 +2139,7 @@ function(require)
 			var func = function(s,e)
 			{
 				var applyCallBack = function (callBack) {
-					var  a = self._entries[0]?self._entries[0].value:null;
+					var  a = self._nodes[0]?self._nodes[0].value:null;
 					var r = null;
 					if(typeof callBack === 'function')
 						r = callBack(a);
@@ -2176,7 +2147,7 @@ function(require)
 						r = applyTreatment.apply(callBack, [a]);
 					if(typeof r === 'undefined')
 						r = a;
-					if(r.promise || typeof r.then === 'function')
+					else if(r && (r.promise || typeof r.then === 'function' || r._isBRANCHES_))
 						deep.when(r).then(function (argument) {
 							if(typeof argument === 'undefined')
 								argument = a;
@@ -2187,8 +2158,8 @@ function(require)
 					else
 						forceNextQueueItem(self, r, null);
 				}
-				if(typeof callBack !== 'function')
-					deep.when(callBack)
+				if(typeof callBack === 'string')
+					deep.when(deep.get(callBack))
 					.done(applyCallBack)
 					.fail(function (error) {
 						forceNextQueueItem(self, null, error);
@@ -2198,7 +2169,7 @@ function(require)
 			};
 			if(callBack)
 			{
-				addInQueue.apply(this,[func]);
+				addInChain.apply(this,[func]);
 				return this;
 			}
 			else
@@ -2232,7 +2203,7 @@ function(require)
 						r = applyTreatment.apply(callBack, [a]);
 					if(typeof r === 'undefined')
 						r = a;
-					if(r.promise || typeof r.then === 'function')
+					else if(r && (r.promise || typeof r.then === 'function' || r._isBRANCHES_))
 						deep.when(callBack(a)).then(function (res) {
 							if(typeof res === "undefined")
 								res = a;
@@ -2244,8 +2215,8 @@ function(require)
 					else
 						forceNextQueueItem(self, r, null);
 				}
-				if(typeof callBack !== 'undefined')
-					deep.when(callBack)
+				if(typeof callBack === 'string')
+					deep.when(deep.get(callBack))
 					.done(applyCallBack)
 					.fail(function (error) {
 						forceNextQueueItem(self, null, error);
@@ -2255,7 +2226,7 @@ function(require)
 			};
 			if(callBack)
 			{
-				addInQueue.apply(this,[func]);
+				addInChain.apply(this,[func]);
 				return this;
 			}
 			else
@@ -2281,21 +2252,23 @@ function(require)
 				var applyCallBack = function (callBack) {
 					var alls = [];
 					if(typeof callBack === 'object')
-						self._entries.forEach(function(entry) {
+						self._nodes.forEach(function(entry) {
 							alls.push(applyTreatment.apply(callBack, [entry.value]));
 						});
 					else
-						self._entries.forEach(function(e){
+						self._nodes.forEach(function(e){
 							alls.push(callBack(e.value));
 						});
-					deep.all(alls).then(function (results) {
+					deep.all(alls)
+					.done(function (results) {
 						forceNextQueueItem(self, results, null);
-					}, function (error) {
+					})
+					.fail(function (error) {
 						forceNextQueueItem(self, null, error);
 					});
 				};
-				if(typeof callBack !== 'function')
-					deep.when(callBack)
+				if(typeof callBack === 'string')
+					deep.when(deep.get(callBack))
 					.done(applyCallBack)
 					.fail(function (error) {
 						forceNextQueueItem(self, null, error);
@@ -2303,7 +2276,7 @@ function(require)
 				else
 					applyCallBack(callBack);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
@@ -2324,7 +2297,7 @@ function(require)
 			var self = this;
 			var func = function(s,e)
 			{
-				var  a = self._entries.concat([]);
+				var  a = self._nodes.concat([]);
 				deep.when(callBack(a)).then(function (argument) {
 					self.running = false;
 					nextQueueItem.apply(self, [s, e]);
@@ -2336,7 +2309,7 @@ function(require)
 			};
 			if(callBack)
 			{
-				addInQueue.apply(this,[func]);
+				addInChain.apply(this,[func]);
 				return this;
 			}
 			else
@@ -2375,7 +2348,7 @@ function(require)
 				}, ms);
 			}
 			func._isTRANSPARENT_ = true;
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		//____________________________________________________________________  LOAD
@@ -2399,7 +2372,7 @@ function(require)
 				var  paths = [];
 				var  promises = [];
 				//console.log("deepLoad : ", self)
-				self._entries.forEach(function (e) {
+				self._nodes.forEach(function (e) {
 					var strings = self.querier.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {resultType:"full"});
 					//console.log("deep load query result : ", strings)
 					strings.forEach(function (toLoad) {
@@ -2440,13 +2413,13 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 		/**
 		 *
 		 * if request is provided : 
-		 * 		try to retrieve 'request' and replace entries values by loaded result
+		 * 		try to retrieve 'request' and simply inject result in chain. request could be a ressource pointer OR a function to call to get something (maybe a promise tht will be manage before continuing chain)
 		 * 	else
 		 * 		will try to retrieve any entry.value strings (will not seek deeply) and replace associated entries values by loaded result.
 		 * 		OR if entry.value is an object : look if there is any .load() function in it. If so : fire it.
@@ -2484,7 +2457,7 @@ function(require)
 						promises.push(request);
 				}
 				else
-					self._entries.forEach(function (e) {
+					self._nodes.forEach(function (e) {
 						if(!e.value)
 							return;
 						if(e.value.load)
@@ -2506,17 +2479,13 @@ function(require)
 					var count = 0;
 					if(request)
 					{
-						//console.log("deep.load results from request : ", self._entries)
-						self._entries.forEach(function (entry) {
-							if(!entry.ancestor)
-								//throw new Error("You couldn't interpret root !");
-									entry.value = results[0];
-								else
-									entry.value = entry.ancestor.value[entry.key] = results[0];
-						});
+						//console.log("deep.load results from request : ", self._nodes)
+						forceNextQueueItem(self, results.shift(), null);
+						return;
 					}
 					else
-						results.forEach(function  (r) {
+						results.forEach(function  (r) 
+						{
 							//console.log("deep.load results from inner : ", r)
 							var item = paths[count++];
 							if(!item.value.load)
@@ -2534,7 +2503,7 @@ function(require)
 					forceNextQueueItem(self, null, error);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 
@@ -2564,7 +2533,7 @@ function(require)
 				.done(function (context)
 				{
 					var res = [];
-					self._entries.forEach(function (e) {
+					self._nodes.forEach(function (e) {
 						var strings = self.querier.query(e, ".//?_schema.type=string", {resultType:"full"});
 						strings.forEach(function (interpretable) {
 							var r = deep.interpret(interpretable.value, context);
@@ -2586,7 +2555,7 @@ function(require)
 					nextQueueItem.apply(self, [null, error]);
 				});
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},*/
 		/**
@@ -2615,7 +2584,7 @@ function(require)
 				var applyContext = function (context) {
 					//console.log("interpret: received context : ", context);
 					var res = [];
-					self._entries.forEach(function (interpretable)
+					self._nodes.forEach(function (interpretable)
 					{
 						if(typeof interpretable.value === 'string')
 						{
@@ -2642,7 +2611,7 @@ function(require)
 				else 
 					applyContext(context);
 			};
-			addInQueue.apply(this,[func]);
+			addInChain.apply(this,[func]);
 			return this;
 		},
 
@@ -2659,7 +2628,7 @@ function(require)
 					forceNextQueueItem(self, s, e);
 			};
 			f._isPUSH_HANDLER_TO_ = true;
-			addInQueue.apply(this,[f]);
+			addInChain.apply(this,[f]);
 			return this;
 		},
 
@@ -2724,14 +2693,14 @@ function(require)
 					else
 						map[val] = w;
 				});
-				self._entries.forEach(function(entry) {
+				self._nodes.forEach(function(entry) {
 					if(map[entry.value[localKey]])
 						entry.value[whereToStore || localKey] = map[entry.value[localKey]];
 				});
 				forceNextQueueItem(self, deep.chain.values(self), null);
 			};
 			var func = function(s, e) {
-				if(self._entries.length === 0)
+				if(self._nodes.length === 0)
 				{
 					forceNextQueueItem(self, deep.chain.values(self), null);
 					return;
@@ -2766,7 +2735,7 @@ function(require)
 				else
 					doMap(what, localKey, foreignKey, whereToStore);
 			};
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 
@@ -2817,28 +2786,36 @@ function(require)
 			var func = function (s,e) 
 			{
 				var alls  = [];
-				self._entries.forEach(function(entry){
+				var temp = [];
+				self._nodes.forEach(function(entry){
 					if(!entry.schema || !entry.schema.links)
 						return;
+					var r = {
+						value:entry.value,
+						schema:entry.schema
+					}
+					temp.push(r);
 					deep.query(entry.schema.links, "./*?rel=in=("+relations.join(",")+")")
 					.forEach(function(relation){
 						var path = deep.interpret(relation.href, entry.value);
 						var parsed = deep.parseRequest(path);
-						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:{ relation:relation, request:parsed, entry:entry } }));
+						var wrap = { rel:relation, href:parsed } ;
+						r[relation] = wrap;
+						alls.push(deep.get(parsed, { defaultProtocole:"json", wrap:wrap}));
 					});
 				});
 				if(alls.length == 0)
 					return [s,e];
 				deep.all(alls)
-				.done(function(results){
-					//console.log("get relations : ", results)
-					forceNextQueueItem(self, results, null);
+				.done(function(s){
+					//console.log("get relations : ", s)
+					forceNextQueueItem(self, temp, null);
 				})
 				.fail(function(error){
 					forceNextQueueItem(self, null, error);
 				});
 			}
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 
@@ -2891,7 +2868,7 @@ function(require)
 				relations.push(i);
 			//console.log("mapRelations :  relations : ", relations);
 			var func = function (s,e) {
-				self._entries.forEach(function(entry){
+				self._nodes.forEach(function(entry){
 					if(!entry.schema || !entry.schema.links)
 						return;
 					var alls  = [];
@@ -2919,7 +2896,7 @@ function(require)
 					})
 				});
 			}
-			deep.chain.addInQueue.apply(this, [func]);
+			deep.chain.addInChain.apply(this, [func]);
 			return this;
 		},
 		/**
@@ -2942,12 +2919,12 @@ function(require)
 	deep.chain = {
 		nextQueueItem:nextQueueItem,
 		forceNextQueueItem:forceNextQueueItem,
-		addInQueue:addInQueue,
+		addInChain:addInChain,
 		stringify:function (handler, options)
 		{
 			options = options || {};
 			var res = "";
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				if(options.pretty)
 					res += JSON.stringify(e.value, null, ' ')+"\n";
 				else
@@ -2961,34 +2938,34 @@ function(require)
 			return handler;
 		},
 		val:function (handler) {
-			if(handler._entries.length === 0)
+			if(handler._nodes.length === 0)
 				return undefined;
-			return handler._entries[0].value;
+			return handler._nodes[0].value;
 		},
 		values:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e.value);
 			});
 			return res;
 		},
 		nodes:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e);
 			});
 			return res;
 		},
 		paths:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e.paths);
 			});
 			return res;
 		},
 		schemas:function (handler) {
 			var res = [];
-			handler._entries.forEach(function (e) {
+			handler._nodes.forEach(function (e) {
 				res.push(e.schema);
 			});
 			return res;
@@ -2997,7 +2974,7 @@ function(require)
 			options = options || {};
 			handler.positions.push({
 				name:name,
-				entries:handler._entries.concat([]),
+				entries:handler._nodes.concat([]),
 				store:handler._store,
 				queue:(options.restartChain)?handler.callQueue.concat([]):null
 			});
@@ -3139,9 +3116,8 @@ function(require)
 		});
 	};
 
-	var stores = require( "deep/deep-stores" )(deep);
-
-	var deepPromises = require("deep/deep-promise")(deep);
+	require( "deep/deep-stores" )(deep);
+	require("deep/deep-promise")(deep);
 	return deep;
 
 	//______________________________________________________________________________________________________________________________________
