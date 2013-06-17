@@ -976,11 +976,9 @@ define(function(require){
 			case "application/json-rpc" : 
 				return utils.parseJson(body);
 				break;	
-
 			case "application/json" : 
 				return utils.parseJson(body);
 				break;	
-
 			case "application/javascript" :   // TODO : should be parsed by json-extended parser
 				return utils.parseJson(body);
 				break;	
@@ -997,6 +995,9 @@ define(function(require){
 	{
 		if (typeof err === 'object') 
 		{
+			console.log("\n\n**************************** (deep) Error Dump : \n")
+			if (err.status) 
+			  console.log('\nStatus: ' + err.status)
 			if (err.message) 
 			  console.log('\nMessage: ' + err.message)
 			if (err.stack) 
@@ -1009,11 +1010,6 @@ define(function(require){
 		else 
 			console.log('dumpError :: argument is not an object');
 	}
-
-
-
-
-
 
 	return utils;	
 })
