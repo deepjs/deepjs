@@ -6,10 +6,8 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 define(["require","./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors"],
-	function(require)
+function(require)
 {
-
-
 	var deep = dp = function(obj, schema, options)
 	{
 		//console.log("start chain : ", obj)
@@ -171,7 +169,6 @@ define(["require","./utils", "./deep-rql", "./deep-schema", "./deep-query", "./d
 	 */
 	deep.query = Querier.query;
 
-
 	/**
 	 * shortcut for utils.interpret
 	 * @static
@@ -200,7 +197,6 @@ define(["require","./utils", "./deep-rql", "./deep-schema", "./deep-query", "./d
 	 * @return {String} the result
 	 */
 	deep.globals = {};
-
 
 	var addInChain = function(handle)
 	{
