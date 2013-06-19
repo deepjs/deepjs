@@ -466,6 +466,7 @@ define(["require"], function (require){
 	promise.promise = deep.promise;
 	promise.all = deep.all;
 	promise.Deferred = deep.Deferred;
+
 	return deep;
 	}
 })
