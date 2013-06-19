@@ -307,12 +307,12 @@ define(function(require){
 		{
 			var part = parts.shift();
 			if(!tmp[part])
-				return null;
+				return undefined;
 			tmp = tmp[part];
 		}
 		if(tmp)
 			return tmp[parts.shift()];
-		else return null;
+		else return undefined;
 	}
 
 	utils.deletePropertyByPath = function deletePropertyByPath(object, path, pathDelimiter)
@@ -347,13 +347,13 @@ define(function(require){
 		{
 			var part = parts.shift();
 			if(!tmp.properties || !tmp.properties[part])
-				return null;
+				return undefined;
 			tmp = tmp.properties[part];
 		}
 		if(tmp.properties)
 			return tmp.properties[parts.shift()];
 		else
-			return null;
+			return undefined;
 	}
 	/*
 		Does not make a deep-copy if collision : just if collid : make unique
@@ -515,7 +515,7 @@ define(function(require){
 				}
 			}
 			if(!tmp.properties || !tmp.properties[part])
-				return null;
+				return undefined;
 			tmp = tmp.properties[part];
 		}
 		// console.log("after test last part -1 : ", tmp);
@@ -545,7 +545,7 @@ define(function(require){
 
 			if(res.length ==0)
 				if (tmp.additionalProperties == undefined || tmp.additionalProperties == false)
-					return null;
+					return undefined;
 				else
 					return tmp.additionalProperties;
 		}

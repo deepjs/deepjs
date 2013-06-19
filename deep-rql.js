@@ -23,10 +23,11 @@ add _brothers  (any brothers)
 
 */ 
 define(function defineJsonQuery(require){
+	return function(utils){
 	RQL_Global = {}
 
 var layer = {};
-var utils = require("./utils");
+//var utils = require("./utils");
 var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
 var parser = require("rql/parser");
 var parseQuery = parser.parseQuery;
@@ -708,4 +709,5 @@ function query(target, qry, options){
 	}
 }
 return layer;
+}
 });
