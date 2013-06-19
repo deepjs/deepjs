@@ -10,8 +10,9 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 define(function(require){
-	var collider = require("./deep-collider");
-	var compose = require("./deep-compose");
+	return function(deep){
+	var collider = deep.collider;//require("./deep-collider");
+	var compose = deep.compose; //require("./deep-compose");
 	/**
 	 * @class utils
 	 * @namespace deep
@@ -1046,4 +1047,5 @@ define(function(require){
 	}
 
 	return utils;	
+}
 })

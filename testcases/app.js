@@ -13,8 +13,8 @@ define(function(require){
 	};
 	console.log("start app");
 	deep = require("deep/deep");
-	require("deep/deep-roles")(deep);
-	deep(deep.roles).up({
+	//require("deep/deep-roles")(deep);
+	/*deep(deep.roles).up({
 		"user":{
 			name:"user",
 			backgrounds:[deep.Role],
@@ -23,7 +23,7 @@ define(function(require){
 			}
 		}
 	})
-	.flatten();
+	.flatten();*/
 	var init = function()
 	{	
 		console.log("app intialised");

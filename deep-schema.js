@@ -288,8 +288,14 @@ if(typeof define !== 'function')
 	var swig = require("swig");
 	var isNode = true;
 }	
-define(["require", "./utils", "./promise", "./deep-query"],
+define(["require"],
 function(require, utils, promise, Querier){
+
+	return function (deep) {
+
+	var utils = deep.utils;
+	var promise = deep;
+	var Querier = deep.Querier;
 
 	if(isNode)
 	{	
@@ -1347,5 +1353,5 @@ function(require, utils, promise, Querier){
 		return valider.partialValidation(obj, schema, options);
 	}
 	return Validator;
-
+}
 });

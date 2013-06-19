@@ -190,8 +190,10 @@ if(typeof define !== 'function'){
 }
 define(function defineDeepQuery(require)
 {
-	var rqlQuery = require("./deep-rql").query;
-	var utils = require("./utils");
+	return function(deep)
+	{
+	var rqlQuery = deep.rql;// require("./deep-rql").query;
+	var utils = deep.utils; //require("./utils");
 	var QueryError = Error;
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath;
 
@@ -781,20 +783,11 @@ define(function defineDeepQuery(require)
 	 */
 	DQ.prototype.query = function doDeepQuery(obj, q, options) 
 	{
-		if(typeof obj !== 'object')
+		if(typeof obj !== 'object' || !obj)
 		{
 			return [];
 		}
-		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\.\.)/gi))
-		{
-			if(q[0] == ".")
-				q = q.substring(1);
-			//console.log("STRAIGHT QUERY : ",q)
-			var r = utils.retrieveValueByPath(obj, q, "/");
-			if(typeof r === 'undefined')
-				return [];
-			return r;
-		}
+		
 		//console.log("DQ.query : ", obj, q, options)
 		options = options || {};
 		if(!this.cache || !options.keepQueryCache)
@@ -804,16 +797,14 @@ define(function defineDeepQuery(require)
 		if(q[0] === '#')
 			q = q.substring(1);
 		//console.log("DeepQuery : will do : ",q);
-		var parts = this.analyse(q);
-		if(parts.length == 0 || parts[0].type != "move")
-			throw new QueryError("query need to start with move : "+q);
-		if(obj && obj._isDQ_NODE_ == true)
+	
+		if(obj._isDQ_NODE_ == true)
 		{
 			//console.log("DQ : start with _isDQ_NODE_")
 			this.root = this.cache["/"] = obj.root || obj;
 			items = [obj];
 		}
-		else if(obj && obj._deep_entry)
+		else if(obj._deep_entry)
 		{
 			//console.log("DQ : start with object with _deep_entry ")
 			this.root = this.cache["/"] = obj._deep_entry.root;
@@ -827,6 +818,20 @@ define(function defineDeepQuery(require)
 		}
 		items[0].root = this.root;
 
+		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\.\.)/gi))
+		{
+			if(q[0] == ".")
+				q = q.substring(1);
+			//console.log("STRAIGHT QUERY : ",q)
+			var r = utils.retrieveValueByPath(items[0].value, q, "/");
+			if(typeof r === 'undefined')
+				return [];
+			return r;
+		}
+
+		var parts = this.analyse(q);
+		if(parts.length == 0 || parts[0].type != "move")
+			throw new QueryError("query need to start with move : "+q);
 		var self = this;
 		var start = true;
 		while(parts.length>0)
@@ -905,4 +910,5 @@ define(function defineDeepQuery(require)
 			}
 	}
 	return DQ;
+}
 })

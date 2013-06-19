@@ -158,7 +158,8 @@ if(typeof define !== 'function')
 	var define = require('amdefine')(module);
 
 define(function(require, exports, module){
-	var promise = require("./promise");
+	return function(deep)
+	{
 	// console.log("Deep-compose init");
 
 	/**
@@ -181,7 +182,7 @@ define(function(require, exports, module){
 		return function executeChain() {
 			var self = this;
 			var args = arguments;
-			var def = promise.Deferred();
+			var def = deep.Deferred();
 			var r = before.apply(this, args);
 			//console.log("chain.first : result == ", r)
 
@@ -194,7 +195,7 @@ define(function(require, exports, module){
 					return r;
 				if(!r.then)
 					return r;
-				promise.when(r)
+				deep.when(r)
 				.done(function (suc) {
 					def.resolve(suc);
 				}).fail(function (error) {
@@ -208,9 +209,9 @@ define(function(require, exports, module){
 					return r;
 				if(!r.then)
 					return r;
-				promise.when(r)
+				deep.when(r)
 				.done(function (suc) {
-					//	console.log("chain.second.promise.when : result : ", suc)
+					//	console.log("chain.second.deep.when : result : ", suc)
 					def.resolve(suc);
 				}).fail(function (error) {
 					def.reject(error);
@@ -218,11 +219,11 @@ define(function(require, exports, module){
 			}
 			else
 			{
-				//console.log("________________BEFORE promise.when___________");
-				promise.when(r)
+				//console.log("________________BEFORE deep.when___________");
+				deep.when(r)
 				.done(function (r)
 				{
-					//console.log("after : promise.when(first) res : ", r);
+					//console.log("after : deep.when(first) res : ", r);
 					var argus = args ;
 					if(typeof r !== 'undefined' )
 						argus = [r];
@@ -231,7 +232,7 @@ define(function(require, exports, module){
 						return	def.resolve(r);
 					if(!r.then)
 						return def.resolve(r);
-					promise.when(r).then(function (suc) {
+					deep.when(r).then(function (suc) {
 						def.resolve(suc);
 					}, function (error) {
 						def.reject(error);
@@ -379,7 +380,7 @@ define(function(require, exports, module){
 				{
 					var self = this;
 					var args = arguments;
-					return promise.when(previous.apply(this, args))
+					return deep.when(previous.apply(this, args))
 					.done(function (res) {
 						//console.log("compose.fail : previous done : ", res);
 						if(res instanceof Error)
@@ -459,7 +460,7 @@ define(function(require, exports, module){
 				{
 					var args = arguments;
 					var promises = [argument.apply(this, args), previous.apply(this,args)];
-					return promise.all(promises);
+					return deep.all(promises);
 				};
 			};
 			this.stack.push(wrapper);
@@ -678,4 +679,5 @@ define(function(require, exports, module){
 	// console.log("Deep-compose initialised");
 
 	return compose;
+}
 });
