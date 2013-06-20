@@ -292,6 +292,9 @@ function(require)
 						throw e;
 					self._success = null;
 					self._error = e;
+					self._running = false;  // asynch flag
+					//self._executing = false;
+					//return forceHandle.call(this);
 				}
 				finally{
 					if(previousContext !== this.context)
@@ -928,11 +931,20 @@ function(require)
 						var val = toLoad.value;
 						if(context)
 							val = deep.utils.interpret(toLoad.value, context);
-						console.log("deepLoad : will get : ", val);
-						return deep.get(val, { entry:toLoad });
+						//console.log("deepLoad : will get : ", val);
+						return deep.when(deep.get(val, { entry:toLoad }))
+						.done(function(s){
+							//console.log("deepLoad.get res : ", JSON.stringify(s));
+							return s.value;
+						});
 					}
 					else if(typeof toLoad.value === 'function')
-						return toLoad.value();
+					{
+						if(toLoad.ancestor)
+							toLoad.ancestor.value[toLoad.key]();
+						else
+							return toLoad.value();
+					}
 					else
 						return toLoad.value;
 				}
@@ -940,7 +952,7 @@ function(require)
 				self._nodes.forEach(function (e) {
 					toLoads = toLoads.concat(deep.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {resultType:"full"}));
 				});
-				console.log("deep.load will load : ",toLoads)
+				//console.log("deep.load will load : ",toLoads)
 				return deep.chain.transformNodes(toLoads, doDeepLoad);
 			};
 			func._isDone_ = true;
@@ -981,11 +993,16 @@ function(require)
 						return request;
 				}
 				return deep.chain.transformNodes(self._nodes, function(v){
-					console.log("deep.load : node : ",v)
+					//console.log("deep.load : node : ",v)
 					if(v.value.load)
-						return callFunctionFromValue(v, "load");
+					{
+						return deep.when(callFunctionFromValue(v, "load"))
+						.done(function (argument) {
+							return v.value;
+						})
+					}
 					else if(typeof v.value === 'string')
-						return deep.get(v.value);
+						return deep.get(v.value, {});
 					else
 						return v.value;
 				});
@@ -1786,7 +1803,7 @@ function(require)
 					var replaced = [];
 					self._nodes.forEach(function (r) 
 					{
-						self.querier.query(r.value, what, {resultType:"full"}).forEach(function(r){
+						deep.query(r.value, what, {resultType:"full"}).forEach(function(r){
 							if(!r.ancestor)
 								return;
 							r.ancestor.value[r.key] = r.value = by;
@@ -1864,7 +1881,7 @@ function(require)
 			var func = function(){
 				var removed = [];
 				self._nodes.forEach(function (r) {
-					self.querier.query(r, what, {resultType:"full"}).forEach(function(r)
+					deep.query(r, what, {resultType:"full"}).forEach(function(r)
 					{
 						if(!r.ancestor)
 							return;
@@ -2651,16 +2668,19 @@ function(require)
 			nodes.forEach(function (e) {
 				results.push(transformer(e));
 			});
+			//console.log("transfo will wait for : ", results);
 			return deep.all(results)
 			.done(function(res){
-				//console.log("transformeNodes results : ", res, nodes);
+				//console.log("transformeNodes results : ", res);
+				var fin = [];
 				nodes.forEach(function(n)
 				{
 					n.value = res.shift();
 					if(n.ancestor)
 						n.ancestor.value[n.key] = n.value;
+					fin.push(n.value);
 				});
-				return res;
+				return fin;
 			});
 		},
 		val: function (handler) {
@@ -3864,14 +3884,17 @@ function(require)
 		return this;
 	});
 		//
-	deep.Chain.addHandle("nodes", function()
+	deep.Chain.addHandle("nodes", function(callBack)
 	{
 		var self = this;
 		var func = function(s,e)
 		{
-			return deep.chain.nodes(self);
+			return callBack(deep.chain.nodes(self));
 		}
-		addInChain.apply(self,[func]);
+		if(callBack)
+			addInChain.apply(self,[func]);
+		else
+			return deep.chain.nodes(self);
 		return this;
 	});
 	//_________________________________________________________________________________

@@ -818,7 +818,7 @@ define(function defineDeepQuery(require)
 		}
 		items[0].root = this.root;
 
-		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\.\.)/gi))
+		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\.\.)|(\*)/gi))
 		{
 			if(q[0] == ".")
 				q = q.substring(1);
