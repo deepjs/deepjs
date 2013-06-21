@@ -631,7 +631,7 @@ define(function defineDeepQuery(require)
 		if(path[0] == '[')
 		{
 			if(fromUnion)
-				throw new QueryError("you couldn't have union in union of selectors.", path, parts);
+				throw new QueryError("you couldn't have union in union of selectors."+this.currentQuery);
 			return this.analyseUnionAccess(path, parts);
 		}	
 		var string = "";
@@ -787,7 +787,7 @@ define(function defineDeepQuery(require)
 		{
 			return [];
 		}
-		
+		this.currentQuery = q;
 		//console.log("DQ.query : ", obj, q, options)
 		options = options || {};
 		if(!this.cache || !options.keepQueryCache)
@@ -882,10 +882,88 @@ define(function defineDeepQuery(require)
 	 * @param  {Object} options
 	 * @return {Array} results
 	 */
-	DQ.query = function(root, path, options){
+	DQ.query = function deepQuery(root, path, options){
 		if(!globalQuerier)
 			globalQuerier = new DQ();
 		return globalQuerier.query(root, path, options);
+	}
+
+
+	DQ.firstObjectWithProperty = function firstObjectWithProperty(entry, property){
+		//console.profile("firstObjectWithProperty")
+		if(!entry._isDQ_NODE_)
+			entry = DQ.createRootNode(entry, {})
+		var value = entry.value;
+		if(value[property])
+			return entry;
+		var way = [];
+		var searchProp = function firstObjectWithPropertySearch(entry) 
+		{
+			var value = entry.value;
+			if(typeof value !== "object" || !value)
+				return false;
+			way.push(entry);
+			if(value[property])
+				return true;
+			else
+			{
+				var ok = false;
+				if(value instanceof Array)
+				{
+					var index = 0;
+					ok = value.some(function (v) {
+						if(typeof v === 'object')
+							return searchProp(DQ.createEntry(index++, entry));
+						return false;
+					});
+				}
+				else
+					for(var i in value)
+					{
+						if(!value.hasOwnProperty(i) || i == "_deep_entry" || typeof value[i] !== 'object' )
+							continue;
+						ok = searchProp(DQ.createEntry(i, entry));
+						if(ok)
+							break;
+					}
+			}
+			if(ok)
+				return true;
+			way.pop();
+			return false;
+		}
+		var ok = searchProp(entry);
+		//console.log("first object way : ",way)
+		//console.profileEnd("firstObjectWithProperty")
+		if(ok)
+			return way.pop();
+		return null;
+	}
+	DQ.createEntry = function  (key, ancestor) 
+	{
+		var path = ancestor.path
+		if(path[path.length-1] == '/')
+			path += key;
+		else
+			path += "/"+key;
+		//if(this.cache[path])
+		//	return this.cache[path];
+
+		var schema = null;
+		//console.log("ancestor.schema : ", ancestor.schema)
+		//if(ancestor.schema)
+		//	schema = retrieveFullSchemaByPath(ancestor.schema, key, "/");
+		//console.log("DQ.createEntry : "+path+" : schema : ",schema)
+		return {
+			_isDQ_NODE_:true,
+			root:ancestor.root,
+			value:ancestor.value[key],
+			path:path,
+			key:key,
+			ancestor:ancestor,
+			schema:schema,
+			depth:ancestor.depth+1
+		}
 	}
 	/**
 	 * create a root DeepQuery node

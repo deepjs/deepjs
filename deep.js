@@ -210,7 +210,7 @@ function(require)
 		return this;
 	}
 
-	var forceHandle = function()
+	var forceHandle = function forceChainHandle()
 	{
 		if(!this._initialised)
 			return;
@@ -1969,57 +1969,34 @@ function(require)
 		flatten : function()
 		{
 			var self = this;
-			var count = 0;
-
-			var doChilds = function(result)
+			var flattenChilds = function(nodes)
 			{
-				var def = deep.Deferred();
-				//console.log("do childs")
-				deep.when(self.extChilds(result))
-				.done(function () {
-					count--;
-					//console.log("do childs ends : count : ", count);
-					if(count === 0)
-						def.resolve(deep.chain.values(self));
-				}, function (error) {
-					//console.error("error : deep.flatten : ",error);
-					def.reject(error);
-				});
-				return def.promise();
-			};
-			var func = function(){
 				var alls = [];
-				//console.log("execute flatten")
-				self._nodes.forEach(function (result)
+				self._nodes.forEach(function (node)
 				{
-					count++;
-					if(typeof result.value.backgrounds !== 'undefined' && result.value.backgrounds !== null)
-					{
-						alls.push(deep.when(self.extBack(result))
-						.done(function(stack) {
-							//console.log("backgrounds extendeds")
-							var f = {};
-							stack.forEach(function(s){ 
-								//console.log("flatten : extended background : ",s)
-								f = utils.bottom(s, result.value, result.schema); 
-								delete s.backgrounds; 
-							});
-							delete result.value.backgrounds;
-							return doChilds(result);
-						}));
-						delete result.value.backgrounds;
-					}
-					else
-						alls.push(doChilds(result));
+					alls.push(extendsChilds(node));
 				});
-				if(self._nodes.length === 0)
-					return deep.chain.val(self);
-				return deep.all(alls).done(function(){
+				return deep.all(alls)
+				.done(function(){
 					return deep.chain.val(self);
 				});
 			};
-			func._isDone_ = true;
-			addInChain.apply(this,[func]);
+			var flattenBackgrounds = function(){
+				var alls = [];
+				self._nodes.forEach(function (node)
+				{
+					if(node.value && node.value.backgrounds)
+						alls.push(extendsBackgrounds(node));
+					else
+						alls.push(node);
+				});
+				if(alls.length === 0)
+					return deep.chain.val(self);
+				return deep.all(alls)
+				.done(flattenChilds);
+			};
+			flattenBackgrounds._isDone_ = true;
+			addInChain.apply(this,[flattenBackgrounds]);
 			return this;
 		},
 		/**
@@ -2473,29 +2450,26 @@ function(require)
 	 * @param  {DeepEntry} entry from where seeking after backgrounds properties
 	 * @return {deep.Promise} a promise
 	 */
-	var extendsChilds = fullAPI.extChilds = function doExtendsChilds(entry)
+	function extendsChilds(entry)
 	{
 		if(!entry)
 			return entry;
-		var toExtends = deep.query(entry, ".//*?backgrounds", {resultType:"full"});
-		if(toExtends.length === 0)
+		var toExtends = deep.Querier.firstObjectWithProperty(entry, "backgrounds");
+		if(!toExtends)
 			return entry;
-		var deferred = deep.Deferred();
-		var rec = toExtends[0];
-		var handler = deep(rec);
-		handler.flatten().then(function ()
-		{
-			deep.when(handler.extChilds(entry))
-			.then(function () {
-				deferred.resolve(entry);
-			}, function (error) {
-				deferred.reject(error);
+		return deep.when(extendsBackgrounds(toExtends))
+		.done(function(toExtends){
+			return deep.when(extendsChilds(toExtends))
+			.done(function(toExtends){
+				if(toExtends.ancestor)
+					delete toExtends.ancestor[toExtends.key]
+				return deep.when(extendsChilds(entry))
+				.done(function(){
+					toExtends.ancestor[toExtends.key] = toExtends.value;
+					return entry;
+				})
 			});
-		},
-		function (error) {
-			deferred.reject(error);
 		});
-		return deferred.promise();
 	};
 	/**
 	 * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
@@ -2507,52 +2481,30 @@ function(require)
 	 * @param  {DeepEntry} entry from where seeking after backgrounds properties
 	 * @return {deep.Promise} a promise
 	 */
-	var extendsBackgrounds = fullAPI.extBack = function doExtendsBackgrounds(entry)
+	function extendsBackgrounds(entry)
 	{
-		var self = this;
-		var value = entry;
 		if(!entry)
-			return [];
-		if(entry._isDQ_NODE_)
-			value = entry.value;
-		if(value.backgrounds !== null && typeof value.backgrounds === "object")
+			return entry;
+		if(!entry._isDQ_NODE_)
+			throw deep.errors.Internal("you couldn't only extends backgrounds of query node.")
+		var self = this;
+		var value = entry.value;
+		if(value.backgrounds)
 		{
-			var deferred = deep.Deferred();
-			if(!value.backgrounds.push)
-				value.backgrounds = [ value.backgrounds ];
+			var backgrounds = value.backgrounds;
+			delete value.backgrounds;
+			if(!backgrounds.push)
+				backgrounds = [ backgrounds ];
 			//console.log("will retrieve backgrounds : ", value.backgrounds, " - ", entry);
-			deep.when(deep.getAll(value.backgrounds, { entry:entry })).then(function extendedsLoaded(extendeds){
-				//console.log("extendeds backgroudns: ", extendeds);
-				var recursion = [];
-				while(extendeds.length > 0)
-				{
-					var exts = extendeds.shift();
-					if(exts instanceof Array)
-					{
-						extendeds = exts.concat(extendeds);
-						continue;
-					}
-					recursion.push(exts);
-					recursion.push(self.extBack(exts));
-				}
-				deep.all(recursion).then(function finaliseExtendsBackgrounds(extendeds){
-					var res = [];
-					extendeds.forEach(function (extended){
-						res = res.concat(extended);
-					});
-					delete value.backgrounds;
-					deferred.resolve(res);
-				},function  (error) {
-					console.error("currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : "+JSON.stringify(extendeds));
-					deferred.reject(error);
+			return deep.when(deep.getAll(backgrounds, { entry:entry }))
+			.done(function extendedsLoaded(extendeds){
+				extendeds.forEach(function(s){ 
+					utils.bottom(s, entry.value, entry.schema); 
 				});
-			}, function(res){
-				console.error("currentLevel extension (backgrounds property) failed to retrieve pointed ressource(s) : "+JSON.stringify(extendeds));
-				deferred.reject(res);
+				return extendsBackgrounds(entry);
 			});
-			return deferred.promise();
 		}
-		return [];
+		return entry;
 	};
 
 	var applyCallBack = function (callBack, value) 
@@ -2568,29 +2520,6 @@ function(require)
 	}
 
 	deep.utils.up(fullAPI, deep.Chain.prototype);
-
-	deep.Chain.addHandle("refresh", function()
-	{
-		var self = this;
-		var func = function(s,e){
-			var res = null;
-			if(self._value instanceof Array)
-			{
-				res = [];
-				self._value.forEach(function(v){
-					if(typeof v['refresh'] === 'function')
-						res.push(v.refresh.apply(v, arguments));
-				});
-				return deep.all(res);
-			}
-			else
-				if(typeof self._value['refresh'] === 'function')
-					return self._value.refresh.apply(self._value, arguments);
-		}
-		func._isDone_ = true;
-		addInChain.apply(self,[func]);
-		return this;
-	});
 
 
 	//________________________________________________________ DEEP CHAIN UTILITIES
@@ -3883,6 +3812,16 @@ function(require)
 		addInChain.apply(self,[func]);
 		return this;
 	});
+	deep.Chain.addHandle("logProperty", function(path)
+	{
+		var self = this;
+		var func = function(s,e)
+		{
+			throw new Error("deep.Chain.logProperty not implemented yet. Do it !! ;)");
+		}
+		addInChain.apply(self,[func]);
+		return this;
+	});
 		//
 	deep.Chain.addHandle("nodes", function(callBack)
 	{
@@ -3891,12 +3830,52 @@ function(require)
 		{
 			return callBack(deep.chain.nodes(self));
 		}
+		func._isDone_ = true;
 		if(callBack)
 			addInChain.apply(self,[func]);
 		else
 			return deep.chain.nodes(self);
 		return this;
 	});
+	deep.Chain.addHandle("init", function()
+	{
+		var args= arguments;
+		var self = this;
+		var func = function(s,e)
+		{
+			var alls = [];
+			deep.chain.each(self, function (v) {
+				if(typeof v.init === "function")
+					alls.push(v.init.apply(v,args));
+				else
+					alls.push(v);
+			})
+			return deep.all(alls);
+		}
+		func._isDone_ = true;
+		addInChain.apply(self,[func]);
+		return this;
+	});
+	deep.Chain.addHandle("refresh", function()
+	{
+		var args= arguments;
+		var self = this;
+		var func = function(s,e)
+		{
+			var alls = [];
+			deep.chain.each(self, function (v) {
+				if(typeof v.refresh === "function")
+					alls.push(v.refresh.apply(v,args));
+				else
+					alls.push(v);
+			})
+			return deep.all(alls);
+		}
+		func._isDone_ = true;
+		addInChain.apply(self,[func]);
+		return this;
+	});
+
 	//_________________________________________________________________________________
 	return deep;
 });

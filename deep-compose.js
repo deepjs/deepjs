@@ -472,8 +472,8 @@ define(function(require, exports, module){
 	{
 		decorator = decorator || new Composer();
 		var start = function start() {
-			if(!decorator.createIfNecessary)
-				throw new Error("Decorator not applied ! (start)");
+			//if(!decorator.createIfNecessary)
+			//	throw new Error("Decorator not applied ! (start)");
 			return compose.wrap(function(){}, decorator).apply(this, arguments);
 		};
 		start.decorator = decorator;

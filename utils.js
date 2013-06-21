@@ -13,6 +13,13 @@ define(function(require){
 	return function(deep){
 	var collider = deep.collider;//require("./deep-collider");
 	var compose = deep.compose; //require("./deep-compose");
+
+	Array.prototype.insert = function(index) {
+	    this.splice.apply(this, [index, 0].concat(
+	        Array.prototype.slice.call(arguments, 1)));
+	    return this;
+	};
+	
 	/**
 	 * @class utils
 	 * @namespace deep
@@ -1046,6 +1053,15 @@ define(function(require){
 		}
 		else 
 			console.log('dumpError :: argument is not an object');
+	}
+
+	utils.logItemsProperty = function (array, prop) {
+		var r = [];
+		array.forEach(function (a) {
+			console.log("deep.logItemsProperty : ",prop, a[prop]);
+			r.push(a[prop]);
+		})
+		return r;
 	}
 
 	return utils;	
