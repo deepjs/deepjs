@@ -1035,7 +1035,7 @@ function(require)
 				//console.log("deep2.Chain.query : ", args, " - on : ", self._nodes);
 
 				self._nodes.forEach(function (r) {
-					//console.log("deep.Chain.query on : ", r);
+					//console.log("deep.Chain.query ",args," : on : ", r);
 					for(var i = 0; i < args.length; ++i)
 					{
 						var q = args[i];
@@ -1047,7 +1047,11 @@ function(require)
 							nodes = nodes.concat(r);	
 					}
 				});
-				self._nodes = deep.utils.arrayUnique(nodes, "path");
+				if(nodes.length > 0)
+					self._nodes = deep.utils.arrayUnique(nodes, "path");
+				else
+					self._nodes = [];
+				//console.log("query result : ", self._nodes)
 				self._queried = true;
 				return deep.chain.values(self);
 			}
@@ -1102,10 +1106,10 @@ function(require)
 					return deep.when(deep.get(callBack))
 					.done(function(callBack)
 					{
-						return applyCallBack(callBack, deep.chain.val(self));
+						return applyCallBackOrTreatment(callBack, deep.chain.val(self));
 					});
 				else
-					return applyCallBack(callBack, deep.chain.val(self));
+					return applyCallBackOrTreatment(callBack, deep.chain.val(self));
 			};
 			func._isDone_ = true;
 			if(callBack)
@@ -1137,7 +1141,7 @@ function(require)
 					if(callBack === true)
 						return deep.chain.first(self, true);
 					else	
-						return applyCallBack(callBack, deep.chain.first(self));
+						return applyCallBackOrTreatment(callBack, deep.chain.first(self));
 				}
 				if(typeof callBack === 'string')
 					return deep.when(deep.get(callBack))
@@ -1177,7 +1181,7 @@ function(require)
 					if(callBack === true)
 						return deep.chain.last(self, true);
 					else	
-						return applyCallBack(callBack, deep.chain.last(self));
+						return applyCallBackOrTreatment(callBack, deep.chain.last(self));
 				}
 				if(typeof callBack === 'string')
 					return deep.when(deep.get(callBack))
@@ -1210,14 +1214,14 @@ function(require)
 			var self = this;
 			var func = function()
 			{
-				var applyCallBack = function (callBack) {
+				var applyCallBackOrTreatment = function (callBack) {
 					return deep.chain.each(self, callBack);
 				};
 				if(typeof callBack === 'string')
 					return deep.when(deep.get(callBack))
-					.done(applyCallBack);
+					.done(applyCallBackOrTreatment);
 				else
-					return applyCallBack(callBack);
+					return applyCallBackOrTreatment(callBack);
 			};
 			func._isDone_ = true;
 			addInChain.apply(this,[func]);
@@ -1245,9 +1249,9 @@ function(require)
 				if(typeof callBack === 'string')
 					return deep.when(deep.get(callBack))
 					.done(function(callBack){
-						return applyCallBack(callBack, deep.chain.values(self));
+						return applyCallBackOrTreatment(callBack, deep.chain.values(self));
 					});
-				return applyCallBack(callBack, deep.chain.values(self));
+				return applyCallBackOrTreatment(callBack, deep.chain.values(self));
 			};
 			func._isDone_ = true;
 			if(callBack)
@@ -1969,13 +1973,17 @@ function(require)
 		flatten : function()
 		{
 			var self = this;
-			var flattenChilds = function(nodes)
+			var flattenChilds = function()
 			{
 				var alls = [];
 				self._nodes.forEach(function (node)
 				{
-					alls.push(extendsChilds(node));
+					var r = extendsChilds(node);
+					if(r && r.then)
+						alls.push(r);
 				});
+				if(alls.length === 0)
+					return deep.chain.val(self);
 				return deep.all(alls)
 				.done(function(){
 					return deep.chain.val(self);
@@ -1985,13 +1993,17 @@ function(require)
 				var alls = [];
 				self._nodes.forEach(function (node)
 				{
-					if(node.value && node.value.backgrounds)
-						alls.push(extendsBackgrounds(node));
-					else
-						alls.push(node);
+					if(!node.value || typeof node.value !== 'object')
+						return;
+					if(node.value.backgrounds)
+					{
+						var r = extendsBackgrounds(node);
+						if(r && r.then)
+							alls.push(r)
+					}
 				});
 				if(alls.length === 0)
-					return deep.chain.val(self);
+					return flattenChilds();
 				return deep.all(alls)
 				.done(flattenChilds);
 			};
@@ -2442,7 +2454,7 @@ function(require)
 	/**
 	 * will perform the backgrounds application on any backgrounds properties at any level
 	 * 
-	 *	not intend to be call directly by programmer. use at your own risk. use .flatten instead.
+	 *	not intend to be call directly by programmer. use at your own risk : Use deep.Chain.flatten() instead.
 	 *	
 	 * @method  extendsChilds
 	
@@ -2452,29 +2464,47 @@ function(require)
 	 */
 	function extendsChilds(entry)
 	{
-		if(!entry)
-			return entry;
+		if(!entry._isDQ_NODE_)
+			throw deep.errors.Internal("you couldn't only extends backgrounds of query node.");
 		var toExtends = deep.Querier.firstObjectWithProperty(entry, "backgrounds");
 		if(!toExtends)
 			return entry;
-		return deep.when(extendsBackgrounds(toExtends))
-		.done(function(toExtends){
-			return deep.when(extendsChilds(toExtends))
-			.done(function(toExtends){
-				if(toExtends.ancestor)
-					delete toExtends.ancestor[toExtends.key]
-				return deep.when(extendsChilds(entry))
-				.done(function(){
-					toExtends.ancestor[toExtends.key] = toExtends.value;
-					return entry;
-				})
-			});
-		});
+		//console.log("extends Childs : first child with backgournds : ", toExtends, " - entry.root ? : ", entry.root, " - toextends.root : ", toExtends.root);
+		
+		function finalise(){
+			if(toExtends.ancestor)
+				toExtends.ancestor[toExtends.key] = toExtends.value;
+			return entry;
+		}
+
+		function recurse2(toExt)
+		{
+			if(toExtends.ancestor)
+				delete toExtends.ancestor[toExtends.key];
+			var r = extendsChilds(entry);
+			if(r && r.then)
+				return deep.when(r)
+				.done(finalise);
+			return finalise();
+		}
+
+		function recurse(toExt){
+			var r = extendsChilds(toExtends);
+			if(r && r.then)
+				return deep.when(r)
+				.done(recurse2);
+			return recurse2(toExtends);
+		};
+		var r = extendsBackgrounds(toExtends);
+		if(r && r.then)
+			return deep.when(r)
+			.done(recurse);
+		return recurse(toExtends);
 	};
 	/**
 	 * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
 	 *
-	 *	not intend to be call directly by programmer. use at your own risk.  use .flatten instead.
+	 *	not intend to be call directly by programmer. use at your own risk : Use deep.Chain.flatten() instead.
 	 * 
 	 * @method  extendsBackgrounds
 	 * @private
@@ -2483,31 +2513,89 @@ function(require)
 	 */
 	function extendsBackgrounds(entry)
 	{
-		if(!entry)
-			return entry;
+		//console.log("extends backgrounds of : ", entry, " - root ?  : ", entry.root)
 		if(!entry._isDQ_NODE_)
-			throw deep.errors.Internal("you couldn't only extends backgrounds of query node.")
+			throw deep.errors.Internal("you couldn't only extends backgrounds of query node.");
 		var self = this;
 		var value = entry.value;
 		if(value.backgrounds)
 		{
+			var getBackgrounds = function (backgrounds) 
+			{
+				//console.log("try retrieve backgrounds : ", backgrounds);
+				var all = [];
+				var needLoad = false;
+				backgrounds.forEach(function (b) {
+					if(typeof b === 'string')
+					{
+						var rget = deep.get(b, { entry:entry });
+						//console.log("background get result : ",rget);
+						all.push(rget);
+						
+						if(rget && rget.then)
+						{
+							needLoad = true;
+						}
+					}	
+					else
+						all.push(b);
+				})
+				
+				function extendedsLoaded(extendeds){
+					var stack = [];
+					var needRecursion = false;
+					extendeds.forEach(function(s){ 
+						if(s && s.backgrounds)
+						{
+							stack.push(getBackgrounds(s.backgrounds));
+							needRecursion = true;
+						}
+					});
+					if(!needRecursion)
+						return extendeds;
+					return deep.all(stack)
+					.done(function (stack) {
+						var finalStack = [];
+						extendeds.forEach(function(s){ 
+							if(s && s.backgrounds)
+							{
+								finalStack = finalStack.concat(stack.shift());
+								delete s.backgrounds;
+							}	
+							finalStack.push(s);
+						});
+						return finalStack;
+					});
+				}
+				if(!needLoad)
+					return extendedsLoaded(all);
+				//console.log("will retrieve backgrounds : ", all);
+				return deep.all(all)
+				.done(extendedsLoaded);
+			}
 			var backgrounds = value.backgrounds;
 			delete value.backgrounds;
-			if(!backgrounds.push)
-				backgrounds = [ backgrounds ];
-			//console.log("will retrieve backgrounds : ", value.backgrounds, " - ", entry);
-			return deep.when(deep.getAll(backgrounds, { entry:entry }))
-			.done(function extendedsLoaded(extendeds){
-				extendeds.forEach(function(s){ 
-					utils.bottom(s, entry.value, entry.schema); 
+			var r = getBackgrounds(backgrounds);
+			if(r && r.then)
+				return deep.when(r)
+				.done(function extendedsLoaded(extendeds){
+					//console.log("final backgrounds stack : ", extendeds);
+					extendeds.reverse();
+					extendeds.forEach(function(s){ 					
+						utils.bottom(s, entry.value, entry.schema); 
+					});
+					return entry;
 				});
-				return extendsBackgrounds(entry);
+			//console.log("final backgrounds stack : ", r);
+			r.forEach(function(s){ 					
+				utils.bottom(s, entry.value, entry.schema); 
 			});
+			return entry;
 		}
 		return entry;
 	};
 
-	var applyCallBack = function (callBack, value) 
+	var applyCallBackOrTreatment = function (callBack, value) 
 	{	
 		var r = null;
 		if(typeof callBack === 'function')
@@ -2724,10 +2812,6 @@ function(require)
 	};
 	
 
-	//______________________________________
-
-	deep.handlers = {};
-	deep.handlers.decorations = {};
 	//________________________________________________________ DEEP CHAIN UTILITIES
 
 	/**
@@ -3320,8 +3404,7 @@ function(require)
 			});
 		return res;
 	};
-
-
+	// ___________________________________________________________________________ PROTOCOLES
 	deep.protocoles = {
 		/**
 		 * options must contain the entry from where start query
@@ -3331,9 +3414,9 @@ function(require)
 		 */
 		queryThis:function (request, options) 
 		{
-			//console.log("deep.stores.queryThis : ", request, options)
 			var entry = options.entry;
-			var root = entry.root;
+			var root = entry.root || entry;
+			//console.log("deep.stores.queryThis : ", request, " - root ? ", entry.root)
 
 			var infos = request;
 			if(typeof infos === 'string')
@@ -3341,11 +3424,13 @@ function(require)
 			if(infos.uri[0] == '#')
 				infos.uri = infos.uri.substring(1);
 			var res = null;
+			//console.log("uri : ", infos.uri);
 			if(infos.uri.substring(0,3) == "../")
 			{
 				infos.uri = ((entry.path != "/")?(entry.path+"/"):"")+infos.uri;
-				//console.log("queryThis with ../ start : ",infos.uri)
-				res = deep.query(root || entry, infos.uri, { keepCache:false });
+				//console.log("queryThis with ../ start : ",root.value)
+				res = deep.query(root.value, infos.uri, { keepCache:false });
+				//console.log("res : ",res);
 			}
 			else if(infos.uri[0] == '/')
 				res = deep.query(root || entry, infos.uri, { keepCache:false });
@@ -3439,7 +3524,6 @@ function(require)
 		}
 	}
 
-
 	deep.Chain.addHandle("store", function(name)
 	{
 		var self = this;
@@ -3456,7 +3540,7 @@ function(require)
 			}	
 			deep.chain.position(self, self._storeName);
 		}
-		deep.handlers.decorations.store({
+		deep.Store.extendsChain({
 			get:function (argument) {},
 			patch:function (argument) {},
 			put:function (argument) {},
@@ -3470,10 +3554,7 @@ function(require)
 		addInChain.apply(self,[func]);
 		return this;
 	});
-
-
-
-	deep.handlers.decorations.store = function (store, handler) {
+	deep.Store.extendsChain = function (store, handler) {
 			//console.log("store decoration");
 			deep.utils.up({
 				//_store : deep.collider.replace(store),
@@ -3875,7 +3956,6 @@ function(require)
 		addInChain.apply(self,[func]);
 		return this;
 	});
-
 	//_________________________________________________________________________________
 	return deep;
 });

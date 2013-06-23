@@ -818,15 +818,20 @@ define(function defineDeepQuery(require)
 		}
 		items[0].root = this.root;
 
-		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\.\.)|(\*)/gi))
+		var straightQuery = false;
+		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\*)/gi))
 		{
-			if(q[0] == ".")
-				q = q.substring(1);
-			//console.log("STRAIGHT QUERY : ",q)
-			var r = utils.retrieveValueByPath(items[0].value, q, "/");
-			if(typeof r === 'undefined')
-				return [];
-			return r;
+			straightQuery = true;
+			/*if(!q.match(/(\.\.)/gi))
+			{
+				if(q[0] == ".")
+					q = q.substring(1);
+				//console.log("STRAIGHT QUERY : ",q)
+				var r = utils.retrieveValueByPath(items[0].value, q, "/");
+				if(typeof r === 'undefined')
+					return [];
+				return r;
+			}*/
 		}
 
 		var parts = this.analyse(q);
@@ -866,7 +871,9 @@ define(function defineDeepQuery(require)
 		var finalRes = [];
 		items.forEach(function (r) {
 			finalRes.push(r.value);
-		})
+		});
+		if(straightQuery)
+			return finalRes.shift();
 		return finalRes;
 	}
 
@@ -976,16 +983,18 @@ define(function defineDeepQuery(require)
 	 */
 	DQ.createRootNode = function (obj, schema, options) {
 		options = options || {};
-		return {
-				_isDQ_NODE_:true,
-				value:obj,
-				path:"/",
-				uri:options.uri || null,
-				key:null,
-				ancestor:null,
-				schema:schema || {},
-				depth:0
-			}
+		var node =  {
+			_isDQ_NODE_:true,
+			value:obj,
+			path:"/",
+			uri:options.uri || null,
+			key:null,
+			ancestor:null,
+			schema:schema || {},
+			depth:0
+		}
+		node.root = node;
+		return node;
 	}
 	return DQ;
 }
