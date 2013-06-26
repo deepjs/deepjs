@@ -1,7 +1,7 @@
 /**
  *
  *	a bunch of utilities functions for deep
- * 
+ *
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  * @module deep
  * @submodule utils
@@ -15,11 +15,11 @@ define(function(require){
 	var compose = deep.compose; //require("./deep-compose");
 
 	Array.prototype.insert = function(index) {
-	    this.splice.apply(this, [index, 0].concat(
-	        Array.prototype.slice.call(arguments, 1)));
-	    return this;
+		this.splice.apply(this, [index, 0].concat(
+			Array.prototype.slice.call(arguments, 1)));
+		return this;
 	};
-	
+
 	/**
 	 * @class utils
 	 * @namespace deep
@@ -35,7 +35,7 @@ define(function(require){
 
 	/**
 	 * swig related : produce swig-macro-import string
-	 * @deprecated 
+	 * @deprecated
 	 * @category swig
 	 * @method getMacroImport
 	 * @static
@@ -71,7 +71,7 @@ define(function(require){
 
 	// TODO : need to be asynch and to retrieve values from stores : as app::language
 	/**
-	 * interpret a string with a context : means fetch in context and replace in string any variable-string-format (e.g. { my.property.in.my.context }) 
+	 * interpret a string with a context : means fetch in context and replace in string any variable-string-format (e.g. { my.property.in.my.context })
 	 * founded in string
 	 * @example
 	 * 		var interpreted = deep.utils.interpret("hello { name }", { name:"john" });
@@ -79,7 +79,7 @@ define(function(require){
 	 * @example
 	 * 		// equivalent of first example
 	 * 		var interpreted = deep("hello { name }").interpret({ name:"john" }).val();
-	 * 		
+	 *
 	 * @method interpret
 	 * @category stringUtils
 	 * @static
@@ -139,18 +139,18 @@ define(function(require){
 			if( path[ count ] == ')' )
 				catched--;
 			if(path[ count ] == ')' )
-			{	
+			{
 				if(catched > 1)
-					res += path[ count++ ]
+					res += path[ count++ ];
 			}
 			else
-				res += path[ count++ ]
+				res += path[ count++ ];
 		}
 		count++;
 		return { value:res, rest:path.substring(count)};
 	}
 
-	function trim_words(theString, numWords, maxChar) 
+	function trim_words(theString, numWords, maxChar)
 	{
 	    expString = theString.split(/\s+/,numWords);
 	    if(expString.length == 1)
@@ -200,8 +200,8 @@ define(function(require){
 	        return fct.apply(this, arguments);
 	    };
 	    clone.prototype = fct.prototype;
-	    for (property in fct) 
-	        if (fct.hasOwnProperty(property)) 
+	    for (property in fct)
+	        if (fct.hasOwnProperty(property))
 	            clone[property] = utils.copy(fct[property]);
 	    return clone;
 	};
@@ -230,7 +230,7 @@ define(function(require){
 				return obj;
 			if(obj instanceof Date)
 				return new Date(obj.valueOf());
-		
+
 			res = {};
 			for(var i in obj)
 			{
@@ -274,11 +274,11 @@ define(function(require){
 		}
 		return obj;
 	}
-	
+
 	utils.getObjectClass = function getObjectClass(obj) {
 	    if (obj && obj.constructor && obj.constructor.toString) {
 	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
-	        if (arr && arr.length == 2) 
+	        if (arr && arr.length == 2)
 	            return arr[1];
 	    }
 	    return undefined;
@@ -428,7 +428,7 @@ define(function(require){
 			test[e] = true;
 		})
 		if(what.forEach)
-		{	
+		{
 			var okCount = 0;
 			what.forEach(function(e){
 				if(typeof test[e] !== 'undefined')
@@ -557,7 +557,7 @@ define(function(require){
 					return tmp.additionalProperties;
 		}
 
-		
+
 		var finalSchema = {};
 		if(res.length > 1)
 			res.forEach(function(e){
@@ -570,7 +570,7 @@ define(function(require){
 		return finalSchema;
 	}
 
-	var deepArrayFusion = utils.deepArrayFusion = function deepArrayFusion(arr1, arr2, schema)
+	utils.deepArrayFusion = function deepArrayFusion(arr1, arr2, schema, fromBottom)
 	{
 		var map = {}
 		var count = 0;
@@ -583,7 +583,7 @@ define(function(require){
 				itemsSchema = schema.items;
 			if(schema.collision && schema.collision.unique)
 				mergeOn = (schema.collision.unique === true)?null:schema.collision.unique;
-		}	
+		}
 
 		//if(!mergeOn)
 		//	return arr1.concat(arr2);
@@ -604,6 +604,7 @@ define(function(require){
 				val = String(a);
 			map[val] = {ref:a, index:count++};
 		})
+		//console.log("array fusion map :", map);
 		arr2.forEach(function(a){
 			var val = null;
 			if(mergeOn)
@@ -618,13 +619,15 @@ define(function(require){
 				val = String(a);
 			if(!map[val])
 				arr.push(a);
+			else if(fromBottom)
+				utils.bottom(a, map[val].ref, itemsSchema, arr, map[val].index);
 			else
-				utils.up(map[val].ref, a, true, itemsSchema, arr, map[val].index);
+				utils.up(a, map[val].ref, itemsSchema, arr, map[val].index);
 		})
 		return arr;
 	}
 
-	var up = function up(src, target, schema, parent, key) 
+	var up = function up(src, target, schema, parent, key)
 	{
 		if( typeof src === 'undefined' )
 			return target;
@@ -640,7 +643,7 @@ define(function(require){
 		var targetType = utils.getJSPrimitiveType(target);
 		//console.log("deepUp : objects types : ", srcType, targetType);
 		if (srcType === 'function')
-		{	
+		{
 			if (targetType === 'function')
 			{
 				if(src.decorator && src.decorator instanceof compose.Decorator)
@@ -649,7 +652,7 @@ define(function(require){
 						return target;
 					//console.log("deepUp: src is decorator : ",src)
 					result = compose.up(target, src);
-				}	
+				}
 				else if(src._deep_collider)
 				{
 					//console.log("deepUp: src is collider : ",src)
@@ -662,7 +665,7 @@ define(function(require){
 				{
 					//console.log("deepUp: src is simple function : ",src)
 					result = src;
-				}	
+				}
 			}
 			else
 			{
@@ -673,7 +676,7 @@ define(function(require){
 						if(src.decorator.ifExists)
 						{
 							return target;
-						}	
+						}
 						else{
 							//src.decorator.createIfNecessary = true;
 							result = src;
@@ -681,7 +684,7 @@ define(function(require){
 					}
 					else
 						throw new Error("deep.compose need to be applied on function ! ");
-				}	
+				}
 				else if(src._deep_collider)
 					result = src(target, parent, key);
 				else
@@ -701,7 +704,7 @@ define(function(require){
 			if(parent && key)
 				parent[key] = target;
 			return target;
-		}	
+		}
 		if(srcType !== targetType)
 		{
 			target = utils.copy(src);
@@ -711,11 +714,11 @@ define(function(require){
 		}
 		switch(srcType)
 		{
-			case 'array' : 
-				result = deepArrayFusion(target, src, schema);
+			case 'array' :
+				//console.log("array fusion up rsult : ", target, src)
+				result = utils.deepArrayFusion(target, src, schema);
 				if(parent && key)
 					parent[key] = result;
-				//console.log("array fusion up rsult : ", JSON.stringify(result), parent, key, JSON.stringify(parent))
 				return result;
 				break;
 			case 'object' :
@@ -724,15 +727,15 @@ define(function(require){
 					if(parent && key)
 						parent[key] = src;
 					return src;
-				}	
+				}
 				if(src instanceof Date)
 				{
 					target = new Date(src.valueOf());
 					if(parent && key)
 						parent[key] = target;
 					return target;
-				}	
-				
+				}
+
 				for(var i in src)
 				{
 					if(i == "_deep_entry")
@@ -758,14 +761,14 @@ define(function(require){
 				}
 				return target;
 				break;
-			default : 
+			default :
 				if(parent && key)
 					parent[key] = src;
 				return src;
 		}
 	}
 
-	var bottom = function bottom(src, target, schema, parent, key) 
+	var bottom = function bottom(src, target, schema, parent, key)
 	{
 		 // console.log("utils.bottom : objects ", src, target)
 
@@ -779,22 +782,22 @@ define(function(require){
 			if(parent && key)
 				parent[key] = target;
 			return target;
-		}	
+		}
 		//console.log("utils.bottom : objects not nulls.")
 		var result= null;
 		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
 		// console.log("utils.bottom : objects types : ", srcType, targetType);
 		if ( targetType === 'function')
-		{	
+		{
 			if ( srcType === 'function')
 			{
 				if(target.decorator && target.decorator instanceof compose.Decorator)
 				{
 					// console.log("utils.bottom: target is decorator : ",target)
-					result = compose.bottom(src, target); 
+					result = compose.bottom(src, target);
 
-				}	
+				}
 
 				else if(target._deep_collider)
 				{
@@ -808,7 +811,7 @@ define(function(require){
 				{
 					//console.log("utils.bottom: src is simple function : ",src)
 					result = target;
-				}	
+				}
 			}
 			else
 			{
@@ -833,8 +836,8 @@ define(function(require){
 		}
 		switch(srcType)
 		{
-			case 'array' : 
-				result = deepArrayFusion(src, target, schema);
+			case 'array' :
+				result = utils.deepArrayFusion(src, target, schema, true);
 				if(parent && key)
 					parent[key] = result;
 				//console.log("array fusion bottom rsult : ", result, parent, key)
@@ -849,13 +852,13 @@ define(function(require){
 						continue;
 					oldProps[i] = target[i];
 					delete target[i];
-				}	
+				}
 				for(var i in src)
 				{
 					if(i == "_deep_entry")
 						continue;
 					target[i] = utils.copy(src[i]);
-				}	
+				}
 
 				for(var i in oldProps)
 				{
@@ -878,7 +881,7 @@ define(function(require){
 				}
 				return target;
 				break;
-			default : 
+			default :
 				return target;
 		}
 	}
@@ -903,7 +906,7 @@ define(function(require){
 			end:0,
 			hasNext:false,
 			hasPrevious:false,
-			next:function (width) 
+			next:function (width)
 			{
 				if(!this.hasNext)
 					return this;
@@ -911,7 +914,7 @@ define(function(require){
 				this.end = this.start+(width-1);
 				return  this.update(this.start, this.end);
 			},
-			previous:function (width) 
+			previous:function (width)
 			{
 				if(!this.hasPrevious)
 					return this;
@@ -919,7 +922,7 @@ define(function(require){
 				this.end = this.start+(width-1);
 				return this.update(this.start, this.end);
 			},
-			update:function (start, end, total) 
+			update:function (start, end, total)
 			{
 				this.total = total || this.total || 0;
 				if(this.total == 0)
@@ -955,7 +958,7 @@ define(function(require){
 		return res;
 	}
 
-	utils.parseBody = function (body, headers) 
+	utils.parseBody = function (body, headers)
 	{
 
 		if(typeof body === 'undefined' || body == null)
@@ -977,15 +980,15 @@ define(function(require){
 		try{
 		switch(contentType)
 		{
-			case "application/json-rpc" : 
+			case "application/json-rpc" :
 				return utils.parseJson(body);
-				break;	
-			case "application/json" : 
+				break;
+			case "application/json" :
 				return utils.parseJson(body);
-				break;	
+				break;
 			case "application/javascript" :   // TODO : should be parsed by json-extended parser
 				return utils.parseJson(body);
-				break;	
+				break;
 			default :
 				return body;
 		}
@@ -995,13 +998,13 @@ define(function(require){
 		}
 	}
 
-	function parseUri (str) 
+	function parseUri (str)
 	{
 		var	o   = parseUri.options,
 			m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
 			uri = {},
 			i   = 14;
-		while (i--) 
+		while (i--)
 			uri[o.key[i]] = m[i] || "";
 		uri[o.q.name] = {};
 		uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
@@ -1034,25 +1037,31 @@ define(function(require){
 
 	//_____________________________________________________  ERROR RELATED
 
-	utils.dumpError  =function(err) 
+	utils.dumpError  =function(err)
 	{
-		if (typeof err === 'object') 
+		if (typeof err === 'object' && err !== null)
 		{
 
 			console.log("\n\n**************************** (deep) Error Dump : \n")
-			if (err.status) 
+			if (err.status)
 			  console.log('\nStatus: ' + err.status)
-			if (err.message) 
+			if (err.message)
 			  console.log('\nMessage: ' + err.message)
-			if (err.stack) 
+			if (err.stack && deep.debug)
 			{
 			  console.log('\nStacktrace:')
 			  console.log('====================')
 			  console.log(err.stack);
 			}
+			if (err.report)
+			{
+			  console.log('\nReport:')
+			  console.log('====================')
+			  console.log(err.report);
+			}
 		}
-		else 
-			console.log('dumpError :: argument is not an object');
+		else
+			console.warn('dumpError :: argument is not an object : ',err);
 	}
 
 	utils.logItemsProperty = function (array, prop) {
@@ -1064,6 +1073,78 @@ define(function(require){
 		return r;
 	}
 
-	return utils;	
+    utils.applyTreatment = function(context)
+	{
+		if (!this.how || this.condition === false)
+			return false;
+		if (typeof this.condition === "function" && !this.condition.apply(this))
+			return false;
+		//console.log("deep.applyTtreatment : ", this, context);
+		context = context || this;
+		var self = this;
+		var objs = [];
+
+		if (typeof this.what === 'string')
+		{
+			var what = deep.interpret(this.what, context);
+			objs.push(deep.get(what, {
+				root: context._deep_entry || context
+			}));
+		}
+		else if (typeof this.what === 'function')
+			objs.push(this.what.apply(controller));
+		else if (this.what)
+			objs.push(this.what);
+
+		if (typeof this.how === "string")
+		{
+			var how = deep.interpret(this.how, context);
+			objs.push(deep.get(how, {
+				root: context._deep_entry || context
+			}));
+		}
+		if (typeof this.where === "string") {
+			var where = deep.interpret(this.where, context);
+			objs.push(deep.get(where, {
+				root: context._deep_entry || context,
+				acceptQueryThis: true
+			}));
+		}
+		return deep
+		.all(objs)
+		.done(function(results) {
+			var what = (self.what) ? results.shift() : context;
+			if (what._isDQ_NODE_) what = what.value;
+			var how = (typeof self.how === "string") ? results.shift() : self.how;
+			var where = (typeof self.where === "string") ? results.shift() : self.where;
+			var r = "";
+			var nodes = self.nodes || null;
+			try {
+				r = how.apply({}, [what]);
+				if (where) nodes = where(r, nodes);
+			}
+			catch (e)
+			{
+				console.log("Error while treating : ", e);
+				if (typeof self.fail === 'function')
+					return self.fail.apply(context, [e]) || e;
+				return e;
+			}
+			if (typeof self.done === "function")
+				return self.done.apply(context, [nodes, r, what]) || [nodes, r, what];
+
+			return nodes || r;
+		})
+		.fail(function(error)
+		{
+			console.log("Error while treating : ", error);
+			if (typeof self.fail === 'function')
+				return self.fail.apply(context, [error]) || error;
+			return error;
+		});
+	};
+
+
+	return utils;
 }
 })

@@ -7,10 +7,16 @@
 	var failed = 0;
 	var count = 0;
 
-	function report(result)
+	function report(result, error)
 	{
 		console.log("chain.replace RESULT = ", result);
 		count++;
+		if(error)
+		{
+			failed++;
+	      	console.log("report : error : ", deep.utils.dumpError(error));
+			return;
+		}
 		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
 		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
 		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));

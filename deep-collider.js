@@ -248,13 +248,6 @@ define(function(require)
 			 * @class deep.collider.object
 			 */
 			object:{
-				merge:function(newObject, overwrite, schema){
-					var a = function(oldObject){
-						return deep.utils.deepCopy(newObject, oldObject, overwrite, schema);
-					}
-					a._deep_collider = true;
-					return  a;
-				},
 				replace:function(newObject){
 					var a = function(){
 						return newObject;
@@ -279,4 +272,34 @@ define(function(require)
 			}
 		}
 	}
+
+/*
+	//__________________
+	//
+
+	var o = {
+		user:{
+			brol:{
+				backgrounds:[new deep.store.Collection("brol")],
+				collection:[],
+				schema:"json::/brol/schema"
+			}
+		}
+	};
+
+	//_______________
+
+	var a = {
+		myCollection:[
+		//...
+		]
+	};
+
+	var b = {
+		myCollection:deep.collider.store.Collection("brol", "json::/brol/schema");
+	};
+
+	deep.utils.up(b,a);
+
+*/
 });

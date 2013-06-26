@@ -7,9 +7,15 @@
 	var failed = 0;
 	var count = 0;
 
-	function report(result)
+	function report(result, error)
 	{
 		count++;
+		if(error || !result)
+		{
+			failed++;
+	      	console.log("report : error : ", deep.utils.dumpError(error));
+			return;
+		}
 		var ok = result.equal;
 		if(ok)
 			success++;
@@ -19,8 +25,7 @@
 
 	var tests = [];
 
-	//________________________________________________________________________________________
-
+//________________________________________________________________________________________
 
 deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
 .pushHandlerTo(tests)
@@ -30,7 +35,7 @@ deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
     {itemId:2, value:"hello"}
     ], 
     "id","itemId","linkeds")
-.valuesEqual([
+.equal([
     {
         title:"my title", 
         id:1, 
@@ -47,12 +52,11 @@ deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
 ])
 .always(report);
 
-
-	deep.all(tests).then(function (argument) {
-		printReport("chain.mapOn : success ", success, tests.length-success, tests.length);
-	}, function (argument) {
-		printReport("chain.mapOn : errors ", success, tests.length-success, tests.length);
-	});
+deep.all(tests).then(function (argument) {
+	printReport("chain.mapOn : success ", success, tests.length-success, tests.length);
+}, function (argument) {
+	printReport("chain.mapOn : errors ", success, tests.length-success, tests.length);
+});
 
 
 

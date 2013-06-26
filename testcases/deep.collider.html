@@ -9,9 +9,15 @@
 	var failed = 0;
 	var count = 0;
 
-	function report(result)
+	function report(result, error)
 	{
 		count++;
+		if(error)
+		{
+			failed++;
+	      	console.log("report : error : ", deep.utils.dumpError(error));
+			return;
+		}
 		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
 		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
 		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
@@ -42,6 +48,84 @@
     }).always(report)
 
     //__________________________________________________________________________________
+
+
+deep({
+    steps:[
+    {
+        id:"client",
+        label:"hello"
+    }]
+})
+.pushHandlerTo(tests)
+.up({
+    steps:[
+        {
+            id:"address",
+            label:"heu"
+        },
+        {
+            id:"client",
+            label:"world",
+            testez:1
+        }
+    ]
+})
+.equal({
+ "steps": [
+  {
+   "id": "client",
+   "label": "world",
+   "testez": 1
+  },
+  {
+   "id": "address",
+   "label": "heu"
+  }
+ ]
+})
+.always(report);
+
+    //__________________________________________________________________________________
+    
+deep({
+    steps:[
+    {
+        id:"client",
+        label:"hello"
+    }]
+})
+.pushHandlerTo(tests)
+.bottom({
+    steps:[
+        {
+            id:"address",
+            label:"heu"
+        },
+        {
+            id:"client",
+            label:"world",
+            testez:1
+        }
+    ]
+})
+.equal( {
+ "steps": [
+  {
+   "id": "address",
+   "label": "heu"
+  },
+  {
+   "id": "client",
+   "label": "hello",
+   "testez": 1
+  }
+ ]
+})
+.always(report)
+
+
+    ////_____________________________________________________________________________________
 
     deep.all(tests).then(function () {
         printReport("deep.collider : success ", success, tests.length-success, tests.length);

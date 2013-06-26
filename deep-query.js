@@ -818,10 +818,10 @@ define(function defineDeepQuery(require)
 		}
 		items[0].root = this.root;
 
-		var straightQuery = false;
+		this.straightQuery = false;
 		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\*)/gi))
 		{
-			straightQuery = true;
+			this.straightQuery = true;
 			/*if(!q.match(/(\.\.)/gi))
 			{
 				if(q[0] == ".")
@@ -865,14 +865,19 @@ define(function defineDeepQuery(require)
 			start = false;
 		}
 		items =	utils.arrayUnique(items, "path");
-		//console.log("DQ : raw results : ", items)
+		//console.log("DQ :"+q+" raw results : ", items)
 		if(options.resultType == "full")
+		{
+			if(this.straightQuery)
+				return items.shift();
 			return items;
+		}	
 		var finalRes = [];
 		items.forEach(function (r) {
 			finalRes.push(r.value);
 		});
-		if(straightQuery)
+		//console.log("QUERY "+q+" : straight ? ", straightQuery);
+		if(this.straightQuery)
 			return finalRes.shift();
 		return finalRes;
 	}
@@ -893,6 +898,12 @@ define(function defineDeepQuery(require)
 		if(!globalQuerier)
 			globalQuerier = new DQ();
 		return globalQuerier.query(root, path, options);
+	}
+
+	DQ.lastIsStraight = function (argument) {
+		if(globalQuerier)
+			return globalQuerier.straightQuery;
+		return false;
 	}
 
 

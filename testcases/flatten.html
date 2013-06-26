@@ -7,10 +7,16 @@
 	var failed = 0;
 	var count = 0;
 
-	function report(result)
+	function report(result, error)
 	{
 		///console.log("deep.load RESULT = ", result.equal);
 		count++;
+		if(error)
+		{
+			failed++;
+	      	console.log("report : error : ", deep.utils.dumpError(error));
+			return;
+		}
 		//$("#content-container").append("<br/>("+count+") <strong>"+title+"</strong><br/>")
 		//$("#content-container").append("result : <br/>"+JSON.stringify(r, null, ' '));
 		//$("#content-container").append("<br/>result needed : <br/>"+JSON.stringify(result, null, ' '));
@@ -24,8 +30,6 @@
 		}
 	//	$("#content-container").append("<br/><strong  style=\"color:#"+((ok)?"000000":"FF0000")+"\">test :</strong>", JSON.stringify(ok, null, ' ')+"<br/>");
 	}
-
-	
 
 	//___________________________________________
 
@@ -50,6 +54,7 @@
 			this.obj.b = true;
 		})
 	}
+//__________________________________________________________________
 
 	deep({})
 	.bottom(b)
@@ -62,6 +67,7 @@
         a:true,
         b:true
     }).always(report);
+//__________________________________________________________________
 
 	deep({
 	    sub:{
@@ -83,6 +89,43 @@
 	        b:true
 	    }).always(report);
 	
+//__________________________________________________________________
+var bc2 = {
+    test:2
+}
+
+var bc = {
+    test:1
+}
+
+var b = {
+    backgrounds:[bc]
+}
+
+deep({
+    backgrounds:[bc2, b],
+    c:{
+        backgrounds:[b],
+        prop:2
+    },
+    d:{
+        backgrounds:["#../c"],
+    },
+    e:{
+        backgrounds:["#/c"],
+    }
+})
+.flatten()
+.done(function(s){
+    return deep(s.test).equal(1).log()
+    .deep(s.d.prop).equal(2).log()
+    .deep(s.e.prop).equal(2).log();
+})
+.always(report);
+//__________________________________________________________________
+
+
+
 
 	return	printReport("chain.flatten", success, failed, count);
 })();

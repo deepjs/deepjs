@@ -5,10 +5,16 @@
 	var failed = 0;
 	var count = 0;
 
-	function report(result, reports)
+	function report(result, error)
 	{
 		//console.log("report");
 		count++;
+		if(error)
+		{
+			failed++;
+	      	console.log("report : error : ", deep.utils.dumpError(error));
+			return;
+		}
 		var ok = result.equal;
 		if(ok)
 			success++;
@@ -25,7 +31,8 @@
 	.pushHandlerTo(tests)
 	.query("./msg")
 	.interpret({ name:"john" })
-	.equal("hello john").always(report);
+	.equal("hello john")
+	.always(report);
 	
 
 	// 3

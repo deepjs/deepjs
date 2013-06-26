@@ -23,13 +23,13 @@
 	deep([0,1,2,3,4,5])
 	.pushHandlerTo(tests)
 	.range(1,4)
-	.valuesEqual([1,2,3,4])
+	.equal([1,2,3,4])
 	.always(report);
 
 	deep([0,1,2,3,4,5])
 	.pushHandlerTo(tests)
 	.range(3,5)
-	.valuesEqual([3,4,5])
+	.equal([3,4,5])
 	.always(report);
 
 	//________________________________________________________________________________________

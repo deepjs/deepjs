@@ -11,7 +11,7 @@
  *   	.store("mystore")
  *    	.put()
  *     	.done(function (puttedObject) {
- *	     	// do something 
+ *	     	// do something
  *	    });
  *
  * @example simple 2
@@ -40,19 +40,19 @@
  * 		.done(function (camp) {
  *		 	....
  *		});
- * 
+ *
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 
 /*
-	TODO : 
+	TODO :
 		stores : array
 		stores : object
 		+ add create function (more homogene with json create)
 
 STANDARD trans stores/facets (tout store/facet peut etre utilisé avec)
-	manager les readOnly + privates 
-	manager rpc + bulk 
+	manager les readOnly + privates
+	manager rpc + bulk
 
 Ajouter deep-facets.js
 
@@ -70,12 +70,12 @@ define(["require"],function(require)
 		//_______________________________________________________________________________ STORES
 		//var deep = require("deep/deep");
 		var Querier = require("deep/deep-query");
-		
+
 		/**
 		 * Just a namespace : where default and custom stores are mainly... stored. ;)
 		 * @class deep.stores
 		* @constructor
-		 * 
+		 *
 		 */
 		deep.stores = {};
 
@@ -92,7 +92,7 @@ define(["require"],function(require)
 		 *  ...
 		 *  deep.store("campaign").get("?").log()
 		 *
-		 * 
+		 *
 		 * @class deep.store
 	 	 * @constructor
 		 */
@@ -131,8 +131,8 @@ define(["require"],function(require)
 			{
 				stores = deep.context.role.stores;
 				role = deep.context.role;
-			}	
-			
+			}
+
 			var st = stores[ancestor];
 			if(!st)
 				throw new Error("no stores to extends found with : "+ancestor+". Could not create : "+name );
@@ -146,10 +146,10 @@ define(["require"],function(require)
 
 		/**
 		 * set chain with a certain store. If no store founded : throw an error.
-		 * @example 
+		 * @example
 		 *
 		 * 	deep(myObject).store("campaign").post().log();
-		 * 
+		 *
 		 * @for deep.Chain
 		 * @method store
 		 * @param {String} name the name of the store to select
@@ -168,7 +168,7 @@ define(["require"],function(require)
 				{
 					stores = self.context.role.stores;
 					role = self.context.role;
-				}	
+				}
 				if(typeof name === 'string')
 				{
 					if(!stores[name])
@@ -208,7 +208,7 @@ define(["require"],function(require)
 				//.condition(typeof store.get === "function")
 				.createIfNecessary()
 				.replace(function (id, options) {
-					
+
 					var self = this;
 					if(id == "?" || !id)
 						id = "";
@@ -285,7 +285,7 @@ define(["require"],function(require)
 				.createIfNecessary()
 				.replace(function (object, id, options) {
 					var self = this;
-					var func = function (s,e) 
+					var func = function (s,e)
 					{
 						if(!self._storeName)
 							return deep.errors.Store("no store declared in chain. aborting patch !");
@@ -303,10 +303,10 @@ define(["require"],function(require)
 				del : deep.compose
 				//.condition(typeof store.del === "function")
 				.createIfNecessary()
-				.replace(function (id, options) 
+				.replace(function (id, options)
 				{
 					var self = this;
-					var func = function (s,e) 
+					var func = function (s,e)
 					{
 						if(!self._storeName)
 							return deep.errors.Store("no store declared in chain. aborting delete !");
@@ -395,7 +395,7 @@ define(["require"],function(require)
 		 * @param {Array} arr a first array of objects to hold
 		 * @param {Object} options could contain 'schema'
 		 */
-		deep.store.ArrayStore = function (arr, options) 
+		deep.store.ArrayStore = function (arr, options)
 		{
 			var store = new deep.store.Store();
 			options = options || {};
@@ -423,7 +423,7 @@ define(["require"],function(require)
 						return res.shift();
 					})
 					.store(this);
-				
+
 				return deep(stock)
 				.query("./collection/*?id="+id)
 				.done(function(res){
@@ -466,7 +466,7 @@ define(["require"],function(require)
 			 * @param  {Object} options (optional)
 			 * @return {Object} the inserted object (decorated with it's id)
 			 */
-			store.post = function (object, options) 
+			store.post = function (object, options)
 			{
 				options = options || {};
 				if(!object.id)
@@ -550,7 +550,7 @@ define(["require"],function(require)
 			options = options || {};
 			store.schema = options.schema || {};
 			/**
-			 * 
+			 *
 			 * @method get
 			 * @param  {String} id
 			 * @return {deep.Chain} depending on first argument : return an object or an array of objects
@@ -640,11 +640,11 @@ define(["require"],function(require)
 		 * perform an http get
 		 * if request is not a string : will just return request
 		 * @for deep
-		 * @static 
+		 * @static
 		 * @method get
 		 * @param  {String} request a string to retrieve
 		 * @param  {Object} options (optional)
-		 * @return {deep.Chain} a handler that hold result 
+		 * @return {deep.Chain} a handler that hold result
 		 */
 		deep.get = function  (request, options)
 		{
@@ -669,7 +669,7 @@ define(["require"],function(require)
 			{
 				switch(infos.method)
 				{
-					case "range" : 
+					case "range" :
 						if(!infos.store.range)
 							return deep(new Error("store doesn't contain method : "+request));
 						var splitted = infos.uri.split("?");
@@ -685,7 +685,7 @@ define(["require"],function(require)
 					default:
 						res = infos.store.get(infos.uri, options);
 				}
-				
+
 			}
 			else
 				res = infos.store.get(infos.uri, options);
@@ -711,11 +711,11 @@ define(["require"],function(require)
 		 * retrieve an array of retrievable strings (e.g. "json::test.json")
 		 * if request is not a string : will just return request
 		 * @for deep
-		 * @static 
+		 * @static
 		 * @method getAll
 		 * @param  {String} requests a array of strings to retrieve
 		 * @param  {Object} options (optional)
-		 * @return {deep.Chain} a handler that hold result 
+		 * @return {deep.Chain} a handler that hold result
 		 */
 		deep.getAll = function  (requests, options)
 		{
@@ -734,7 +734,7 @@ define(["require"],function(require)
 		 * @param  {String} request
 		 * @return {Object} infos an object containing parsing result
 		 */
-		deep.parseRequest = function (request, options) 
+		deep.parseRequest = function (request, options)
 		{
 			var protoIndex = request.indexOf("::");
 			var protoc = null;
@@ -791,7 +791,7 @@ define(["require"],function(require)
 				{
 					store = deep.stores[options.defaultProtocole];
 					protoc = options.defaultProtocole;
-				}	
+				}
 			}
 			else
 				store = stores[protoc] || stores[protoc+"."+method];
@@ -916,8 +916,8 @@ define(["require"],function(require)
 					//console.log("deep.stores.instance  : could not instanciate : "+JSON.stringify(id));
 					return new Error("deep.stores.instance  : could not instanciate : "+JSON.stringify(id));
 				});
-				//console.log("DeepRequest.instance : ", cl);
-				
+				//console.log("protocole::instance : ", cl);
+
 			}
 		};
 
@@ -933,7 +933,7 @@ define(["require"],function(require)
 			 * @param  {Object} options
 			 * @return {Object} the loaded aspect
 			 */
-			get:function (id, options) {		
+			get:function (id, options) {
 				return deep.stores.js
 				.get(id, options)
 				.done(function(res){
@@ -946,11 +946,11 @@ define(["require"],function(require)
 
 
 		/*
-			TODO : add schema protocole : 
+			TODO : add schema protocole :
 
 				retrieve it and "compile" it ( produce cleans + validations methods )
 
-				use LAZZY SCHEMA LOADING (only on demand) 
+				use LAZZY SCHEMA LOADING (only on demand)
 
 		 */
 
