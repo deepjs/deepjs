@@ -216,28 +216,43 @@ define(function(require){
 	 */
 	utils.copy = function copy(obj)
 	{
+        if(!obj)
+            return obj;
 		var res = null;
-		if(obj instanceof Array)
+		if(obj.forEach)
 		{
+            if(obj._deep_shared_)
+                return obj;
 			res = [];
-			obj.forEach(function(e){
-				res.push(copy(e));
-			})
+            var len = obj.length;
+            for(var i = 0; i < len; ++i)
+            {
+                var e = obj[i];
+                if(typeof e === 'object')
+				    res.push(copy(e));
+                else
+                    res.push(e);
+            }
 		}
-		else if(obj && typeof obj === 'object')
+		else if(typeof obj === 'object')
 		{
 			if(obj instanceof RegExp)
 				return obj;
 			if(obj instanceof Date)
-				return new Date(obj.valueOf());
-
+				return obj; //new Date(obj.valueOf());
+            if(obj._deep_shared_)
+                return obj;
 			res = {};
 			for(var i in obj)
 			{
 				if(i == "_deep_entry")
 					continue;
+                var v = obj[i];
 				if(obj.hasOwnProperty(i))
-					res[i] = copy(obj[i]);
+                    if(typeof v === 'object')
+					   res[i] = copy(v);
+                    else
+                        res[i] = v;
 			}
 		}
 		else if(typeof obj === 'function')
@@ -629,6 +644,9 @@ define(function(require){
 
 	var up = function up(src, target, schema, parent, key)
 	{
+        //console.log("up : ", src, target)
+       // if(src && src._deep_shared_)
+         //   console.log("_____________ GOT SHARED");
 		if( typeof src === 'undefined' )
 			return target;
 		if(src === null)
@@ -722,6 +740,7 @@ define(function(require){
 				return result;
 				break;
 			case 'object' :
+
 				if(src instanceof RegExp)
 				{
 					if(parent && key)
@@ -770,14 +789,16 @@ define(function(require){
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
-		 // console.log("utils.bottom : objects ", src, target)
-
+		 //console.log("utils.bottom : objects ", src, target)
+        // if(src && src._deep_shared_)
+          //   console.log("got botom shared");
 		if(src === null || typeof src === "undefined")
 			return target;
 		if(target == null)
 			return target;
 		if(typeof target === 'undefined')
 		{
+            //console.log("bottom : target undefined : copy src : ",src)
 			target = utils.copy(src);
 			if(parent && key)
 				parent[key] = target;
@@ -844,7 +865,13 @@ define(function(require){
 				return result;
 				break;
 			case 'object' :
-				// console.log("deep.bottom : apply objects together")
+				 //console.log("deep.bottom : apply objects together")
+                /*if(src && src._deep_shared_)
+                {
+                    if(parent && key)
+				        parent[key] = src;
+
+                }*/
 				var oldProps = {};
 				for(var i in target)
 				{
@@ -857,11 +884,15 @@ define(function(require){
 				{
 					if(i == "_deep_entry")
 						continue;
+                    //console.log("bottom : copy source : ",src[i])
 					target[i] = utils.copy(src[i]);
 				}
 
 				for(var i in oldProps)
 				{
+                    //console.log("i of oldprops in bottom : ", i)
+                    //if(oldProps[i] && oldProps[i]._deep_shared_)
+                      //  console.log("____________ got shared at bottom object");
 					if(i == "_deep_entry")
 						continue;
 					if(oldProps[i] == null)

@@ -2,8 +2,8 @@
  *
  *
  * A other proposal for (json/object)-query which (as differences from official proposal):
- * 	- use simple slash delimitted syntax, 
- * 	- could handle regular expression for step selection, 
+ * 	- use simple slash delimitted syntax,
+ * 	- could handle regular expression for step selection,
  * 	- could handle rql (for filtering) on each step selection,
  * 	- could be relative to where the query are placed in a object/json
  * 	- so could handle steps toward any ancestor
@@ -11,9 +11,9 @@
  * 	- could handle ancestor in rql filtering
  *
  *
- * 
+ *
  * @example
-* deep-query : tools to query json/object structures. 
+* deep-query : tools to query json/object structures.
 ==========================
 
 see Docs/deep-query.md   for full documentations
@@ -40,7 +40,7 @@ on this : recursively take any property named bar and equal to 3
 
 
 /?foo=2&bar/(myArray.*)?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&_parent.taxerate=lt=0.12&_schema.type=string
-From root : Give me any property. 
+From root : Give me any property.
 On this : give me those which have a property named foo and equal to 2 AND has a property named bar (different of undefined, null, false, or 0).
 On this : select any property named myArray.* (RegExp) where length > 10.
 On this : give me property (if any) named 1 or 3 or an index equal to parent.length-2 (parent is myAtrray.*).
@@ -53,7 +53,7 @@ On this : Recursively give me any property where its name correspond to (^p.*)g 
 
 A query consist of succession of steps.
 
-A step is : 
+A step is :
 move selector ? rql
 
 
@@ -79,7 +79,7 @@ any step selector is either a direct string, or an int (array index) or a regula
 You could express range of array indexes as 0:10:2 which says : take items from 0 to 10 (included) by step of two. (see examples below for optionals placement)
 Regular expression are always surrounded by parenthesis, and could be ended with 'g', 'i' or 'gi'.
 
-examples of valid selectors : 
+examples of valid selectors :
 1
 foo
 (foo.*)
@@ -92,7 +92,7 @@ query example :
 Say : give me foo from root,
 on this, give the first items (or any property called '1'),
 on this, give me any property named bar... ,
-on this, get all items by step of two (if any). (it's the result of the query) 
+on this, get all items by step of two (if any). (it's the result of the query)
 
 
 All those below are equivalent and say : give me all properties or items of the last move
@@ -102,10 +102,10 @@ All those below are equivalent and say : give me all properties or items of the 
 /
 
 
-#### Length cases : 
+#### Length cases :
 In array brackets access : you could use @.length to get the length (if any) of the parent IF IT'S AN ARRAY.
-example : 
-//[@.length-1]  
+example :
+//[@.length-1]
 will give you any last array childs at any level from root.
 
 //length
@@ -150,13 +150,13 @@ Here's an example on how to query some JSON/object with deep-query:
 *
 *
 *
-* 
+*
 * @module deep
 * @submodule deep-query
  * @author Gilles Coomans <gilles.coomans@gmail.com>
 */
 /*
-	TODO : 
+	TODO :
 	add context and parametrisation
 	add full expression in access
 	add -brothers selector
@@ -165,24 +165,24 @@ Here's an example on how to query some JSON/object with deep-query:
 	check if parent access give array if starting from items 		OK it does
 
 
-	REFACTORING : 
+	REFACTORING :
 
 		- store the uri of the object  in deep_node (maybe store base_uri in root node)
 			- if externals ressource : it means it's location
 				- in case of queries : uri = base_uri/id/path/to/prop
-			- if internal ressource : 
+			- if internal ressource :
 				if root level has uri : use it as base_uri
 				if not : produce (auto) base uri for root level and use it as before
 
 
-		- when doing : 
+		- when doing :
 
 			deep("campaign::12").validate() or deep("campaign::?").validate()
 
 				==> will get schema from campaign before vaildation
-				
+
 			deep.stores("campaign").validate(obj)
-		
+
 
 */
 if(typeof define !== 'function'){
@@ -236,20 +236,20 @@ define(function defineDeepQuery(require)
 						var filtered = self.returnProperty(parent, i);
 						if(typeof filtered !== 'undefined' && filtered != null)
 							res.push(filtered);
-					}	
+					}
 				}
 				return res;
 			}
 		});
 		return rest;
-	}		
+	}
 /**
  * analyse path and return parsed paths objects
  * @method analyse
  * @param  {String} path
  * @return {Array} parsed paths
  */
-	DQ.prototype.analyse = function (path) 
+	DQ.prototype.analyse = function dqAnalyse(path)
 	{
 		//console.log("analyse")
 		var paths = [];
@@ -289,7 +289,7 @@ define(function defineDeepQuery(require)
 		return paths;
 	}
 
-	DQ.prototype.analyseRQL = function (path, parts) {
+	DQ.prototype.analyseRQL = function dqanalyseRQL(path, parts) {
 		if(path[0] != "?")
 			return path;
 		path = path.substring(1);
@@ -332,7 +332,7 @@ define(function defineDeepQuery(require)
 		return path.substring(count);
 	}
 
-	DQ.prototype.analyseIndexAccess = function (path, parts) 
+	DQ.prototype.analyseIndexAccess = function dqanalyseIndexAccess(path, parts)
 	{
 		var tmp = "";
 		var count = 0;
@@ -352,15 +352,15 @@ define(function defineDeepQuery(require)
 					var prop = self.returnProperty(parent, st);
 					if(prop != null && typeof prop !== 'undefined')
 						return [prop];
-					return [];	
-				}	
+					return [];
+				}
 				var res = [];
 				for(var i = st; i <= this.end(parent); i += this.step(parent))
 				{
 					var prop = self.returnProperty(parent, i);
 					if(prop != null && typeof prop !== 'undefined')
 						res.push(prop);
-				}	
+				}
 				return res;
 			},
 			start:null,
@@ -384,13 +384,13 @@ define(function defineDeepQuery(require)
 						else
 							return -1;
 					}
-				else 
+				else
 					value = function(parent){
 						return 1;
 					}
 			}
 			else if(e.substring(0,8) == '@.length')
-			{	
+			{
 				var rest = e.substring(8);
 				//console.log("got index with @.length : rest : ",rest)
 				if(rest.length == 0 || rest[0] != "-")
@@ -403,12 +403,12 @@ define(function defineDeepQuery(require)
 					{
 						var len = Math.min(integ, parent.value.length);
 						return len-integ;
-					}	
+					}
 					else
 						return -1;
 				};
-			}	
-			else 
+			}
+			else
 			{
 				var integs = parseInt(e);
 				if(isNaN(integs) )
@@ -416,7 +416,7 @@ define(function defineDeepQuery(require)
 				value = function(parent){
 					return integs;
 				}
-			}	
+			}
 			if(pos == 0)
 				range.start = value;
 			else if(pos == 1)
@@ -428,7 +428,7 @@ define(function defineDeepQuery(require)
 		return path.substring(count);
 	}
 
-	DQ.prototype.analyseUnionAccess = function (path, parts) 
+	DQ.prototype.analyseUnionAccess = function dqanalyseUnionAccess(path, parts)
 	{
 		if(path[0] != '[')
 			throw new QueryError("union access need to start with '['.", path, parts)
@@ -476,7 +476,7 @@ define(function defineDeepQuery(require)
 	 * @param  {[type]} ancestor
 	 * @return {[type]}
 	 */
-	DQ.prototype.createEntry = function  (key, ancestor) 
+	DQ.prototype.createEntry = function  dqCeateEntry(key, ancestor)
 	{
 		var path = ancestor.path
 		if(path[path.length-1] == '/')
@@ -502,13 +502,13 @@ define(function defineDeepQuery(require)
 			depth:ancestor.depth+1
 		}
 	}
-	DQ.prototype.returnProperty = function(entry, key){
+	DQ.prototype.returnProperty = function dqreturnProperty(entry, key){
 		if(key == "_deep_entry")
 			return null;
 		if(typeof entry.value === 'string' && key !== 'length')
 			return null;
 		var obj = entry.value;
-		
+
 		if(obj && typeof obj[key] !== 'undefined')
 			entry = this.createEntry(key, entry);
 		else
@@ -517,7 +517,7 @@ define(function defineDeepQuery(require)
 		return entry;
 
 	}
-	DQ.prototype.returnAllProps = function(entry){
+	DQ.prototype.returnAllProps = function dqreturnAllProps(entry){
 		//if(typeof entry.value === "string")
 		//	return [this.createEntry('length', entry)];
 		if(typeof entry.value === "string")
@@ -526,7 +526,7 @@ define(function defineDeepQuery(require)
 		var childs = [];
 		for(var i in obj)
 		{
-			if(i == "_deep_entry")
+			if(i == "_deep_entry" || i == "_deep_shared_")
 				continue;
 			if(!obj.hasOwnProperty(i))
 				continue;
@@ -536,7 +536,7 @@ define(function defineDeepQuery(require)
 		}
 		return childs;
 	}
-	DQ.prototype.returnRecursiveProps = function(entry){
+	DQ.prototype.returnRecursiveProps = function dqreturnRecursiveProps(entry){
 		//console.log("recursive props : ", entry.path)
 
 		if(typeof entry.value === "string")
@@ -559,7 +559,8 @@ define(function defineDeepQuery(require)
 		}
 		return childs;
 	}
-	DQ.prototype.analyseSelector = function (path, parts, fromUnion) 
+
+	DQ.prototype.analyseSelector = function dqanalyseSelector(path, parts, fromUnion)
 	{
 		//console.log("analyseSelector : ", path);
 		var count = 0;
@@ -633,13 +634,13 @@ define(function defineDeepQuery(require)
 			if(fromUnion)
 				throw new QueryError("you couldn't have union in union of selectors."+this.currentQuery);
 			return this.analyseUnionAccess(path, parts);
-		}	
+		}
 		var string = "";
 		while(path[count] != '/' && path[count] != '?'  && count < path.length)
 			string += path[count++];
 		//console.log("analyseSelector : got string", string);
 		if(string == "*")
-		{	
+		{
 			if(parts.length > 0 && parts[parts.length-1].slashes == "//")
 				return path.substring(count);
 
@@ -666,7 +667,8 @@ define(function defineDeepQuery(require)
 		})
 		return path.substring(count);
 	}
-	DQ.prototype.analyseMoves = function (path, paths) {
+
+	DQ.prototype.analyseMoves = function dqanalyseMoves(path, paths) {
 		var steps = [];
 		var tmp = "";
 		var a = 0;
@@ -678,7 +680,7 @@ define(function defineDeepQuery(require)
 			{
 				tmp += '/';
 				a++;
-			}	
+			}
 			if(tmp.length > 0)
 			{
 				if(tmp.length > 2)
@@ -702,14 +704,14 @@ define(function defineDeepQuery(require)
 			//break;
 		}
 		//console.log("analyseMoves : steps : ", steps);
-		
+
 		//return "";
 		var last = steps[steps.length-1];
 		if(!last)
 			throw new QueryError("deepQuery : missformed query : "+this.asked);
 		if(last[0] == ".")
 			a -= last.length;
-			
+
 		while(steps.length > 0)
 		{
 			var res = { type:"move", points:null, slashes:null };
@@ -728,24 +730,25 @@ define(function defineDeepQuery(require)
 
 		return path.substring(a);
 	}
-	DQ.prototype.doMove = function(move, items, start)
+
+	DQ.prototype.doMove = function dqdoMove(move, items, start)
 	{
 		var newItems = [];
 		var toDo = move;
 		var self = this;
-		items.forEach ( function ( item ) 
+		items.forEach ( function ( item )
 		{
 			if(toDo.points)
 				switch(toDo.points)
 				{
-					case "." : 
+					case "." :
 						newItems.push(item);
 					break;
-					case ".." : 
+					case ".." :
 						if(item.ancestor)
 							newItems.push(item.ancestor);
 					break;
-					case "..." : 
+					case "..." :
 						var tmp = item;
 						while(tmp.ancestor)
 						{
@@ -753,7 +756,7 @@ define(function defineDeepQuery(require)
 							tmp = tmp.ancestor;
 						}
 					break;
-					default: 
+					default:
 						throw new QueryError("bad move : ", toDo);
 				}
 			if(!toDo.points)
@@ -769,24 +772,21 @@ define(function defineDeepQuery(require)
 		//console.log("DO MOVE gives : ", newItems);
 		return newItems;
 	}
-	
 
 	/**
 	 *
 	 * perform the query on object
-	 * 
+	 *
 	 * @method query
 	 * @param  {Object} obj any object to query on
 	 * @param  {String} q the query
 	 * @param  {Object} options (optional) :  options : resultType:"full" when you want to get the array of nodes results, not only the values results.
 	 * @return {Array} an array of results (maybe empty)
 	 */
-	DQ.prototype.query = function doDeepQuery(obj, q, options) 
+	DQ.prototype.query = function doDeepQuery(obj, q, options)
 	{
 		if(typeof obj !== 'object' || !obj)
-		{
 			return [];
-		}
 		this.currentQuery = q;
 		//console.log("DQ.query : ", obj, q, options)
 		options = options || {};
@@ -797,7 +797,7 @@ define(function defineDeepQuery(require)
 		if(q[0] === '#')
 			q = q.substring(1);
 		//console.log("DeepQuery : will do : ",q);
-	
+
 		if(obj._isDQ_NODE_ == true)
 		{
 			//console.log("DQ : start with _isDQ_NODE_")
@@ -819,7 +819,7 @@ define(function defineDeepQuery(require)
 		items[0].root = this.root;
 
 		this.straightQuery = false;
-		if(!q.match(/(\?)|(\/\/)|(\[)|(\])|(\()|(\))|(\*)/gi))
+		if(!q.match(/(\?)|(\/\/)|(\[)|(\()|(\*)/gi))
 		{
 			this.straightQuery = true;
 			/*if(!q.match(/(\.\.)/gi))
@@ -844,20 +844,29 @@ define(function defineDeepQuery(require)
 			var part = parts.shift();
 			switch(part.type)
 			{
-				case 'move' : 
+				case 'move' :
 					items = self.doMove(part, items, start);
 					//console.log("do move : ", items)
 					break;
-				case 'selector' : 
+				case 'selector' :
 					var results = [];
-					items.forEach(function (item) {
+
+                     var len = items.length;
+                    for(var i = 0; i < len; ++i)
+                    {
+                        var item = items[i];
+                        var r =  part.handler(item);
+						if(r && r.length > 0)
+							results = results.concat(r);
+                    }
+					/*items.forEach(function (item) {
 						var r =  part.handler(item);
 						if(r && r.length > 0)
 							results = results.concat(r);
-					});
+					});*/
 					items = results;
 					break;
-				case 'rql': 
+				case 'rql':
 					items = part.handler(items);
 					break;
 			}
@@ -871,11 +880,11 @@ define(function defineDeepQuery(require)
 			if(this.straightQuery)
 				return items.shift();
 			return items;
-		}	
+		}
 		var finalRes = [];
-		items.forEach(function (r) {
-			finalRes.push(r.value);
-		});
+        var len = items.length;
+        for(var i = 0; i < len; ++i)
+            finalRes.push(items[i].value);
 		//console.log("QUERY "+q+" : straight ? ", straightQuery);
 		if(this.straightQuery)
 			return finalRes.shift();
@@ -886,7 +895,7 @@ define(function defineDeepQuery(require)
 	/**
 	 *
 	 * perform the query (static access of query method)
-	 * 
+	 *
 	 * @static
 	 * @method query
 	 * @param  {Object} root
@@ -900,13 +909,6 @@ define(function defineDeepQuery(require)
 		return globalQuerier.query(root, path, options);
 	}
 
-	DQ.lastIsStraight = function (argument) {
-		if(globalQuerier)
-			return globalQuerier.straightQuery;
-		return false;
-	}
-
-
 	DQ.firstObjectWithProperty = function firstObjectWithProperty(entry, property){
 		//console.profile("firstObjectWithProperty")
 		if(!entry._isDQ_NODE_)
@@ -915,7 +917,7 @@ define(function defineDeepQuery(require)
 		if(value[property])
 			return entry;
 		var way = [];
-		var searchProp = function firstObjectWithPropertySearch(entry) 
+		var searchProp = function firstObjectWithPropertySearch(entry)
 		{
 			var value = entry.value;
 			if(typeof value !== "object" || !value)
@@ -951,13 +953,243 @@ define(function defineDeepQuery(require)
 			return false;
 		}
 		var ok = searchProp(entry);
-		//console.log("first object way : ",way)
-		//console.profileEnd("firstObjectWithProperty")
 		if(ok)
 			return way.pop();
 		return null;
 	}
-	DQ.createEntry = function  (key, ancestor) 
+/*
+    DQ.firstObjectWithProperty = function firstObjectWithProperty(entry, property)
+    {
+		if(!entry._isDQ_NODE_)
+			entry = DQ.createRootNode(entry, {});
+        var value = entry.value;
+        if(typeof value !== "object")
+            return null;
+        var toChecks = [];
+        while(entry)
+        {
+            value = entry.value;
+            if(value[property])
+                return entry;
+            if(value.forEach)
+            {
+                var len = value.length;
+                for(var i = 0; i < len; ++i)
+                {
+                    var v = value[i];
+                    if(typeof v === 'object')
+                        toChecks.push(DQ.createEntry(i, entry));
+                }
+            }
+            else
+                for(var i in value)
+                {
+                    var v = value[i];
+                    if(i == "_deep_entry" || typeof v !== 'object')
+                        continue;
+                    toChecks.push(DQ.createEntry(i, entry));
+                }
+            entry = toChecks.shift();
+        }
+		return null;
+	}
+*/
+    DQ.objectsWithProperty2 = function objectsWithProperty(value, property, ommitRoot)
+    {
+        //console.log("OBJECTS WITH PROPERTY : ",value)
+        var path = "/";
+		if(value._isDQ_NODE_)
+        {
+            value = value.value;
+            path = value.path;
+            if(path[path.length-1] !== '/')
+                path += '/';
+        }
+        if(typeof value !== "object")
+            return [];
+        var res = [];
+        var stack = [];
+        var first = true;
+        var val = { path:path, v:value };
+        while(value)
+        {
+            var v = null;
+            //console.log("val : ", val);
+            if(value[property] && (!first || !ommitRoot))
+                res.push(value);
+            var r = [];
+            if(value.forEach)
+            {
+                var len = value.length;
+                for(var i = 0; i < len; ++i)
+                {
+                    v = value[i];
+                    if(typeof v === 'object')
+                        r.unshift({v:v, path:val.path+i+"/"});
+                }
+            }
+            else
+                for(var i in value)
+                {
+                    v = value[i];
+                    if(i == "_deep_entry" || typeof v !== 'object' || i == property)
+                        continue;
+                    r.unshift({v:v, path:val.path+i+"/"});
+                }
+            if(r.length > 0)
+                stack = stack.concat(r);
+            val = stack.pop();
+            if(val)
+                value = val.v;
+            else
+                value = null;
+            first = false;
+        }
+		return res;
+	}
+
+    DQ.objectsWithProperty = function objectsWithProperty(root, property, ommitRoot)
+    {
+        var res = [];
+        var current = null;
+        var stack = [{ value:root, path:"/" }];
+        var first = true;
+        while(stack.length > 0)
+        {
+            current = stack.pop();
+            var v = current.value;
+            if(v[property] && (!first || !ommitRoot))
+                res.push(v);
+            if(first)
+                first = false;
+            var r = [];
+            if(v.forEach)
+            {
+                var len = v.length;
+                for(var i = 0; i < len; ++i)
+                {
+                    var va = v[i];
+                     if(typeof va === 'object')
+                        r.unshift({ path:current.path+i+'/', value:va });
+                }
+            }
+            else
+                for(var i in v)
+                {
+                    var va = v[i];
+                    if(i == "_deep_entry" || typeof va !== 'object' || i == property)
+                        continue;
+                    r.unshift({ path:current.path+i+'/', value:va });
+                }
+             if(r.length > 0)
+                stack = stack.concat(r);
+        }
+        return res;
+    }
+
+    DQ.preorder2 = function preorder2(root, path, res)
+    {
+        //console.log("r : ", path)
+        res.push(path);
+        if(root.forEach)
+        {
+            var len = root.length;
+            for(var i = 0; i < len; ++i)
+            {
+                var r = root[i];
+                if(typeof r === 'object')
+                    DQ.preorder2(r, path+i+'/', res);
+            };
+        }
+        else
+            for(var i in root)
+            {
+                var r = root[i];
+                if(typeof r === 'object')
+                    DQ.preorder2(r, path+i+'/', res);
+            }
+    }
+
+    DQ.pedale = function(){
+        var res = [];
+        for(var i = 0; i < 20000; ++i)
+        {
+            if(i % 500 == 0)
+                res = [];
+            res.push(i);
+        }
+    }
+
+    DQ.preorder = function preorder(root)
+    {
+        var res = [];
+        var current = null;
+        var stack = [{ value:root, path:"/" }];
+        while(stack.length > 0)
+        {
+            current = stack.pop();
+            var v = current.value;
+            res.push(current.path);
+            var r = [];
+            if(v.forEach)
+            {
+                var len = v.length;
+                for(var i = 0; i < len; ++i)
+                {
+                    var va = v[i];
+                     if(typeof va === 'object')
+                        r.unshift({ path:current.path+i+'/', value:va });
+                }
+            }
+            else
+                for(var i in v)
+                {
+                    var va = v[i];
+                    if(i == "_deep_entry" || typeof va !== 'object')
+                        continue;
+                    r.unshift({ path:current.path+i+'/', value:va });
+                }
+            if(r.length > 0)
+                stack = stack.concat(r);
+        }
+        return res;
+    }
+
+    DQ.inorder = function inorder(root)
+    {
+        var res = [];
+        var current = null;
+        var stack = [{ value:root, path:"/" }];
+        while(stack.length > 0)
+        {
+            current = stack.shift();
+            var v = current.value;
+            res.push(current.path);
+            if(v.forEach)
+            {
+                var len = v.length;
+                for(var i = 0; i < len; ++i)
+                {
+                    var va = v[i];
+                     if(typeof va === 'object')
+                        stack.push({ path:current.path+i+'/', value:va });
+                }
+            }
+            else
+                for(var i in v)
+                {
+                    var va = v[i];
+                    if(i == "_deep_entry" || typeof va !== 'object')
+                        continue;
+                    stack.push({ path:current.path+i+'/', value:va });
+                }
+        }
+        return res;
+    }
+
+
+
+	DQ.createEntry = function  staticCreateEntry(key, ancestor)
 	{
 		var path = ancestor.path
 		if(path[path.length-1] == '/')
@@ -969,8 +1201,8 @@ define(function defineDeepQuery(require)
 
 		var schema = null;
 		//console.log("ancestor.schema : ", ancestor.schema)
-		//if(ancestor.schema)
-		//	schema = retrieveFullSchemaByPath(ancestor.schema, key, "/");
+		if(ancestor.schema)
+			schema = retrieveFullSchemaByPath(ancestor.schema, key, "/");
 		//console.log("DQ.createEntry : "+path+" : schema : ",schema)
 		return {
 			_isDQ_NODE_:true,
@@ -985,14 +1217,14 @@ define(function defineDeepQuery(require)
 	}
 	/**
 	 * create a root DeepQuery node
-	 * 
-	 * @static 
+	 *
+	 * @static
 	 * @method createRootNode
 	 * @param  {Object} obj
 	 * @param  {Object} schema
 	 * @return {Object} a DeepQuery root node
 	 */
-	DQ.createRootNode = function (obj, schema, options) {
+	DQ.createRootNode = function createRootNode(obj, schema, options) {
 		options = options || {};
 		var node =  {
 			_isDQ_NODE_:true,

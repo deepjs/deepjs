@@ -4,7 +4,7 @@
  * Keep in mind that if you collide a simple function (up) on a composition (chained or not) : it mean : simply overwrite the composition by the function.
  * So if you apply a composition from bottom on a function, the composition will never b applied.
  * If you collide two compositions : they will be merged to give a unique composition chain.
- * 
+ *
  * @example
  * deep.compose : Chained Aspect Oriented Programming
 ==========================
@@ -19,7 +19,7 @@ If it return nothing, th original arguments are injected in next function.
 If it returns a promise or a chain : it will wait until the resolution of the returned value.
 If the returned object isn't a promise, the next function is executed immediately.
 
-ex : 
+ex :
 
 	var base = {
 	    myFunc:deep.compose.after(function(arg)
@@ -47,7 +47,7 @@ If the previous returned object isn't a promise, 'func' is executed immediately.
 
 Same thing for returned object(s) from 'func' : it will be chained..
 
-	ex : 
+	ex :
 
 	var base = {
 	    myFunc:function(arg)
@@ -71,7 +71,7 @@ here you want to do your own wrapper.
 Juste provid a function that receive in argument the collided function (the one which is bottom),
 an which return the function that use this collided function.
 
-	ex : 
+	ex :
 
 	var base = {
 		myFunc:function(arg)
@@ -100,7 +100,7 @@ before firing eventual next composed function, you could use deep.compose.parall
 Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
 Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
 
-So as implies a foot print on the chaining (the forwarded arguments become an array) : 
+So as implies a foot print on the chaining (the forwarded arguments become an array) :
 It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
 
 An other point need to be clarify if you use deep(this).myChain()... in the composed function.
@@ -108,16 +108,16 @@ As you declare a new branch on this, you need to be careful if any other of the 
 
 You'll maybe work on the same (sub)objects in the same time.
 
-## compositions chaining 
+## compositions chaining
 
-You could do 
+You could do
 	var obj = {
 		func:deep.compose.after(...).before(...).around(...)...
 	}
 It will wrap, in the order of writing, and immediately, the compositions themselves.
 You got finally an unique function that is itself a composition (and so could be applied later an other functions).
 
-So when you do : 
+So when you do :
 
 deep.parallele(...).before(...) and deep.before(...).parallel(...)
 
@@ -127,11 +127,11 @@ In first : you wrap the collided function with a parallele, and then you chain w
 So finally the execution will be : the before and then the parallelised call.
 
 In second : you wrap the collided function with a before, and then wrap the whole in a parallele.
-So the execution will be the parallelised call, but on one branche, there is two chained calls (the before and the collided function). 
+So the execution will be the parallelised call, but on one branche, there is two chained calls (the before and the collided function).
 
 Keep in mind that you WRAP FUNCTIONS, in the order of writing, and IMMEDIATELY.
  *
- * 
+ *
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  * @module deep
  * @submodule deep-compose
@@ -152,7 +152,7 @@ Keep in mind that you WRAP FUNCTIONS, in the order of writing, and IMMEDIATELY.
  *
  *
  * 	deep.utils.up(b,a).myFunc()
- * 
+ *
  */
 if(typeof define !== 'function')
 	var define = require('amdefine')(module);
@@ -166,7 +166,7 @@ define(function(require, exports, module){
 	 *Not intended to be used directly.
 	 *
 	 * Use deep.compose... in place.
-	 * 
+	 *
 	 * @class Composer
 	 * @namespace deep
 	 * @private
@@ -287,7 +287,7 @@ define(function(require, exports, module){
 		 *
 		 * chainable around composition
 		 *
-		 * 
+		 *
 		 * here you want to do your own wrapper.
 		 * Juste provid a function that receive in argument the collided function (the one which is bottom),
 		 * an which return the function that use this collided function.
@@ -417,11 +417,11 @@ define(function(require, exports, module){
 		 *
 		 * when you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)
 		 * before firing eventual next composed function, you could use deep.compose.parallele( func )
-		 * 
+		 *
 		 * Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
 		 * Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
 
-		 * So as it implies that the forwarded arguments become an array : 
+		 * So as it implies that the forwarded arguments become an array :
 		 * It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
 		 *
 		 * @example
@@ -446,7 +446,7 @@ define(function(require, exports, module){
 		 * 		.bottom(a)
 		 * 		.load() // will perform both loads (http get on json files) parallely (in the same time)
 		 * 		.log();  // will print a concatened array of loadeds stuffs.
-		 * 
+		 *
 		 * @method parallele
 		 * @chainable
 		 * @param  {[type]} argument
@@ -677,6 +677,51 @@ define(function(require, exports, module){
 		}
 	};
 	// console.log("Deep-compose initialised");
+
+
+
+    //________________________________________________________ DEEP CHAIN UTILITIES
+
+    /**
+     * execute array of funcs sequencially
+     * @for deep
+     * @static
+     * @method sequence
+     * @param  {String} funcs an array of functions to execute sequentially
+     * @param  {Object} args (optional) some args to pass to first functions
+     * @return {deep.Chain} a handler that hold result
+     */
+    compose.sequence = function (funcs, args) {
+        if (!funcs || funcs.length === 0)
+            return args;
+        var current = funcs.shift();
+        var def = deep.Deferred();
+        var context = {};
+        var doIt = function (r) {
+            deep.when(r).then(function (r) {
+                if (funcs.length === 0) {
+                    if (typeof r === 'undefined') {
+                        r = args;
+                        if (args.length == 1)
+                            r = args[0];
+                    }
+                    def.resolve(r);
+                    return r;
+                }
+                if (typeof r === 'undefined')
+                    r = args;
+                else
+                    r = [r];
+                current = funcs.shift();
+                doIt(current.apply(context, r));
+            }, function (error) {
+                if (!def.rejected && !def.resolved && !def.canceled)
+                    def.reject(error);
+            });
+        };
+        doIt(current.apply(context, args));
+        return def.promise();
+    };
 
 	return compose;
 }

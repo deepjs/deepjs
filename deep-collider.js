@@ -1,15 +1,12 @@
 /**
- *
- *
- *
- * layer-data-composition : inspired by Compose, it offer a large set of tools that permit to manipulate values 
- * from within the object used as layer when applied together. 
+ * layer-data-composition : inspired by Compose, it offer a large set of tools that permit to manipulate values
+ * from within the object used as layer when applied together.
  * As Compose merge two prototype by wrapping collided functions by appropriate Compose method (after, before, around),
  * layer-compose do the same by applying a function when values are collided with that function.
  *
- * If you know photoshop : it's an equivalent of the fusion modes between two layers (or part of two layers). 
+ * If you know photoshop : it's an equivalent of the fusion modes between two layers (or part of two layers).
  *
- * 
+ *
  * @module deep
  * @submodule deep-collider
  * @author Gilles Coomans <gilles.coomans@gmail.com>
@@ -147,7 +144,7 @@ define(function(require)
 			 */
 			assert:{
 				/**
-				 * assert is true on collided value. 
+				 * assert is true on collided value.
 				 * @method isTrue
 		 		 * @static
 				 * @return {Function} the collider
@@ -268,38 +265,8 @@ define(function(require)
 			"boolean":{
 			},
 			"func":{
-				
+
 			}
 		}
 	}
-
-/*
-	//__________________
-	//
-
-	var o = {
-		user:{
-			brol:{
-				backgrounds:[new deep.store.Collection("brol")],
-				collection:[],
-				schema:"json::/brol/schema"
-			}
-		}
-	};
-
-	//_______________
-
-	var a = {
-		myCollection:[
-		//...
-		]
-	};
-
-	var b = {
-		myCollection:deep.collider.store.Collection("brol", "json::/brol/schema");
-	};
-
-	deep.utils.up(b,a);
-
-*/
 });
