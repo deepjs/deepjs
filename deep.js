@@ -925,6 +925,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         load: function chainLoad(request) {
             var self = this;
             var func = function (s, e) {
+
                 if (request) {
                     if (typeof request === "string")
                         return deep.get(request);
@@ -933,8 +934,16 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     else
                         return request;
                 }
-                self._nodes.forEach(function (v) {
-                    //console.log("deep.load : node : ",v)
+                //console.log("self.load : queried : ", self._queried, " - nodes : ", self._nodes);
+                if(!self._queried && self._nodes[0] && self._nodes[0].value instanceof Array)
+                {
+                    self._nodes = deep.query(self._nodes[0], "./*", { resultType:"full"});
+                    self._queried = true;
+                }    
+                var res = [];
+
+                var doLoad = function (v) {
+                    //console.log("deep.load : node : ",v);
                     if (!v.value)
                         return v.value;
                     if (v.value.load) 
@@ -948,7 +957,11 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         });
                     else
                         return v.value;
+                }
+                self._nodes.forEach(function(n){
+                    res.push(doLoad(n));
                 });
+                return deep.all(res);
             };
             func._isDone_ = true;
             addInChain.apply(this, [func]);
