@@ -1078,7 +1078,7 @@ define(function(require){
 			  console.log('\nStatus: ' + err.status)
 			if (err.message)
 			  console.log('\nMessage: ' + err.message)
-			if (err.stack && deep.debug)
+			if (err.stack)
 			{
 			  console.log('\nStacktrace:')
 			  console.log('====================')

@@ -642,6 +642,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         if (cloneValues)
             newRes = newRes.concat(handler._nodes);
         var newHandler = new deep.Chain({
+            _root: handler._root,
             _rethrow: handler.rethrow,
             _nodes: newRes,
             _queried: handler._queried,
@@ -932,17 +933,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     else
                         return request;
                 }
-                return deep.chain.transformNodes(self._nodes, function (v) {
+                self._nodes.forEach(function (v) {
                     //console.log("deep.load : node : ",v)
                     if (!v.value)
                         return v.value;
-                    if (v.value.load) {
-                        return deep.when(callFunctionFromValue(v, "load"))
-                            .done(function (argument) {
-                            return v.value;
-                        })
-                    } else if (typeof v.value === 'string')
-                        return deep.get(v.value, {});
+                    if (v.value.load) 
+                        return deep.when(callFunctionFromValue(v, "load"));
+                    else if (typeof v.value === 'string')
+                        return deep.when(deep.get(v.value, {}))
+                        .done(function(r){
+                            if(v.ancestor)
+                                v.ancestor.value[v.key] = r;
+                            return v.value = r;
+                        });
                     else
                         return v.value;
                 });

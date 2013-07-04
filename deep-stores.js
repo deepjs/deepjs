@@ -652,6 +652,8 @@ define(["require"], function (require) {
              */
             queryThis: function (request, options) {
                 var entry = options.entry;
+                if(!entry)
+                    return undefined;
                 var root = entry.root || entry;
                 //console.log("deep.stores.queryThis : ", request, " - root ? ", entry.root)
 
