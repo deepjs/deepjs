@@ -1058,6 +1058,8 @@ define(function defineDeepQuery(require)
         {
             current = stack.pop();
             var v = current.value;
+            if(!v)
+            	continue;
             if(v[property] && (!first || !ommitRoot))
                 res.push(v);
             if(first)
