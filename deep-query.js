@@ -1079,7 +1079,7 @@ define(function defineDeepQuery(require)
                 for(var i in v)
                 {
                     var va = v[i];
-                    if(i == "_deep_entry" || typeof va !== 'object' || i == property)
+                    if(i == "_deep_entry" || typeof va !== 'object' || i == property || !v.hasOwnProperty(i))
                         continue;
                     r.unshift({ path:current.path+i+'/', value:va });
                 }
