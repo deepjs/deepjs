@@ -1189,8 +1189,6 @@ define(function defineDeepQuery(require)
         return res;
     }
 
-
-
 	DQ.createEntry = function  staticCreateEntry(key, ancestor)
 	{
 		var path = ancestor.path

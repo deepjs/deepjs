@@ -949,8 +949,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     if (v.value.load) 
                         return deep.when(callFunctionFromValue(v, "load"));
                     else if (typeof v.value === 'string')
-                        return deep.when(deep.get(v.value, {}))
+                        return deep.when(deep.get(v.value, {entry:v}))
                         .done(function(r){
+                            console.log("load res : ",r)
                             if(v.ancestor)
                                 v.ancestor.value[v.key] = r;
                             return v.value = r;

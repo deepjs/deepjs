@@ -683,10 +683,11 @@ define(["require"], function (require) {
                 if (res)
                     switch (infos.protocole) {
                     case "first":
-                        res = res[0] || null;
+
+                        //res = res[0] || null;
                         break;
                     case "last":
-                        res = res[res.length - 1] || null;
+                        //res = res[res.length - 1] || null;
                         break;
                 }
                 //if(infos.protocole == "first")
@@ -714,10 +715,16 @@ define(["require"], function (require) {
                     //console.log("final proto : ", proto);
                     if (!proto || splitted.length > 0)
                         return deep.errors.Protocole("no protocole found with : " + path);
+
                     if(proto._deep_store_ && !proto.initialised && proto.init)
-                        return proto.init().done(function(){
-                            return proto;
-                        });
+                    {
+                        var ini = proto.init();
+                        if(ini && (ini.then || ini.promise))
+                            return deep.when(ini).done(function(){
+                                return proto;
+                            });
+                        return proto;
+                    }   
                     return proto;
                 }
                 return deep.errors.Protocole("no protocole found with : " + path);;
@@ -836,6 +843,7 @@ define(["require"], function (require) {
                 var self = this;
                 var func = function (s, e) {
                     var store = self._store || deep.protocoles.store(self._storeName);
+                    //console.log("chain post : store getted : ", store);
                     if (store instanceof Error)
                         return store;
                     if (!store)
