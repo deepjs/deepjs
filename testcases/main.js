@@ -9,10 +9,10 @@ console.flog = function(flag, message)
 }
 
 require.config({
-	 baseUrl: "/common/js-lib",
+	 baseUrl: "/js",
     "packages": [{"name":"deep", "main":"deep.js"}]
 });
-require([ "app.js", "deep/deep", "/common/js-lib/swig/swig.pack.min.js"], function( app, deep ) {
+require([ "app.js", "deep/deep", "/js/swig/swig.pack.min.js"], function( app, deep ) {
 	// console.log("deep ? ", deep);
   	app();
 });

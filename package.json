@@ -2,7 +2,7 @@
   "name": "deep",
   "version": "0.9.1",
   "author": "Gilles Coomans",
-  "description": "just say : powaaaa ! ;)",
+  "description": "Powerful atomic tools for managing objects, functions and promises",
   "licenses": [
      {
          "type": "AFLv2.1",
@@ -15,12 +15,11 @@
   ],
   "repository": {
     "type":"git",
-    "url":"http://bitbucket.com/nomocas/deep"
+    "url":"ssh://git@dev.ubik.be/deep"
   },
   "dependencies": {
     "rql": "0.3.1"
   },
-
   "main": "./deep",
   "mappings":{
     "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"

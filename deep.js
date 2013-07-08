@@ -178,22 +178,23 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     /**
      * a magic context that follow promise context and switch automaticaly
      * @static
-     * @method interpret
-     * @param {String} string the string to interpret
-     * @param {Object} context the context injected for interpretation
-     * @return {String} the result
+     * @property interpret
      */
     deep.context = {};
 
     /**
      * where to place YOUR globals (deep does'nt have any globals)
      * @static
-     * @method globals
-     * @param {String} string the string to interpret
-     * @param {Object} context the context injected for interpretation
-     * @return {String} the result
+     * @property globals
      */
     deep.globals = {};
+
+    /**
+     * where to place YOUR globals headers to set on each store call (deep does'nt have any globals)
+     * @static
+     * @property globals
+     */
+    deep.globalHaders = {};
 
     var addInChain = function addInChain(handle) {
         var self = this;

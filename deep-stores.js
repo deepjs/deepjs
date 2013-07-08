@@ -51,6 +51,12 @@ define(["require"], function (require) {
                 this.initialised = true;
                 if(this.protocole)
                   deep.protocole(this.protocole, this);
+            },
+            wrap:function(){
+                var self = this;
+                return function(){
+                    return self;
+                }
             }
         };
 

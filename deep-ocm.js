@@ -124,9 +124,17 @@ define(["require"], function (require){
             deep.chain.addInChain.apply(self,[func]);
             return this;
         });
-        deep.generalMode = function(){
+        deep.generalMode = function(arg){
             deep.context = deep.utils.simpleCopy(deep.context);
-            deep.context.mode = Array.prototype.slice.apply(arguments);
+            if(arguments.length > 1)
+                deep.context.mode = Array.prototype.slice.apply(arguments);
+            else
+            {
+                if(arg instanceof Array)
+                   deep.context.mode = arg; 
+                else
+                    deep.context.mode = [arg];
+            }
         }
         //_____________________________________________________________
 
