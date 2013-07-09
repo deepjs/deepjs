@@ -82,7 +82,7 @@ deep n'est que des outils
 14:19
 et les outils ne force rien
 14:20
-c'est pas deep qui force le fait d'utiliser _APP en global par exemple
+c'est pas deep qui force le fait d'utiliser smart en global par exemple
 14:20
 ca c'est la manière dont on a construit le model d'une app chz nous
 14:20

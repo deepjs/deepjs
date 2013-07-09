@@ -355,7 +355,7 @@ define(["require"], function (require)
 		login:function  (obj) {
 			/*
 				if obj is provided : do a login on server with it (email/pass)
-				and set _APP associated state
+				and set smart associated state
 
 				if !obj
 				show login ui
