@@ -1,6 +1,11 @@
 /**
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  *
+ *
+ * TODO : 
+ *     - files extensions matching optimisation
+ *     - add optimised mode that do not return deep chain handle for any HTTP verb (to be used when stores are used from within a chain)
+ *     - check range object usage in chain
  */
 if (typeof define !== 'function')
     var define = require('amdefine')(module);
@@ -13,9 +18,8 @@ define(["require"], function (require) {
             requirejs.onError = function (err) {
                 console.log('requirejs OnError : ' + err);
                 console.log(err.requireType);
-                if (err.requireType === 'timeout') {
+                if (err.requireType === 'timeout') 
                     console.log('modules: ' + err.requireModules);
-                }
                 //throw err;
         };
 
@@ -811,7 +815,7 @@ define(["require"], function (require) {
                     if (!store.range)
                         return deep.errors.Store("provided store doesn't have RANGE. aborting RANGE !");
                     return deep.when(store.range(arg1, arg2, uri, options))
-                        .done(function (success) {
+                    .done(function (success) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
@@ -956,7 +960,7 @@ define(["require"], function (require) {
                     if (!store.bulk)
                         return deep.errors.Store("provided store doesn't have BULK. aborting BULK !");
                     return deep.when(store.bulk(arr, uri, options))
-                        .done(function (success) {
+                    .done(function (success) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };

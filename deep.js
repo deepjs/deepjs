@@ -10,8 +10,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         //console.log("start chain : ", obj)
         //if(obj && obj._deep_chain_ && obj.oldQueue)
         //	return obj;
+        var h = new deep.Chain(options);
         try {
-            var h = new deep.Chain(options);
             if (typeof obj === 'string')
                 obj = deep.get(obj);
             if (typeof schema === 'string')
@@ -41,20 +41,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     h._nodes = [deep.Querier.createRootNode(obj, schema, options)];
                 h._root = h._nodes[0];
                 h._start(r, null);
-            }
-            if (obj && (obj.then || obj.promise || (schema && (schema.then || schema.promise)))) {
+            };
+            var alls = null;
+            if (obj && (obj.then || obj.promise))
+                alls = [obj, schema];
+            if(alls){
                 //console.log("chain start with deferred or promise : ", obj)
-                var alls = [];
-                alls.push(obj);
-                if (schema)
-                    alls.push(schema);
                 deep.all(alls)
                 .done(function (res) {
                     //console.log("deep start chain res  : ",res);
                     doStart(res[0], res[1]);
                 })
                 .fail(function (error) {
-                    h._nodes = [deep.Querier.createRootNode({}, schema, options)];
+                    h._nodes = null;
                     h._start(null, error);
                 });
             } else
@@ -65,7 +64,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             h._start(null, error);
         }
         return h;
-    }
+    };
     var errors = require("deep/deep-errors")(deep);
 
     /**
@@ -101,7 +100,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      * perform a (synched) deep-rql filter on array
      * @example
      *
-     * 		deep.rql(["a","b","c"], "=a"); // return  ["a"]
+     *      deep.rql(["a","b","c"], "=a"); // return  ["a"]
      *
      * @static
      * @method rql
@@ -429,7 +428,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         resolve: function resolveDef(argument) {
             //console.log("deep.Deferred.resolve : ", argument);
             if (this.rejected || this.resolved || this.canceled)
-                throw new Error("DeepDeferred (resolve) has already been resolved !");
+                throw new Error("DeepDeferred (resolve) has already been ended ! could not recolve anymore.");
             if (argument instanceof Error)
                 return this.reject(argument);
             this._success = argument;
@@ -447,7 +446,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         reject: function rejectDef(argument) {
             //	console.log("DeepDeferred.reject");
             if (this.rejected || this.resolved || this.canceled)
-                throw new Error("DeepDeferred (reject) has already been rejected !");
+                throw new Error("DeepDeferred has already been ended ! could not reject anymore.");
             this._error = argument;
             this.rejected = true;
             this._promises.forEach(function (promise) {
@@ -660,11 +659,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         var brancher = {
             branches: [],
             branch: function () {
+                if(this._ended)
+                    throw deep.errors.Chain("Branching failed : brancher has already bean ended. Could not add branches any more.")
                 var cloned = cloneHandler(handler, true);
                 this.branches.push(cloned);
                 return cloned;
             },
             promise: function () {
+                this._ended = true;
                 return deep.all(this.branches);
             }
         };
@@ -681,7 +683,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     this.deferred.resolve(this._success);
                 else
                     this.deferred.reject(this._error);
-
             return this.deferred.promise();
         },
         _forceHandle: function chainForce() {
@@ -1511,7 +1512,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 if (name) {
                     var pos = self.positions.concat([]),
                         ok = false;
-                    while (true && pos.length > 0) {
+                    while (true && pos.length > 0)
+                    {
                         position = pos.pop();
                         if (position.name == name) {
                             ok = true;

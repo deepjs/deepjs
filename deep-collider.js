@@ -16,6 +16,15 @@ if(typeof define !== 'function')
 
 /*
  * TODO : implement almost every operations, few are done. Will be made on-need.
+ *
+ *
+ *	- add chaining capabilities
+ *
+ * - add asynch collision (up, bottom) mode
+ * 
+ * 	- gives fine wrapper for custom behaviour (need chaining capabilities)
+ * 		- ifCollision : don't keep collider if no collision
+ * 		- dontKeep : do not keep collider (it will only be used to fire something as a test)
  */
 
 define(function(require)

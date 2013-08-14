@@ -1097,6 +1097,43 @@ TODO :
 		secured chain
 		jsgi stack
 		clean headers
-
-
  */
+
+
+
+ce qui reste : 
+	- test cases pattern and classes
+	- refactoriser chain : remove self._queried ?
+
+	- gestion classes dans compositions
+
+	- deepLoad : qu'il sauve la structure dans un _deep_entry dans l'objet deepLoadé
+		- check si _deep_entry existe pour reload
+
+Videos : 
+
+	MODELISATION
+	- up/bottom/composition/colliders
+	- queries, selectors and OOP related
+	- stores and protocoles
+	- ocm
+
+
+	- facet
+
+
+	RUN TIME
+	- start chain + simple protocole : load something
+	- chain base handlers and concept : log, logValues, done, fail + errors management, always
+	- full chain api :  val, each, values, query, load, deepLoad,...
+	- synch usage of chain
+	- branches
+	- custom protocoles
+	- stores usage
+
+
+	NODE
+	- simple server
+	- routes usages
+
+

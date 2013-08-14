@@ -22,7 +22,7 @@
 
 		merge
 		loadable
-		"interpretation-deepness"   ==> have equivalent in draft 4 : template : bad word : template-engine is better or href-interpreter (because it's the only interpretable string)
+		"interpretation-deepness"   ==> has equivalent in draft 4 : template : bad word : template-engine is better or href-interpreter (because it's the only interpretable string)
 
 
 		deprecated : 

@@ -31,42 +31,6 @@ define(function(require){
 		throw error;
 	}
 
-	// _______________________________________ swig related
-
-	/**
-	 * swig related : produce swig-macro-import string
-	 * @deprecated
-	 * @category swig
-	 * @method getMacroImport
-	 * @static
-	 * @param  {ViewController} controller
-	 * @param  {Array} macrosSet
-	 * @return {String} the macro import string
-	 */
-	utils.getMacroImport = function(controller, macrosSet)
-	{
-		var renderedTemplate = "";
-		if(controller.layer && controller.layer.templates)
-		{    
-			var macros = controller.layer.templates.macros;
-			for (var i in macros)
-			{
-				if(!macros.hasOwnProperty(i) || (macrosSet && ! i in macrosSet))
-					continue;
-				var  m = macros[i];
-				var prefix = "";
-				var index = m.indexOf(":");
-				if(index > -1)
-				{    
-					prefix = m.substring(0,index);
-					m = m.substring(index+2);
-				}
-				renderedTemplate += "{% import '" + m + "' as "+i+" %}\n";
-			}
-		}
-		return renderedTemplate;
-	}
-
 	// ______________________________________ STRINGS RELATED
 
 	// TODO : need to be asynch and to retrieve values from stores : as app::language

@@ -1,6 +1,6 @@
 /**
  * @author Gilles Coomans <gilles.coomans@gmail.com>
- *
+ * @stability 3 stable
  */
 
 //________________________________________________________________________ OCM for the mass !!!
