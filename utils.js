@@ -566,6 +566,7 @@ define(function(require){
 
 		//if(!mergeOn)
 		//	return arr1.concat(arr2);
+		//console.log("array fusion  :", arr1, arr2);
 
 		if(arr1 && arr1.length > 0)
 			arr = arr.concat(arr1);
@@ -599,10 +600,12 @@ define(function(require){
 			if(!map[val])
 				arr.push(a);
 			else if(fromBottom)
-				utils.bottom(a, map[val].ref, itemsSchema, arr, map[val].index);
+				arr[map[val].index] = utils.bottom(a, map[val].ref, itemsSchema);
 			else
-				utils.up(a, map[val].ref, itemsSchema, arr, map[val].index);
-		})
+				arr[map[val].index] = utils.up(a, map[val].ref, itemsSchema);
+		});
+		//console.log("array fusion  :", arr);
+
 		return arr;
 	}
 
