@@ -4,7 +4,14 @@
   "author": "Gilles Coomans",
   "description": "Powerful atomic tools for managing objects, functions and promises",
   "licenses": [
-    "LGPL"
+     {
+         "type": "AFLv2.1",
+         "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L43"
+     },
+     {
+         "type": "BSD",
+         "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
+     }
   ],
   "repository": {
     "type":"git",
@@ -13,5 +20,8 @@
   "dependencies": {
     "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"
   },
-  "main": "./deep"
+  "main": "./deep",
+  "mappings":{
+    "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"
+  }
 }
