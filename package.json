@@ -4,7 +4,7 @@
   "author": "Gilles Coomans",
   "description": "Powerful atomic tools for managing objects, functions and promises",
   "licenses": [
-
+    "LGPL"
   ],
   "repository": {
     "type":"git",
