@@ -1029,7 +1029,7 @@ function(require, utils, promise, Querier){
 			schema:{ type:["string", "array"], items:{ type:"string" }, loadable:"direct"}
 		},
 		"$schema":{
-			schema:{ type:"string", items:{ type:"string" },
+			schema:{ type:"string", items:{ type:"string" }},
 			test:function(value, type, schema){
 				console&&console.log("$schema isn't implemented in this validator and will not be implemented (due to his self definition method)");
 				return true;
