@@ -15,5 +15,8 @@
   "main": "./deep",
   "mappings":{
     "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"
+  },
+  "engines": {
+        "node": ">=0.10.2"
   }
 }

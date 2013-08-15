@@ -285,7 +285,7 @@ deep.clean(chain | obj, ?schema)
 if(typeof define !== 'function')
 {
 	var define = require('amdefine')(module);
-	var swig = require("swig");
+	//var swig = require("swig");
 	var isNode = true;
 }	
 define(["require"],
@@ -297,18 +297,7 @@ function(require, utils, promise, Querier){
 	var promise = deep;
 	var Querier = deep.Querier;
 
-	if(isNode)
-	{	
-		swig.init({
-			filters:{
-				join_coma:function (input) {
-					if(input instanceof Array)
-						return input.join(",");
-					return input;
-				}
-			}
-		});
-	}
+	
 
 	function findPatternProperties(name, patterns)
 	{
@@ -373,7 +362,7 @@ function(require, utils, promise, Querier){
 	Validator.prototype.createError = function createError(message, value, type, schema, valuePath, schemaPath, schemaProperty){
 		if(!schemaProperty)
 			schemaProperty = ""
-		var detail = swig.compile(message)({ value:value, type:type, path:valuePath, schema:schema, schemaPath:schemaPath, __this:this });
+		var detail = deep.utils.interpret(message, { value:value, type:type, path:valuePath, schema:schema, schemaPath:schemaPath, __this:this });
 		var error = {
 			detail:detail,
 			value:value,
@@ -723,9 +712,9 @@ function(require, utils, promise, Querier){
 	}
 	Validator.prototype.lexic = {
 		__additionalErrors:{
-			schemaIsNotObject:"{{ path }}, trying to validate a schema (type:'schema') but the value isn't an object : Value provided : {{ value }}",
-			badType:"{{ path }}, type not allowed. Allowed type :  {{ schema.type }}",
-			unknownSchemaType:"type from schema is unknown : {{ schema.type }}"
+			schemaIsNotObject:"{ path }, trying to validate a schema (type:'schema') but the value isn't an object : Value provided : { value }",
+			badType:"{ path }, type not allowed. Allowed type :  { schema.type }",
+			unknownSchemaType:"type from schema is unknown : { schema.type }"
 		},
 		__requiredEquivalent:"required",
 		__defaultPattern:{
@@ -776,38 +765,38 @@ function(require, utils, promise, Querier){
 			},
 			object:{
 				test:function(value){ return typeof value === 'object'; },
-				error:"{{ path }} need to be float. Value provided : {{ value }}"
+				error:"{ path } need to be float. Value provided : { value }"
 			},
 			"boolean":{
 				test:function(value){ return value === true || value === false; },
-				error:"{{ path }} need to be float. Value provided : {{ value }}"
+				error:"{ path } need to be float. Value provided : { value }"
 			},
 			number:{
 				test:function(value){
 			//	console.log("DEEP-SCHEMA : test number type of : ", value, typeof value);
 				 return typeof value === 'number' && !isNaN(value); 
 				},
-				error:"{{ path }} need to be float. Value provided : {{ value }}"
+				error:"{ path } need to be float. Value provided : { value }"
 			},
 			integer:{
 				test:function(value){	return typeof value === 'number' && parseInt(String(value)) != NaN; },
-				error:"{{ path }} need to be integer. Value provided : {{ value }}"
+				error:"{ path } need to be integer. Value provided : { value }"
 			},
 			"null":{
 				test:function(value){	return value === null; },
-				error:"{{ path }} need to be null. Value provided : {{ value }}"
+				error:"{ path } need to be null. Value provided : { value }"
 			},
 			string:{
 				test:function(value){ return typeof value === 'string'; },
-				error:"{{ path }} need to be string. Value provided : {{ value }}"
+				error:"{ path } need to be string. Value provided : { value }"
 			},
 			array:{
 				test:function(value){ return value instanceof Array; },
-				error:"{{ path }} need to be array. Value provided : {{ value }}"
+				error:"{ path } need to be array. Value provided : { value }"
 			},
 			schema:{
 				test:function(value){ return typeof value === 'object'; },
-				error:"{{ path }} need to be true. Value provided : {{ value }}"
+				error:"{ path } need to be true. Value provided : { value }"
 			}
 		},
 		dependencies:{
@@ -848,7 +837,7 @@ function(require, utils, promise, Querier){
 					})
 				return true;
 			},
-			error:"{{ path }} unmatched dependency {{ schema.dependencies }}. Value provided : {{ value|json }}"
+			error:"{ path } unmatched dependency { schema.dependencies }. Value provided : { value|json }"
 		},
 		format:{
 			schema:{ type:"string" },
@@ -863,7 +852,7 @@ function(require, utils, promise, Querier){
 				//console.log("try interpret direct reg exp for format : "+schema.format)
 				return new RegExp(schema.format).test(String(value)); 
 			},
-			error:"{{ path }} unmatched format {{ schema.format }}. Value provided : {{ value }}"
+			error:"{ path } unmatched format { schema.format }. Value provided : { value }"
 		},
 		pattern:{
 			schema:{ type:"string" },
@@ -875,7 +864,7 @@ function(require, utils, promise, Querier){
 					return this.doTest(this.lexic.__defaultPattern[schema.pattern], value, type, schema, valuePath, schemaPath, schemaPath+".pattern");	
 				return new RegExp(schema.pattern).searchInterpretable(String(value)); 
 			},
-			error:"{{ path }} unmatched pattern {{ schema.pattern }}. Value provided : {{ value }}"
+			error:"{ path } unmatched pattern { schema.pattern }. Value provided : { value }"
 		},
 		minLength:{
 			schema:{ type:"integer" },
@@ -886,7 +875,7 @@ function(require, utils, promise, Querier){
 					return true;
 				return value.length >= schema.minLength; 
 			},
-			error:"{{ path }} need to be at least {{ schema.minLength }} length. Value provided : {{ value }}"
+			error:"{ path } need to be at least { schema.minLength } length. Value provided : { value }"
 		},
 		maxLength:{
 			schema:{ type:"integer" },
@@ -896,7 +885,7 @@ function(require, utils, promise, Querier){
 				if(type != "array" && type != "string" && type != "integer") return true;
 				return value.length <= schema.maxLength; 
 			},
-			error:"{{ path }} need to be at max {{ schema.minLength }} length. Value provided : {{ value }}"
+			error:"{ path } need to be at max { schema.minLength } length. Value provided : { value }"
 		},
 		minimum:{
 			schema:{ type:"number" },
@@ -907,7 +896,7 @@ function(require, utils, promise, Querier){
 				if(schema.exclusiveMinimum) return value > schema.minimum; 
 				return value >= schema.minimum;  
 			},
-			error:"{{ path }} need to be at least {{ schema.exclusiveMinimum }}. Value provided : {{ value }}"
+			error:"{ path } need to be at least { schema.exclusiveMinimum }. Value provided : { value }"
 		},
 		maximum:{
 			schema:{ type:"number" },
@@ -918,7 +907,7 @@ function(require, utils, promise, Querier){
 				if(schema.exclusiveMaximum) return value < schema.maximum; 
 				return value <= schema.maximum;  
 			},
-			error:"{{ path }} need to be max {{ schema.exclusiveMaximum }}. Value provided : {{ value }}"
+			error:"{ path } need to be max { schema.exclusiveMaximum }. Value provided : { value }"
 		},
 		minItems:{
 			schema:{ type:"integer" },
@@ -928,7 +917,7 @@ function(require, utils, promise, Querier){
 				if(type != "array" ) return true;
 				return value.length >= schema.minItems;  
 			},
-			error:"{{ path }} need to be at least {{ schema.minItems }} long. Value provided : {{ value|json }}"
+			error:"{ path } need to be at least { schema.minItems } long. Value provided : { value|json }"
 		},
 		maxItems:{
 			schema:{ type:"integer" },
@@ -938,7 +927,7 @@ function(require, utils, promise, Querier){
 				if(type != "array") return true;
 				return value.length <= schema.maxItems; 
 			 },
-			error:"{{ path }} need to be at max {{ schema.maxItems }} long. Value provided : {{ value|json }}"
+			error:"{ path } need to be at max { schema.maxItems } long. Value provided : { value|json }"
 		},
 		required:{      /// draft v3
 			schema:{ type:"boolean" },
@@ -946,7 +935,7 @@ function(require, utils, promise, Querier){
 				//console.log("Validator : check required : ", typeof value !== 'undefined' )
 				return typeof value !== 'undefined';  
 			},
-			error:"{{ path }} is required and is missing."
+			error:"{ path } is required and is missing."
 		},
 		"enum":{
 			schema:{ type:"array", items:{ type:"string" } },
@@ -963,7 +952,7 @@ function(require, utils, promise, Querier){
 					}
 				return ok;  
 			},
-			error:"{{ path }} need to be equal to one of those values {{ schema.enum|join_coma }}. Value provided : {{ value }}"
+			error:"{ path } need to be equal to one of those values { schema.enum|join_coma }. Value provided : { value }"
 		},
 		disallow:{
 			schema:{
@@ -981,7 +970,7 @@ function(require, utils, promise, Querier){
 						return false;
 				return true;
 			},
-			error:"{{ path }} need to be of different type than {{ schema.disallow|join_coma }}. type provided : {{ type }}"
+			error:"{ path } need to be of different type than { schema.disallow|join_coma }. type provided : { type }"
 		},
 		divisibleBy:{
 			schema:{ type:"integer", minimum:1, absoluteMinimum:true },
@@ -991,7 +980,7 @@ function(require, utils, promise, Querier){
 				if(type != "number" && type != "integer") return true;
 				return value % schema.divisibleBy == 0;
 			},
-			error:"{{ path }} ( value : {{ value }}) need to be divisible by {{ schema.divisibleBy }}."
+			error:"{ path } ( value : { value }) need to be divisible by { schema.divisibleBy }."
 		},
 		uniqueItems:{
 			schema:{ type:"boolean" },
@@ -1040,7 +1029,7 @@ function(require, utils, promise, Querier){
 			schema:{ type:["string", "array"], items:{ type:"string" }, loadable:"direct"}
 		},
 		"$schema":{
-			schema:{ type:"string", items:{ type:"string" }},
+			schema:{ type:"string", items:{ type:"string" },
 			test:function(value, type, schema){
 				console&&console.log("$schema isn't implemented in this validator and will not be implemented (due to his self definition method)");
 				return true;
@@ -1110,7 +1099,7 @@ function(require, utils, promise, Querier){
 				if(type != "number" && type != "integer") return true;
 				return value % schema.mod == 0;
 			},
-			error:"need to be divisible by {{ schema.divisibleBy }}"
+			error:"need to be divisible by { schema.divisibleBy }"
 		},
 		/*required:{      // draft v4
 			schema:{ type:"array", items:{ type:"string" } },
@@ -1140,7 +1129,7 @@ function(require, utils, promise, Querier){
 				}
 				return count <= schema.maxProperties;
 			},
-			error:"need to have maximum {{ schema.maxProperties }} properties"
+			error:"need to have maximum { schema.maxProperties } properties"
 		},
 		minProperties:{
 			schema:{
@@ -1158,7 +1147,7 @@ function(require, utils, promise, Querier){
 				}
 				return count >= schema.minProperties;
 			},
-			error:"need to have minimum {{ schema.maxProperties }} properties"
+			error:"need to have minimum { schema.maxProperties } properties"
 		}
 	}
 
@@ -1262,7 +1251,7 @@ function(require, utils, promise, Querier){
 				var res = Querier.query(this.rootValue, q)
 				return res.length > 0 && res[0] == value;
 			},
-			error:"this field need to match {{ schema.needMatchingOn }}"
+			error:"this field need to match { schema.needMatchingOn }"
 		}
 	}
 
