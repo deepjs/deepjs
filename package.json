@@ -1,24 +1,16 @@
 {
   "name": "deep",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "author": "Gilles Coomans",
   "description": "Powerful atomic tools for managing objects, functions and promises",
   "licenses": [
-     {
-         "type": "AFLv2.1",
-         "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L43"
-     },
-     {
-         "type": "BSD",
-         "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
-     }
   ],
   "repository": {
     "type":"git",
     "url":"ssh://git@dev.ubik.be/deep"
   },
   "dependencies": {
-    "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"
+    "rql": "*"
   },
   "main": "./deep",
   "mappings":{
