@@ -55,3 +55,27 @@ deep sheet
 
 //_________________________
 
+
+implémentation jsgi like : 
+
+
+ajout chain handler : 
+	
+	forme d'around : 
+
+		.around(function(chain){
+			return function(arg){
+				if(arg...)
+				{
+					//... process the arg (as request in jsgi)
+					return reponse;
+				}
+				return base.call(this, arg);
+			}
+		})
+
+		deep(request)
+		.done(function(req){
+			return req;
+		})
+

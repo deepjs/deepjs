@@ -14,11 +14,7 @@ define(function(require){
 	var collider = deep.collider;//require("./deep-collider");
 	var compose = deep.compose; //require("./deep-compose");
 
-	Array.prototype.insert = function(index) {
-		this.splice.apply(this, [index, 0].concat(
-			Array.prototype.slice.call(arguments, 1)));
-		return this;
-	};
+
 
 	/**
 	 * @class utils
@@ -30,7 +26,11 @@ define(function(require){
 		//console.log("ksss")
 		throw error;
 	}
-
+	utils.arrayInsert = function(array, index) {
+		array.splice.apply(array, [index, 0].concat(
+			Array.prototype.slice.call(arguments, 1)));
+		return array;
+	};
 	// ______________________________________ STRINGS RELATED
 
 	// TODO : need to be asynch and to retrieve values from stores : as app::language

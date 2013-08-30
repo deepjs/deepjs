@@ -420,10 +420,9 @@ define(["require"], function (require) {
         deep.selector = function deepSelector(root, query, selectorName)
         {
             var queries = deep.store.Selector.parse(query);
-            q = queries.shift();
-            var res = [];
-            var current = [];
-            var cur = root;
+            //console.log("deep.selector : parse : ", queries);
+            //return;
+            var q = queries.shift(), selected = [], current = [], cur = root;
             if(cur.push)
             {
                 current = cur;
@@ -431,43 +430,51 @@ define(["require"], function (require) {
             }
             while(q)
             {
+                //console.log("q : ",q);
                 var func = new Function("return " + q + ";");
                 while(cur)
                 {
+                    //console.log("will try find selectors : ",cur, selectorName, true);
+                    //console.log("selected : ",)
                     var nodes = deep.Querier.objectsWithProperty(cur, selectorName, true);
-                    n = nodes.shift();
+                    var n = nodes.shift();
                     while(n)
                     {
-                        var o = {};
-                        var sel = n[selectorName];
-                        var len = sel.length;
+                        var o = {}, sel = n[selectorName], len = sel.length;
                         for(var i = 0; i < len; ++i)
                             o[sel[i]] = true;
                         o.___func___ = func;
+                        //console.log("selected selector func : ", o.___func___())
                         if (o.___func___())
-                            res.push(n);
+                            selected.push(n);
                         n = nodes.shift();
                     }
                     cur = current.shift();
                 }
-                if(res.length === 0)
+                if(selected.length === 0)
                     break;
                 q = queries.shift();
                 if(q)
                 {
-                    current = res;
+                    current = selected;
+                    //console.log("intermediate selected = ",selected)
                     cur = current.shift();
-                    res = [];
+                    selected = [];
                 }
             }
-            return res;
+            console.log("selector selected : ", selected)
+            selected.forEach(function(e){
+                console.log("selected : ", e);
+            });
+            //return [];
+            return selected;
         }
 
         deep.store.Selector.parse = function parseSelector(selector)
         {
             var char = selector[0];
             var res = [];
-            var final = "";
+            var finalString = "";
             var index = 0;
             while (char) {
                 switch (char) {
@@ -477,16 +484,16 @@ define(["require"], function (require) {
                 case ')':
                 case ' ':
                 case '!':
-                    final += char;
+                    finalString += char;
                     char = selector[++index];
                     break;
                 case '>' :
-                    res.push(final);
+                    res.push(finalString);
                     char = selector[++index];
-                    final = "";
+                    finalString = "";
                     break;
                 default:
-                    final += "this.";
+                    finalString += "this.";
                     var count = index;
                     while (char) {
                         var shouldBreak = false;
@@ -502,18 +509,18 @@ define(["require"], function (require) {
                                 break;
                         }
                         if (shouldBreak) {
-                            final += selector.substring(index, count);
+                            finalString += selector.substring(index, count);
                             index = count;
                             break;
                         }
                         char = selector[++count];
                         if (!char)
-                            final += selector.substring(index, count);
+                            finalString += selector.substring(index, count);
                     }
                 }
             }
-            if(final.length > 0)
-                res.push(final);
+            if(finalString.length > 0)
+                res.push(finalString);
             return res;
         }
         //_______________________________________________________________________________ GET/GET ALL  REQUESTS
@@ -561,7 +568,7 @@ define(["require"], function (require) {
             } else {
                 store = deep.protocoles.store(protoc);
             }
-            //console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
+            console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
             //console.log("parseRequest : store : ", store);
             var res = {
                 _deep_request_: true,
