@@ -1,6 +1,8 @@
 BUG 
 
+values : renvoie d'office un array : donc si premier objet = aray = alors retour = array d'array.
 
+run : doit retourner retour seul (pas array) si un seul call avant
 
 ____________________________________________
 

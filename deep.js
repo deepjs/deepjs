@@ -1075,7 +1075,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var func = function (s, e) {
                 if (typeof callBack === 'string')
                     return deep.when(deep.get(callBack))
-                        .done(function (callBack) {
+                    .done(function (callBack) {
                         return applyCallBackOrTreatment(callBack, deep.chain.val(self));
                     });
                 else
@@ -1272,24 +1272,34 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         run: function chainRun(funcRef, args) {
             var self = this;
             args = args || [];
+            var doRun = function(node){
+                if (!funcRef) {
+                    if (typeof node.value != "function")
+                        return;
+                    if (node.ancestor)
+                        return callFunctionFromValue(node.ancestor, node.key, args);
+                    else
+                        return node.value(args || null);
+                    return;
+                } else if (typeof funcRef === 'function')
+                    return runFunctionFromValue(node, funcRef, args);
+                else if (typeof funcRef === 'string')
+                    return callFunctionFromValue(node, funcRef, args);
+                else
+                    return node;
+            }
             var create = function (s, e) {
+
+                if(!self._queried)
+                {
+                    if(!self._nodes[0])
+                        return undefined;
+                    return doRun(self._nodes[0]);
+                }
                 //console.log("deep.run : ", funcRef)
                 var alls = [];
-                self._nodes.forEach(function (result) {
-                    if (!funcRef) {
-                        if (typeof result.value != "function")
-                            return;
-                        if (result.ancestor)
-                            alls.push(callFunctionFromValue(result.ancestor, result.key, args));
-                        else
-                            alls.push(result.value(args || null));
-                        return;
-                    } else if (typeof funcRef === 'function')
-                        alls.push(runFunctionFromValue(result, funcRef, args));
-                    else if (typeof funcRef === 'string')
-                        alls.push(callFunctionFromValue(result, funcRef, args));
-                    else
-                        alls.push(result);
+                self._nodes.forEach(function (node) {
+                    alls.push(doRun(node));
                 });
                 return deep.all(alls);
             };
@@ -2660,8 +2670,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return firstNode.value;
         },
         values: function utilsValue(handler) {
-            if (!handler._queried && (handler._nodes[0].value instanceof Array))
-                return handler._nodes[0].value;
+            //if (!handler._queried && (handler._nodes[0].value instanceof Array))
+              //  return [handler._nodes[0].value];
             var res = [];
             handler._nodes.forEach(function (e) {
                 res.push(e.value);
@@ -2737,7 +2747,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         var self = this;
         var func = function (s, e) {
             if (e)
-                console.log("deep.Chain state : ERROR : ", JSON.stringify(e, null, ' '));
+                console.log("deep.Chain state : ERROR : ", e);//JSON.stringify(e, null, ' '));
             else
                 console.log("deep.Chain state : SUCCESS : ", JSON.stringify(s, null, ' '));
         }

@@ -994,6 +994,7 @@ define(function defineDeepQuery(require)
 		return null;
 	}
 */
+/*
     DQ.objectsWithProperty2 = function objectsWithProperty(value, property, ommitRoot)
     {
         //console.log("OBJECTS WITH PROPERTY : ",value)
@@ -1047,7 +1048,7 @@ define(function defineDeepQuery(require)
         }
 		return res;
 	}
-
+*/
     DQ.objectsWithProperty = function objectsWithProperty(root, property, ommitRoot)
     {
         var res = [];
@@ -1079,7 +1080,7 @@ define(function defineDeepQuery(require)
                 for(var i in v)
                 {
                     var va = v[i];
-                    if(i == "_deep_entry" || typeof va !== 'object' || i == property || !v.hasOwnProperty(i))
+                    if(i == "_deep_entry" || typeof va !== 'object' || i == property || !v.hasOwnProperty(i) || (typeof jQuery !== 'undefined' && va instanceof jQuery))
                         continue;
                     r.unshift({ path:current.path+i+'/', value:va });
                 }
@@ -1088,7 +1089,7 @@ define(function defineDeepQuery(require)
         }
         return res;
     }
-
+/*
     DQ.preorder2 = function preorder2(root, path, res)
     {
         //console.log("r : ", path)
@@ -1121,7 +1122,7 @@ define(function defineDeepQuery(require)
             res.push(i);
         }
     }
-
+*/
     DQ.preorder = function preorder(root)
     {
         var res = [];

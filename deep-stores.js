@@ -420,8 +420,6 @@ define(["require"], function (require) {
         deep.selector = function deepSelector(root, query, selectorName)
         {
             var queries = deep.store.Selector.parse(query);
-            //console.log("deep.selector : parse : ", queries);
-            //return;
             var q = queries.shift(), selected = [], current = [], cur = root;
             if(cur.push)
             {
@@ -430,12 +428,9 @@ define(["require"], function (require) {
             }
             while(q)
             {
-                //console.log("q : ",q);
                 var func = new Function("return " + q + ";");
                 while(cur)
                 {
-                    //console.log("will try find selectors : ",cur, selectorName, true);
-                    //console.log("selected : ",)
                     var nodes = deep.Querier.objectsWithProperty(cur, selectorName, true);
                     var n = nodes.shift();
                     while(n)
@@ -444,7 +439,6 @@ define(["require"], function (require) {
                         for(var i = 0; i < len; ++i)
                             o[sel[i]] = true;
                         o.___func___ = func;
-                        //console.log("selected selector func : ", o.___func___())
                         if (o.___func___())
                             selected.push(n);
                         n = nodes.shift();
@@ -457,16 +451,10 @@ define(["require"], function (require) {
                 if(q)
                 {
                     current = selected;
-                    //console.log("intermediate selected = ",selected)
                     cur = current.shift();
                     selected = [];
                 }
             }
-            console.log("selector selected : ", selected)
-            selected.forEach(function(e){
-                console.log("selected : ", e);
-            });
-            //return [];
             return selected;
         }
 
@@ -568,7 +556,7 @@ define(["require"], function (require) {
             } else {
                 store = deep.protocoles.store(protoc);
             }
-            console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
+            //console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
             //console.log("parseRequest : store : ", store);
             var res = {
                 _deep_request_: true,
