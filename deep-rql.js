@@ -252,7 +252,8 @@ layer.operators = {
 		return this;
 	},
 	match: filter(function rqlMatch(value, regex){
-		return new RegExp(regex).test(retrieve(value));
+		//console.log("match rql : ", value, regex," - ", value, " - ",new RegExp(regex).test());
+		return new RegExp(regex).test(value);
 	}),
 	"instanceOf": function rqlInstanceOf(value, values){
 		//console.log("IN OP : query "+value+" in : ",values)

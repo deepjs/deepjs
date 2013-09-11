@@ -517,6 +517,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return this;
         },
         done: function chainDone(callBack) {
+            if(!callBack)
+                return this._success;
             var self = this;
             var func = function chainDoneHandle(s, e) {
                 //console.log("deep.done : ",s,e)
@@ -531,6 +533,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return addInChain.apply(this, [func]);
         },
         fail: function chainFail(callBack) {
+            if(!callBack)
+                return this._error;
             var self = this;
             var func = function chainFailHandle(s, e) {
                 self.oldQueue = self._queue;
@@ -2031,7 +2035,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         reports: []
                     };
                     self._nodes.forEach(function (e) {
-                        var rep = deep.Validator.validate(e.value, schema || e.schema || {});
+                        var rep = deep.validate(e.value, schema || e.schema || {});
                         report.reports.push(rep);
                         if (!rep.valid)
                             report.valid = false;
@@ -2588,7 +2592,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             }
             return transfo.promise
                 .done(function (res) {
-                if (transfo.nodes instanceof Array)
+                if (handler._queried)
                     transfo.nodes.forEach(function (n) {
                         n.value = res.shift();
                         if (n.ancestor)
@@ -2785,6 +2789,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         return this;
     });
 
+/*
     deep.Chain.addHandle("success", function () {
         return this._success;
     });
@@ -2792,7 +2797,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     deep.Chain.addHandle("failure", function () {
         return this._error;
     });
-
+*/
     //_________________________________________________________________________________
 
     require("deep/deep-stores")(deep);

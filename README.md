@@ -71,7 +71,7 @@ ROUTES
 						smart.gui().profile(id).update()
 					},
 					"/profile/_query_/account":function(parsedPath){
-						smart.gui().profile(id).account()
+						smart.gui().profile(id).account(12).
 					},
 					"/profile/?country=belgium":function(parsedPath){
 						//...	

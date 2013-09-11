@@ -21,19 +21,35 @@ define(["require"], function (require){
          */
         deep.ocm = function(protocole, layer, init)
         {
+            //console.log("deep.context : ", deep.context)
+            if(typeof protocole !== 'string')
+            {
+                init = layer;
+                layer = protocole;
+            }
             var params = {
                 layer:layer || {},
                 currentModes:null,
                 compiled:{},
+                multiMode:true,
                 compileModes:function(modes, layer)
                 {
-                    //console.log("compil modes : ",modes);
-                    var res = {};
-                    modes.forEach(function (m) {
-                        var r = layer[m];
-                        if(r)
-                            deep.utils.up(r, res);
-                    });
+                    //console.log("compil modes : ",modes, deep.context);
+                    var self = this;
+                    var res = null;
+                    if(!this.multiMode && modes.length === 1)
+                        res = this.layer[modes[0]] || null;
+                    else
+                        modes.forEach(function (m) {
+                            var r = self.layer[m];
+                            if(r)
+                               res = deep.utils.up(r, res);
+                        });
+                    if(res === null)
+                    {
+                        console.warn("OCM : no associate mode found with : ", modes, " for protocole : ", protocole);
+                        return {};
+                    }    
                     return res;
                 },
                 init:init
@@ -47,10 +63,11 @@ define(["require"], function (require){
                     else if ( deep.context.mode && deep.context.mode.length > 0 )
                         modes = deep.context.mode;
                     else
-                        throw deep.errors.OCM("You need to set a mode before using ocm objects");
+                        throw deep.errors.OCM("You need to set a mode before using ocm objects : ", deep.context);
                 var joined = modes.join(".");
                 if(params.compiled[joined])
                     return params.compiled[joined];
+
                 var compiled = params.compileModes(modes, params.layer);
                 if(!deep.ocm.nocache)
                     params.compiled[joined] = compiled;
@@ -65,6 +82,9 @@ define(["require"], function (require){
                 deep.protocoles[protocole] = m;
             }
             m._deep_ocm_ = true;
+            m.multiMode = function(yes){
+                params.multiMode = yes;
+            }
             m.mode = function (arg)
             {
                 if(params.blocked)
@@ -106,10 +126,12 @@ define(["require"], function (require){
         deep.ocm.nocache = false;
         // deep mode management
         deep.mode = function(args){
-            return deep({}).mode((args)?Array.prototype.slice.apply(arguments):null);
+            var mode = (args)?Array.prototype.slice.apply(arguments):null;
+            return deep({}).mode(mode);
         }
         deep.Chain.addHandle("mode", function(arg)
         {
+            // console.log("chain.mode : ", arguments, deep.context);
             var self = this;
             var args = arguments;
             var func = function(s,e)
@@ -119,12 +141,14 @@ define(["require"], function (require){
                     deep.context.mode = arg;
                 else
                     deep.context.mode = (arg)?Array.prototype.slice.apply(args):null;
+                // console.log("deep.context.mode setted : ",deep.context.mode);  
             }
             func._isDone_ = true;
             deep.chain.addInChain.apply(self,[func]);
             return this;
         });
         deep.generalMode = function(arg){
+            // console.log("generalMode : ", arguments)
             deep.context = deep.utils.simpleCopy(deep.context);
             if(arguments.length > 1)
                 deep.context.mode = Array.prototype.slice.apply(arguments);

@@ -79,6 +79,11 @@ define(["require"], function (require) {
                 return new deep.store.Collection(protocole, collection, schema);
             deep.Store.call(this);
             deep.utils.bottom(deep.Store.prototype, this);
+            if(typeof protocole !== "string" && protocole !== null)
+            {
+                schema = collection;
+                collection = protocole;
+            }
             if (collection)
                 this.collection = collection;
             if(schema)
@@ -109,7 +114,7 @@ define(["require"], function (require) {
                 //console.log("deep.store.Collection.get : ",id," - stock : ", this.collection)
                 var q = "";
                 var queried = false;
-                if(id === '')
+                if(!id)
                 {
                     q = "./*";
                     queried = true;
@@ -127,9 +132,15 @@ define(["require"], function (require) {
                 else
                     q = "./*?id=" + id;
                 //console.log("deep.store.Collection.get : q :",q);
-                var r = deep.query(this.collection, q);
+                var col = this.collection;
+                if(this.collection._deep_ocm_)
+                    col = this.collection();
+                var r = deep.query(col, q);
+                //console.log("deep.store.Collection.get : res :",r);
                 if (!queried && r instanceof Array)
                     r = r.shift();
+                if(typeof r === 'undefined')
+                    return deep(deep.errors.NotFound());
                 return deep(r).store(this);
             },
             /**
@@ -140,21 +151,26 @@ define(["require"], function (require) {
              */
             put: function (object, options) {
                 options = options || {};
-                var id = options.id || object.id;
-                if (!id)
-                    return deep(deep.errors.Store("Collection store need id on put"));
                 var schema = options.schema || this.schema;
-                var r = deep.query(this.collection, "./*?id=" + id, {
-                    resultType: "full"
-                });
-                if (!r)
-                    return deep(deep.errors.NotFound("no items found in collection with : " + id));
-                r = r.shift();
                 if (schema) {
                     var report = deep.validate(object, schema);
                     if (!report.valid)
                         return  deep(deep.errors.PreconditionFail("Failed to put on collection : validation failed.", report));
                 }
+                var id = options.id || object.id;
+                if (!id)
+                    return deep(deep.errors.Store("Collection store need id on put"));
+                var col = this.collection;
+                if(this.collection._deep_ocm_)
+                    col = this.collection();
+
+                var r = deep.query(col, "./*?id=" + id, {
+                    resultType: "full"
+                });
+                if (!r)
+                    return deep(deep.errors.NotFound("no items found in collection with : " + id));
+                r = r.shift();
+                
                 r.value = object;
                 if (r.ancestor)
                     r.ancestor.value[r.key] = r.value;
@@ -168,18 +184,23 @@ define(["require"], function (require) {
              */
             post: function (object, options) {
                 options = options || {};
-                if (!object.id)
-                    object.id = new Date().valueOf() + ""; // mongo styled id
                 var schema = options.schema || this.schema;
-                var res = deep.query(this.collection, "./*?id=" + object.id);
-                if (res && res.length > 0)
-                    return deep(deep.errors.Store("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
-                if (schema) {
+                 if (schema) 
+                 {
                     var report = deep.validate(object, schema);
                     if (!report.valid)
                         return deep(deep.errors.PreconditionFail("Failed to put on collection : validation failed.", report));
                 }
-                this.collection.push(object);
+                if (!object.id)
+                    object.id = "D"+new Date().valueOf() + ""; // mongo styled id
+                var col = this.collection;
+                if(this.collection._deep_ocm_)
+                    col = this.collection();
+                var res = deep.query(col, "./*?id=" + object.id);
+                if (res && res.length > 0)
+                    return deep(deep.errors.Store("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
+               
+                col.push(object);
                 return deep(object).store(this);
             },
             /**
@@ -189,7 +210,10 @@ define(["require"], function (require) {
              * @return {Object} the removed object
              */
             del: function (id, options) {
-                var removed = deep(this.collection).remove("./*?id=" + id).success();
+                var col = this.collection;
+                if(this.collection._deep_ocm_)
+                    col = this.collection();
+                var removed = deep(col).remove("./*?id=" + id).success();
                 if (removed)
                     removed = removed.shift();
                 return deep(removed);
@@ -202,11 +226,19 @@ define(["require"], function (require) {
              */
             patch: function (object, options) {
                 options = options || {};
+                var schema = options.schema || this.schema;
+                if (schema) {
+                    var report = deep.validate(object, schema);
+                    if (!report.valid)
+                        return  deep(deep.errors.PreconditionFail("Failed to put on collection : validation failed.", report));
+                }
                 var id = options.id || object.id;
                 if (!id)
                     return deep(deep.errors.Store("Collection store need id on patch"));
-
-                var r = deep.query(this.collection, "./*?id=" + id, {
+                var col = this.collection;
+                if(this.collection._deep_ocm_)
+                    col = this.collection();
+                var r = deep.query(col, "./*?id=" + id, {
                     resultType: "full"
                 });
                 if (!r)
@@ -214,12 +246,6 @@ define(["require"], function (require) {
                 r = r.shift();
                 var val = deep.utils.copy(r.value);
                 deep.utils.up(object, val);
-                var schema = options.schema || this.schema;
-                if (schema) {
-                    var report = deep.validate(val, schema);
-                    if (!report.valid)
-                        return deep(deep.errors.PreconditionFail("Failed to patch on collection : validation failed.", report));
-                }
                 r.value = val;
                 if (r.ancestor)
                     r.ancestor.value[r.key] = val;
@@ -233,7 +259,10 @@ define(["require"], function (require) {
              * @return {deep.Chain} a chain that hold the selected range and has injected values as success object.
              */
             range: function (start, end) {
-                return deep(this.collection).range(start, end).store(this);
+                var col = this.collection;
+                if(this.collection._deep_ocm_)
+                    col = this.collection();
+                return deep(col).range(start, end).store(this);
             }
         }
         //__________________________________________________________________________________ OBJECT store
@@ -772,8 +801,12 @@ define(["require"], function (require) {
          *
          */
         deep.protocole = function (name, ctrl) {
-            deep.protocoles[name] = ctrl;
-            return ctrl;
+            if(ctrl)
+            {
+                deep.protocoles[name] = ctrl;
+                return ctrl;
+            }
+            return deep.protocoles[name];
         }
 
         //______________________________________________________________________ CHAIN DECORATION
@@ -803,17 +836,22 @@ define(["require"], function (require) {
                 var self = this;
                 var func = function (s, e) {
                     var store = self._store || deep.protocoles.store(self._storeName);
+
                     if (store instanceof Error)
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting RANGE !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.range)
                         return deep.errors.Store("provided store doesn't have RANGE. aborting RANGE !");
+                    
                     return deep.when(store.range(arg1, arg2, uri, options))
                     .done(function (success) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -824,22 +862,44 @@ define(["require"], function (require) {
                 var self = this;
                 if (id == "?" || !id)
                     id = "";
-                var func = function (s, e) {
+                var func = function (s, e) 
+                {
                     var store = self._store || deep.protocoles.store(self._storeName);
+                    
+                    //console.log("deep(...).store : get : store : ", store);
+                    
                     if (store instanceof Error)
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting GET !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.get)
                         return deep.errors.Store("provided store doesn't have GET. aborting GET !");
-                    return deep.when(store.get(id, options))
+
+                    var func = "get";
+                    if(id[0] == "*")
+                        id = id.substring(1);
+
+                    if(id[0] == '?' && store.query)
+                    {
+                        id = id.substring(1);
+                        func = "query";
+                    }
+
+                    if(!id && store.query)
+                        func = "query";
+                    return deep.when(store[func](id, options))
                         .done(function (success) {
                         //console.log("deep(...).store : get : success : ", success);
+                        self._success = success;
                         self._nodes = [deep.Querier.createRootNode(success, null, {
                                 uri: id
                             })]
+                        //return success;
                     });
                 };
+                func._isDone_ = true;
                 deep.chain.addInChain.apply(this, [func]);
                 self.range = deep.Chain.range;
                 return self;
@@ -848,19 +908,24 @@ define(["require"], function (require) {
                 var self = this;
                 var func = function (s, e) {
                     var store = self._store || deep.protocoles.store(self._storeName);
-                    //console.log("chain post : store getted : ", store);
+                    //console.log("chain post : store getted : ", store, deep.context);
                     if (store instanceof Error)
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting POST !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.post)
                         return deep.errors.Store("provided store doesn't have POST. aborting POST !");
+                    
                     //console.log("deep.Chain.post : got store : ",store);
                     return deep.when(store.post(object || deep.chain.val(self), id, options))
-                        .done(function (success) {
+                    .done(function (success) {
+                        //console.log("chain.post done : ", success);
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -874,13 +939,17 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting PUT !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.put)
                         return deep.errors.Store("provided store doesn't have PUT. aborting PUT !");
+
                     return deep.when(store.put(object || deep.chain.val(self), options))
                         .done(function (success) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -893,6 +962,8 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting PATCH !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.patch)
                         return deep.errors.Store("provided store doesn't have PATCH. aborting PATCH !");
                     return deep.when(store.patch(object || deep.chain.val(self), id, options))
@@ -900,6 +971,7 @@ define(["require"], function (require) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -912,6 +984,8 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting DELETE !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.del)
                         return deep.errors.Store("provided store doesn't have DEL. aborting DELETE !");
                     var val = deep.chain.val(self);
@@ -920,6 +994,7 @@ define(["require"], function (require) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -932,6 +1007,8 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting RPC !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.rpc)
                         return deep.errors.Store("provided store doesn't have RPC. aborting RPC !");
                     return deep.when(store.rpc(method, body, uri, options))
@@ -939,6 +1016,7 @@ define(["require"], function (require) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -952,6 +1030,8 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting BULK !");
+                    if(store._deep_ocm_)
+                        store = store();
                     if (!store.bulk)
                         return deep.errors.Store("provided store doesn't have BULK. aborting BULK !");
                     return deep.when(store.bulk(arr, uri, options))
@@ -959,6 +1039,7 @@ define(["require"], function (require) {
                         self._nodes = [deep.Querier.createRootNode(success)];
                     });
                 };
+                func._isDone_ = true;
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
@@ -971,7 +1052,33 @@ define(["require"], function (require) {
             //console.log("CREATE DEEPSHARED")
             datas._deep_shared_ = true;
             return datas;
-        }
+        };
+
+
+        deep.mediaCache = {
+            cache:{},
+            reloadablesUriDico : {},
+            reloadablesRegExpDico : [ /^(json::)/gi /* ,/(\.json)$/gi */ ],
+            clearCache:function ()
+            {
+                this.cache = {};
+            },
+            manage:function (response, uri) {
+                //console.log("manage cache : ", response, uri);
+                if(this.reloadablesUriDico[uri])
+                    return;
+                var count = 0;
+                reg = this.reloadablesRegExpDico[count];
+                while(reg && !(reg.test(uri)))
+                    reg = this.reloadablesRegExpDico[++count];
+                if(count == this.reloadablesRegExpDico.length)
+                {
+                    this.cache[uri] = response;
+                    //console.log("deep-ui : deep.mediaCache.manage : retain !!!")
+                }
+            }
+        };
+
         return deep;
     }
 });

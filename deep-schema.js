@@ -379,7 +379,7 @@ function(require, utils, promise, Querier){
 		if(!this.errorsMap[valuePath].errors)
 			this.errorsMap[valuePath].errors = [];
 		this.errorsMap[valuePath].errors.push(error);
-		if(console.flags.validationError) console.log("validator", "create error : ", JSON.stringify(error));
+		if(console.flags && console.flags.validationError) console.log("validator", "create error : ", JSON.stringify(error));
 		this.errors.push(error);
 		return error;
 	}
@@ -468,7 +468,7 @@ function(require, utils, promise, Querier){
 		var schemaPaths = [];
 		var deferred = promise.Deferred();
 		var othis = this;
-		console.log("Validator", "partialValidation : fieldsToCheck = " + fieldsToCheck);
+		//console.log("Validator", "partialValidation : fieldsToCheck = " + fieldsToCheck);
 	
 		fieldsToCheck.forEach(function  (required) {
 			//console.log("Validator", "partialValidation : forEach : field = " + required);
@@ -701,7 +701,7 @@ function(require, utils, promise, Querier){
 					if(this.lexic[i])
 						this.doTest( this.lexic[i], value, type, schema, valuePath, schemaPath );
 					else
-						if(console.flags.validator) console.log("validator", "unrecognised schema property : "+i);
+						if(console.flags && console.flags.validator) console.log("validator", "unrecognised schema property : "+i);
 				}
 			}
 		return validations;
