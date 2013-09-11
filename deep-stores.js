@@ -213,7 +213,7 @@ define(["require"], function (require) {
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-                var removed = deep(col).remove("./*?id=" + id).success();
+                var removed = deep(col).remove("./*?id=" + id).done();
                 if (removed)
                     removed = removed.shift();
                 return deep(removed);
@@ -395,9 +395,9 @@ define(["require"], function (require) {
                     root = root();
                 var r = null;
                 if (id[0] == "." || id[0] == "/")
-                    r = deep(root).query(id).up(object).success();
+                    r = deep(root).query(id).up(object).done();
                 else
-                    r = deep(root).query("./" + id).up(object).success();
+                    r = deep(root).query("./" + id).up(object).done();
                 return deep(r).store(this);
             }
         }
