@@ -108,7 +108,10 @@ define(["require"], function (require){
             {
                 if(params.blocked)
                     return deep.when(null);
-                return deep(params.layer).flatten();
+                return deep(params.layer).flatten()
+                .done(function(){
+                    return m;
+                });
             };
             m.up = function()
             {
