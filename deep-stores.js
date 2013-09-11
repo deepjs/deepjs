@@ -551,7 +551,7 @@ define(["require"], function (require) {
          * @return {Object} infos an object containing parsing result
          */
         deep.parseRequest = function (request, options) {
-            var protoIndex = request.indexOf("::");
+            var protoIndex = request.substring(0,50).indexOf("::");
             var protoc = null;
             var uri = request;
             var store = null;
