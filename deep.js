@@ -903,7 +903,10 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     }));
                 });
                 //console.log("deep.load will load : ",toLoads)
-                return deep.chain.transformNodes(toLoads, doDeepLoad);
+                return deep.when(deep.chain.transformNodes(toLoads, doDeepLoad))
+                .done(function(){
+                    return deep.chain.val(self);
+                });
             };
             func._isDone_ = true;
             addInChain.apply(this, [func]);
