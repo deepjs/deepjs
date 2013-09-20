@@ -487,6 +487,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         _running: false,
         _executing: false,
         _initialised: false,
+
         _start: function chainStart(s, e) {
             this._initialised = true;
             this._success = (s instanceof Error) ? null : s;
@@ -494,6 +495,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             this._forceHandle();
             return this;
         },
+
         catchError: function (arg) {
             var self = this;
             if (self._initialised) {
@@ -505,6 +507,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 self._rethrow = (typeof arg !== 'undefined') ? !arg : false;
             return this;
         },
+
         pushHandlerTo: function (array) {
             var self = this;
             if (self._initialised) {
@@ -516,11 +519,62 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 array.push(self);
             return this;
         },
+
+        condition: function (cond, manager) {
+
+            /*
+                equivalent to (without loading manager if needed)
+                .always(function(s,e){
+                    if(cond)
+                        manager.apply(self)
+                })
+
+                .condition(deep.mode.dev, "dev::/dumpError")
+                
+
+                deep(1)
+                .condition(deep.mode.dev, function(){
+                    this.fail(function(e){
+                        // handle error for dev
+                    })
+                })
+
+                .each("swig::./items.tpl", req.accept.contain("html"))
+             */
+
+            var self = this;
+            var func = function (s, e) {        // WARNING : it's an always
+                if(typeof cond === 'function')
+                    cond = cond();
+                if(!cond)
+                    return;
+                var applyCondition = function(manager)
+                {
+                    self.oldQueue = self._queue;
+                    self._queue = [];
+                    var res = manager.call(self, s, e);
+                    if (res === self)
+                        return;
+                    return res;
+                }
+                if (typeof manager === 'string')
+                    return deep.when(deep.get(manager))
+                    .done(function (manager){
+                        if(cond)
+                            return applyCondition(manager);
+                    });
+                return applyCondition(manager);
+            };
+            addInChain.call(this, func);
+            return this;
+        },
+
         done: function chainDone(callBack) {
             if(!callBack)
                 return this._success;
             var self = this;
-            var func = function chainDoneHandle(s, e) {
+            var func = function chainDoneHandle(s, e)
+            {
                 //console.log("deep.done : ",s,e)
                 self.oldQueue = self._queue;
                 self._queue = [];
@@ -532,6 +586,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             func._isDone_ = true;
             return addInChain.apply(this, [func]);
         },
+
         fail: function chainFail(callBack) {
             if(!callBack)
                 return this._error;
@@ -547,7 +602,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             func._isFail_ = true;
             return addInChain.apply(this, [func]);
         },
-        always: function chainAlways(callBack) {
+
+        always: function chainAlways(callBack)
+        {
             var self = this;
             var func = function chainAlwaysHandle(s, e) {
                 self.oldQueue = self._queue;
@@ -559,13 +616,16 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             };
             return addInChain.apply(this, [func]);
         },
-        then: function chainThen(successCallBack, errorCallBack) {
+
+        then: function chainThen(successCallBack, errorCallBack)
+        {
             if (successCallBack)
                 this.done(successCallBack);
             if (errorCallBack)
                 this.fail(errorCallBack);
             return this;
         },
+
         // __________________________________________________ LOG
         /**
          *
