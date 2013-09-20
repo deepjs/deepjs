@@ -1,4 +1,4 @@
-Layered Aspect Oriented Programmation
+Query based object manipulation
 ==========================
 
 ```javascript
@@ -35,4 +35,4 @@ Layered Aspect Oriented Programmation
 	console.log("myOwnLand is : ", myOwnLand);
 	myOwnLand.watering();
 ```
-Hello world.
+pour aller plus loin : link vers selector et autre tutos associé plus précis sur le query based
