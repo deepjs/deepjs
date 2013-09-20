@@ -1142,6 +1142,36 @@ define(function(require){
 		});
 	};
 
+	utils.upSheet = function(sheet, entry, schema){
+		var res = [];
+		for(var i in sheet)
+		{
+			var toApply = sheet[i];
+			deep.when(deep.get(i, { entry:entry }))
+			pushHandlerTo(res)
+			.done(function(objs){
+				objs.forEach(function(o){
+					deep.utils.up(toApply, o, schema);
+				})
+			});
+		}
+		return deep.all(res);
+	}
+	utils.bottomSheet = function(sheet, entry, schema){
+		var res = [];
+		for(var i in sheet)
+		{
+			var toApply = sheet[i];
+			deep.when(deep.get(i, { entry:entry }))
+			pushHandlerTo(res)
+			.done(function(objs){
+				objs.forEach(function(o){
+					deep.utils.bottom(toApply, o, schema);
+				})
+			});
+		}
+		return deep.all(res);
+	}
 
 	return utils;
 }

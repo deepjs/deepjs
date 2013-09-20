@@ -1717,6 +1717,41 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
          * @return {deep.Chain} this
          */
+        upSheet: function chainUpSheet() {
+            var args = Array.prototype.slice.call(arguments);
+            var self = this;
+            var func = function () {
+                return deep.when(deep.getAll(args))
+                    .done(function (objects) {
+                    self._nodes.forEach(function (result) {
+                        objects.forEach(function (object) {
+
+                            //console.log("deep.up : entry : ", result.value, " - to apply : ", object)
+                            
+                            result.value = utils.upSheet(object, result.value, result.schema);
+                            if (result.ancestor)
+                                result.ancestor.value[result.key] = result.value;
+                        });
+                    });
+                    return deep.chain.val(self);
+                });
+            };
+            func._isDone_ = true;
+            addInChain.apply(this, [func]);
+            return this;
+        },
+
+        /**
+         * apply arguments from UP on each entries : will merge objects and array together DEEPLY. see docs and examples.
+         *
+         * synch
+         * inject entries values as chain success.
+         *
+         * @method  up
+         * @chainable
+         * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
+         * @return {deep.Chain} this
+         */
         up: function chainUp() {
             var args = Array.prototype.slice.call(arguments);
             var self = this;
@@ -1727,6 +1762,39 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         objects.forEach(function (object) {
                             //console.log("deep.up : entry : ", result.value, " - to apply : ", object)
                             result.value = utils.up(object, result.value, result.schema);
+                            if (result.ancestor)
+                                result.ancestor.value[result.key] = result.value;
+                        });
+                    });
+                    return deep.chain.val(self);
+                });
+            };
+            func._isDone_ = true;
+            addInChain.apply(this, [func]);
+            return this;
+        },
+
+        /**
+         *
+         * apply arguments from BOTTOM on each entries : will merge objects and array together DEEPLY. see docs and examples.
+         *
+         * synch
+         * inject entries values as chain success.
+         * @method  bottom
+         * @chainable
+         * @param objects a list (coma separated - not an array) of objects to apply on each chain entries
+         * @return {deep.Chain} this
+         */
+        bottomSheet: function chainBottom() {
+            var args = Array.prototype.slice.call(arguments);
+            args.reverse();
+            var self = this;
+            var func = function () {
+                return deep.when(deep.getAll(args))
+                    .done(function (objects) {
+                    self._nodes.forEach(function (result) {
+                        objects.forEach(function (object) {
+                            result.value = utils.bottomSheet(object, result.value, result.schema);
                             if (result.ancestor)
                                 result.ancestor.value[result.key] = result.value;
                         });
