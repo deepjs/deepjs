@@ -5,7 +5,7 @@
 Based on Layered and/or Chained Programmation approach, it provides, uses and mixes : 
 
 * Layered Aspect Oriented Programmation
-* Query Based Programmation
+* Query Based Programmation including Code Sheet
 * Object Capabilities Management (or Model)
 * full Promised asynch management
 * homogeneous HTTP Rest compliant ressources management

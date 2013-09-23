@@ -1163,7 +1163,7 @@ define(function(require){
 		{
 			var toApply = sheet[i];
 			deep.when(deep.get(i, { entry:entry }))
-			pushHandlerTo(res)
+			.pushHandlerTo(res)
 			.done(function(objs){
 				objs.forEach(function(o){
 					deep.utils.bottom(toApply, o, schema);
