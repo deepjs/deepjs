@@ -819,7 +819,7 @@ define(function defineDeepQuery(require)
 		items[0].root = this.root;
 
 		this.straightQuery = false;
-		if(!q.match(/(\?)|(\/\/)|(\[)|(\()|(\*)/gi))
+		if(options.allowStraightQueries !== false && !q.match(/(\?)|(\/\/)|(\[)|(\()|(\*)/gi))
 		{
 			this.straightQuery = true;
 			/*if(!q.match(/(\.\.)/gi))
