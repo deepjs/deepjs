@@ -489,32 +489,32 @@ define(["require"], function (require) {
 
         deep.store.Selector.parse = function parseSelector(selector)
         {
-            var char = selector[0];
+            var chars = selector[0];
             var res = [];
             var finalString = "";
             var index = 0;
-            while (char) {
-                switch (char) {
+            while (chars) {
+                switch (chars) {
                 case '|':
                 case '&':
                 case '(':
                 case ')':
                 case ' ':
                 case '!':
-                    finalString += char;
-                    char = selector[++index];
+                    finalString += chars;
+                    chars = selector[++index];
                     break;
                 case '>' :
                     res.push(finalString);
-                    char = selector[++index];
+                    chars = selector[++index];
                     finalString = "";
                     break;
                 default:
                     finalString += "this.";
                     var count = index;
-                    while (char) {
+                    while (chars) {
                         var shouldBreak = false;
-                        switch (char) {
+                        switch (chars) {
                             case '|':
                             case '&':
                             case '(':
@@ -530,8 +530,8 @@ define(["require"], function (require) {
                             index = count;
                             break;
                         }
-                        char = selector[++count];
-                        if (!char)
+                        chars = selector[++count];
+                        if (!chars)
                             finalString += selector.substring(index, count);
                     }
                 }
@@ -551,19 +551,21 @@ define(["require"], function (require) {
          * @return {Object} infos an object containing parsing result
          */
         deep.parseRequest = function (request, options) {
+            // console.log("parse request : ", request);
             var protoIndex = request.substring(0,50).indexOf("::");
             var protoc = null;
             var uri = request;
             var store = null;
+            var subproto = null;
             if (protoIndex > -1) {
                 protoc = request.substring(0, protoIndex);
                 uri = request.substring(protoIndex + 2);
             }
 
-            var queryThis = false;
+            //var queryThis = false;
             if (request[0] == '#' || protoc == "first" || protoc == "last" || protoc == "this") {
-                store = deep.protocoles.queryThis;
-                queryThis = true;
+                store = deep.protocoles.dq;
+              //  queryThis = true;
             } else if (!protoc) {
                 //console.log("no protocole : try extension");
                 deep.extensions.some(function (storez)
@@ -582,15 +584,26 @@ define(["require"], function (require) {
                         return true;
                     return false;
                 });
-            } else {
-                store = deep.protocoles.store(protoc);
+            }
+            else
+            {
+                var splitted = protoc.split(".");
+                if (splitted.length == 2) 
+                {
+                    store = deep.protocoles.store(splitted.shift());
+                    subproto = splitted.shift();
+                    // console.log("parse request : got subproto ", store, subproto);
+                }
+                else
+                    store = deep.protocoles.store(protoc);
             }
             //console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
             //console.log("parseRequest : store : ", store);
             var res = {
                 _deep_request_: true,
                 request: request,
-                queryThis: queryThis,
+                subproto:subproto,
+              //  queryThis: queryThis,
                 store: store,
                 protocole: protoc,
                 uri: uri
@@ -637,6 +650,7 @@ define(["require"], function (require) {
             var infos = request;
             if (typeof infos === 'string')
                 infos = deep.parseRequest(request, options);
+            options.parsedRequest = infos;
             var res = null;
             //console.log("deep.get : infos : ", infos);
             if (!infos.store)
@@ -648,11 +662,11 @@ define(["require"], function (require) {
             }
             else
             {
-                //console.log("________________ deep.get : will do call on store : ", infos)
-                if(infos.store._deep_ocm_)
-                {
-                    res = deep.query(infos.store(),infos.uri);
-                }
+                // console.log("________________ deep.get : will do call on store : ", infos, infos.store[infos.subproto])
+                //if(infos.store._deep_ocm_)
+                  //  res = deep.query(infos.store(),infos.uri);
+                if(infos.subproto && typeof infos.store[infos.subproto] === 'function')
+                    res = infos.store[infos.subproto](infos.uri, options);
                 else if (typeof infos.store.get === 'function')
                     res = infos.store.get(infos.uri, options);
                 else if (typeof infos.store === 'function')
@@ -678,90 +692,146 @@ define(["require"], function (require) {
         };
         // ___________________________________________________________________________ BASICAL PROTOCOLES
         deep.protocoles = {
+            sheet:{
+                get:function(request, options){
+                    if(!options)
+                    {
+                        
+                    }
+                }
+            },
             /**
              * options must contain the entry from where start query
              * @param  {[type]} request [description]
              * @param  {[type]} options [description]
              * @return {[type]}         [description]
              */
-            queryThis: function (request, options) {
-                var entry = options.entry;
-                if(!entry)
-                    return undefined;
-                var root = entry.root || entry;
-                //console.log("deep.stores.queryThis : ", request, " - root ? ", entry.root)
-
-                var infos = request;
-                if (typeof infos === 'string')
-                    infos = deep.parseRequest(infos);
-                if (infos.uri[0] == '#')
-                    infos.uri = infos.uri.substring(1);
-                var res = null;
-                //console.log("uri : ", infos.uri);
-                if (infos.uri.substring(0, 3) == "../") {
-                    infos.uri = ((entry.path != "/") ? (entry.path + "/") : "") + infos.uri;
-                    //console.log("queryThis with ../ start : ",root.value)
-                    res = deep.query(root, infos.uri, {
-                        keepCache: false
-                    });
-                    //console.log("res : ",res);
-                } else if (infos.uri[0] == '/')
-                    res = deep.query(root, infos.uri, {
-                        keepCache: false
-                    });
-                else
-                    res = deep.query(entry, infos.uri, {
-                        keepCache: false
-                    });
-
-                if (res)
-                    switch (infos.protocole) {
-                    case "first":
-
-                        //res = res[0] || null;
-                        break;
-                    case "last":
-                        //res = res[res.length - 1] || null;
-                        break;
+            up:{
+                get:function(request, options){
+                    if(!options || !options.parsedRequest || !options.parsedRequest.subproto)
+                        return deep.errors.Store("Up protocole need avaiable sub proto to be executed. Request : " + request, options.parsedRequest);
+                    var store = deep.protocoles.store(options.parsedRequest.subproto);
+                    if(!store)
+                        return deep.errors.Store("Up protocole couldn't find sub protocole. Request : " + request, options.parsedRequest);
+                    var res = null;
+                    options.allowStraightQueries = false;
+                    if(typeof store === 'function')
+                        res = store(request, options);
+                    else if(typeof store.get === 'function')
+                        res = store.get(request, options);
+                    return function(layer, options){
+                        return deep.when(res).done(function(r){
+                            if(r)
+                                r.forEach(function(item){
+                                    deep.utils.up(layer, item, options.shema);
+                                });
+                        });
+                    };
                 }
-                //if(infos.protocole == "first")
-                //	console.log("QUERY THIS : "+request + " - base path : "+basePath)//, " - results : ", JSON.stringify(res, null, ' '));
-                return res;
+            },
+            bottom:{
+                get:function(request, options){
+                    if(!options || !options.parsedRequest || !options.parsedRequest.subproto)
+                        return deep.errors.Store("Bottom protocole need avaiable sub proto to be executed. Request : " + request, options.parsedRequest);
+                    var store = deep.protocoles.store(options.parsedRequest.subproto);
+                    if(!store)
+                        return deep.errors.Store("Bottom protocole couldn't find sub protocole. Request : " + request, options.parsedRequest);
+                    var res = null;
+                    options.allowStraightQueries = false;
+                    if(typeof store === 'function')
+                        res = store(request, options);
+                    else if(typeof store.get === 'function')
+                        res = store.get(request, options);
+                    return function(layer, options){
+                        return deep.when(res).done(function(r){
+                            if(r)
+                                r.forEach(function(item){
+                                    deep.utils.bottom(layer, item, options.shema);
+                                });
+                        });
+                    };
+                }
+            },
+            dq:{
+                up:function dqUP(request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqUP(layer){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        var r = self.get(request, options);
+                        if(r)
+                            r.forEach(function(item){
+                                var f = deep.utils.up(layer, item.value, options.shema);
+                                if(item.ancestor)
+                                    item.ancestor.value[item.key] = f;
+                            });
+                    };
+                },
+                bottom:function dqBottom(request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqBottom(layer){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        var r = self.get(request, options);
+                        if(r)
+                            r.forEach(function(item){
+                                var f = deep.utils.bottom(layer, item.value, options.shema);
+                                if(item.ancestor)
+                                    item.ancestor.value[item.key] = f;
+                            });
+                    };
+                },
+                get: function dqGet(request, options) {
+                    var entry = options.entry;
+                    if(!entry)
+                        return undefined;
+                    var root = entry.root || entry;
+                    //console.log("deep.stores.queryThis : ", request, " - root ? ", entry.root)
+
+                    var infos = request;
+                    if (typeof infos === 'string')
+                        infos = deep.parseRequest(infos);
+                    if (infos.uri[0] == '#')
+                        infos.uri = infos.uri.substring(1);
+                    var res = null;
+                    options = options || {};
+                    options.keepCache = false;
+                    //console.log("uri : ", infos.uri);
+                    if (infos.uri.substring(0, 3) == "../") {
+                        infos.uri = ((entry.path != "/") ? (entry.path + "/") : "") + infos.uri;
+                        //console.log("queryThis with ../ start : ",root.value)
+                        res = deep.query(root, infos.uri, options);
+                        //console.log("res : ",res);
+                    } else if (infos.uri[0] == '/')
+                        res = deep.query(root, infos.uri, options);
+                    else
+                        res = deep.query(entry, infos.uri, options);
+                    return res;
+                }
             },
             store: function (path, options) {
                 //console.log("deep.protocoles.store : ", path, options);
                 if (typeof path === 'object')
                     path = path.uri;
+                var proto = null;
                 if (deep.protocoles[path])
-                    return deep.protocoles[path];
-                var splitted = path.split(".");
-                if (splitted.length > 1) {
-                    var proto = deep.protocoles[splitted.shift()];
-                    //console.log("deep.protocoles.store start with : ",proto);
-                    while (proto && splitted.length > 0) {
-                        if (proto._deep_ocm_) {
-                            var p = proto();
-                            proto = p[splitted.shift()];
-                        }
-                        else
-                            proto = proto[splitted.shift()];
-                    }
-                    //console.log("final proto : ", proto);
-                    if (!proto || splitted.length > 0)
-                        return deep.errors.Protocole("no protocole found with : " + path);
-
-                    if(proto._deep_store_ && !proto.initialised && proto.init)
-                    {
-                        var ini = proto.init();
-                        if(ini && (ini.then || ini.promise))
-                            return deep.when(ini).done(function(){
-                                return proto;
-                            });
-                        return proto;
-                    }   
+                    proto =  deep.protocoles[path];
+                if (proto && proto._deep_ocm_)
+                    proto = proto();
+                if (!proto)
+                    return deep.errors.Protocole("no store found with : " + path);
+                if(proto._deep_store_ && !proto.initialised && proto.init)
+                {
+                    var ini = proto.init();
+                    if(ini && (ini.then || ini.promise))
+                        return deep.when(ini).done(function(){
+                            return proto;
+                        });
                     return proto;
-                }
-                return deep.errors.Protocole("no protocole found with : " + path);;
+                }   
+                return proto;
             },
             js: function (path, options) {
                 if (typeof path === 'object')
