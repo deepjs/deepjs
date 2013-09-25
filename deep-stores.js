@@ -676,8 +676,9 @@ define(["require"], function (require) {
             }
             //console.log("deep.get "+infos.request+" result : ",res)
             if (options.wrap)
+            {
                 return deep.when(res)
-                    .done(function (res) {
+                .done(function (res) {
                     if (options.wrap.result) {
                         if (typeof options.wrap.result.push === 'function')
                             options.wrap.result.push(res);
@@ -687,8 +688,9 @@ define(["require"], function (require) {
                         options.wrap.result = res;
                     return options.wrap;
                 });
-
-            return res;
+            }
+            else
+                return res;
         };
         // ___________________________________________________________________________ BASICAL PROTOCOLES
         deep.protocoles = {
@@ -761,12 +763,15 @@ define(["require"], function (require) {
                         options.allowStraightQueries = false;
                         options.resultType = "full";
                         var r = self.get(request, options);
+                        var modified = [];
                         if(r)
                             r.forEach(function(item){
                                 var f = deep.utils.up(layer, item.value, options.shema);
                                 if(item.ancestor)
                                     item.ancestor.value[item.key] = f;
+                                modified.push(f);
                             });
+                        return modified;
                     };
                 },
                 bottom:function (request, options) {
@@ -776,12 +781,15 @@ define(["require"], function (require) {
                         options.allowStraightQueries = false;
                         options.resultType = "full";
                         var r = self.get(request, options);
+                        var modified = [];
                         if(r)
                             r.forEach(function(item){
                                 var f = deep.utils.bottom(layer, item.value, options.shema);
                                 if(item.ancestor)
                                     item.ancestor.value[item.key] = f;
+                                modified.push(f);
                             });
+                        return modified;
                     };
                 },
                 series:function (request, options) {
@@ -789,13 +797,20 @@ define(["require"], function (require) {
                     var self = this;
                     return function dodqSeries(fn){
                         options.allowStraightQueries = false;
-                        options.resultType = "full";
+                        options.resultType = null;
                         var r = self.get(request, options);
                         var results = [];
+                        var err = null;
                         if(r && r.length > 0)
                         {
                             var def = deep.Deferred();
-                            var cycle =function(){
+                            var end = function(){
+                                if(err)
+                                    def.reject(err);
+                                else
+                                    def.resolve(results);
+                            };
+                            var cycle = function(){
                                 var item = r.shift();
                                 var output = null;
                                 if(typeof fn === 'string')
@@ -805,6 +820,11 @@ define(["require"], function (require) {
                                 }
                                 else
                                     output = fn.apply(item);
+                                if(output instanceof Error)
+                                {
+                                    err = output;
+                                    return end();
+                                }
                                 if(output && output.then)
                                     deep.when(output)
                                     .done(function (s){
@@ -822,10 +842,7 @@ define(["require"], function (require) {
                                         cycle();
                                     else end();
                                 }
-                            }
-                            var end = function(){
-                                def.resolve(results);
-                            }
+                            };
                             cycle();
                             return def.promise();
                         }
@@ -844,11 +861,12 @@ define(["require"], function (require) {
                     var self = this;
                     return function dodqCall(fn){
                         options.allowStraightQueries = false;
-                        options.resultType = "full";
+                        options.resultType = null;
                         var res = [];
                         var r = self.get(request, options);
                         if(r)
                             r.forEach(function(item){
+                                //console.log("dq.call : on : ", item)
                                 if(typeof fn === 'string')
                                 {
                                     if(typeof item[fn] === 'function')
@@ -860,6 +878,22 @@ define(["require"], function (require) {
                                     res.push(fn.apply(item));
                             });
                         return res;
+                    };
+                },
+                equal:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqEqual(compare){
+                        options.allowStraightQueries = false;
+                        options.resultType = null;
+                        var res = [];
+                        var r = self.get(request, options);
+                        var ok = true;
+                        if(r)
+                            ok = r.every(function(item){
+                                return deep.utils.deepEqual(item, compare);
+                            });
+                        return ok || new Error("sheet equality failed");
                     };
                 },
                 get: function dqGet(request, options) {
@@ -909,7 +943,7 @@ define(["require"], function (require) {
                             return proto;
                         });
                     return proto;
-                }   
+                }
                 return proto;
             },
             js: function (path, options) {
@@ -944,7 +978,7 @@ define(["require"], function (require) {
                     return deep.errors.Internal("deep.protocoles.instance  : could not instanciate : " + JSON.stringify(id));
                 });
             }
-        }
+        };
 
         /**
          *
@@ -956,7 +990,7 @@ define(["require"], function (require) {
                 return ctrl;
             }
             return deep.protocoles[name];
-        }
+        };
 
         //______________________________________________________________________ CHAIN DECORATION
         deep.Chain.addHandle("store", function (name) {
@@ -971,7 +1005,7 @@ define(["require"], function (require) {
                     self._store = name;
                 }
                 deep.chain.position(self, self._storeName);
-            }
+            };
 
             deep.Store.extendsChain(self);
             func._isDone_ = true;
@@ -1011,7 +1045,7 @@ define(["require"], function (require) {
                 var self = this;
                 if (id == "?" || !id)
                     id = "";
-                var func = function (s, e) 
+                var func = function (s, e)
                 {
                     var store = self._store || deep.protocoles.store(self._storeName);
                     
@@ -1042,9 +1076,7 @@ define(["require"], function (require) {
                         .done(function (success) {
                         //console.log("deep(...).store : get : success : ", success);
                         self._success = success;
-                        self._nodes = [deep.Querier.createRootNode(success, null, {
-                                uri: id
-                            })]
+                        self._nodes = [deep.Querier.createRootNode(success, null, { uri: id })];
                         //return success;
                     });
                 };
@@ -1147,7 +1179,7 @@ define(["require"], function (require) {
                 self.range = deep.Chain.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
-            }
+            };
             handler.rpc = function (method, body, uri, options) {
                 var self = this;
                 var func = function (s, e) {
@@ -1229,5 +1261,5 @@ define(["require"], function (require) {
         };
 
         return deep;
-    }
+    };
 });
