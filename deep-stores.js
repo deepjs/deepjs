@@ -753,7 +753,8 @@ define(["require"], function (require) {
                 }
             },
             dq:{
-                up:function dqUP(request, options) {
+                //________________________________________ SHEET PROTOCOLES
+                up:function (request, options) {
                     options = options || {};
                     var self = this;
                     return function dodqUP(layer){
@@ -768,7 +769,7 @@ define(["require"], function (require) {
                             });
                     };
                 },
-                bottom:function dqBottom(request, options) {
+                bottom:function (request, options) {
                     options = options || {};
                     var self = this;
                     return function dodqBottom(layer){
@@ -781,6 +782,84 @@ define(["require"], function (require) {
                                 if(item.ancestor)
                                     item.ancestor.value[item.key] = f;
                             });
+                    };
+                },
+                series:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqSeries(fn){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        var r = self.get(request, options);
+                        var results = [];
+                        if(r && r.length > 0)
+                        {
+                            var def = deep.Deferred();
+                            var cycle =function(){
+                                var item = r.shift();
+                                var output = null;
+                                if(typeof fn === 'string')
+                                {
+                                    if(typeof item[fn] === 'function')
+                                        output = item[fn]();
+                                }
+                                else
+                                    output = fn.apply(item);
+                                if(output && output.then)
+                                    deep.when(output)
+                                    .done(function (s){
+                                        results.push(s);
+                                        if(r.length > 0)
+                                            cycle();
+                                        else end();
+                                    })
+                                    .fail(function (error) {
+                                        def.reject(error);
+                                    });
+                                else {
+                                    results.push(output);
+                                    if(r.length > 0)
+                                        cycle();
+                                    else end();
+                                }
+                            }
+                            var end = function(){
+                                def.resolve(results);
+                            }
+                            cycle();
+                            return def.promise();
+                        }
+                        return results;
+                    };
+                },
+                parallele:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqParallele(fn){
+                        return deep.all(self.call(request, options)(fn));
+                    };
+                },
+                call:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqCall(fn){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        var res = [];
+                        var r = self.get(request, options);
+                        if(r)
+                            r.forEach(function(item){
+                                if(typeof fn === 'string')
+                                {
+                                    if(typeof item[fn] === 'function')
+                                        res.push(item[fn]());
+                                    else
+                                        res.push(undefined);
+                                }
+                                else
+                                    res.push(fn.apply(item));
+                            });
+                        return res;
                     };
                 },
                 get: function dqGet(request, options) {
