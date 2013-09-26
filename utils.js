@@ -611,9 +611,9 @@ define(function(require){
 
 	var up = function up(src, target, schema, parent, key)
 	{
-        //console.log("up : ", src, target)
-       // if(src && src._deep_shared_)
-         //   console.log("_____________ GOT SHARED");
+        //console.log("up : ", src, target, parent, key)
+       	// if(src && src._deep_shared_)
+        //   console.log("_____________ GOT SHARED");
 		if( typeof src === 'undefined' )
 			return target;
 		if(src === null)
@@ -743,7 +743,10 @@ define(function(require){
 					var sch = {};
 					if(schema)
 						sch = retrieveFullSchemaByPath(schema, i);
-					target[i] = utils.up(src[i], target[i], sch, target, i);
+					if(typeof src[i] === 'object' || typeof src[i] === 'function')
+						target[i] = utils.up(src[i], target[i], sch, target, i);
+					else
+						target[i] = src[i];
 				}
 				return target;
 				break;
@@ -756,7 +759,7 @@ define(function(require){
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
-		 //console.log("utils.bottom : objects ", src, target)
+		// console.log("utils.bottom : objects ", src, target)
         // if(src && src._deep_shared_)
           //   console.log("got botom shared");
 		if(src === null || typeof src === "undefined")
@@ -875,7 +878,10 @@ define(function(require){
 					var sch = {};
 					if(schema)
 						sch = retrieveFullSchemaByPath(schema, i);
-					target[i] = utils.up(oldProps[i], target[i], sch, target, i);
+					if(typeof src[i] === 'object' || typeof src[i] === 'function')
+						target[i] = utils.up(oldProps[i], target[i], sch, target, i);
+					else if(typeof target[i] === 'undefined')
+						target[i] = oldProps[i];
 				}
 				return target;
 				break;
@@ -1142,7 +1148,34 @@ define(function(require){
 		});
 	};
 
+	/*
+		TODO : 
 
+		dq usage : 
+			- no stright queries allowed : we need to get allways a array results
+
+
+		json select and other querier : 
+			need to get path and/or ancestor/key to fully work
+
+	 */
+	
+	utils.sheet = function applySheet(sheet, entry, options)
+	{
+	 	options = options || {};
+	 	options.entry = entry;
+	 	var res = [];
+		for(var i in sheet)
+		{
+			var toApply = sheet[i];
+			deep.when(deep.get(i, options))
+			.pushHandlerTo(res)
+			.done(function(handler){
+				return handler(toApply, options);
+			});
+		}
+		return deep.all(res);
+	}
 	return utils;
 }
 })
