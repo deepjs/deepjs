@@ -34,7 +34,12 @@ var myOwnLand = {
 	]
 };
 
-deep(myOwnLand).bottom(land).up(orchard,kitchenGarden).query("/plants/*").up({
+
+deep(myOwnLand)
+.bottom(land)
+.up(orchard,kitchenGarden)
+//Query based object modelisation
+.query("/plants/*").up({
 	size : 0,
 	grow : function () {
 		this.size += growSpeed;
@@ -43,5 +48,12 @@ deep(myOwnLand).bottom(land).up(orchard,kitchenGarden).query("/plants/*").up({
 		this.size -= heightpruned;
 	}
 });
+
+//Query based object manipulation
+deep(myOwnLand)
+.query("/plants/*")
+.run("grow")
+.query("/plants/*?size=gt=5")
+.run("prune",[2]);
 
 console.log("myOwnLand is : ", myOwnLand);
