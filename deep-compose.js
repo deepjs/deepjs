@@ -524,6 +524,37 @@ define(function(require, exports, module){
 	 * @return {[type]}
 	 */
 	var compose = {
+		Classes:function(){
+			var args = arguments;
+			function Constructor(){
+				// console.log("Compose Classes constructor : ", this);
+				for(var i in args)
+				{
+					var cl = args[i];
+					if(typeof cl === 'function')
+					{
+						var r = cl.apply(this, arguments);
+						if(typeof r === 'object')
+							deep.utils.up(r, this);
+					}
+				}
+			}
+			var prototype = {};
+			for(var i in args)
+			{
+				var cl = args[i];
+				if(typeof cl === 'function')
+				{
+					if(cl.prototype)
+						deep.utils.up(cl.prototype, prototype);
+				}
+				else 
+					deep.utils.up(cl, prototype);
+			}	
+			Constructor.prototype = prototype;
+			// console.log("before composer return classes : ", Constructor.prototype)
+			return Constructor;
+		},
 		Decorator:Composer,
 		cloneStart:function cloneStart(start) {
 			var newStack = start.decorator.stack.concat([]);
