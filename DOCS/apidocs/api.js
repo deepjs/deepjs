@@ -19,7 +19,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "deep.store",
         "deep.store.Array",
         "deep.store.Object",
-        "deep.store.Store",
+        "deep.Store",
         "deep.stores",
         "deep.stores.aspect",
         "deep.stores.instance",
