@@ -77,6 +77,30 @@ define(function(require)
 				error.status = 500;
 				error.report = report;
 				return error;
+			},
+			Post:function  (msg, report, fileName, lineNum) {
+				var error = new Error("PostError : "+msg);
+				error.status = 500;
+				error.report = report;
+				return error;
+			},
+			Put:function  (msg, report, fileName, lineNum) {
+				var error = new Error("PutError : "+msg);
+				error.status = 500;
+				error.report = report;
+				return error;
+			},
+			Patch:function  (msg, report, fileName, lineNum) {
+				var error = new Error("PatchError : "+msg);
+				error.status = 500;
+				error.report = report;
+				return error;
+			},
+			Delete:function  (msg, report, fileName, lineNum) {
+				var error = new Error("DeleteError : "+msg);
+				error.status = 500;
+				error.report = report;
+				return error;
 			}
 		}
 		return deep;

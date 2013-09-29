@@ -298,11 +298,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         }
     }
 
-        function createImmediatePromise(result) {
-            //console.log("deep.createImmediatePromise : ", result instanceof Error)
-            var prom = new deep.Promise();
-            return prom._start(result);
-        }
+    function createImmediatePromise(result) {
+        //console.log("deep.createImmediatePromise : ", result instanceof Error)
+        var prom = new deep.Promise();
+        return prom._start(result);
+    }
+
 
     deep.promise = function deepPromise(arg) {
         //console.log("deep.promise : ", arg)
@@ -328,6 +329,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         }
         return createImmediatePromise(arg);
     }
+    deep.promise.immediate = createImmediatePromise;
     /**
      * return a promise that will be fullfilled when arg are ready (resolve or immediat)
      * @for deep
