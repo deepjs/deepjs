@@ -75,7 +75,7 @@
             
                 <li><a href="../classes/deep.store.Object.html">deep.store.Object</a></li>
             
-                <li><a href="../classes/deep.store.Store.html">deep.store.Store</a></li>
+                <li><a href="../classes/deep.Store.html">deep.Store</a></li>
             
                 <li><a href="../classes/deep.stores.html">deep.stores</a></li>
             
@@ -210,7 +210,7 @@ STANDARD trans stores/facets (tout store/facet peut etre utilisé avec)
 
 Ajouter deep-facets.js
 
-Add deep.store.Store.fetchRelation(name) based on schema links.
+Add deep.Store.fetchRelation(name) based on schema links.
 
  */
 if(typeof define !== &#x27;function&#x27;)
@@ -266,7 +266,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			}
 			if(definer instanceof Array)
 				store = stores[name] = deep.store.ArrayStore(definer, options);
-			else if(definer instanceof deep.store.Store)
+			else if(definer instanceof deep.Store)
 				store = stores[name] = definer.create(name, options);
 			else store = stores[name] = deep.store.ObjectStore(definer, options);
 			store.name = name;
@@ -289,7 +289,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 			if(!st)
 				throw new Error(&quot;no stores to extends found with : &quot;+ancestor+&quot;. Could not create : &quot;+name );
 
-			var store = stores[name] = new deep.store.Store();
+			var store = stores[name] = new deep.Store();
 			store.name = name;
 			if(st.extends)
 				return st.extends(store, options);
@@ -550,11 +550,11 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		};
 		/**
 		 * Empty class : Just there to get instanceof working (be warning with iframe issue in that cases).
-		 * @class deep.store.Store
+		 * @class deep.Store
 		 * @constructor
 		 */
-		deep.store.Store = function () {};
-		deep.store.Store.prototype = {
+		deep.Store = function () {};
+		deep.Store.prototype = {
 			_deep_store_:true
 		};
 
@@ -567,7 +567,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 */
 		deep.store.ArrayStore = function (arr, options) 
 		{
-			var store = new deep.store.Store();
+			var store = new deep.Store();
 			options = options || {};
 			store.schema = options.schema || {};
 			var stock = {
@@ -715,7 +715,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;],function(require)
 		 */
 		deep.store.ObjectStore = function (obj, options)
 		{
-			var store = new deep.store.Store();
+			var store = new deep.Store();
 			options = options || {};
 			store.schema = options.schema || {};
 			/**

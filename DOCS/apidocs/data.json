@@ -133,7 +133,7 @@
             "classes": {
                 "deep.stores": 1,
                 "deep.store": 1,
-                "deep.store.Store": 1,
+                "deep.Store": 1,
                 "deep.store.Array": 1,
                 "deep.store.Object": 1,
                 "deep.stores.queryThis": 1,
@@ -214,7 +214,7 @@
                 "deep.Validator": 1,
                 "deep.stores": 1,
                 "deep.store": 1,
-                "deep.store.Store": 1,
+                "deep.Store": 1,
                 "deep.store.Array": 1,
                 "deep.store.Object": 1,
                 "deep.stores.queryThis": 1,
@@ -368,7 +368,7 @@
             "classes": {
                 "deep.stores": 1,
                 "deep.store": 1,
-                "deep.store.Store": 1,
+                "deep.Store": 1,
                 "deep.store.Array": 1,
                 "deep.store.Object": 1,
                 "deep.stores.queryThis": 1,
@@ -683,9 +683,9 @@
             ],
             "is_constructor": 1
         },
-        "deep.store.Store": {
-            "name": "deep.store.Store",
-            "shortname": "deep.store.Store",
+        "deep.Store": {
+            "name": "deep.Store",
+            "shortname": "deep.Store",
             "classitems": [],
             "plugins": [],
             "extensions": [],

@@ -23,6 +23,9 @@ define(["require"], function (require) {
                 //throw err;
         };
 
+        deep.extensions = [];
+
+
         /**
 	 * start chain setted with a certain store
 	 * @example
@@ -36,6 +39,7 @@ define(["require"], function (require) {
 	 * @class deep.store
  	 * @constructor
 	 */
+    
         deep.store = function (name) {
             //	console.log("deep.store(name) : ",name)
             return deep({}).store(name);
@@ -43,28 +47,25 @@ define(["require"], function (require) {
 
         /**
          * Empty class : Just there to get instanceof working (be warning with iframe issue in that cases).
-         * @class deep.store.Store
+         * @class deep.Store
          * @constructor
          */
-        deep.Store = function () {
+        deep.Store = function (protocole) {
+            this.protocole = protocole;
+            if (protocole)
+                deep.protocole(protocole, this);
             this._deep_store_ = true;
         };
         deep.Store.prototype = {
             _deep_store_: true,
-            init:function(){
-                this.initialised = true;
-                if(this.protocole)
-                  deep.protocole(this.protocole, this);
-            },
             wrap:function(){
                 var self = this;
                 return function(){
                     return self;
-                }
+                };
             }
         };
 
-        deep.extensions = [];
 
         //_____________________________________________________________________ COLLECTION STORE
         /**
@@ -75,10 +76,10 @@ define(["require"], function (require) {
          * @param {Object} options could contain 'schema'
          */
         deep.store.Collection = function (protocole, collection, schema) {
-            if (!(this instanceof deep.store.Collection))
-                return new deep.store.Collection(protocole, collection, schema);
-            deep.Store.call(this);
+            // if (!(this instanceof deep.store.Collection))
+            //     return new deep.store.Collection(protocole, collection, schema);
             deep.utils.bottom(deep.Store.prototype, this);
+            deep.Store.call(this, protocole);
             if(typeof protocole !== "string" && protocole !== null)
             {
                 schema = collection;
@@ -88,8 +89,6 @@ define(["require"], function (require) {
                 this.collection = collection;
             if(schema)
                 this.schema = schema;
-            if (protocole)
-                deep.protocole(protocole, this);
             return this;
         };
 
@@ -274,16 +273,14 @@ define(["require"], function (require) {
          * @param {Object} options could contain 'schema'
          */
         deep.store.Object = function (protocole, root, schema) {
-            if (!(this instanceof deep.store.Object))
-                return new deep.store.Object(protocole, root, schema);
-            deep.Store.call(this);
+            // if (!(this instanceof deep.store.Object))
+            //     return new deep.store.Object(protocole, root, schema);
             deep.utils.bottom(deep.Store.prototype, this);
+            deep.Store.call(this, protocole);
             if (root)
                 this.root = root;
             if(schema)
                 this.schema = schema;
-            if (protocole)
-                deep.protocole(protocole, this);
             return this;
         }
 
@@ -416,18 +413,14 @@ define(["require"], function (require) {
             return this;
         });
 
-        deep.store.Selector = function SelectorStoreConstructor(protocole, root, selector) {
-            if (!(this instanceof deep.store.Selector))
-                return new deep.store.Selector(protocole, root, selector);
-            deep.Store.call(this);
+        deep.store.Selector = function SelectorStoreConstructor(protocole, root, selector) 
+        {
             deep.utils.bottom(deep.Store.prototype, this);
+            deep.Store.call(this, protocole);
             if (root)
                 this.root = root;
             if(selector)
                 this.selector = selector;
-            if (protocole)
-                deep.protocole(protocole, this);
-            return this;
         }
         deep.store.Selector.prototype = {
             /**
@@ -880,6 +873,24 @@ define(["require"], function (require) {
                         return res;
                     };
                 },
+                transform:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqCall(fn){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        var res = [];
+                        var r = self.get(request, options);
+                        if(r)
+                            r.forEach(function(item){
+                                var res = fn(item.value);
+                                if(item.ancestor)
+                                    item.ancestor.value[item.key] = res;
+                                res.push(res);
+                            });
+                        return res;
+                    };
+                },
                 equal:function (request, options) {
                     options = options || {};
                     var self = this;
@@ -1243,6 +1254,9 @@ define(["require"], function (require) {
             clearCache:function ()
             {
                 this.cache = {};
+            },
+            remove:function (uri) {
+                delete this.cache[uri];
             },
             manage:function (response, uri) {
                 //console.log("manage cache : ", response, uri);
