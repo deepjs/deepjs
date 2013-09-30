@@ -195,6 +195,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      */
     deep.globalHaders = {};
 
+
+    deep.destructiveLoad = false;
+
     var addInChain = function addInChain(handle) {
         var self = this;
         if (self.deferred && (self.deferred.rejected || self.deferred.resolved))
@@ -864,7 +867,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             };
             create._isDone_ = true;
             return addInChain.call(this, create);
-            return self;
         }
     }
 
@@ -937,6 +939,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         deepLoad: function chainDeepLoad(context) {
             var self = this;
             var func = function (s, e) {
+                var res = [];
                 var doDeepLoad = function (toLoad) {
                     if (typeof toLoad.value === 'string') {
                         var val = toLoad.value;
@@ -946,7 +949,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return deep.when(deep.get(val, {
                             entry: toLoad
                         }))
-                            .done(function (s) {
+                        .done(function (s) {
                             //console.log("deepLoad.get res : ", JSON.stringify(s));
                             return s.value;
                         });
@@ -960,6 +963,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 }
                 var toLoads = [];
                 self._nodes.forEach(function (e) {
+                    if(!deep.destructiveLoad)
+                        e = deep.utils.copy(e.value);
+                    res.push(e.value?e.value:e);
                     toLoads = toLoads.concat(deep.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {
                         resultType: "full"
                     }));
@@ -967,12 +973,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 //console.log("deep.load will load : ",toLoads)
                 return deep.when(deep.chain.transformNodes(toLoads, doDeepLoad))
                 .done(function(){
-                    return deep.chain.val(self);
+                    if(!self._queried)
+                        return res.shift()
+                    return res;
                 });
             };
             func._isDone_ = true;
-            addInChain.apply(this, [func]);
-            return this;
+            return addInChain.apply(this, [func]);
         },
         /**
          *
@@ -1023,9 +1030,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return deep.when(deep.get(v.value, {entry:v}))
                         .done(function(r){
                             //console.log("load res : ",r)
-                            if(v.ancestor)
-                                v.ancestor.value[v.key] = r;
-                            return v.value = r;
+                            if(deep.destructiveLoad)
+                            {
+                                if(v.ancestor)
+                                    v.ancestor.value[v.key] = r;
+                                return v.value = r;
+                            }
+                            else
+                                return r;
                         });
                     else
                         return v.value;
@@ -1036,8 +1048,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 return deep.all(res);
             };
             func._isDone_ = true;
-            addInChain.apply(this, [func]);
-            return this;
+            return addInChain.apply(this, [func]);
         },
         // ________________________________________ READ ENTRIES
         /**
@@ -1099,8 +1110,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 return deep.chain.val(self);
             }
             func._isDone_ = true;
-            addInChain.apply(self, [func]);
-            return this;
+            return addInChain.apply(self, [func]);
         },
         /**
          * same as .query : but in place of holding queried entries : it return directly the query results.

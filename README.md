@@ -15,10 +15,7 @@ It works both server side and browser side. Its aim is to be totaly unobstrusive
 
 As jquery (that is highly unobstrusive and ergonomic) works on standard DOM objects, deepjs works on standard js objects and functions structures.
 
-
-
-
-
+See [tutorials](./tutorials) page for details.   
 
 
 
