@@ -41,7 +41,7 @@ deep(myOwnLand)
 .query("/plants/*").up({
 	size : 0,
 	grow : function () {
-		this.size += growSpeed;
+		this.size += this.growSpeed;
 	},
 	prune : function (heightpruned) {
 		this.size -= heightpruned;
