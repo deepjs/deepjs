@@ -835,7 +835,7 @@ define(function(require){
 				return result;
 				break;
 			case 'object' :
-				 //console.log("deep.bottom : apply objects together")
+				// console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
                 /*if(src && src._deep_shared_)
                 {
                     if(parent && key)
@@ -859,18 +859,20 @@ define(function(require){
 				}
 
 				for(var i in oldProps)
-				{
+				{	
                     //console.log("i of oldprops in bottom : ", i)
                     //if(oldProps[i] && oldProps[i]._deep_shared_)
                       //  console.log("____________ got shared at bottom object");
+                     var oldProperty = oldProps[i];
+                     var targetProp = target[i];
 					if(i == "_deep_entry")
 						continue;
-					if(oldProps[i] == null)
+					if(oldProperty == null)
 					{
 						target[i] = null;
 						continue;
 					}
-					if(oldProps[i] && oldProps[i]._deep_colliderRemove)
+					if(oldProperty && oldProperty._deep_colliderRemove)
 					{
 						delete target[i];
 						continue;
@@ -878,10 +880,10 @@ define(function(require){
 					var sch = {};
 					if(schema)
 						sch = retrieveFullSchemaByPath(schema, i);
-					if(typeof src[i] === 'object' || typeof src[i] === 'function')
-						target[i] = utils.up(oldProps[i], target[i], sch, target, i);
-					else if(typeof target[i] === 'undefined')
-						target[i] = oldProps[i];
+					if(typeof oldProperty === 'object' || typeof oldProperty === 'function')
+						target[i] = utils.up(oldProperty, targetProp, sch, target, i);
+					else //if(typeof targetProp === 'undefined')
+						target[i] = oldProperty;
 				}
 				return target;
 				break;

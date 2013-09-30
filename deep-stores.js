@@ -55,6 +55,7 @@ define(["require"], function (require) {
             if (protocole)
                 deep.protocole(protocole, this);
             this._deep_store_ = true;
+            //console.log("deep.Store : protocole : ", protocole);
         };
         deep.Store.prototype = {
             _deep_store_: true,
@@ -413,16 +414,15 @@ define(["require"], function (require) {
             return this;
         });
 
-        deep.store.Selector = function SelectorStoreConstructor(protocole, root, selector) 
+        deep.store.Selector = deep.compose.Classes(deep.Store, function (protocole, root, selector, options) 
         {
-            deep.utils.bottom(deep.Store.prototype, this);
-            deep.Store.call(this, protocole);
             if (root)
                 this.root = root;
             if(selector)
                 this.selector = selector;
+            //console.log(" selector constructor : protocole : ", protocole);
         }
-        deep.store.Selector.prototype = {
+        ,{
             /**
              *
              * @method get
@@ -435,12 +435,13 @@ define(["require"], function (require) {
                 if(root._deep_ocm_)
                     root = root();
                 var res = deep.selector(root, id, this.selector);
-                return deep(res).store(this);
+                return deep.when(res);
             }
-        };
+        });
 
         deep.selector = function deepSelector(root, query, selectorName)
         {
+            //console.log("deep.selector : ", root, query, selectorName);
             var queries = deep.store.Selector.parse(query);
             var q = queries.shift(), selected = [], current = [], cur = root;
             if(cur.push)
