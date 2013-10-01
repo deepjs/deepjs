@@ -12,7 +12,7 @@ require.config({
 	 baseUrl: "/js",
     "packages": [{"name":"deep", "main":"deep.js"}]
 });
-require([ "app-sndbx.js", "deep-ui/plugin", "deep-swig/main","/js/swig/swig.pack.min.js"], function( app, deep ) {
+require([ "app-sndbx.js", "deep-ui/plugin", "deep-swig/index","/js/swig/swig.pack.min.js"], function( app, deep ) {
 	// console.log("deep ? ", deep);
   	app();
 });

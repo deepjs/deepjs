@@ -1079,7 +1079,7 @@ define(function(require){
 		return r;
 	}
 
-    utils.applyTreatment = function(context)
+    utils.execTreatment = function(context)
 	{
 		if (!this.how || this.condition === false)
 			return false;
@@ -1148,6 +1148,131 @@ define(function(require){
 				return self.fail.apply(context, [error]) || error;
 			return error;
 		});
+	};
+
+
+	utils.loadTreatments = function (treatments, context, destructive)
+	{
+		if(typeof destructive === 'undefined')
+			destructive = false;
+		var res = [];
+		for(var i in treatments)
+		{
+			var treatment = null;
+
+			if(!destructive) 
+			{
+				treatment = deep.utils.copy(treatments[i]);
+				treatment.source = treatments[i];
+			}
+			else
+				treatment = treatments[i];
+
+			if(!treatment.how || treatment.condition === false)
+					continue;
+			if(treatment.condition)
+				if(typeof treatment.condition === "function" && !treatment.condition.apply(context))
+					continue;
+
+
+			res.push(treatment);
+			var objs = [];
+			if(treatment.what)
+			{
+				//console.log("view controller . render : what : ", treatment.what)
+				if(typeof treatment.what === 'string')
+				{
+					treatment.what = deep.interpret(treatment.what, context);
+					treatment.what = deep.get(treatment.what, { root:context._deep_entry || context });
+				}
+				else if(typeof treatment.what === 'function')
+					treatment.what = treatment.what.apply(context);
+			}
+			if(typeof treatment.how === "string")
+			{
+				treatment.how = deep.interpret(treatment.how, context);
+				treatment.how = deep.get(treatment.how, { root:context._deep_entry || context });
+			}
+			if(typeof treatment.where === "string")
+			{
+				treatment.where = deep.interpret(treatment.where, context);
+				treatment.where = deep.get(treatment.where, { root:context._deep_entry || context });
+			}
+			objs.push(treatment.what, treatment.how, treatment.where);
+		}
+		//console.log("load treatment : ", objs)
+		return deep.all(objs)
+		.done(function(success){
+			var len = res.length;
+			var count = 0;
+			for(var i = 0; i < len; i++)
+			{
+				var r = res[i];
+				r.what = success[count++];
+				r.how = success[count++];
+				r.where = success[count++];
+			}
+			//console.log("treaments loaded : ", res);
+			return res;
+		})
+		.fail(function(error){
+			// console.log("Renderables load failed : ", error);
+			if(typeof treatment.fail === 'function')
+				return treatment.fail.apply(context, [error]) || error;
+			return [{}, function(){ return ""; }, function(){} ];
+		});
+	};
+
+
+	utils.applyTreatments = function (treatments, context, keepSended) // apply render and place in dom orderedly
+	{
+		//console.log("apply renderables: ", treatments)
+		var res = [];
+		var len = treatments.length;
+		treatments.forEach(function(treatment){
+			//var treatment = treatments[i];
+			if(!treatment.how || treatment.condition === false)
+					return;
+			if(treatment.condition)
+				if(typeof treatment.condition === "function" && !treatment.condition.apply(context))
+					return;
+			var what = treatment.what||context,
+				how = treatment.how,
+				where = treatment.where,
+				r = "",
+				sended = null;
+			if(what._isDQ_NODE_)
+				what = what.value;
+
+			if(keepSended && treatment.sended)
+				sended = treatment.sended() || null;
+			//console.log('renderables : ', treatment, ' - how : ', how, " - sended : ", sended)
+			try{
+				r = how.call(context,what);
+				if(where)
+					sended = where.call(context, r, sended);
+				else
+					sended = null;
+				//console.log("render success : ", sended,"r : ", r, "what : ", what)
+			}
+			catch(e)
+			{
+				//console.log("Error while rendering : ", e);
+				if(typeof treatment.fail === 'function')
+					return res.push(treatment.fail.apply(context, [e]) || e);
+				return res.push(e);
+			}
+			if(keepSended)
+				if(treatment.source)
+					treatment.source.sended = function(){ return sended; };
+				else
+					treatment.sended = function(){ return sended; };
+
+			if(typeof treatment.done === "function")
+				return res.push(treatment.done.apply(context, [sended, r, what]) || [sended, r, what]);
+			return res.push([sended, r, what]);
+		});
+		return res;
 	};
 
 	/*

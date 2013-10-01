@@ -312,10 +312,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         //console.log("deep.promise : ", arg)
         if (typeof arg === "undefined" || arg === null)
             return createImmediatePromise(arg);
-        if (typeof arg.promise === "function") // deep.Deferred, deep.Chain and jquery deferred case
-            return arg.promise();
-        if (typeof arg.promise === 'object')
-            return arg.promise;
         if (typeof arg.then === 'function') //any promise compliant object
         {
             if (arg._deep_promise_)
@@ -330,6 +326,11 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             })
             return def.promise();
         }
+        if (typeof arg.promise === "function") // deep.Deferred, deep.Chain and jquery deferred case
+            return arg.promise();
+        if (typeof arg.promise === 'object')
+            return arg.promise;
+
         return createImmediatePromise(arg);
     }
     deep.promise.immediate = createImmediatePromise;
@@ -936,8 +937,10 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          * @chainable
          * @return {deep.Chain} this
          */
-        deepLoad: function chainDeepLoad(context) {
+        deepLoad: function chainDeepLoad(context, destructive) {
             var self = this;
+            if(typeof destructive === 'undefined')
+                destructive = false;
             var func = function (s, e) {
                 var res = [];
                 var doDeepLoad = function (toLoad) {
@@ -963,9 +966,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 }
                 var toLoads = [];
                 self._nodes.forEach(function (e) {
-                    if(!deep.destructiveLoad)
+                    if(!destructive && !deep.destructiveLoad)
                         e = deep.utils.copy(e.value);
-                    res.push(e.value?e.value:e);
+                    if(e && e.value)
+                        res.push(e.value);
+                    else
+                        res.push(e);
                     toLoads = toLoads.concat(deep.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {
                         resultType: "full"
                     }));
@@ -973,6 +979,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 //console.log("deep.load will load : ",toLoads)
                 return deep.when(deep.chain.transformNodes(toLoads, doDeepLoad))
                 .done(function(){
+                    //console.log("deep load results : ", res);
                     if(!self._queried)
                         return res.shift()
                     return res;
@@ -1000,8 +1007,10 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          * @chainable
          * @return {deep.Chain} this
          */
-        load: function chainLoad(request) {
+        load: function chainLoad(request, destructive) {
             var self = this;
+            if(typeof destructive === 'undefined')
+                destructive = false;
             var func = function (s, e) {
 
                 if (request) {
@@ -1030,7 +1039,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return deep.when(deep.get(v.value, {entry:v}))
                         .done(function(r){
                             //console.log("load res : ",r)
-                            if(deep.destructiveLoad)
+                            if(destructive || deep.destructiveLoad)
                             {
                                 if(v.ancestor)
                                     v.ancestor.value[v.key] = r;
