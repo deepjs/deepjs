@@ -644,7 +644,7 @@ define(["require"], function (require) {
             var infos = request;
             if (typeof infos === 'string')
                 infos = deep.parseRequest(request, options);
-            options.parsedRequest = infos;
+            //options.parsedRequest = infos;
             var res = null;
             //console.log("deep.get : infos : ", infos);
             if (!infos.store)
@@ -656,17 +656,20 @@ define(["require"], function (require) {
             }
             else
             {
-                // console.log("________________ deep.get : will do call on store : ", infos, infos.store[infos.subproto])
+                // console.log("________________ deep.get : will do call on store : ", infos)
                 //if(infos.store._deep_ocm_)
                   //  res = deep.query(infos.store(),infos.uri);
                 if(infos.subproto && typeof infos.store[infos.subproto] === 'function')
                     res = infos.store[infos.subproto](infos.uri, options);
                 else if (typeof infos.store.get === 'function')
+                {
                     res = infos.store.get(infos.uri, options);
+                }
                 else if (typeof infos.store === 'function')
                     res = infos.store(infos, options);
                 else
                     return deep.errors.Store("no store found with : " + request, infos);
+
             }
             //console.log("deep.get "+infos.request+" result : ",res)
             if (options.wrap)
@@ -702,52 +705,6 @@ define(["require"], function (require) {
              * @param  {[type]} options [description]
              * @return {[type]}         [description]
              */
-            up:{
-                get:function(request, options){
-                    if(!options || !options.parsedRequest || !options.parsedRequest.subproto)
-                        return deep.errors.Store("Up protocole need avaiable sub proto to be executed. Request : " + request, options.parsedRequest);
-                    var store = deep.protocoles.store(options.parsedRequest.subproto);
-                    if(!store)
-                        return deep.errors.Store("Up protocole couldn't find sub protocole. Request : " + request, options.parsedRequest);
-                    var res = null;
-                    options.allowStraightQueries = false;
-                    if(typeof store === 'function')
-                        res = store(request, options);
-                    else if(typeof store.get === 'function')
-                        res = store.get(request, options);
-                    return function(layer, options){
-                        return deep.when(res).done(function(r){
-                            if(r)
-                                r.forEach(function(item){
-                                    deep.utils.up(layer, item, options.shema);
-                                });
-                        });
-                    };
-                }
-            },
-            bottom:{
-                get:function(request, options){
-                    if(!options || !options.parsedRequest || !options.parsedRequest.subproto)
-                        return deep.errors.Store("Bottom protocole need avaiable sub proto to be executed. Request : " + request, options.parsedRequest);
-                    var store = deep.protocoles.store(options.parsedRequest.subproto);
-                    if(!store)
-                        return deep.errors.Store("Bottom protocole couldn't find sub protocole. Request : " + request, options.parsedRequest);
-                    var res = null;
-                    options.allowStraightQueries = false;
-                    if(typeof store === 'function')
-                        res = store(request, options);
-                    else if(typeof store.get === 'function')
-                        res = store.get(request, options);
-                    return function(layer, options){
-                        return deep.when(res).done(function(r){
-                            if(r)
-                                r.forEach(function(item){
-                                    deep.utils.bottom(layer, item, options.shema);
-                                });
-                        });
-                    };
-                }
-            },
             dq:{
                 //________________________________________ SHEET PROTOCOLES
                 up:function (request, options) {

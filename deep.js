@@ -947,14 +947,15 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     if (typeof toLoad.value === 'string') {
                         var val = toLoad.value;
                         if (context)
-                            val = deep.utils.interpret(toLoad.value, context);
-                        //console.log("deepLoad : will get : ", val);
+                            val = deep.utils.interpret(val, context);
+                        // console.log("deepLoad : will get : ", val);
                         return deep.when(deep.get(val, {
-                            entry: toLoad
+                            //entry: toLoad, 
+                            //resultType:"full"
                         }))
                         .done(function (s) {
-                            //console.log("deepLoad.get res : ", JSON.stringify(s));
-                            return s.value;
+                            // console.log("deepLoad.get res : ", s);
+                            return s;//s.value;
                         });
                     } else if (typeof toLoad.value === 'function') {
                         if (toLoad.ancestor)
@@ -965,23 +966,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return toLoad.value;
                 }
                 var toLoads = [];
-                self._nodes.forEach(function (e) {
+                self._nodes.forEach(function (node) {
+                    var e = node;
                     if(!destructive && !deep.destructiveLoad)
-                        e = deep.utils.copy(e.value);
-                    if(e && e.value)
-                        res.push(e.value);
-                    else
-                        res.push(e);
+                        e = deep.utils.copy(node.value);
+                    res.push((e && e._isDQ_NODE_)?e.value:e);
                     toLoads = toLoads.concat(deep.query(e, ".//*?or(_schema.type=string,_schema.type=function)", {
                         resultType: "full"
                     }));
                 });
-                //console.log("deep.load will load : ",toLoads)
                 return deep.when(deep.chain.transformNodes(toLoads, doDeepLoad))
                 .done(function(){
-                    //console.log("deep load results : ", res);
                     if(!self._queried)
-                        return res.shift()
+                        return res.shift();
                     return res;
                 });
             };

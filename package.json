@@ -12,7 +12,7 @@
   "dependencies": {
     "rql": "*"
   },
-  "main": "./deep",
+  "main": "./deep.js",
   "mappings":{
     "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1"
   },
