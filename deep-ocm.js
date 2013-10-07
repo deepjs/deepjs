@@ -19,15 +19,17 @@ define(["require"], function (require){
          * @param  {Function} init any function that will be fired on newly compiled object
          * @return {deep.OCM} an Object Capabilities Manager
          */
-        deep.ocm = function(protocole, layer, init)
+        deep.ocm = function(protocole, layer, init, modeNode)
         {
             //console.log("deep.context : ", deep.context)
             if(typeof protocole !== 'string')
             {
+                modeNode = init;
                 init = layer;
                 layer = protocole;
             }
             var params = {
+                modeNode:modeNode,
                 layer:layer || {},
                 currentModes:null,
                 compiled:{},
@@ -60,14 +62,17 @@ define(["require"], function (require){
                 if(modes.length === 0 || params.blocked)
                     if(params.currentModes && params.currentModes.length > 0)
                         modes = params.currentModes;
+                    else if (params.modeNode && deep.ocm.modeNodes[params.modeNode] )
+                        modes = deep.ocm.modeNodes[params.modeNode];
                     else if ( deep.context.mode && deep.context.mode.length > 0 )
                         modes = deep.context.mode;
                     else
                         throw deep.errors.OCM("You need to set a mode before using ocm objects : ", deep.context);
-                var joined = modes.join(".");
+                var joined = modes;
+                if(typeof modes.join === 'function')
+                    joined = modes.join(".");
                 if(params.compiled[joined])
                     return params.compiled[joined];
-
                 var compiled = params.compileModes(modes, params.layer);
                 if(!deep.ocm.nocache)
                     params.compiled[joined] = compiled;
@@ -79,12 +84,22 @@ define(["require"], function (require){
             if(protocole)
             {
                 m.name = protocole;
-                deep.protocoles[protocole] = m;
+                deep.protocoles[protocole] = function(request, options){
+                    console.log("ocm protocole : ", protocole, request.uri, options)
+                    return deep.query(m(),request.uri, options);
+                }
             }
             m._deep_ocm_ = true;
             m.multiMode = function(yes){
                 params.multiMode = yes;
             }
+            m.modeNode = function (arg)
+            {
+                if(params.blocked)
+                    return m();
+                params.modeNode = arg;
+                return m;
+            };
             m.mode = function (arg)
             {
                 if(params.blocked)
@@ -127,6 +142,11 @@ define(["require"], function (require){
         }
         deep.ocm.instances = [];
         deep.ocm.nocache = false;
+
+        deep.ocm.modeNodes = {
+
+        }
+
         // deep mode management
         deep.mode = function(args){
             var mode = (args)?Array.prototype.slice.apply(arguments):null;
@@ -139,11 +159,13 @@ define(["require"], function (require){
             var args = arguments;
             var func = function(s,e)
             {
-                deep.context = self.context = deep.utils.simpleCopy(deep.context);
+                if(!self._contextCopied)
+                    deep.context = self.context = deep.utils.simpleCopy(deep.context);
+                self._contextCopied = true;
                 if(arg instanceof Array)
-                    deep.context.mode = arg;
+                    self.context.mode = arg;
                 else
-                    deep.context.mode = (arg)?Array.prototype.slice.apply(args):null;
+                    self.context.mode = (arg)?Array.prototype.slice.apply(args):null;
                 // console.log("deep.context.mode setted : ",deep.context.mode);  
             }
             func._isDone_ = true;
