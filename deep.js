@@ -686,10 +686,38 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     def.resolve(undefined);
                 }, ms);
                 return def.promise();
+            };
+            return addInChain.apply(this, [func]);
+        },
+
+        setContext:function (key, val) {
+            var self = this;
+            var create = function (s, e) {
+                if(!self._contextCopied)
+                    deep.context = self.context = deep.utils.simpleCopy(self.context);
+                self._contextCopied = true;
+                self.context[key] = val;
+            };
+            if(!val)
+            {
+                if(key)
+                    return self.context[key];
+                return self.context;
             }
+            create._isDone_ = true;
+            return addInChain.call(this, create);
+        },
+        logContext: function (key) {
+            var self = this;
+            var func = function chainLogHandle(s, e) {
+               if(key)
+                    console.log("deep.chain.context : ", self.context[key]);
+                else
+                    console.log("deep.chain.context : ", self.context);
+            };
             return addInChain.apply(this, [func]);
         }
-    }
+    };
 
     deep.BaseChain = function BaseChainConstructor(options) {
         options = options || {};
@@ -1051,7 +1079,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 self._nodes.forEach(function(n){
                     res.push(doLoad(n));
                 });
-                return deep.all(res);
+                return deep.all(res)
+                .done(function (res){
+                    console.log("load res : ", res)
+                    if(!self._queried)
+                        return res.shift();
+                    return res;
+                });
             };
             func._isDone_ = true;
             return addInChain.apply(this, [func]);
@@ -2466,7 +2500,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     }
 
         function callFunctionFromValue(entry, functionName, args) {
-            //console.log("callFunctionFromValue : ", entry, functionName);
             if (!entry._isDQ_NODE_)
                 throw new Error("deep.callFunctionFromValue need DQNode");
             var value = entry.value;
@@ -2474,6 +2507,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 args = [];
             else if (!(args instanceof Array))
                 args = [args];
+            //console.log("callFunctionFromValue : ", entry, functionName, args);
             var prom;
             if (value && value[functionName]) {
                 value._deep_entry = entry;
@@ -2492,7 +2526,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         }
 
         function runFunctionFromValue(entry, func, args) {
-            //console.log("runFunctionFromValue", entry, func);
+           // console.log("runFunctionFromValue", entry, func, args);
             if (!entry._isDQ_NODE_)
                 throw new Error("deep.callFunctionFromValue need DQNode");
             var value = entry.value;
