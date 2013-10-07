@@ -441,7 +441,7 @@ define(["require"], function (require) {
 
         deep.selector = function deepSelector(root, query, selectorName)
         {
-            //console.log("deep.selector : ", root, query, selectorName);
+            // console.log("deep.selector : ", root, query, selectorName);
             var queries = deep.store.Selector.parse(query);
             var q = queries.shift(), selected = [], current = [], cur = root;
             if(cur.push)
@@ -451,7 +451,12 @@ define(["require"], function (require) {
             }
             while(q)
             {
-                var func = new Function("return " + q + ";");
+                var func = null;
+                if(q == "this.*" || q === "")
+                    func = new Function("return true;");
+                else
+                    func = new Function("return " + q + ";");
+
                 while(cur)
                 {
                     var nodes = deep.Querier.objectsWithProperty(cur, selectorName, true);
@@ -479,8 +484,13 @@ define(["require"], function (require) {
                 }
             }
             return selected;
-        }
+        };
 
+        deep.store.Selector.create = function parseSelector(protocole, root, selector)
+        {
+            return new deep.store.Selector(protocole, root, selector);
+        };
+        
         deep.store.Selector.parse = function parseSelector(selector)
         {
             var chars = selector[0];
@@ -581,15 +591,17 @@ define(["require"], function (require) {
             }
             else
             {
-                var splitted = protoc.split(".");
-                if (splitted.length == 2) 
+                store = deep.protocoles.store(protoc, { noError:true });
+                if(!store)
                 {
-                    store = deep.protocoles.store(splitted.shift());
-                    subproto = splitted.shift();
-                    // console.log("parse request : got subproto ", store, subproto);
+                    var splitted = protoc.split(".");
+                    if (splitted.length == 2) 
+                    {
+                        store = deep.protocoles.store(splitted.shift());
+                        subproto = splitted.shift();
+                        // console.log("parse request : got subproto ", store, subproto);
+                    }
                 }
-                else
-                    store = deep.protocoles.store(protoc);
             }
             //console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
             //console.log("parseRequest : store : ", store);
@@ -902,9 +914,9 @@ define(["require"], function (require) {
                     proto =  deep.protocoles[path];
                 if (proto && proto._deep_ocm_)
                     proto = proto();
-                if (!proto)
+                if (!proto && (!options || !options.noError))
                     return deep.errors.Protocole("no store found with : " + path);
-                if(proto._deep_store_ && !proto.initialised && proto.init)
+                if(proto && proto._deep_store_ && !proto.initialised && proto.init)
                 {
                     var ini = proto.init();
                     if(ini && (ini.then || ini.promise))
@@ -1218,17 +1230,7 @@ define(["require"], function (require) {
             },
             manage:function (response, uri) {
                 //console.log("manage cache : ", response, uri);
-                if(this.reloadablesUriDico[uri])
-                    return;
-                var count = 0;
-                reg = this.reloadablesRegExpDico[count];
-                while(reg && !(reg.test(uri)))
-                    reg = this.reloadablesRegExpDico[++count];
-                if(count == this.reloadablesRegExpDico.length)
-                {
-                    this.cache[uri] = response;
-                    //console.log("deep-ui : deep.mediaCache.manage : retain !!!")
-                }
+                this.cache[uri] = response;
             }
         };
 
