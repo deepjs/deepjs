@@ -98,10 +98,12 @@ define(["require"], function (require) {
              *
              */
             init: deep.compose.parallele(function () {
+                //console.log("deep.store.Collection.init : this.collection : ", this.collection, " - this.schema : ", this.schema);
                 if (typeof this.collection === 'string' || typeof this.schema === 'string')
                     return deep(this)
                         .query("./[collection,schema]")
                         .load();
+                return this;
             }),
             /**
              * @method get
@@ -908,6 +910,7 @@ define(["require"], function (require) {
                     proto = proto();
                 if (!proto && (!options || !options.noError))
                     return deep.errors.Protocole("no store found with : " + path);
+                //console.log("deep.protocoles.store : found : ", proto)
                 if(proto && proto._deep_store_ && !proto.initialised && proto.init)
                 {
                     var ini = proto.init();
@@ -1021,37 +1024,41 @@ define(["require"], function (require) {
                 var func = function (s, e)
                 {
                     var store = self._store || deep.protocoles.store(self._storeName);
-                    
                     //console.log("deep(...).store : get : store : ", store);
-                    
                     if (store instanceof Error)
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting GET !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.get)
-                        return deep.errors.Store("provided store doesn't have GET. aborting GET !");
+                    var doGet = function(store){
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.get)
+                            return deep.errors.Store("provided store doesn't have GET. aborting GET !");
 
-                    var func = "get";
-                    if(id[0] == "*")
-                        id = id.substring(1);
+                        var func = "get";
+                        if(id[0] == "*")
+                            id = id.substring(1);
 
-                    if(id[0] == '?' && store.query)
-                    {
-                        id = id.substring(1);
-                        func = "query";
-                    }
+                        if(id[0] == '?' && store.query)
+                        {
+                            id = id.substring(1);
+                            func = "query";
+                        }
 
-                    if(!id && store.query)
-                        func = "query";
-                    return deep.when(store[func](id, options))
-                        .done(function (success) {
-                        //console.log("deep(...).store : get : success : ", success);
-                        self._success = success;
-                        self._nodes = [deep.Querier.createRootNode(success, null, { uri: id })];
-                        //return success;
-                    });
+                        if(!id && store.query)
+                            func = "query";
+                        return deep.when(store[func](id, options))
+                            .done(function (success) {
+                            //console.log("deep(...).store : get : success : ", success);
+                            self._success = success;
+                            self._nodes = [deep.Querier.createRootNode(success, null, { uri: id })];
+                            //return success;
+                        });
+                    };
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doGet);
+                    return doGet(store);
                 };
                 func._isDone_ = true;
                 deep.chain.addInChain.apply(this, [func]);
@@ -1061,23 +1068,33 @@ define(["require"], function (require) {
             handler.post = function (object, id, options) {
                 var self = this;
                 var func = function (s, e) {
+                    
+
                     var store = self._store || deep.protocoles.store(self._storeName);
-                    //console.log("chain post : store getted : ", store, deep.context);
                     if (store instanceof Error)
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting POST !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.post)
-                        return deep.errors.Store("provided store doesn't have POST. aborting POST !");
-                    
-                    //console.log("deep.Chain.post : got store : ",store);
-                    return deep.when(store.post(object || deep.chain.val(self), id, options))
-                    .done(function (success) {
-                        //console.log("chain.post done : ", success);
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+
+                    var doAction = function(store){
+                        // console.log("chain post : store getted : ", store, deep.context);
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.post)
+                            return deep.errors.Store("provided store doesn't have POST. aborting POST !");
+                        
+                        //console.log("deep.Chain.post : got store : ",store);
+                        return deep.when(store.post(object || deep.chain.val(self), id, options))
+                        .done(function (success) {
+                            //console.log("chain.post done : ", success);
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    };
+
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
@@ -1093,15 +1110,22 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting PUT !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.put)
-                        return deep.errors.Store("provided store doesn't have PUT. aborting PUT !");
 
-                    return deep.when(store.put(object || deep.chain.val(self), options))
-                        .done(function (success) {
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+                    var doAction = function(store){
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.put)
+                            return deep.errors.Store("provided store doesn't have PUT. aborting PUT !");
+
+                        return deep.when(store.put(object || deep.chain.val(self), options))
+                            .done(function (success) {
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    };
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
@@ -1116,14 +1140,20 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting PATCH !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.patch)
-                        return deep.errors.Store("provided store doesn't have PATCH. aborting PATCH !");
-                    return deep.when(store.patch(object || deep.chain.val(self), id, options))
-                        .done(function (success) {
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+                    var doAction = function(store){
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.patch)
+                            return deep.errors.Store("provided store doesn't have PATCH. aborting PATCH !");
+                        return deep.when(store.patch(object || deep.chain.val(self), id, options))
+                            .done(function (success) {
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    }
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
@@ -1138,15 +1168,21 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting DELETE !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.del)
-                        return deep.errors.Store("provided store doesn't have DEL. aborting DELETE !");
-                    var val = deep.chain.val(self);
-                    return deep.when(store.del(id || val.id, options))
-                        .done(function (success) {
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+                    var doAction = function(store){
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.del)
+                            return deep.errors.Store("provided store doesn't have DEL. aborting DELETE !");
+                        var val = deep.chain.val(self);
+                        return deep.when(store.del(id || val.id, options))
+                            .done(function (success) {
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    };
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
@@ -1161,14 +1197,20 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting RPC !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.rpc)
-                        return deep.errors.Store("provided store doesn't have RPC. aborting RPC !");
-                    return deep.when(store.rpc(method, body, uri, options))
-                        .done(function (success) {
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+                    var doAction = function (store) {
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.rpc)
+                            return deep.errors.Store("provided store doesn't have RPC. aborting RPC !");
+                        return deep.when(store.rpc(method, body, uri, options))
+                            .done(function (success) {
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    };
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
@@ -1184,14 +1226,20 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting BULK !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.bulk)
-                        return deep.errors.Store("provided store doesn't have BULK. aborting BULK !");
-                    return deep.when(store.bulk(arr, uri, options))
-                    .done(function (success) {
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+                    var doAction = function(store){
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.bulk)
+                            return deep.errors.Store("provided store doesn't have BULK. aborting BULK !");
+                        return deep.when(store.bulk(arr, uri, options))
+                        .done(function (success) {
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    };
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
