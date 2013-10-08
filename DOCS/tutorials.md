@@ -1,12 +1,4 @@
 
-
-* [layered aspects](#layered)
-* modelisation
-* ocm
-* chain
-* stores and protocles
-  
-
 Layered Aspect Oriented Programmation
 ==========================
 
