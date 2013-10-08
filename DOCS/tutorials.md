@@ -1,8 +1,16 @@
 
-Layered Aspect Oriented Programmation
+* [nodejs simple ](./nodes/simple.md) 
+* [nodejs more complex](./nodes/full.md)
+* [deep chain](./deep.md)
+* [deep-query](./deep-query.md)
+* [deep-rql](./deep-rql.md)
+* [transparencies](./transparencies.md)
+
+Layered Aspect Oriented 
 ==========================
 
 ```javascript
+
 	//-----------------Models
 	var land = {
 		location : "pls override this value with your own location",
@@ -31,9 +39,31 @@ Layered Aspect Oriented Programmation
 		plants : ["grass"]
 	};
 
-	deep(myOwnLand).bottom(land).up(orchard,kitchenGarden);
+	deep(myOwnLand)
+	.bottom(land)
+	.up(orchard,kitchenGarden)
+	//Query based object modelisation
+	.query("/plants/*").up({
+		size : 0,
+		grow : function () {
+			this.size += this.growSpeed;
+		},
+		prune : function (heightpruned) {
+			this.size -= heightpruned;
+		}
+	});
+
 
 	console.log("myOwnLand is : ", myOwnLand);
 	myOwnLand.watering();
+
+	//Query based object manipulation
+	deep(myOwnLand)
+	.query("/plants/*")
+	.run("grow")
+	.query("/plants/*?size=gt=5")
+	.run("prune",[2]);
+
+	console.log("myOwnLand is : ", myOwnLand);
+
 ```
-Hello world.
