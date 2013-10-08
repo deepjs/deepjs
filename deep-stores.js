@@ -93,6 +93,11 @@ define(["require"], function (require) {
             return this;
         };
 
+        deep.store.Collection.create = function(protocole, collection, schema)
+        {
+            return new deep.store.Collection(protocole, collection, schema);
+        }
+
         deep.store.Collection.prototype = {
             /**
              *
@@ -285,8 +290,11 @@ define(["require"], function (require) {
             if(schema)
                 this.schema = schema;
             return this;
-        }
-
+        };
+        deep.store.Object.create = function(protocole, root, schema)
+        {
+            return new deep.store.Object(protocole, root, schema);
+        };
         deep.store.Object.prototype = {
             /**
              *
