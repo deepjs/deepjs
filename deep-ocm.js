@@ -160,12 +160,12 @@ define(["require"], function (require){
             var func = function(s,e)
             {
                 if(!self._contextCopied)
-                    deep.context = self.context = deep.utils.simpleCopy(deep.context);
+                    deep.context = self._context = deep.utils.simpleCopy(self._context);
                 self._contextCopied = true;
                 if(arg instanceof Array)
-                    self.context.mode = arg;
+                    self._context.mode = arg;
                 else
-                    self.context.mode = (arg)?Array.prototype.slice.apply(args):null;
+                    self._context.mode = (arg)?Array.prototype.slice.apply(args):null;
                 // console.log("deep.context.mode setted : ",deep.context.mode);  
             }
             func._isDone_ = true;

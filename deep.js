@@ -223,12 +223,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             {
                 var previousContext = deep.context;
                 try {
-                    if (previousContext !== this.context) {
+                    if (previousContext !== self._context) {
                         if (previousContext && previousContext.suspend)
                             previousContext.suspend();
-                        deep.context = this.context;
-                        if (this.context && this.context.resume)
-                            this.context.resume();
+                        deep.context = self._context;
+                        if (self._context && self._context.resume)
+                            self._context.resume();
                     }
 
                     // get next handle : if no more handle : just break;
@@ -284,9 +284,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     //self._executing = false;
                     //return forceHandle.call(this);
                 } finally {
-                    if (previousContext !== this.context) {
-                        if (this.context && this.context.suspend)
-                            this.context.suspend();
+                    if (previousContext !== self._context) {
+                        if (self._context && self._context.suspend)
+                            self._context.suspend();
                         if (previousContext && previousContext.resume)
                             previousContext.resume();
                         deep.context = previousContext;
@@ -411,7 +411,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     deep.Deferred = function deepDeferred() {
         if (!(this instanceof deep.Deferred))
             return new deep.Deferred();
-        this.context = deep.context;
+        this._context = deep.context;
         this._promises = [];
         this._deep_deferred_ = true;
         return this;
@@ -476,7 +476,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     deep.Promise = function deepPromiseConstructor(options) {
         options = options || {};
-        this.context = deep.context;
+        this._context = deep.context;
         this._queue = [];
         this._deep_promise_ = true;
         this._running = false;
@@ -690,19 +690,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return addInChain.apply(this, [func]);
         },
 
-        setContext:function (key, val) {
+        context:function (key, val) {
             var self = this;
             var create = function (s, e) {
                 if(!self._contextCopied)
-                    deep.context = self.context = deep.utils.simpleCopy(self.context);
+                    deep.context = self._context = deep.utils.simpleCopy(self._context);
                 self._contextCopied = true;
-                self.context[key] = val;
+                self._context[key] = val;
             };
             if(!val)
             {
                 if(key)
-                    return self.context[key];
-                return self.context;
+                    return self._context[key];
+                return self._context;
             }
             create._isDone_ = true;
             return addInChain.call(this, create);
@@ -711,9 +711,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var self = this;
             var func = function chainLogHandle(s, e) {
                if(key)
-                    console.log("deep.chain.context : ", self.context[key]);
+                    console.log("deep.chain.context : ", self._context[key]);
                 else
-                    console.log("deep.chain.context : ", self.context);
+                    console.log("deep.chain.context : ", self._context);
             };
             return addInChain.apply(this, [func]);
         }
@@ -723,7 +723,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         options = options || {};
         this._rethrow = (typeof options.rethrow !== "undefined") ? options.rethrow : deep.rethrow;
         this._deep_chain_ = true;
-        this.context = options._context || deep.context;
+        this._context = options._context || deep.context;
         this._queue = [];
         this._queried = options._queried;
         this._nodes = options._nodes; // || [deep.Querier.createRootNode(this._value, options.schema, options)];

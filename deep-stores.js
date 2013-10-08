@@ -543,7 +543,7 @@ define(["require"], function (require) {
             if(finalString.length > 0)
                 res.push(finalString);
             return res;
-        }
+        };
         //_______________________________________________________________________________ GET/GET ALL  REQUESTS
 
         /**
@@ -703,14 +703,6 @@ define(["require"], function (require) {
         };
         // ___________________________________________________________________________ BASICAL PROTOCOLES
         deep.protocoles = {
-            sheet:{
-                get:function(request, options){
-                    if(!options)
-                    {
-                        
-                    }
-                }
-            },
             /**
              * options must contain the entry from where start query
              * @param  {[type]} request [description]
@@ -1220,7 +1212,7 @@ define(["require"], function (require) {
         deep.mediaCache = {
             cache:{},
             reloadablesUriDico : {},
-            reloadablesRegExpDico : [ /^(json::)/gi /* ,/(\.json)$/gi */ ],
+            //reloadablesRegExpDico : [ /^(json::)/gi /* ,/(\.json)$/gi */ ],
             clearCache:function ()
             {
                 this.cache = {};
