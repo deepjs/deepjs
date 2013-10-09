@@ -575,7 +575,7 @@ define(["require"], function (require) {
                 protoc = request.substring(0, protoIndex);
                 uri = request.substring(protoIndex + 2);
             }
-
+            //console.log("protoco found : ", protoc, " - uri : ", uri);
             //var queryThis = false;
             if (request[0] == '#' || protoc == "first" || protoc == "last" || protoc == "this") {
                 store = deep.protocoles.dq;
@@ -673,43 +673,51 @@ define(["require"], function (require) {
             {
                 if (!infos.protocole)
                     return request;
-                else
-                    return deep.errors.Store("no store found with : " + request, infos);
+                return deep.errors.Store("no store found with : " + request, infos);
             }
-            else
-            {
+
+            var doAction = function(store){
+
                 // console.log("________________ deep.get : will do call on store : ", infos)
                 //if(infos.store._deep_ocm_)
                   //  res = deep.query(infos.store(),infos.uri);
-                if(infos.subproto && typeof infos.store[infos.subproto] === 'function')
-                    res = infos.store[infos.subproto](infos.uri, options);
-                else if (typeof infos.store.get === 'function')
+                if(infos.subproto && typeof store[infos.subproto] === 'function')
+                    res = store[infos.subproto](infos.uri, options);
+                else if (typeof store.get === 'function')
                 {
-                    res = infos.store.get(infos.uri, options);
+                    res = store.get(infos.uri, options);
                 }
-                else if (typeof infos.store === 'function')
-                    res = infos.store(infos, options);
+                else if (typeof store === 'function')
+                    res = store(infos, options);
                 else
                     return deep.errors.Store("no store found with : " + request, infos);
 
-            }
-            //console.log("deep.get "+infos.request+" result : ",res)
-            if (options.wrap)
-            {
-                return deep.when(res)
-                .done(function (res) {
-                    if (options.wrap.result) {
-                        if (typeof options.wrap.result.push === 'function')
-                            options.wrap.result.push(res);
-                        else
-                            options.wrap.result = [].concat(options.wrap.result);
-                    } else
-                        options.wrap.result = res;
-                    return options.wrap;
-                });
-            }
-            else
-                return res;
+                
+                //console.log("deep.get "+infos.request+" result : ",res)
+                if (options.wrap)
+                {
+                    return deep.when(res)
+                    .done(function (res) {
+                        if (options.wrap.result) {
+                            if (typeof options.wrap.result.push === 'function')
+                                options.wrap.result.push(res);
+                            else
+                                options.wrap.result = [].concat(options.wrap.result);
+                        } else
+                            options.wrap.result = res;
+                        return options.wrap;
+                    });
+                }
+                else
+                    return res;
+            };
+
+
+            if(infos.store.then || infos.store.promise)
+                return deep.when(infos.store)
+                .done(doAction);
+            return doAction(infos.store);
+
         };
         // ___________________________________________________________________________ BASICAL PROTOCOLES
         deep.protocoles = {
