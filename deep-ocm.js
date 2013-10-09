@@ -17,6 +17,7 @@ define(["require"], function (require){
          * @param  {String} protocole the name of the protocole associated with this manager
          * @param  {Object} layer (optional) initial layer
          * @param  {Function} init any function that will be fired on newly compiled object
+         * @modeNode(arg) {String}  (optional) any mode to follow (doc will come soon)
          * @return {deep.OCM} an Object Capabilities Manager
          */
         deep.ocm = function(protocole, layer, init, modeNode)
@@ -116,14 +117,15 @@ define(["require"], function (require){
                 m.unblock = function(ukey){
                     if(ukey === key)
                         params.blocked = false;
-                }
+                };
             };
             m.unblock = function(key){};
             m.flatten = function ()
             {
                 if(params.blocked)
                     return deep.when(null);
-                return deep(params.layer).flatten()
+                return deep(params.layer)
+                .flatten()
                 .done(function(){
                     return m;
                 });

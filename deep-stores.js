@@ -658,9 +658,7 @@ define(["require"], function (require) {
          * @return {deep.Chain} a handler that hold result
          */
         deep.get = function (request, options) {
-            if (!request)
-                return request;
-            if (typeof request !== "string" && !request._deep_request_)
+            if (!request || (typeof request !== "string" && !request._deep_request_))
                 return request;
             options = options || {};
             var infos = request;
@@ -692,7 +690,6 @@ define(["require"], function (require) {
                 else
                     return deep.errors.Store("no store found with : " + request, infos);
 
-                
                 //console.log("deep.get "+infos.request+" result : ",res)
                 if (options.wrap)
                 {
@@ -712,16 +709,17 @@ define(["require"], function (require) {
                     return res;
             };
 
-
             if(infos.store.then || infos.store.promise)
                 return deep.when(infos.store)
                 .done(doAction);
             return doAction(infos.store);
-
         };
         // ___________________________________________________________________________ BASICAL PROTOCOLES
         deep.protocoles = {
             /**
+             * deep-query protocole :
+             * for code-sheet usage.
+             * 
              * options must contain the entry from where start query
              * @param  {[type]} request [description]
              * @param  {[type]} options [description]
@@ -973,7 +971,7 @@ define(["require"], function (require) {
         };
 
         /**
-         *
+         * 
          */
         deep.protocole = function (name, ctrl) {
             if(ctrl)
@@ -992,13 +990,13 @@ define(["require"], function (require) {
                 if (typeof name === 'string') {
                     self._storeName = name;
                     self._store = null;
+
                 } else {
                     self._storeName = name.name;
                     self._store = name;
                 }
                 deep.chain.position(self, self._storeName);
             };
-
             deep.Store.extendsChain(self);
             func._isDone_ = true;
             deep.chain.addInChain.apply(self, [func]);
@@ -1016,15 +1014,21 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting RANGE !");
-                    if(store._deep_ocm_)
-                        store = store();
-                    if (!store.range)
-                        return deep.errors.Store("provided store doesn't have RANGE. aborting RANGE !");
-                    
-                    return deep.when(store.range(arg1, arg2, uri, options))
-                    .done(function (success) {
-                        self._nodes = [deep.Querier.createRootNode(success)];
-                    });
+                    var doAction = function(store){
+                        if(store._deep_ocm_)
+                            store = store();
+                        if (!store.range)
+                            return deep.errors.Store("provided store doesn't have RANGE. aborting RANGE !");
+                        
+                        return deep.when(store.range(arg1, arg2, uri, options))
+                        .done(function (success) {
+                            self._nodes = [deep.Querier.createRootNode(success)];
+                        });
+                    };
+                    if(store.then || store.promise)
+                        return deep.when(store)
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 self.range = deep.Chain.range;
@@ -1045,7 +1049,7 @@ define(["require"], function (require) {
                         return store;
                     if (!store)
                         return deep.errors.Store("no store declared in chain. aborting GET !");
-                    var doGet = function(store){
+                    var doAction = function(store){
                         if(store._deep_ocm_)
                             store = store();
                         if (!store.get)
@@ -1073,8 +1077,8 @@ define(["require"], function (require) {
                     };
                     if(store.then || store.promise)
                         return deep.when(store)
-                        .done(doGet);
-                    return doGet(store);
+                        .done(doAction);
+                    return doAction(store);
                 };
                 func._isDone_ = true;
                 deep.chain.addInChain.apply(this, [func]);
@@ -1271,7 +1275,6 @@ define(["require"], function (require) {
             datas._deep_shared_ = true;
             return datas;
         };
-
 
         deep.mediaCache = {
             cache:{},
