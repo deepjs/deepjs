@@ -2839,14 +2839,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             if (!handler._queried && (handler._nodes[0].value instanceof Array))
                 handler._nodes[0].value.forEach(function (v) {
                     if (typeof callBack === 'object')
-                        res.push(deep.utils.applyTreatment.call(callBack, v));
+                        res.push(deep.utils.execTreatment.call(callBack, v));
                     else
                         res.push(callBack(v));
                 });
             else
                 handler._nodes.forEach(function (e) {
                     if (typeof callBack === 'object')
-                        res.push(deep.utils.applyTreatment.call(callBack, e.value));
+                        res.push(deep.utils.execTreatment.call(callBack, e.value));
                     else
                         res.push(callBack(e.value));
                 });
