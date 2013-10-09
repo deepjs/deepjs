@@ -1,102 +1,3 @@
-deep : the deep core
-==========================
-
-# workshop :
-
-	presentation + demo : 1h30
-		cadre : 
-		http/rest - json - query - couche
-
-		css/jquery inspired
-
-		demo : show magic
-
-
-	request	(log + read values)   (3 h)
-		load, protocoles, usage, syntax 
-
-	navigation	(3 h)
-		query, root, parents
-
-	modelisation	(utils)   (6 h)
-		up
-		bottom
-		compose
-
-
-		backgrounds
-		flatten
-		closure
-
-	promises 		(run familly)   (6 h)
-		closure
-		when
-		chain
-		reject
-
-		
-		branches
-		recursive promise return
-		errors handling
-
-	tests and (asynch) test cases    (+ pushTo familly)   (3 h)
-
-	plugin 	(handler structure)				(2 h)
-
-	//__________________________________________________________
-
-
-
-	deep-ui   ((deep)interpretation + deepLoad)      6 h
-		(re)loadables
-		app-ctrl
-		view-ctrl
-		deep-linking
-		renderables
-		closure
-
-
-
-
-	Schema and CCS
-
-# Lexic
-	
-	deep-copy up(above,below)
-
-		apply object together as a stack of layer.
-		The values contained in the layer above will override any collided values from the layer below.
-		If the layer above contain deep.collider or deep.compose : they will be applied or wrapped.
-
-	deep-copy bottom(below,above)
-
-		apply object together as a stack of layer.
-		The values contained in the layer above will override any collided values from the layer below.
-		If the layer above contain deep.collider or deep.compose : they will be applied or wrapped.
-
-	chain
-
-		a chain of functions calls that manage synch/asynch for you
-
-	select
-
-		when we say "select values from queries in the deep handler", it mean : take the query result set as the current entries of the handler.
-
-	merge : see deep-copy
-
-	retrievable : 
-			any string in deep request format (ex: "swig::template.html", "json::/campaigns/?owner=15" )
-			any promise
-			any object
-			any function
-
-	query : 
-
-		a deep query
-
-	current entries : 
-
-		the current set of elements that the handler hold and on what you could apply chained opertations.
 
 # API doc : 
 
@@ -377,132 +278,6 @@ deep : the deep core
 
 		chain.pushSchemasTo(array)
 
-# deep.compose : Chained Aspect Oriented Programming
-
-	When you collide two functions together, you could use deep.compose to manage how collision is resolved.
-	Keep in mind that if you collide a simple function (up) on a composition (chained or not) : it mean : simply overwrite the composition by the function.
-	So if you apply a composition from bottom on a function, the composition will never b applied.
-	If you collide two compositions : they will be merged to give a unique composition chain.
-
-	deep.compose.before( func )
-
-		If it returns something, it will be injected as argument(s) in next function.
-		If it return nothing, th original arguments are injected in next function.
-		If it returns a promise or a chain : it will wait until the resolution of the returned value.
-		If the returned object isn't a promise, the next function is executed immediately.
-
-		ex : 
-
-		var base = {
-		    myFunc:deep.compose.after(function(arg)
-		    {
-		        return arg + " _ myfunc base";
-		    })
-		}
-
-		deep(base)
-		.bottom({
-		    myFunc:function(arg){
-		        return arg + " _ myfunc from bottom";
-		    }
-		});
-
-		base.myFunc("hello");
-
-
-	deep.compose.after( func )
-
-		If the previous returns something, it will be injected as argument(s) in 'func'.
-		If the previous return nothing, th original arguments are injected in 'func'.
-		If the previous returns a promise or a chain : it will wait until the resolution of the returned value before executing 'func'.
-		If the previous returned object isn't a promise, 'func' is executed immediately.
-
-		Same thing for returned object(s) from 'func' : it will be chained..
-
-		ex : 
-
-		var base = {
-		    myFunc:function(arg)
-		    {
-		        return arg + " _ myfunc base";
-		    }
-		}
-
-		deep(base)
-		.up({
-		    myFunc:deep.compose.after(function(arg){
-		        return arg + " _ myfunc from after";
-		    })
-		});
-
-		base.myFunc("hello");
-
-	deep.compose.around( func )
-
-		here you want to do your own wrapper.
-		Juste provid a function that receive in argument the collided function (the one which is bottom),
-		an which return the function that use this collided function.
-
-		ex : 
-
-		var base = {
-			myFunc:function(arg)
-			{
-				return arg + " _ myfunc base";
-			}
-		}
-
-		deep(base)
-		.up({
-		    myFunc:deep.compose.around(function(collidedMyFunc){
-		    	return function(arg){
-		    		return collidedMyFunc.apply(this, [arg + " _ myfunc from around"]);
-		    	}
-		    })
-		});
-
-		base.myFunc("hello");
-
-
-	deep.compose.parallele( func )
-
-		when you want to call a function in the same time of an other, and to wait that both function are resolved (even if deferred)
-		before firing eventual next composed function, you could use deep.compose.parallele( func )
-
-		Keep in mind that the output of both functions will be injected as a single array argument in next composed function.
-		Both will receive in argument either the output of previous function (if any, an even if deferred), or the original(s) argument(s).
-
-		So as implies a foot print on the chaining (the forwarded arguments become an array) : 
-		It has to be used preferently with method(s) that do not need to handle argument(s), and that return a promise just for maintaining the chain asynch management.
-
-		An other point need to be clarify if you use deep(this).myChain()... in the composed function.
-		As you declare a new branch on this, you need to be careful if any other of the composed function (currently parallelised) do the same thing.
-
-		You'll maybe work on the same (sub)objects in the same time.
-
-	## compositions chaining 
-
-		You could do 
-		var obj = {
-			func:deep.compose.after(...).before(...).around(...)...
-		}
-		It will wrap, in the order of writing, and immediately, the compositions themselves.
-		You got finally an unique function that is itself a composition (and so could be applied later an other functions).
-
-		So when you do : 
-
-			deep.parallele(...).before(...) and deep.before(...).parallel(...)
-
-			it does not give the same result of execution.
-
-			In first : you wrap the collided function with a parallele, and then you chain with a before.
-			So finally the execution will be : the before and then the parallelised call.
-
-			In second : you wrap the collided function with a before, and then wrap the whole in a parallele.
-			So the execution will be the parallelised call, but on one branche, there is two chained calls (the before and the collided function). 
-
-			Keep in mind that you WRAP FUNCTIONS, in the order of writing, and IMMEDIATELY.
-
 # deep(this)	
 
 		in any function/method of an object, you could use deep(this).myChain()...
@@ -558,8 +333,49 @@ deep : the deep core
 
 	## deep.rql(array, rql, options)
 
+
+# Lexic
+	
+	deep-copy up(above,below)
+
+		apply object together as a stack of layer.
+		The values contained in the layer above will override any collided values from the layer below.
+		If the layer above contain deep.collider or deep.compose : they will be applied or wrapped.
+
+	deep-copy bottom(below,above)
+
+		apply object together as a stack of layer.
+		The values contained in the layer above will override any collided values from the layer below.
+		If the layer above contain deep.collider or deep.compose : they will be applied or wrapped.
+
+	chain
+
+		a chain of functions calls that manage synch/asynch for you
+
+	select
+
+		when we say "select values from queries in the deep handler", it mean : take the query result set as the current entries of the handler.
+
+	merge : see deep-copy
+
+	retrievable : 
+			any string in deep request format (ex: "swig::template.html", "json::/campaigns/?owner=15" )
+			any promise
+			any object
+			any function
+
+	query : 
+
+		a deep query
+
+	current entries : 
+
+		the current set of elements that the handler hold and on what you could apply chained opertations.
+
+
 # examples
 
+```javascript
 //______
 
 deep("./json/simple.json").logValues("simple.json : ");
@@ -626,7 +442,7 @@ function(arg){
 
 h.reject({msg:"test rejection"});
 
-
+``` 
 
 
 # License
