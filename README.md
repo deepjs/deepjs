@@ -1,4 +1,4 @@
-
+#deepjs
 
 deepjs is a set of tools for managing standard javascripts functions, objects and promises.
 
@@ -24,10 +24,10 @@ All that to say that we are now polishing last little things and working hard on
 
 deepjs : simply made with love. 
 
-Code is poetry.
 
-Nodejs simple example
-=====
+
+## Nodejs simple example
+
 ```javascript
 
 var http = require('http');
@@ -57,8 +57,7 @@ console.log('Server running at http://127.0.0.1:1337/');
 
 
 
-Layered Aspect Oriented 
-==========================
+## Layered Aspect Oriented 
 
 ```javascript
 	//-----------------Models
