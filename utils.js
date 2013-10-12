@@ -609,6 +609,18 @@ define(function(require){
 		return arr;
 	}
 
+
+
+
+	/**
+	 * up : merge object from up
+	 * @param  {[type]} src     [description]
+	 * @param  {[type]} target  [description]
+	 * @param  {[type]} schema  [description]
+	 * @param  {[type]} parent  [description]
+	 * @param  {[type]} key     [description]
+	 * @return {[type]}         [description]
+	 */
 	var up = function up(src, target, schema, parent, key)
 	{
         //console.log("up : ", src, target, parent, key)
@@ -1302,6 +1314,15 @@ define(function(require){
 			});
 		}
 		return deep.all(res);
+	}
+
+
+	utils.decorateUpFrom = function(src, target, properties)
+	{
+		properties.forEach(function(prop){
+			if(typeof src[prop] !== 'undefined')
+				utils.up(src[prop], target[prop], null, target, prop);
+		});
 	}
 	return utils;
 }
