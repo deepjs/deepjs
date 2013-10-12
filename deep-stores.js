@@ -1290,6 +1290,7 @@ define(["require"], function (require) {
             manage:function (response, uri) {
                 //console.log("manage cache : ", response, uri);
                 this.cache[uri] = response;
+                return response;
             }
         };
 
