@@ -60,6 +60,12 @@ define(function(require)
 				error.report = report;
 				return error;
 			},
+			Watch:function  (msg, report, fileName, lineNum) {
+				var error = new Error("FileWatchError : "+msg);
+				error.status = 500;
+				error.report = report;
+				return error;
+			},
 			Store:function  (msg, report, fileName, lineNum) {
 				var error = new Error("StoreError : "+msg);
 				error.status = 500;
