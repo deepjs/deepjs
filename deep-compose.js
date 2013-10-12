@@ -250,15 +250,34 @@ define(function(require, exports, module){
 					var self = this;
 					var args = arguments;
 					return deep.when(previous.apply(this, args))
-					.done(function (res) {
-						//console.log("compose.fail : previous done : ", res);
-						if(res instanceof Error)
-							return fn.apply(self, [res]);
-						return res;
-					})
 					.fail(function (error) {
 						//console.log("compose.fail : previous error : ", error);
 						return fn.apply(self, [error]);
+					});
+				};
+			};
+			this.stack.push(wrapper);
+			return this;
+		},
+		/**
+		 * wrap collided function with fn and execute fn only if collided function success (in promised way).
+		 * @method done
+		 * @chainable
+		 * @param  {Function} fn
+		 * @return {Composer} this
+		 */
+		done : function fail(fn)
+		{
+			var wrapper = function failWrapper(previous)
+			{
+				return function()
+				{
+					var self = this;
+					var args = arguments;
+					return deep.when(previous.apply(this, args))
+					.done(function (res) {
+						//console.log("compose.done : previous done : ", res);
+						return fn.apply(self, [res]);
 					});
 				};
 			};
@@ -356,6 +375,10 @@ define(function(require, exports, module){
 		};
 		start.fail = function startFail(argument) {
 			decorator.fail(argument);
+			return start;
+		};
+		start.done = function startFail(argument) {
+			decorator.done(argument);
 			return start;
 		};
 		start.around = function startAround(argument) {
@@ -554,6 +577,16 @@ define(function(require, exports, module){
 		fail : function cFail(argument)
 		{
 			return createStart().fail(argument);
+		},
+		/**
+		 * @method done
+		 * @static
+		 * @chainable
+		 * @return {compose} starter
+		 */
+		done : function cFail(argument)
+		{
+			return createStart().done(argument);
 		},
 		/**
 		 * @method parallele
