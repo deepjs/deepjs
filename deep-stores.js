@@ -59,6 +59,7 @@ define(["require"], function (require) {
         };
         deep.Store.prototype = {
             _deep_store_: true,
+
             wrap:function(){
                 var self = this;
                 return function(){
@@ -76,29 +77,16 @@ define(["require"], function (require) {
          * @param {Array} arr a first array of objects to hold
          * @param {Object} options could contain 'schema'
          */
-        deep.store.Collection = function (protocole, collection, schema) {
-            // if (!(this instanceof deep.store.Collection))
-            //     return new deep.store.Collection(protocole, collection, schema);
-            deep.utils.bottom(deep.Store.prototype, this);
-            deep.Store.call(this, protocole);
-            if(typeof protocole !== "string" && protocole !== null)
-            {
-                schema = collection;
-                collection = protocole;
-            }
+        deep.store.Collection = deep.compose.Classes(deep.Store,
+        function (protocole, collection, schema, options) {
             if (collection)
                 this.collection = collection;
             if(schema)
                 this.schema = schema;
-            return this;
-        };
-
-        deep.store.Collection.create = function(protocole, collection, schema)
+            if(options)
+                deep.utils.up(options, this);
+        },
         {
-            return new deep.store.Collection(protocole, collection, schema);
-        }
-
-        deep.store.Collection.prototype = {
             /**
              *
              */
@@ -108,7 +96,6 @@ define(["require"], function (require) {
                     return deep(this)
                         .query("./[collection,schema]")
                         .load();
-                return this;
             }),
             /**
              * @method get
@@ -147,8 +134,8 @@ define(["require"], function (require) {
                 if (!queried && r instanceof Array)
                     r = r.shift();
                 if(typeof r === 'undefined')
-                    return deep(deep.errors.NotFound());
-                return deep(r).store(this);
+                    return deep.when(deep.errors.NotFound());
+                return deep.when(r);
             },
             /**
              * @method put
@@ -158,15 +145,9 @@ define(["require"], function (require) {
              */
             put: function (object, options) {
                 options = options || {};
-                var schema = options.schema || this.schema;
-                if (schema) {
-                    var report = deep.validate(object, schema);
-                    if (!report.valid)
-                        return  deep(deep.errors.PreconditionFail("Failed to put on collection : validation failed.", report));
-                }
                 var id = options.id || object.id;
                 if (!id)
-                    return deep(deep.errors.Store("Collection store need id on put"));
+                    return deep.when(deep.errors.Store("Collection store need id on put"));
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
@@ -175,13 +156,13 @@ define(["require"], function (require) {
                     resultType: "full"
                 });
                 if (!r)
-                    return deep(deep.errors.NotFound("no items found in collection with : " + id));
+                    return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
                 r = r.shift();
                 
                 r.value = object;
                 if (r.ancestor)
                     r.ancestor.value[r.key] = r.value;
-                return deep(r.value).store(this);
+                return deep.when(r.value);
             },
             /**
              * @method post
@@ -190,25 +171,20 @@ define(["require"], function (require) {
              * @return {Object} the inserted object (decorated with it's id)
              */
             post: function (object, options) {
+                //console.log("deep.store.Collection.post : ", object, options);
                 options = options || {};
-                var schema = options.schema || this.schema;
-                 if (schema) 
-                 {
-                    var report = deep.validate(object, schema);
-                    if (!report.valid)
-                        return deep(deep.errors.PreconditionFail("Failed to put on collection : validation failed.", report));
-                }
-                if (!object.id)
-                    object.id = "D"+new Date().valueOf() + ""; // mongo styled id
+                options.id = options.id || object.id;
+                if (!options.id)
+                    object.id = options.id = "id"+new Date().valueOf(); // mongo styled id
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
                 var res = deep.query(col, "./*?id=" + object.id);
                 if (res && res.length > 0)
-                    return deep(deep.errors.Store("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
+                    return deep.when(deep.errors.Store("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
                
                 col.push(object);
-                return deep(object).store(this);
+                return deep.when(object);
             },
             /**
              * @method del
@@ -223,7 +199,7 @@ define(["require"], function (require) {
                 var removed = deep(col).remove("./*?id=" + id).done();
                 if (removed)
                     removed = removed.shift();
-                return deep(removed);
+                return deep.when(removed);
             },
             /**
              * @method patch
@@ -231,7 +207,7 @@ define(["require"], function (require) {
              * @param  {Object} options  could contain 'id'
              * @return {deep.Chain} a chain that hold the patched object and has injected values as success object.
              */
-            patch: function (object, options) {
+            /*patch: function (object, options) {
                 options = options || {};
                 var schema = options.schema || this.schema;
                 if (schema) {
@@ -257,7 +233,7 @@ define(["require"], function (require) {
                 if (r.ancestor)
                     r.ancestor.value[r.key] = val;
                 return deep(r.value).store(this);
-            },
+            },*/
             /**
              * select a range in collection
              * @method range
@@ -271,7 +247,13 @@ define(["require"], function (require) {
                     col = this.collection();
                 return deep(col).range(start, end).store(this);
             }
-        }
+        });
+
+        deep.store.Collection.create = function(protocole, collection, schema, options)
+        {
+            return new deep.store.Collection(protocole, collection, schema, options);
+        };
+
         //__________________________________________________________________________________ OBJECT store
         /**
          * A store based on simple object
@@ -280,22 +262,16 @@ define(["require"], function (require) {
          * @param {Object} obj the root object to hold
          * @param {Object} options could contain 'schema'
          */
-        deep.store.Object = function (protocole, root, schema) {
-            // if (!(this instanceof deep.store.Object))
-            //     return new deep.store.Object(protocole, root, schema);
-            deep.utils.bottom(deep.Store.prototype, this);
-            deep.Store.call(this, protocole);
+        deep.store.Object = deep.compose.Classes(deep.Store,
+        function (protocole, root, schema, options) {
             if (root)
                 this.root = root;
             if(schema)
                 this.schema = schema;
-            return this;
-        };
-        deep.store.Object.create = function(protocole, root, schema)
+            if(options)
+                deep.utils.up(options, this);
+        },
         {
-            return new deep.store.Object(protocole, root, schema);
-        };
-        deep.store.Object.prototype = {
             /**
              *
              * @method get
@@ -308,8 +284,8 @@ define(["require"], function (require) {
                 if(root._deep_ocm_)
                     root = root();
                 if (id[0] == "." || id[0] == "/")
-                    return deep(deep.query(root, id)).store(this);
-                return deep(deep.query(root, "./" + id)).store(this);
+                    return deep.when(deep.query(root, id));
+                return deep.when(deep.query(root, "./" + id));
             },
             /**
              * @method put
@@ -324,23 +300,17 @@ define(["require"], function (require) {
                     root = root();
                 var id = options.id;
                 if (!id)
-                    return deep(deep.errors.Store("QuerierStore need id on put"));
+                    return deep.when(deep.errors.Store("QuerierStore need id on put"));
                 var r = deep.query(root, id, {
                     resultType: "full"
                 });
                 if (!r)
-                    return deep(deep.errors.NotFound("QuerierStore.put : no items found in collection with : " + id));
+                    return deep.when(deep.errors.NotFound("QuerierStore.put : no items found in collection with : " + id));
                 r = r.shift();
-                var schema = options.schema || this.schema;
-                if (schema) {
-                    var report = deep.validate(object, schema);
-                    if (!report.valid)
-                        return deep(deep.errors.PreconditionFail("Failed to put on QuerierStore : validation failed.", report));
-                }
                 r.value = object;
                 if (r.ancestor)
                     r.ancestor.value[r.key] = object;
-                return deep(r.value).store(this);
+                return deep.when(r.value);
             },
             /**
              * @method post
@@ -357,14 +327,9 @@ define(["require"], function (require) {
                 var schema = options.schema || this.schema;
                 var res = deep.query(root, id);
                 if (res && res.length > 0)
-                    return deep(deep.errors.Store("deep.store.Object.post : An object has the same id before post : please put in place : object : ", object));
-                if (schema) {
-                    var report = deep.validate(object, schema);
-                    if (!report.valid)
-                        return deep(deep.errors.PreconditionFail("Failed to put on deep.store.Object : validation failed.", report));
-                }
+                    return deep.when(deep.errors.Store("deep.store.Object.post : An object has the same id before post : please put in place : object : ", object));
                 deep(root).setByPath(id, object);
-                return deep(object).store(this);
+                return deep.when(object);
             },
             /**
              * @method del
@@ -388,8 +353,8 @@ define(["require"], function (require) {
                         res = removed;
                     });
                 if (res)
-                    return res.shift();
-                return deep(res).store(this);
+                    res = res.shift();
+                return deep.when(res);
             },
             /**
              * @method patch
@@ -397,7 +362,7 @@ define(["require"], function (require) {
              * @param  {[type]} id
              * @return {[type]}
              */
-            patch: function (object, id) {
+            /*patch: function (object, id) {
                 var root = this.root || this;
                 if(root._deep_ocm_)
                     root = root();
@@ -407,8 +372,13 @@ define(["require"], function (require) {
                 else
                     r = deep(root).query("./" + id).up(object).done();
                 return deep(r).store(this);
-            }
-        }
+            }*/
+        });
+
+        deep.store.Object.create = function(protocole, root, schema)
+        {
+            return new deep.store.Object(protocole, root, schema);
+        };
 
         //________________________________________________________________________________________ SELECTORS
 
@@ -953,12 +923,12 @@ define(["require"], function (require) {
                 }
                 return def.promise();
             },
-            aspect: function (path, options) {
+            /*aspect: function (path, options) {
                 return deep.protocoles.js(path, options)
                     .done(function (res) {
                     return res.aspect;
                 });
-            },
+            },*/
             instance: function (path, options) {
                 return deep.protocoles.js(path, options)
                     .done(function (cl) {
@@ -1294,6 +1264,184 @@ define(["require"], function (require) {
             }
         };
 
+
+        deep.store.CachedSheet = {
+            "dq.up::./get":deep.compose.around(function(old){
+                return function(id, opt)
+                {
+                    opt = opt || {};
+                    deep.utils.decorateUpFrom(this, opt, ["cache","cachePath"]);
+                    if(opt.cache !== false)
+                    {
+                        opt.cacheName = opt.cacheName || (opt.cachePath+id);
+                        //console.log("check cache : ", id, opt);
+                        if(deep.mediaCache.cache[opt.cacheName])
+                            return deep.mediaCache.cache[opt.cacheName];
+                    }
+                    var res = old.call(this, id, opt);
+                    if(opt.cache !== false)
+                        deep.mediaCache.manage(res, opt.cacheName);
+                    return res;
+                };
+            }),
+            "dq.up::./[post,put,patch]":deep.compose.around(function(old){
+                return function(object, opt)
+                {
+                    opt = opt || {};
+                    deep.utils.decorateUpFrom(this, opt, ["cache","cachePath"]);
+                    opt.id = opt.id || content.id;
+                    if(!opt.id)
+                        return deep.errors.Post("node.fs store need id on post/put/patch : ", object);
+                    opt.cacheName = opt.cacheName || (opt.cachePath+opt.id);
+                    var res = old.call(this, object, opt);
+                    if(opt.cache !== false)
+                        deep.mediaCache.manage(res, opt.cacheName);
+                    return res;
+                };
+            }),
+            "dq.up::./del":deep.compose.around(function(old){
+                return function(id, opt)
+                {
+                    opt = opt || {};
+                    deep.utils.decorateUpFrom(this, opt, ["cache","cachePath"]);
+                    opt.cacheName = opt.cacheName || (opt.cachePath+id);
+                    deep.mediaCache.remove(opt.cacheName);
+                    return old.call(this, object, opt);
+                };
+            })
+        };
+
+        deep.store.ObjectSheet = {
+            "dq.up::./!":{
+                methods:{
+                    relation:function(handler, relationName){
+                        return handler.relation(relationName);
+                    }
+                },
+                patch:function (content, opt) {
+                    opt = opt || {};
+                    deep.utils.decorateUpFrom(this, opt, ["baseURI"]);
+                    opt.id = opt.id || content.id;
+                    if(!opt.id)
+                        return deep.when(deep.errors.Post("json stores need id on PATCH"));
+                    opt.id = (opt.baseURI || "")+opt.id;
+                    var self = this;
+                    return self.get(opt.id, opt)
+                    .fail(function(error){
+                        return deep.when(deep.errors.Patch("object doesn't exists : please POST in place of PATCH. path : "+opt.id, error));
+                    })
+                    .done(function(data){
+                        data = deep.utils.copy(data);
+                        deep.utils.up(content, data);
+                        var schema = self.schema;
+                        if(schema)
+                        {
+                            if(schema._deep_ocm_)
+                                schema = schema();
+                            var report = deep.validate(content, schema);
+                            if(!report.valid)
+                                return deep.when(deep.errors.PreconditionFail(report));
+                        }
+                        return self.put(data, opt);
+                    });
+                },
+                rpc:function(id, method, args, options)
+                {
+                    var self = this;
+                    options = options || {};
+                    if(!this.methods[method])
+                        return deep.when(deep.errors.RPC("no method found with : "+method+". Aborting rpc call !"));
+                    return this.get(id)
+                    .done(function(object){
+                        object = deep.utils.copy(object);
+                        args.unshift({
+                            call:function (method, args) {
+                                if(!self.methods[method])
+                                    return deep.errors.RPC("no method found with : "+method+". Aborting rpc call !");
+                                return self.methods[method].apply(object, args);
+                            },
+                            save:function(){
+                                return self.put(object);
+                            },
+                            relation:function(relationName)
+                            {
+                                if(!self.schema)
+                                    return deep.errors.Store("no schema provided for fetching relation. aborting rpc.getRelation : relation : "+relationName);
+
+                                var link = deep.query(schema, "/links/*?rel="+relationName).shift();
+                                if(!link)
+                                    return deep.errors.Store("("+self.name+") no relation found in schema with : "+relationName);
+
+                                var interpreted = deep.utils.interpret(link.href, object);
+                                return deep.get(interpreted);
+                            },
+                        });
+                        return self.methods[method].apply(object, args);
+                    });
+                },
+                bulk:function(requests, opt){
+                   /*
+                    example of bulk requests
+                        [
+                          {to:"2", method:"put", body:{name:"updated 2"}, id: 1},
+                          {to:"3", method:"put", body:{name:"updated 3"}, id: 2}
+                        ]
+
+                    example of bulk responses
+                        [
+                          {"from":"2", "body":{"name":"updated 2"}, "id": 1},
+                          {"from":"3", "body":{"name":"updated 3"}, "id": 2}
+                        ]
+                    */
+                    var self = this;
+                    var alls = [];
+                    var noError = requests.every(function (req) {
+                        if(!self[req.method])
+                        {
+                            alls.push(deep.errors.Store("method not found during buk update : method : "+method));
+                            return false;
+                        }
+                        if(req.method.toLowerCase() === 'get' || req.method.toLowerCase() === 'delete')
+                            alls.push(self[req.method](req.to, opt))
+                        else
+                            alls.push(self[req.method](req.body, opt));
+                        return true;
+                    });
+                    if(!noError)
+                        return deep.when(alls.pop());
+                    return deep.all(alls)
+                    .done(function (results) {
+                        var res = [];
+                        var count = 0;
+                        results.forEach(function (r) {
+                            var req = requests[count++];
+                            res.push({
+                                from:req.to,
+                                body:r,
+                                id:req.id
+                            });
+                        });
+                        return res;
+                    });
+                }
+            },
+            'dq.up::./[post,put]':deep.compose.around(function(old){
+                return function (content, opt) {
+                    var schema = this.schema;
+                    if(schema)
+                    {
+                        if(schema._deep_ocm_)
+                            schema = schema();
+                        var report = deep.validate(content, schema);
+                        if(!report.valid)
+                            return deep.when(deep.errors.PreconditionFail(report));
+                    }
+                    return old.call(this, content, opt);
+                };
+            })
+        };
+        deep.utils.sheet(deep.store.ObjectSheet, deep.store.Collection.prototype);
+        deep.utils.sheet(deep.store.ObjectSheet, deep.store.Object.prototype);
         return deep;
     };
 });
