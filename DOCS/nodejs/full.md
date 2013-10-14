@@ -1,7 +1,7 @@
 node full example
 ==========================
 
-
+```javascript
 	var http = require('http'),
 		deep = require("deep/deep");
 	require("deep-swig/node")();
@@ -60,5 +60,6 @@ node full example
 
 	//_____________________________________________________________________ REPL
 	console.log('Server running at http://127.0.0.1:1337/');
+```
 
 
