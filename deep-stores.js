@@ -7,6 +7,8 @@
  *     - add optimised mode that do not return deep chain handle for any HTTP verb (to be used when stores are used from within a chain)
  *     - check range object usage in chain
  */
+
+"use strict";
 if (typeof define !== 'function')
     var define = require('amdefine')(module);
 
@@ -18,7 +20,7 @@ define(["require"], function (require) {
             requirejs.onError = function (err) {
                 console.log('requirejs OnError : ' + err);
                 console.log(err.requireType);
-                if (err.requireType === 'timeout') 
+                if (err.requireType === 'timeout')
                     console.log('modules: ' + err.requireModules);
                 //throw err;
         };
@@ -30,14 +32,14 @@ define(["require"], function (require) {
 	 * start chain setted with a certain store
 	 * @example
 	 *
-	 * 	deep.store("json").get("/campaign/").log();
+	 * deep.store("json").get("/campaign/").log();
 
 	 *  ...
 	 *  deep.store("campaign").get("?").log()
 	 *
 	 *
 	 * @class deep.store
- 	 * @constructor
+     * @constructor
 	 */
     
         deep.store = function (name) {
@@ -388,21 +390,21 @@ define(["require"], function (require) {
                  var res = deep.selector(deep.chain.val(self), condition, name);
                 //console.log("res : ",res)
                 return res;
-            }
+            };
             func._isDone_ = true;
             deep.chain.addInChain.call(self, func);
             return this;
         });
 
-        deep.store.Selector = deep.compose.Classes(deep.Store, function (protocole, root, selector, options) 
+        deep.store.Selector = deep.compose.Classes(deep.Store, function (protocole, root, selector, options)
         {
             if (root)
                 this.root = root;
             if(selector)
                 this.selector = selector;
             //console.log(" selector constructor : protocole : ", protocole);
-        }
-        ,{
+        },
+        {
             /**
              *
              * @method get
@@ -575,7 +577,7 @@ define(["require"], function (require) {
                 if(!store)
                 {
                     var splitted = protoc.split(".");
-                    if (splitted.length == 2) 
+                    if (splitted.length == 2)
                     {
                         store = deep.protocoles.store(splitted.shift());
                         subproto = splitted.shift();
@@ -931,11 +933,11 @@ define(["require"], function (require) {
             },*/
             instance: function (path, options) {
                 return deep.protocoles.js(path, options)
-                    .done(function (cl) {
-                    if (typeof cl === 'function')
-                        return new cl();
+                    .done(function (Cl) {
+                    if (typeof Cl === 'function')
+                        return new Cl();
                     //console.log("deep.stores.instance  : could not instanciate : "+JSON.stringify(id));
-                    return deep.errors.Internal("deep.protocoles.instance  : could not instanciate : " + JSON.stringify(id));
+                    return deep.errors.Internal("deep.protocoles.instance  : could not instanciate : " + JSON.stringify(path));
                 });
             }
         };
@@ -1139,7 +1141,7 @@ define(["require"], function (require) {
                             .done(function (success) {
                             self._nodes = [deep.Querier.createRootNode(success)];
                         });
-                    }
+                    };
                     if(store.then || store.promise)
                         return deep.when(store)
                         .done(doAction);
@@ -1289,7 +1291,7 @@ define(["require"], function (require) {
                 {
                     opt = opt || {};
                     deep.utils.decorateUpFrom(this, opt, ["cache","cachePath"]);
-                    opt.id = opt.id || content.id;
+                    opt.id = opt.id || object.id;
                     if(!opt.id)
                         return deep.errors.Post("node.fs store need id on post/put/patch : ", object);
                     opt.cacheName = opt.cacheName || (opt.cachePath+opt.id);
@@ -1306,7 +1308,7 @@ define(["require"], function (require) {
                     deep.utils.decorateUpFrom(this, opt, ["cache","cachePath"]);
                     opt.cacheName = opt.cacheName || (opt.cachePath+id);
                     deep.mediaCache.remove(opt.cacheName);
-                    return old.call(this, object, opt);
+                    return old.call(this, id, opt);
                 };
             })
         };
@@ -1323,7 +1325,7 @@ define(["require"], function (require) {
                     deep.utils.decorateUpFrom(this, opt, ["baseURI"]);
                     opt.id = opt.id || content.id;
                     if(!opt.id)
-                        return deep.when(deep.errors.Post("json stores need id on PATCH"));
+                        return deep.when(deep.errors.Patch("json stores need id on PATCH"));
                     opt.id = (opt.baseURI || "")+opt.id;
                     var self = this;
                     return self.get(opt.id, opt)
@@ -1333,19 +1335,10 @@ define(["require"], function (require) {
                     .done(function(data){
                         data = deep.utils.copy(data);
                         deep.utils.up(content, data);
-                        var schema = self.schema;
-                        if(schema)
-                        {
-                            if(schema._deep_ocm_)
-                                schema = schema();
-                            var report = deep.validate(content, schema);
-                            if(!report.valid)
-                                return deep.when(deep.errors.PreconditionFail(report));
-                        }
                         return self.put(data, opt);
                     });
                 },
-                rpc:function(id, method, args, options)
+                rpc:function(method, args, id, options)
                 {
                     var self = this;
                     options = options || {};
@@ -1368,18 +1361,19 @@ define(["require"], function (require) {
                                 if(!self.schema)
                                     return deep.errors.Store("no schema provided for fetching relation. aborting rpc.getRelation : relation : "+relationName);
 
-                                var link = deep.query(schema, "/links/*?rel="+relationName).shift();
+                                var link = deep.query(self.schema, "/links/*?rel="+relationName).shift();
                                 if(!link)
                                     return deep.errors.Store("("+self.name+") no relation found in schema with : "+relationName);
 
                                 var interpreted = deep.utils.interpret(link.href, object);
                                 return deep.get(interpreted);
-                            },
+                            }
                         });
                         return self.methods[method].apply(object, args);
                     });
                 },
                 bulk:function(requests, opt){
+                    opt = opt || {};
                    /*
                     example of bulk requests
                         [
@@ -1396,13 +1390,18 @@ define(["require"], function (require) {
                     var self = this;
                     var alls = [];
                     var noError = requests.every(function (req) {
+                        if(!req.id)
+                            req.id = "rpc-id"+new Date().valueOf();
                         if(!self[req.method])
                         {
-                            alls.push(deep.errors.Store("method not found during buk update : method : "+method));
+                            alls.push(deep.errors.Store("method not found during buk update : method : "+req.method));
                             return false;
                         }
-                        if(req.method.toLowerCase() === 'get' || req.method.toLowerCase() === 'delete')
-                            alls.push(self[req.method](req.to, opt))
+                        opt.id = req.to;
+                        if(req.method === 'rpc')
+                            alls.push(self.rpc(req.body.method, req.body.args, req.to, opt));
+                        else if(req.method.toLowerCase() === 'get' || req.method.toLowerCase() === 'delete')
+                            alls.push(self[req.method](req.to, opt));
                         else
                             alls.push(self[req.method](req.body, opt));
                         return true;
@@ -1445,3 +1444,8 @@ define(["require"], function (require) {
         return deep;
     };
 });
+
+
+
+
+
