@@ -1,3 +1,4 @@
+"use strict";
 /**
  *
  * 
@@ -68,47 +69,53 @@ define(function(require)
 			},
 			Store:function  (msg, report, fileName, lineNum) {
 				var error = new Error("StoreError : "+msg);
-				error.status = 500;
+				error.status = 400;
 				error.report = report;
 				return error;
 			},
 			Protocole:function  (msg, report, fileName, lineNum) {
 				var error = new Error("ProtocoleError : "+msg);
-				error.status = 500;
+				error.status = 400;
 				error.report = report;
 				return error;
 			},
 			OCM:function  (msg, report, fileName, lineNum) {
 				var error = new Error("OCMError : "+msg);
-				error.status = 500;
+				error.status = 403;
 				error.report = report;
 				return error;
 			},
 			Post:function  (msg, report, fileName, lineNum) {
 				var error = new Error("PostError : "+msg);
-				error.status = 500;
+				error.status = 400;
 				error.report = report;
 				return error;
 			},
 			Put:function  (msg, report, fileName, lineNum) {
 				var error = new Error("PutError : "+msg);
-				error.status = 500;
+				error.status = 400;
 				error.report = report;
 				return error;
 			},
 			Patch:function  (msg, report, fileName, lineNum) {
 				var error = new Error("PatchError : "+msg);
-				error.status = 500;
+				error.status = 400;
 				error.report = report;
 				return error;
 			},
 			Delete:function  (msg, report, fileName, lineNum) {
 				var error = new Error("DeleteError : "+msg);
-				error.status = 500;
+				error.status = 400;
+				error.report = report;
+				return error;
+			},
+			RPC:function  (msg, report, fileName, lineNum) {
+				var error = new Error("RPCError : "+msg);
+				error.status = 400;
 				error.report = report;
 				return error;
 			}
-		}
+		};
 		return deep;
-	}
-})
+	};
+});
