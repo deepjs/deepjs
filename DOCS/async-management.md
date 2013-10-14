@@ -3,18 +3,18 @@
 ```javascript
 var farmManager = {
 	animals : [
-		{id: "poule", poids :0, age:0, eat : "grain"},
-		{id:"porc", poids:0, age:0, eat : "farine"},
-		{id:"vache", poids:0, age:0, eat : "farine"}
+		{id: "chicken", weight :0, age:0, eat : "grain"},
+		{id:"porc", weight:0, age:0, eat : "flour"},
+		{id:"cow", weight:0, age:0, eat : "flour"}
 	],
 	water : function(){
 		console.log("animals are watered");
 	},
-	feed : function (nourriture) {
+	feed : function (food) {
 		return deep(this.animals)
-		.query("./*?eat=" + nourriture)
+		.query("./*?eat=" + food)
 		.run(function () {
-			return this.poids += 0.5;
+			return this.weight += 0.5;
 		})
 		.log("animals feeded")
 		.logValues();
@@ -25,8 +25,8 @@ deep.utils.up({
     water : deep.compose.before(function(){
         var def = deep.Deferred();
         setTimeout(function(){
-            console.log("cleaner avant water");
-            def.resolve("clean done");
+            console.log("cleaning before watering");
+            def.resolve("cleaning done");
         },1500*Math.random());
         return def.promise();
     })
@@ -37,7 +37,7 @@ farmManager.doCycle = function(){
     var d = deep(farmManager);
     for(var i = 0;i<3;i++)
     {
-       d.run("water").run("feed",["farine"]).delay(200);
+       d.run("water").run("feed",["flour"]).delay(200);
     }
     return d;
 };
