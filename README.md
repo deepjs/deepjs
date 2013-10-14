@@ -20,7 +20,7 @@ See [tutorials](./DOCS/tutorials.md) page for details.
 Despite of the state of the documentations and too few tescases, deep has now achieved a certain kind of maturity and stability.
 It is born through years of work and ideas, and has been named differently through its long history...
 
-All that to say that we are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 app plateform that we know you will really enjoy.
+All that to say that we are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 plateform that we know you will really enjoy.
 
 deepjs : simply made with love. 
 
