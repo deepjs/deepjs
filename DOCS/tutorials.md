@@ -5,6 +5,7 @@ Tutorials
 * [nodejs simple ](./nodejs/simple.md) 
 * [nodejs more complex](./nodejs/full.md)
 * [basic-modelisation](./basic-modelisation.md)
+* [Promised and Chained asynch management](./async-management.md)
 * [deep chain](./deep.md)
 * [deep-compose](./deep-compose.md)
 * [deep-query](./deep-query.md)
