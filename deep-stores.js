@@ -382,150 +382,7 @@ define(["require"], function (require) {
             return new deep.store.Object(protocole, root, schema);
         };
 
-        //________________________________________________________________________________________ SELECTORS
-
-        deep.Chain.addHandle("selector", function chainSelector(condition, name) {
-            var self = this;
-            var func = function chainSelectorHandle(s, e) {
-                 var res = deep.selector(deep.chain.val(self), condition, name);
-                //console.log("res : ",res)
-                return res;
-            };
-            func._isDone_ = true;
-            deep.chain.addInChain.call(self, func);
-            return this;
-        });
-
-        deep.store.Selector = deep.compose.Classes(deep.Store, function (protocole, root, selector, options)
-        {
-            if (root)
-                this.root = root;
-            if(selector)
-                this.selector = selector;
-            //console.log(" selector constructor : protocole : ", protocole);
-        },
-        {
-            /**
-             *
-             * @method get
-             * @param  {String} id
-             * @return {deep.Chain} depending on first argument : return an object or an array of objects
-             */
-            get: function selectorStoreGet(id, options) {
-                var root = this.root || this;
-                options = options || {};
-                if(root._deep_ocm_)
-                    root = root();
-                var res = deep.selector(root, id, this.selector);
-                return deep.when(res);
-            }
-        });
-
-        deep.selector = function deepSelector(root, query, selectorName)
-        {
-            // console.log("deep.selector : ", root, query, selectorName);
-            var queries = deep.store.Selector.parse(query);
-            var q = queries.shift(), selected = [], current = [], cur = root;
-            if(cur.push)
-            {
-                current = cur;
-                cur = current.shift();
-            }
-            while(q)
-            {
-                var func = null;
-                if(q == "this.*" || q === "")
-                    func = new Function("return true;");
-                else
-                    func = new Function("return " + q + ";");
-
-                while(cur)
-                {
-                    var nodes = deep.Querier.objectsWithProperty(cur, selectorName, true);
-                    var n = nodes.shift();
-                    while(n)
-                    {
-                        var o = {}, sel = n[selectorName], len = sel.length;
-                        for(var i = 0; i < len; ++i)
-                            o[sel[i]] = true;
-                        o.___func___ = func;
-                        if (o.___func___())
-                            selected.push(n);
-                        n = nodes.shift();
-                    }
-                    cur = current.shift();
-                }
-                if(selected.length === 0)
-                    break;
-                q = queries.shift();
-                if(q)
-                {
-                    current = selected;
-                    cur = current.shift();
-                    selected = [];
-                }
-            }
-            return selected;
-        };
-
-        deep.store.Selector.create = function parseSelector(protocole, root, selector)
-        {
-            return new deep.store.Selector(protocole, root, selector);
-        };
-        
-        deep.store.Selector.parse = function parseSelector(selector)
-        {
-            var chars = selector[0];
-            var res = [];
-            var finalString = "";
-            var index = 0;
-            while (chars) {
-                switch (chars) {
-                case '|':
-                case '&':
-                case '(':
-                case ')':
-                case ' ':
-                case '!':
-                    finalString += chars;
-                    chars = selector[++index];
-                    break;
-                case '>' :
-                    res.push(finalString);
-                    chars = selector[++index];
-                    finalString = "";
-                    break;
-                default:
-                    finalString += "this.";
-                    var count = index;
-                    while (chars) {
-                        var shouldBreak = false;
-                        switch (chars) {
-                            case '|':
-                            case '&':
-                            case '(':
-                            case ')':
-                            case ' ':
-                            case '>':
-                            case '!':
-                                shouldBreak = true;
-                                break;
-                        }
-                        if (shouldBreak) {
-                            finalString += selector.substring(index, count);
-                            index = count;
-                            break;
-                        }
-                        chars = selector[++count];
-                        if (!chars)
-                            finalString += selector.substring(index, count);
-                    }
-                }
-            }
-            if(finalString.length > 0)
-                res.push(finalString);
-            return res;
-        };
+       
         //_______________________________________________________________________________ GET/GET ALL  REQUESTS
 
         /**
@@ -698,165 +555,6 @@ define(["require"], function (require) {
              * @return {[type]}         [description]
              */
             dq:{
-                //________________________________________ SHEET PROTOCOLES
-                up:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqUP(layer){
-                        options.allowStraightQueries = false;
-                        options.resultType = "full";
-                        var r = self.get(request, options);
-                        var modified = [];
-                        if(r)
-                            r.forEach(function(item){
-                                var f = deep.utils.up(layer, item.value, options.shema);
-                                if(item.ancestor)
-                                    item.ancestor.value[item.key] = f;
-                                modified.push(f);
-                            });
-                        return modified;
-                    };
-                },
-                bottom:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqBottom(layer){
-                        options.allowStraightQueries = false;
-                        options.resultType = "full";
-                        var r = self.get(request, options);
-                        var modified = [];
-                        if(r)
-                            r.forEach(function(item){
-                                var f = deep.utils.bottom(layer, item.value, options.shema);
-                                if(item.ancestor)
-                                    item.ancestor.value[item.key] = f;
-                                modified.push(f);
-                            });
-                        return modified;
-                    };
-                },
-                series:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqSeries(fn){
-                        options.allowStraightQueries = false;
-                        options.resultType = null;
-                        var r = self.get(request, options);
-                        var results = [];
-                        var err = null;
-                        if(r && r.length > 0)
-                        {
-                            var def = deep.Deferred();
-                            var end = function(){
-                                if(err)
-                                    def.reject(err);
-                                else
-                                    def.resolve(results);
-                            };
-                            var cycle = function(){
-                                var item = r.shift();
-                                var output = null;
-                                if(typeof fn === 'string')
-                                {
-                                    if(typeof item[fn] === 'function')
-                                        output = item[fn]();
-                                }
-                                else
-                                    output = fn.apply(item);
-                                if(output instanceof Error)
-                                {
-                                    err = output;
-                                    return end();
-                                }
-                                if(output && output.then)
-                                    deep.when(output)
-                                    .done(function (s){
-                                        results.push(s);
-                                        if(r.length > 0)
-                                            cycle();
-                                        else end();
-                                    })
-                                    .fail(function (error) {
-                                        def.reject(error);
-                                    });
-                                else {
-                                    results.push(output);
-                                    if(r.length > 0)
-                                        cycle();
-                                    else end();
-                                }
-                            };
-                            cycle();
-                            return def.promise();
-                        }
-                        return results;
-                    };
-                },
-                parallele:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqParallele(fn){
-                        return deep.all(self.call(request, options)(fn));
-                    };
-                },
-                call:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqCall(fn){
-                        options.allowStraightQueries = false;
-                        options.resultType = null;
-                        var res = [];
-                        var r = self.get(request, options);
-                        if(r)
-                            r.forEach(function(item){
-                                //console.log("dq.call : on : ", item)
-                                if(typeof fn === 'string')
-                                {
-                                    if(typeof item[fn] === 'function')
-                                        res.push(item[fn]());
-                                    else
-                                        res.push(undefined);
-                                }
-                                else
-                                    res.push(fn.apply(item));
-                            });
-                        return res;
-                    };
-                },
-                transform:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqCall(fn){
-                        options.allowStraightQueries = false;
-                        options.resultType = "full";
-                        var res = [];
-                        var r = self.get(request, options);
-                        if(r)
-                            r.forEach(function(item){
-                                var res = fn(item.value);
-                                if(item.ancestor)
-                                    item.ancestor.value[item.key] = res;
-                                res.push(res);
-                            });
-                        return res;
-                    };
-                },
-                equal:function (request, options) {
-                    options = options || {};
-                    var self = this;
-                    return function dodqEqual(compare){
-                        options.allowStraightQueries = false;
-                        options.resultType = null;
-                        var res = [];
-                        var r = self.get(request, options);
-                        var ok = true;
-                        if(r)
-                            ok = r.every(function(item){
-                                return deep.utils.deepEqual(item, compare);
-                            });
-                        return ok || new Error("sheet equality failed");
-                    };
-                },
                 get: function dqGet(request, options) {
                     var entry = options.entry;
                     if(!entry)
@@ -942,6 +640,8 @@ define(["require"], function (require) {
             }
         };
 
+
+
         /**
          * 
          */
@@ -953,6 +653,184 @@ define(["require"], function (require) {
             }
             return deep.protocoles[name];
         };
+
+        deep.protocole.SheetProtocoles = {
+                //________________________________________ SHEET PROTOCOLES
+                up:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqUP(layer){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        return deep.when(self.get(request, options))
+                        .done(function(r){
+                            var modified = [];
+                            console.log("sheet up protocole : getted : ", r );
+                            if(r)
+                                r.forEach(function(item){
+                                    var f = deep.utils.up(layer, item.value, options.shema);
+                                    if(item.ancestor)
+                                        item.ancestor.value[item.key] = f;
+                                    modified.push(f);
+                                });
+                            return modified;
+                        })
+
+                    };
+                },
+                bottom:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqBottom(layer){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        return deep.when(self.get(request, options))
+                        .done(function(r){
+                            var modified = [];
+                            if(r)
+                                r.forEach(function(item){
+                                    var f = deep.utils.bottom(layer, item.value, options.shema);
+                                    if(item.ancestor)
+                                        item.ancestor.value[item.key] = f;
+                                    modified.push(f);
+                                });
+                            return modified;
+                        });
+                    };
+                },
+                series:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqSeries(fn){
+                        options.allowStraightQueries = false;
+                        options.resultType = null;
+                        return deep.when(self.get(request, options))
+                        .done(function(r){
+                            var results = [];
+                            var err = null;
+                            if(r && r.length > 0)
+                            {
+                                var def = deep.Deferred();
+                                var end = function(){
+                                    if(err)
+                                        def.reject(err);
+                                    else
+                                        def.resolve(results);
+                                };
+                                var cycle = function(){
+                                    var item = r.shift();
+                                    var output = null;
+                                    if(typeof fn === 'string')
+                                    {
+                                        if(typeof item[fn] === 'function')
+                                            output = item[fn]();
+                                    }
+                                    else
+                                        output = fn.apply(item);
+                                    if(output instanceof Error)
+                                    {
+                                        err = output;
+                                        return end();
+                                    }
+                                    if(output && output.then)
+                                        deep.when(output)
+                                        .done(function (s){
+                                            results.push(s);
+                                            if(r.length > 0)
+                                                cycle();
+                                            else end();
+                                        })
+                                        .fail(function (error) {
+                                            def.reject(error);
+                                        });
+                                    else {
+                                        results.push(output);
+                                        if(r.length > 0)
+                                            cycle();
+                                        else end();
+                                    }
+                                };
+                                cycle();
+                                return def.promise();
+                            }
+                            return results;
+                        });
+                    };
+                },
+                parallele:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqParallele(fn){
+                        return deep.all(self.call(request, options)(fn));
+                    };
+                },
+                call:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqCall(fn){
+                        options.allowStraightQueries = false;
+                        options.resultType = null;
+                        return deep.when(self.get(request, options))
+                        .done(function(r){
+                            console.log("sheet call protocole : getted : ", r );
+                            var res = [];
+                            if(r)
+                            r.forEach(function(item){
+                                //console.log("dq.call : on : ", item)
+                                if(typeof fn === 'string')
+                                {
+                                    if(typeof item[fn] === 'function')
+                                        res.push(item[fn]());
+                                    else
+                                        res.push(undefined);
+                                }
+                                else
+                                    res.push(fn.apply(item));
+                            });
+                            return res;
+                        });
+                    };
+                },
+                transform:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqCall(fn){
+                        options.allowStraightQueries = false;
+                        options.resultType = "full";
+                        return deep.when(self.get(request, options))
+                        .done(function(r){
+                            var res = [];
+                            if(r)
+                                r.forEach(function(item){
+                                    var res = fn(item.value);
+                                    if(item.ancestor)
+                                        item.ancestor.value[item.key] = res;
+                                    res.push(res);
+                                });
+                            return res;
+                        });
+                    };
+                },
+                equal:function (request, options) {
+                    options = options || {};
+                    var self = this;
+                    return function dodqEqual(compare){
+                        options.allowStraightQueries = false;
+                        options.resultType = null;
+                        var res = [];
+                        return deep.when(self.get(request, options))
+                        .done(function(r){
+                            var ok = true;
+                            if(r)
+                                ok = r.every(function(item){
+                                    return deep.utils.deepEqual(item, compare);
+                                });
+                            return ok || new Error("sheet equality failed");
+                        });
+                    };
+                }
+        };
+        deep.utils.bottom(deep.protocole.SheetProtocoles, deep.protocoles.dq);
 
         //______________________________________________________________________ CHAIN DECORATION
         deep.Chain.addHandle("store", function (name) {
@@ -1441,6 +1319,8 @@ define(["require"], function (require) {
         };
         deep.utils.sheet(deep.store.ObjectSheet, deep.store.Collection.prototype);
         deep.utils.sheet(deep.store.ObjectSheet, deep.store.Object.prototype);
+
+        //console.log("after applying sheet protocl;es related : dq is : ", deep.protocoles.dq);
         return deep;
     };
 });
