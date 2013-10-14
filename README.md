@@ -55,9 +55,10 @@ console.log('Server running at http://127.0.0.1:1337/');
 
 ```
 
-## Layered Aspect Oriented 
+## Layered Aspect Oriented and Query Based programmation
 
 ```javascript
+
 	//-----------------Models
 	var land = {
 		location : "pls override this value with your own location",
@@ -86,10 +87,33 @@ console.log('Server running at http://127.0.0.1:1337/');
 		plants : ["grass"]
 	};
 
-	deep(myOwnLand).bottom(land).up(orchard,kitchenGarden);
+	deep(myOwnLand)
+	.bottom(land)
+	.up(orchard,kitchenGarden)
+	//Query based object modelisation
+	.query("/plants/*").up({
+		size : 0,
+		grow : function () {
+			this.size += this.growSpeed;
+		},
+		prune : function (heightpruned) {
+			this.size -= heightpruned;
+		}
+	});
+
 
 	console.log("myOwnLand is : ", myOwnLand);
 	myOwnLand.watering();
+
+	//Query based object manipulation
+	deep(myOwnLand)
+	.query("/plants/*")
+	.run("grow")
+	.query("/plants/*?size=gt=5")
+	.run("prune",[2]);
+
+	console.log("myOwnLand is : ", myOwnLand);
+
 ```
 
 
