@@ -1310,6 +1310,7 @@ define(function(require){
 			deep.when(deep.get(i, options))
 			.pushHandlerTo(res)
 			.done(function(handler){
+				//console.log("sheet handler : ", handler);
 				return handler(toApply, options);
 			});
 		}
