@@ -665,7 +665,7 @@ define(["require"], function (require) {
                         return deep.when(self.get(request, options))
                         .done(function(r){
                             var modified = [];
-                            console.log("sheet up protocole : getted : ", r );
+                            //console.log("sheet up protocole : getted : ", r );
                             if(r)
                                 r.forEach(function(item){
                                     var f = deep.utils.up(layer, item.value, options.shema);
@@ -772,7 +772,7 @@ define(["require"], function (require) {
                         options.resultType = null;
                         return deep.when(self.get(request, options))
                         .done(function(r){
-                            console.log("sheet call protocole : getted : ", r );
+                            //console.log("sheet call protocole : getted : ", r );
                             var res = [];
                             if(r)
                             r.forEach(function(item){
