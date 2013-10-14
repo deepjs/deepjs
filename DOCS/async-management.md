@@ -21,6 +21,8 @@ var farmManager = {
 	}
 };
 
+// now we add an aspect on water() that will
+// clean the place before watering the animals (asynchronous)
 deep.utils.up({
     water : deep.compose.before(function(){
         var def = deep.Deferred();
@@ -32,7 +34,9 @@ deep.utils.up({
     })
 },farmManager);
 
-
+// this function added to our farmManager will run 3 cycles of
+// watering and feeding the animals.
+// All the asynchronous is managed by the deep chain
 farmManager.doCycle = function(){
     var d = deep(farmManager);
     for(var i = 0;i<3;i++)
@@ -42,9 +46,10 @@ farmManager.doCycle = function(){
     return d;
 };
 
+// run the example
 deep(farmManager)
 .run("doCycle")
 .done(function(s){
     console.log(" 3 cycles finished : ",s);
 });
-```
+``
