@@ -1315,7 +1315,7 @@ define(function(require){
 			});
 		}
 		return deep.all(res);
-	}
+	};
 
 
 	utils.decorateUpFrom = function(src, target, properties)
@@ -1324,7 +1324,9 @@ define(function(require){
 			if(typeof src[prop] !== 'undefined')
 				utils.up(src[prop], target[prop], null, target, prop);
 		});
-	}
+	};
+
+
 	return utils;
 }
 })
