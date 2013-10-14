@@ -52,11 +52,11 @@ define(["require"], function (require){
                     {
                         console.warn("OCM : no associate mode found with : ", modes, " for protocole : ", protocole);
                         return {};
-                    }    
+                    }
                     return res;
                 },
                 init:init
-            }
+            };
             var m = function()
             {
                 var modes = Array.prototype.slice.apply(arguments);
@@ -80,20 +80,20 @@ define(["require"], function (require){
                 if(params.init)
                     params.init.call(compiled);
                 return compiled;
-            }
+            };
             deep.ocm.instances.push(m);
             if(protocole)
             {
                 m.name = protocole;
                 deep.protocoles[protocole] = function(request, options){
-                    console.log("ocm protocole : ", protocole, request.uri, options)
+                    console.log("ocm protocole : ", protocole, request.uri, options);
                     return deep.query(m(),request.uri, options);
-                }
+                };
             }
             m._deep_ocm_ = true;
             m.multiMode = function(yes){
                 params.multiMode = yes;
-            }
+            };
             m.modeNode = function (arg)
             {
                 if(params.blocked)
@@ -105,7 +105,7 @@ define(["require"], function (require){
             {
                 if(params.blocked)
                     return m();
-                if(arg == null)
+                if(arg === null)
                     params.currentModes = null;
                 else
                     params.currentModes = Array.prototype.slice.apply(arguments);
@@ -141,19 +141,20 @@ define(["require"], function (require){
                 return d.bottom.apply(d,arguments);
             };
             return m;
-        }
+        };
         deep.ocm.instances = [];
         deep.ocm.nocache = false;
 
         deep.ocm.modeNodes = {
 
-        }
+        };
 
         // deep mode management
         deep.mode = function(args){
             var mode = (args)?Array.prototype.slice.apply(arguments):null;
             return deep({}).mode(mode);
-        }
+        };
+
         deep.Chain.addHandle("mode", function(arg)
         {
             // console.log("chain.mode : ", arguments, deep.context);
@@ -169,7 +170,7 @@ define(["require"], function (require){
                 else
                     self._context.mode = (arg)?Array.prototype.slice.apply(args):null;
                 // console.log("deep.context.mode setted : ",deep.context.mode);  
-            }
+            };
             func._isDone_ = true;
             deep.chain.addInChain.apply(self,[func]);
             return this;
@@ -182,13 +183,13 @@ define(["require"], function (require){
             else
             {
                 if(arg instanceof Array)
-                   deep.context.mode = arg; 
+                   deep.context.mode = arg;
                 else
                     deep.context.mode = [arg];
             }
-        }
+        };
         //_____________________________________________________________
 
         return deep;
-	}
+	};
 });
