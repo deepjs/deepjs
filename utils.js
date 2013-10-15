@@ -1076,6 +1076,7 @@ define(function(require){
 			  console.log('\nReport:')
 			  console.log('====================')
 			  console.log(err.report);
+			  console.log('============================================================')
 			}
 		}
 		else
@@ -1325,6 +1326,24 @@ define(function(require){
 				utils.up(src[prop], target[prop], null, target, prop);
 		});
 	};
+
+
+	utils.series = function(functions, context){
+        var self = context;
+        var results = [];
+        function doSeries(fn){
+        	//console.log("do series on : ", fn)
+            return deep.when(fn.call(context))
+            .done(function(r){
+            	//console.log("do series ended : ", r);
+            	results.push(r);
+                if(functions.length > 0)
+                	return doSeries(functions.shift());
+                return results;
+            });
+        };
+        return doSeries(functions.shift());
+	}
 
 
 	return utils;
