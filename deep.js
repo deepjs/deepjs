@@ -314,8 +314,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return createImmediatePromise(arg);
         if (typeof arg.then === 'function') //any promise compliant object
         {
-            if (arg._deep_promise_)
-                return arg;
+            //if (arg._deep_promise_)
+              //  return arg;
 
             //console.log("doing simple promise (no promise and then is present) on : ", arg);
             var def = deep.Deferred();
