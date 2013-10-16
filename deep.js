@@ -2,8 +2,9 @@
  * @module deep
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
-if (typeof define !== 'function')
+if (typeof define !== 'function') {
     var define = require('amdefine')(module);
+}
 
 define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors", "./deep-stores", "./deep-ocm"], function (require) {
     deep = function deepStart(obj, schema, options) {
@@ -65,7 +66,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         }
         return h;
     };
-    var errors = require("deep/deep-errors")(deep);
+    var errors = require("./deep-errors")(deep);
 
     /**
      * final namespace for deep/deep-compose
@@ -230,8 +231,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         if (self._context && self._context.resume)
                             self._context.resume();
                     }
-
-                    // get next handle : if no more handle : just break;
                     var next = self._queue.shift();
                     if (self._error)
                         while (next && next._isDone_)
@@ -245,10 +244,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     self._running = true; //  asynch flag
                     var res = next(self._success, self._error);
                     if (res && (res.then || res.promise)) {
-                        //console.log("forceHandle : gt promise as result : ",res)
                         deep.when(res)
                         .done(function (res) {
-                            //console.log("forceHandle : promise resolved : ",res)
                             if (typeof res !== 'undefined') {
                                 self._success = (res instanceof Error) ? null : res;
                                 self._error = (res instanceof Error) ? res : null;
@@ -266,7 +263,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         });
                     } else {
                         self._running = false;
-                        //console.log("deep force queue : res : ",res)
                         if (typeof res !== 'undefined') {
                             self._success = (res instanceof Error) ? null : res;
                             self._error = (res instanceof Error) ? res : null;
@@ -302,7 +298,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     }
 
     function createImmediatePromise(result) {
-        //console.log("deep.createImmediatePromise : ", result instanceof Error)
         var prom = new deep.Promise();
         return prom._start(result);
     }
@@ -363,7 +358,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             d = -1;
         var res = [];
         var rejected = false;
-        //console.log("deep.all : try : ",arr)
         arr.forEach(function (a) {
             if (def.rejected)
                 return;
@@ -377,7 +371,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 }
                 res[i] = a;
                 c++;
-                //console.log("deep.all res : ",res)
                 if (c == count)
                     def.resolve(res);
             } else
@@ -389,7 +382,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     }
                     res[i] = r;
                     c++;
-                    //console.log("deep.all res : ",res)
                     if (c == count)
                         def.resolve(res);
                 }, function (error) {
@@ -2952,8 +2944,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 */
     //_________________________________________________________________________________
 
-    require("deep/deep-stores")(deep);
-    require("deep/deep-ocm")(deep);
+    require("./deep-stores")(deep);
+    require("./deep-ocm")(deep);
 
     //_________________________________________________________________________________
     return deep;

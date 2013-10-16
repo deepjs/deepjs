@@ -6,9 +6,9 @@
  * @module deep
  * @submodule utils
  */
-if(typeof define !== 'function')
-	var define = require('amdefine')(module);
-
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
 define(function(require){
 	return function(deep){
 	var collider = deep.collider;//require("./deep-collider");

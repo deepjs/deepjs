@@ -8,9 +8,9 @@
  *     - check range object usage in chain
  */
 
-"use strict";
-if (typeof define !== 'function')
+if (typeof define !== 'function') {
     var define = require('amdefine')(module);
+}
 
 define(["require"], function (require) {
 
@@ -313,33 +313,7 @@ deep.store("myobjects")
              * @param  {Object} options  could contain 'id'
              * @return {deep.Chain} a chain that hold the patched object and has injected values as success object.
              */
-            /*patch: function (object, options) {
-                options = options || {};
-                var schema = options.schema || this.schema;
-                if (schema) {
-                    var report = deep.validate(object, schema);
-                    if (!report.valid)
-                        return  deep(deep.errors.PreconditionFail("Failed to put on collection : validation failed.", report));
-                }
-                var id = options.id || object.id;
-                if (!id)
-                    return deep(deep.errors.Store("Collection store need id on patch"));
-                var col = this.collection;
-                if(this.collection._deep_ocm_)
-                    col = this.collection();
-                var r = deep.query(col, "./*?id=" + id, {
-                    resultType: "full"
-                });
-                if (!r)
-                    return deep(deep.errors.NotFound("no items found in collection with : " + id));
-                r = r.shift();
-                var val = deep.utils.copy(r.value);
-                deep.utils.up(object, val);
-                r.value = val;
-                if (r.ancestor)
-                    r.ancestor.value[r.key] = val;
-                return deep(r.value).store(this);
-            },*/
+    
             /**
              * select a range in collection
              * @method range
@@ -468,17 +442,6 @@ deep.store("myobjects")
              * @param  {[type]} id
              * @return {[type]}
              */
-            /*patch: function (object, id) {
-                var root = this.root || this;
-                if(root._deep_ocm_)
-                    root = root();
-                var r = null;
-                if (id[0] == "." || id[0] == "/")
-                    r = deep(root).query(id).up(object).done();
-                else
-                    r = deep(root).query("./" + id).up(object).done();
-                return deep(r).store(this);
-            }*/
         });
 
         deep.store.Object.create = function(protocole, root, schema)
@@ -755,8 +718,7 @@ deep.store("myobjects")
                                     modified.push(f);
                                 });
                             return modified;
-                        })
-
+                        });
                     };
                 },
                 bottom:function (request, options) {
@@ -1312,7 +1274,6 @@ deep.store("myobjects")
         };
         deep.utils.sheet(deep.store.ObjectSheet, deep.store.Collection.prototype);
         deep.utils.sheet(deep.store.ObjectSheet, deep.store.Object.prototype);
-        //console.log("after applying sheet protocl;es related : dq is : ", deep.protocoles.dq);
         return deep;
     };
 });

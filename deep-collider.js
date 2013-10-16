@@ -11,9 +11,9 @@
  * @submodule deep-collider
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
-if(typeof define !== 'function')
-	var define = require('amdefine')(module);
-
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
 /*
  * TODO : implement almost every operations, few are done. Will be made on-need.
  *

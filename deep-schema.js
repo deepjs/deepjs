@@ -282,11 +282,8 @@ deep.clean(chain | obj, ?schema)
 
  */
 
-if(typeof define !== 'function')
-{
-	var define = require('amdefine')(module);
-	//var swig = require("swig");
-	var isNode = true;
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
 }	
 define(["require"],
 function(require, utils, promise, Querier){

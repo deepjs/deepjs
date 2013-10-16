@@ -8,8 +8,8 @@
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 
-if(typeof define !== 'function'){
-	var define = require('amdefine')(module);
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
 }
 /**
 TODO :
@@ -20,7 +20,7 @@ add backgrounds()  :  do object extension with deep-extender + schema
 add _ancestor (any ancestor)
 add _brothers  (any brothers)
 */
-define(function defineJsonQuery(require){
+define(function (require){
 	return function(utils){
 	RQL_Global = {}
 
@@ -686,7 +686,6 @@ function query(target, qry, options){
 	var evaluationString = "return " + queryToJS(query) + ".call(target);" ;
 	//evaluationString = "(function(){ console.log('grrrrrrrrrrr ') }).call(target); return []";
 	var	toEval = new Function("target", evaluationString);
-
 
 	//console.log("EVALUATION STRING \n\n",toEval);
 	//var toEval = eval(evaluationString);
