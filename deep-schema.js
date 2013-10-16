@@ -572,12 +572,13 @@ function(require, utils, promise, Querier){
 			types = [types];
 
 		//console.log("will test type in types : " , type, types)
-
 		var ok = false;
+		//
+		if(type == 'undefined' && !schema.required)
+				ok = true;
+		else
 		for(var i = 0; i < types.length; ++i)
 		{
-
-
 
 			if(types[i] == "schema")
 			{
