@@ -459,7 +459,7 @@ deep.store("myobjects")
                 method:"get",
                 store:null
             };
-            if(protocole && protocole._deep_store_)
+            if(typeof protocole === 'object')
                 handler.store = protocole;
             else if(deep.protocoles[protocole])
                 handler.store = deep.protocoles[protocole];
