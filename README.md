@@ -45,7 +45,7 @@ http.createServer(function (req, response) {
 		response.end(JSON.stringify(res));
 	})
 	.fail(function(error){
-		response.writeHead(error.status || 500, {'Content-Type': 'application/json'});
+		response.writeHead(error.status || 500, {'Content-Type': 'application/json'});
 		response.end(JSON.stringify(error));
 	});
 })
