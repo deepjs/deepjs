@@ -31,7 +31,7 @@ deepjs : simply made with love.
 ```javascript
 
 var http = require('http');
-var deep = require("deep");
+var deep = require('deep');
 
 deep.store.Collection("myobjects", []);
 
