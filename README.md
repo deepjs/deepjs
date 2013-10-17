@@ -31,7 +31,7 @@ deepjs : simply made with love.
 ```javascript
 
 var http = require('http');
-var deep = require("deep");
+var deep = require('deep');
 
 deep.store.Collection("myobjects", []);
 
@@ -45,7 +45,7 @@ http.createServer(function (req, response) {
 		response.end(JSON.stringify(res));
 	})
 	.fail(function(error){
-		response.writeHead(error.status || 500, {'Content-Type': 'application/json'});
+		response.writeHead(error.status || 500, {'Content-Type': 'application/json'});
 		response.end(JSON.stringify(error));
 	});
 })
@@ -68,14 +68,14 @@ console.log('Server running at http://127.0.0.1:1337/');
 	};
 	//-----------------Aspects
 	var orchard = {
-		plants : ["appletree"],
+		plants : [{uri:"appletree",growSpeed:10}],
 		watering : deep.compose.after(function () {
 			console.log("We put some mulch after watering");
 		})
 	};
 
 	var kitchenGarden = {
-		plants : ["carrots"],
+		plants : [{uri:"carrots",growSpeed:6}],
 		watering : deep.compose.before(function () {
 			console.log("We protect seedlings before watering");
 		})
@@ -84,7 +84,7 @@ console.log('Server running at http://127.0.0.1:1337/');
 
 	var myOwnLand = {
 		location : "Sao Francisco do Guaporé",
-		plants : ["grass"]
+		plants : [{uri:"grass",growSpeed:2}]
 	};
 
 	deep(myOwnLand)

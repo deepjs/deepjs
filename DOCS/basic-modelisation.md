@@ -11,14 +11,14 @@
 	};
 	//-----------------Aspects
 	var orchard = {
-		plants : ["appletree"],
+		plants : [{uri:"appletree",growSpeed:10}],
 		watering : deep.compose.after(function () {
 			console.log("We put some mulch after watering");
 		})
 	};
 
 	var kitchenGarden = {
-		plants : ["carrots"],
+		plants : [{uri:"carrots",growSpeed:6}],
 		watering : deep.compose.before(function () {
 			console.log("We protect seedlings before watering");
 		})
@@ -27,7 +27,7 @@
 
 	var myOwnLand = {
 		location : "Sao Francisco do Guaporé",
-		plants : ["grass"]
+		plants : [{uri:"grass",growSpeed:2}]
 	};
 
 	deep(myOwnLand)
