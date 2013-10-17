@@ -3,8 +3,8 @@ node full example
 
 ```javascript
 	var http = require('http'),
-		deep = require("deep/deep");
-	require("deep-swig/node")();
+		deep = require("deep");
+	require("deep-swig").createDefault();
 
 	//______________________________________________________ schema
 
