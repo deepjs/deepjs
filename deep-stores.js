@@ -258,14 +258,28 @@ deep.store("myobjects")
                 if(this.collection._deep_ocm_)
                     col = this.collection();
 
-                var r = deep.query(col, "./*?id=" + id, {
-                    resultType: "full"
-                });
-                if (!r)
+                var r = deep.query(col, "./*?id=" + id, { resultType: "full" });
+                if (!r || r.length === 0)
                     return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
                 r = r.shift();
-                
-                r.value = object;
+                if(options.query)
+                {
+                    r.value = deep.utils.copy(r.value);
+                    deep.utils.replace(r.value, options.query, object);
+                }
+                else
+                    r.value = object;
+
+                var schema = this.schema;
+                if(schema)
+                {
+                    if(schema._deep_ocm_)
+                        schema = schema("put");
+                    var report = deep.validate(r.value, schema);
+                    if(!report.valid)
+                        return deep.when(deep.errors.PreconditionFail(report));
+                }
+
                 if (r.ancestor)
                     r.ancestor.value[r.key] = r.value;
                 return deep.when(r.value);
@@ -378,18 +392,34 @@ deep.store("myobjects")
                 var root = this.root || this;
                 if(root._deep_ocm_)
                     root = root();
-                var id = options.id;
+                var id = options.id || object.id;
                 if (!id)
                     return deep.when(deep.errors.Store("QuerierStore need id on put"));
-                var r = deep.query(root, id, {
-                    resultType: "full"
-                });
-                if (!r)
+                var r = deep.query(root, id, { resultType: "full", allowStraightQueries:false });
+                if (!r || r.length === 0)
                     return deep.when(deep.errors.NotFound("QuerierStore.put : no items found in collection with : " + id));
                 r = r.shift();
-                r.value = object;
+                
+                if(options.query)
+                {
+                    r.value = deep.utils.copy(r.value);
+                    deep.utils.replace(r.value, options.query, object);
+                }
+                else
+                    r.value = object;
+
+                var schema = this.schema;
+                if(schema)
+                {
+                    if(schema._deep_ocm_)
+                        schema = schema("put");
+                    var report = deep.validate(r.value, schema);
+                    if(!report.valid)
+                        return deep.when(deep.errors.PreconditionFail(report));
+                }
                 if (r.ancestor)
-                    r.ancestor.value[r.key] = object;
+                    r.ancestor.value[r.key] = r.value;
+                
                 return deep.when(r.value);
             },
             /**
@@ -478,7 +508,7 @@ deep.store("myobjects")
             if(typeof handler.store === 'function')
                 handler.store = {
                     get:handler.store
-                }
+                };
             if(handler.store.init)
                 return deep.when(handler.store.init())
                 .done(function(){
@@ -1159,6 +1189,7 @@ deep.store("myobjects")
                     opt.id = opt.id || content.id;
                     if(!opt.id)
                         return deep.when(deep.errors.Patch("json stores need id on PATCH"));
+
                     opt.id = (opt.baseURI || "")+opt.id;
                     var self = this;
                     return self.get(opt.id, opt)
@@ -1167,7 +1198,20 @@ deep.store("myobjects")
                     })
                     .done(function(data){
                         data = deep.utils.copy(data);
-                        deep.utils.up(content, data);
+                        if(opt.query)
+                        {
+                            deep.query(data, opt.query, { resultType:"full", allowStraightQueries:false })
+                            .forEach(function(entry){
+                                entry.value = deep.utils.up(content, entry.value);
+                                if(entry.ancestor)
+                                    entry.ancestor.value[entry.key] = entry.value;
+                            });
+                            delete opt.query;
+                        }
+                        else
+                        {
+                            deep.utils.up(content, data);
+                        }
                         return self.put(data, opt);
                     });
                 },
@@ -1257,13 +1301,14 @@ deep.store("myobjects")
                     });
                 }
             },
-            'dq.up::./[post,put]':deep.compose.around(function(old){
+            'dq.up::./post':deep.compose.around(function(old){
                 return function (content, opt) {
+                    opt = opt || {};
                     var schema = this.schema;
                     if(schema)
                     {
                         if(schema._deep_ocm_)
-                            schema = schema();
+                            schema = schema("post");
                         var report = deep.validate(content, schema);
                         if(!report.valid)
                             return deep.when(deep.errors.PreconditionFail(report));

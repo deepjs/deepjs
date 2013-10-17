@@ -1345,6 +1345,25 @@ define(function(require){
         return doSeries(functions.shift());
 	}
 
+	utils.replace = function(target, what, by){
+		var replaced = [];
+        function finalise(r) {
+            if (!r.ancestor)
+                return;
+            r.ancestor.value[r.key] = r.value = by;
+            replaced.push(r);
+        }
+        var r = deep.query(target, what, { resultType: "full" });
+        if (!r)
+            return r;
+        if (r._isDQ_NODE_)
+        {
+            finalise(r);
+            return replaced.shift();
+        }
+        r.forEach(finalise);
+    	return replaced;
+	};
 
 	return utils;
 }
