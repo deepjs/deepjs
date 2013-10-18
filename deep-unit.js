@@ -193,11 +193,12 @@ define(["require","./deep"], function (require, deep) {
             });
         })
         .fail(function(error){
-            console.error("deep : Unit bunch failed to load : ", e);    
-        })
+            console.error("deep : Unit bunch failed to load : ", e);
+        });
     };
 
     deep.Unit = Unit;
 
     return Unit;
 });
+
