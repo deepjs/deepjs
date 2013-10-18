@@ -2947,6 +2947,17 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     require("./deep-stores")(deep);
     require("./deep-ocm")(deep);
 
+    deep.coreUnits = deep.coreUnits || [];
+    deep.coreUnits.push("js::deep/units/queries",
+        "js::deep/units/collisions",
+        "js::deep/units/colliders",
+        "js::deep/units/compositions",
+        "js::deep/units/flatten",
+        "js::deep/units/replace",
+        "js::deep/units/remove",
+        "js::deep/units/interpret",
+        "js::deep/units/range");
+
     //_________________________________________________________________________________
     return deep;
 });

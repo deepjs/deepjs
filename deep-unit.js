@@ -160,10 +160,10 @@ define(["require","./deep"], function (require, deep) {
             var results = [];
             var errors = [];
             var doTest = function(unit){
+                console.log("*************** will do unit : ", unit.title);
                 return deep.when(unit.run("*",options));
             };
             console.time("bunch");
-
             var d = deep.when(doTest(units.shift()));
             var always = function(s,e){
                 if(e)

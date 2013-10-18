@@ -14,8 +14,6 @@ define(function(require){
 	var collider = deep.collider;//require("./deep-collider");
 	var compose = deep.compose; //require("./deep-compose");
 
-
-
 	/**
 	 * @class utils
 	 * @namespace deep

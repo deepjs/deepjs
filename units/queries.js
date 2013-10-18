@@ -84,7 +84,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 
 
   var unit = {
-    title:"deep-query full test",
+    title:"deep/units/queries",
     stopOnError:false,
     tests:{
       "/store/[]":function(){
@@ -1017,8 +1017,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
       }
     }
   };
-  unit = new Unit(unit);
-  return unit;
+  return new Unit(unit);
 });
 
 

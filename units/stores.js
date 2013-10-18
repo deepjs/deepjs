@@ -23,7 +23,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
     };
 
     var unit = {
-        title:"Generic store tests",
+        title:"deep/units/stores",
         tests : {
             post:function(){
                 return deep.store(this)

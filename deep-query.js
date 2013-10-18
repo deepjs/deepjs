@@ -24,10 +24,10 @@ define(function defineDeepQuery(require)
 {
 	return function(deep)
 	{
-
+/*
     deep.coreUnits = deep.coreUnits || [];
-    deep.coreUnits.push("js::deep/units/deep-queries");
-		
+    deep.coreUnits.push("js::deep/units/queries");
+*/		
 	var rqlQuery = deep.rql;// require("./deep-rql").query;
 	var utils = deep.utils; //require("./utils");
 	var QueryError = Error;
