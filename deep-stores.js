@@ -69,108 +69,6 @@ define(["require"], function (require) {
                 };
             }
         };
-
-        //_______________________________________________________________ GENERIC STORE TEST CASES
-
-        var postTest = {
-            id:"id123",
-            title:"hello",
-            order:2
-        };
-        var putTest = {
-            id:"id123",
-            order:2,
-            otherVar:"yes"
-        };
-        var patchTest = {
-            id:"id123",
-            order:4,
-            otherVar:"yes",
-            newVar:true
-        };
-        deep.Store.prototype.runTests = function(){
-            console.log("deep.Store.runTests");
-            function dotests(store){
-                var functions = deep.query(store.tests, "./*");
-                //console.log("dotetsts : ", store, functions);
-                return deep.utils.series(functions, store)
-                .fail(function (error) {
-                    console.log("GENERIC STORE TEST FAILED : ", error);
-                    return error;
-                })
-                .done(function(s){
-                    console.log("GENERIC STORE TEST PASSED !! : ",s);
-                });
-            }
-            return dotests(this);
-        };
-        deep.Store.prototype.tests = {
-            base:function(){
-                // post
-                console.log("deep.Store.base tests");
-                return deep.store(this)
-                //.log("chain store init in test")
-                .post( postTest )
-                // .log("post")
-                .equal( postTest )
-                // get
-                .get("id123")
-                // .log("get")
-                .equal(postTest)
-                // put
-                .put(putTest)
-                // .log("put")
-                .equal( putTest )
-                .get("id123")
-                // .log("get")
-                .equal( putTest )
-                .patch({
-                    order:4,
-                    newVar:true,
-                    id:"id123"
-                })
-                // .log("patch")
-                .equal(patchTest)
-                //.log("patch")
-                .get("id123")
-                // .log("get")
-                .equal(patchTest)
-                // query
-                .get("?order=4")
-                // .log("query")
-                .equal([patchTest]);
-            },
-            del:function () {
-                console.log("deep.Store.del tests");
-                var delDone = false;
-                return deep.store(this)
-                .del("id123")
-                .done(function (argument) {
-                    delDone = true;
-                })
-                .get("id123")
-                .fail(function(error){
-                    if(delDone && error.status == 404)
-                        return true;
-                });
-            }
-        };
-/*
-deep.store("myobjects")
-.patch({
-    id:"id1381690769563",
-    test:"hello",
-    fdfsdfsddsfsdfsfdfsd:"11111111111"
-})
-.rpc("first", ["hhhhh","gggggg"], "id1381690769563")
-.get()
-.bulk([
-    {to:"id1381690769563", method:"patch", body:{name:"updated 2"}},
-    {to:"id1381690769563", method:"get"},
-    {to:"id1381690769563", method:"rpc", body:{ args:["hello","blkrpc"], method:"first" }}
-])
-.log();
-*/
         //_____________________________________________________________________ COLLECTION STORE
         /**
          * A store based on simple array
@@ -254,6 +152,7 @@ deep.store("myobjects")
                 var id = options.id || object.id;
                 if (!id)
                     return deep.when(deep.errors.Store("Collection store need id on put"));
+
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
@@ -268,7 +167,11 @@ deep.store("myobjects")
                     deep.utils.replace(r.value, options.query, object);
                 }
                 else
+                {
+                    if(!object.id)
+                        object.id = options.id;
                     r.value = object;
+                }
 
                 var schema = this.schema;
                 if(schema)
@@ -296,13 +199,14 @@ deep.store("myobjects")
                 options.id = options.id || object.id;
                 if (!options.id)
                     object.id = options.id = "id"+new Date().valueOf(); // mongo styled id
+                if(!object.id)
+                    object.id = options.id;
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
                 var res = deep.query(col, "./*?id=" + object.id);
                 if (res && res.length > 0)
                     return deep.when(deep.errors.Store("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
-               
                 col.push(object);
                 return deep.when(object);
             },
@@ -395,6 +299,7 @@ deep.store("myobjects")
                 var id = options.id || object.id;
                 if (!id)
                     return deep.when(deep.errors.Store("QuerierStore need id on put"));
+                
                 var r = deep.query(root, id, { resultType: "full", allowStraightQueries:false });
                 if (!r || r.length === 0)
                     return deep.when(deep.errors.NotFound("QuerierStore.put : no items found in collection with : " + id));
@@ -406,8 +311,11 @@ deep.store("myobjects")
                     deep.utils.replace(r.value, options.query, object);
                 }
                 else
+                {
+                    if(!object.id)
+                        object.id = id;
                     r.value = object;
-
+                }
                 var schema = this.schema;
                 if(schema)
                 {
@@ -434,7 +342,6 @@ deep.store("myobjects")
                 if(root._deep_ocm_)
                     root = root();
                 var id = object.id || options.id;
-                var schema = options.schema || this.schema;
                 var res = deep.query(root, id);
                 if (res && res.length > 0)
                     return deep.when(deep.errors.Store("deep.store.Object.post : An object has the same id before post : please put in place : object : ", object));
@@ -1189,8 +1096,7 @@ deep.store("myobjects")
                     opt.id = opt.id || content.id;
                     if(!opt.id)
                         return deep.when(deep.errors.Patch("json stores need id on PATCH"));
-
-                    opt.id = (opt.baseURI || "")+opt.id;
+                    //console.log("patch : ", content, opt);
                     var self = this;
                     return self.get(opt.id, opt)
                     .fail(function(error){
@@ -1212,6 +1118,7 @@ deep.store("myobjects")
                         {
                             deep.utils.up(content, data);
                         }
+                        //console.log("patch will put : ", data, opt);
                         return self.put(data, opt);
                     });
                 },
