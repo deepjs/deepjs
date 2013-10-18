@@ -29,7 +29,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 }
                 else if (obj && obj._deep_store_)
                 {
-                    h._nodes = [deep.Querier.createRootNode({}, options)];
+                    h._nodes = [deep.Querier.createRootNode({}, null, options)];
                     h.store(obj);
                     deep.Store.extendsChain(h);
                 }
@@ -708,6 +708,25 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     console.log("deep.chain.context : ", self._context);
             };
             return addInChain.apply(this, [func]);
+        },
+                /**
+         * wait promise resolution or rejection before continuing chain
+         *
+         *  asynch
+         *  transparent false
+         *
+         * @method  when
+         * @param  {deep.Promise} prom the promise to waiting for
+         * @chainable
+         * @return {deep.Chain}
+         */
+        when: function (prom) {
+            var self = this;
+            var func = function (s, e) {
+                return prom;
+            };
+            func._isDone_ = true;
+            return addInChain.apply(this, [func]);
         }
     };
 
@@ -825,25 +844,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         e.value._deep_entry = entry;
                 });
             };
-            return addInChain.apply(this, [func]);
-        },
-        /**
-         * wait promise resolution or rejection before continuing chain
-         *
-         *	asynch
-         *	transparent false
-         *
-         * @method  when
-         * @param  {deep.Promise} prom the promise to waiting for
-         * @chainable
-         * @return {deep.Chain}
-         */
-        when: function (prom) {
-            var self = this;
-            var func = function (s, e) {
-                return prom;
-            };
-            func._isDone_ = true;
             return addInChain.apply(this, [func]);
         },
         //_____________________________________________________________  BRANCHES
@@ -1772,7 +1772,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         objects.forEach(function (object) {
 
                             //console.log("deep.up : entry : ", result.value, " - to apply : ", object)
-                            alls.push(utils.sheet(object, result, result.schema) );
+                            alls.push(utils.sheet(object, result) );
                         });
                     });
                     if(args.length == 1)
@@ -1806,7 +1806,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     self._nodes.forEach(function (result) {
                         objects.forEach(function (object) {
                             //console.log("deep.up : entry : ", result.value, " - to apply : ", object)
-                            result.value = utils.up(object, result.value, result.schema);
+                            result.value = utils.up(object, result.value);
                             if (result.ancestor)
                                 result.ancestor.value[result.key] = result.value;
                         });
@@ -1839,7 +1839,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     .done(function (objects) {
                     self._nodes.forEach(function (result) {
                         objects.forEach(function (object) {
-                            result.value = utils.bottom(object, result.value, result.schema);
+                            result.value = utils.bottom(object, result.value);
                             if (result.ancestor)
                                 result.ancestor.value[result.key] = result.value;
                         });
@@ -2665,13 +2665,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     //console.log("final backgrounds stack : ", extendeds);
                     extendeds.reverse();
                     extendeds.forEach(function (s) {
-                        utils.bottom(s, entry.value, entry.schema);
+                        utils.bottom(s, entry.value);
                     });
                     return entry;
                 });
             //console.log("final backgrounds stack : ", r);
             r.forEach(function (s) {
-                utils.bottom(s, entry.value, entry.schema);
+                utils.bottom(s, entry.value);
             });
             return entry;
         }
