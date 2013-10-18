@@ -24,6 +24,10 @@ define(function defineDeepQuery(require)
 {
 	return function(deep)
 	{
+
+    deep.coreUnits = deep.coreUnits || [];
+    deep.coreUnits.push("js::deep/units/deep-queries");
+		
 	var rqlQuery = deep.rql;// require("./deep-rql").query;
 	var utils = deep.utils; //require("./utils");
 	var QueryError = Error;
@@ -744,7 +748,7 @@ define(function defineDeepQuery(require)
 	DQ.firstObjectWithProperty = function firstObjectWithProperty(entry, property){
 		//console.profile("firstObjectWithProperty")
 		if(!entry._isDQ_NODE_)
-			entry = DQ.createRootNode(entry, {})
+			entry = DQ.createRootNode(entry)
 		var value = entry.value;
 		if(value[property])
 			return entry;
@@ -1066,7 +1070,7 @@ define(function defineDeepQuery(require)
 			uri:options.uri || null,
 			key:null,
 			ancestor:null,
-			schema:schema || {},
+			schema:schema,
 			depth:0
 		}
 		node.root = node;
