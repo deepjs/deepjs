@@ -20,7 +20,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     this.obj.a = true;
                 }
             };
-            this.options.context = {
+            return {
                 b : {
                     backgrounds:[a],
                     obj:{

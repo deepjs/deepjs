@@ -11,17 +11,17 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
         title:"deep/units/compositions",
         stopOnError:false,
         setup:function(){
-            this.options.context = {
+            return {
                 a : {
                     func1:function(){
                         //console.log("func1");
                         this.res.push("func1");
                     },
-                    func2:deep.compose.createIfNecessary().before(function(){
+                    func2:deep.compose.before(function(){
                         //console.log("func2");
                         this.res.push("func2");
                     }),
-                    func3:deep.compose.createIfNecessary().after(function(){
+                    func3:deep.compose.after(function(){
                         //console.log("func3");
                         this.res.push("func3");
                     })
@@ -32,7 +32,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                         // console.log("func1_1");
                         this.res.push("func1_1");
                     }),
-                    func2:deep.compose.createIfNecessary().after(function(){
+                    func2:deep.compose.after(function(){
                         // console.log("func2_2");
                         this.res.push("func2_2");
                     }),

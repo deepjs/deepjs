@@ -4,10 +4,9 @@ if (typeof define !== 'function') {
 
 define(["require","./deep"], function (require, deep) {
 
-    function Unit(unit, options){
+    function Unit(unit){
         if(unit)
             deep.utils.up(unit, this);
-        this.options = options || {};
         //console.log("Unit created : ", this);
         this.tests  = this.tests || {};
     }
@@ -18,17 +17,15 @@ define(["require","./deep"], function (require, deep) {
         stopOnError:true,
         options:null,
         setup : function(options){
-
         },
         clean : function(options){
-
+            delete this.context;
         },
         run : function(tests, options){
             options = options || {};
             tests = tests || [];
             if(!tests.forEach)
                 tests = [tests];
-            var context = options.context || this.options.context || {};
             //console.log("unit context : ", context);
             var functions = deep.query(this.tests, "./["+tests.join(",")+"]", { resultType:"full" });
             var numberOfTests = functions.length;
@@ -46,12 +43,12 @@ define(["require","./deep"], function (require, deep) {
 
             var results = [];
             var errors = [];
-            var d = deep.when(this.setup(context, options));
+            var d = deep.when(this.setup(options));
 
             var applyTest = function(fn){
                 console.log("\n- unit test runned : ", fn.key);
                 console.time(fn.key);
-                return deep.when(fn.value.call(context))
+                return deep.when(fn.value.call(self.context))
                 .always(function(s,e){
                     console.timeEnd(fn.key);
                     if(e)
@@ -81,7 +78,8 @@ define(["require","./deep"], function (require, deep) {
                     d.when(applyTest(functions.shift())).done(done).fail(fail);
                 return true;
             };
-            d.done(function(){
+            d.done(function(context){
+                self.context = context || {};
                 console.log("\tsetup done.");
                 console.time("unit");
                 this.when(applyTest(functions.shift()))
@@ -109,7 +107,7 @@ define(["require","./deep"], function (require, deep) {
                 console.log("\tfails : ", errors.length,"/",numberOfTests);
                 console.log("\tommited : ", numberOfTests-results.length,"/",numberOfTests);
                 
-                return self.clean(context, options);
+                return self.clean();
             })
             .always(function(s,e){
                 if(e)

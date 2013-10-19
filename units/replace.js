@@ -11,7 +11,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
         title:"deep/units/replace",
         stopOnError:false,
         setup:function(){
-			this.options.context = {
+			return {
 				aString : "Hello",
 				anInt : 5,
 				anArray : ["1","2","3"],
