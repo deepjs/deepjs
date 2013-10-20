@@ -201,7 +201,7 @@ define(["require","./deep"], function (require, deep) {
             return d.always(always)
             .always(function(s,e){
                 console.log("\n\n\n___________________________________________________________________");
-                console.log("\n\n\n*******************************************************************");
+                console.log("\n*******************************************************************");
                 console.log("************************** Bunch time : ***************************");
                 console.timeEnd("bunch");
                 if(e)
@@ -216,7 +216,9 @@ define(["require","./deep"], function (require, deep) {
                 console.log("\tfailure : ", report.failure,"/",report.numberOfTests);
                 console.log("\tommited : ", report.ommited,"/",report.numberOfTests);
                 //console.log(JSON.stringify(report, null, ' '));
-                console.log("*******************************************************************\n");
+                console.log("\n*******************************************************************");
+                console.log("*******************************************************************");
+                console.log("___________________________________________________________________\n\n");
                 return report;
             });
         })
