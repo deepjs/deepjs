@@ -20,7 +20,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 				};
 				return deep(a)
 				.remove("./anArray/1")
-				.equal({
+				.valuesEqual({
 					aString : "Hello",
 					anInt : 5,
 					anArray : ["1","3"],
@@ -47,7 +47,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 				};
 				return deep(obj, schema)
 				.remove(".//*?_schema.private=true")
-				.equal({
+				.valuesEqual({
 					email: 'test@test.com',
 					id: '51013dec530e96b112000001'
 				});
@@ -72,7 +72,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 				};
 				return deep(objs, schema2)
 				.remove(".//?_schema.private=true")
-				.equal([{
+				.valuesEqual([{
 					email: 'test@test.com',
 					id: '51013dec530e96b112000001'
 				}]);
