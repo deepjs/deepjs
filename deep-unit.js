@@ -39,26 +39,42 @@ define(["require","./deep"], function (require, deep) {
             console.log("\tStop on error ? ", stopOnError );
             console.log("\tNumber of tests : ",functions.length,"\n" );
             //console.log("\tContext : ",context,"\n\n" );
+            var errors = [];
             var self = this;
+            
+            if(functions.length === 0)
+            {
+                console.log("**********************************************************");
+                console.log("************* Nothing to do : aborting unit **************");
+                console.log("**********************************************************");
+                if(console.groupEnd)
+                    console.groupEnd();
+                return {
+                    title:self.title,
+                    numberOfTests:0,
+                    success:0,
+                    failure:0,
+                    ommited:0,
+                    errors:errors,
+                    valid:true
+                };
+            }
+
 
             var results = [];
-            var errors = [];
             var d = deep.when(this.setup(options));
-
+            var closure = {};
             var applyTest = function(fn){
                 console.log("\n- unit test runned : ", fn.key);
                 console.time(fn.key);
+                closure.fn = fn;
                 return deep.when(fn.value.call(self.context))
                 .always(function(s,e){
                     console.timeEnd(fn.key);
                     if(e)
                     {
                         console.error("****** test failed ! ******* : ",fn.key, " error : ", e);
-                        errors.push({
-                            unit:self.title,
-                            test:fn.key,
-                            error:e
-                        });
+         
                     }
                     else
                         console.log("\tok !");
@@ -72,7 +88,11 @@ define(["require","./deep"], function (require, deep) {
             var fail = function(error){
                 //console.log("_______________________________________________ unit test fail : ",error);
                 results.push(error);
-  
+                 errors.push({
+                            unit:self.title,
+                            test:closure.fn.key,
+                            error:error
+                        });
                 deep.utils.dumpError(error);
                 if(!stopOnError && functions.length > 0)
                     d.when(applyTest(functions.shift())).done(done).fail(fail);
@@ -104,7 +124,7 @@ define(["require","./deep"], function (require, deep) {
 
                 console.log("\n\tNumber of tests : ", numberOfTests);
                 console.log("\tsuccess : ", results.length-errors.length,"/",numberOfTests);
-                console.log("\tfails : ", errors.length,"/",numberOfTests);
+                console.log("\tfailure : ", errors.length,"/",numberOfTests);
                 console.log("\tommited : ", numberOfTests-results.length,"/",numberOfTests);
                 
                 return self.clean();
@@ -120,7 +140,7 @@ define(["require","./deep"], function (require, deep) {
                     title:self.title,
                     numberOfTests:numberOfTests,
                     success:results.length-errors.length,
-                    fails:errors.length,
+                    failure:errors.length,
                     ommited:numberOfTests-results.length,
                     //results:results,
                     errors:errors,
@@ -136,6 +156,8 @@ define(["require","./deep"], function (require, deep) {
         console.log("\n*******************************************************************");
         console.log("*************************** Units Bunch ****************************");
         var alls = [];
+        if(!units.forEach)
+            units = [units];
         units.forEach(function(unit){
             if(typeof unit === 'string')
                 alls.push(deep.get(unit));
@@ -147,7 +169,7 @@ define(["require","./deep"], function (require, deep) {
             numberOfUnits:units.length,
             numberOfTests:0,
             success:0,
-            fails:0,
+            failure:0,
             ommited:0
         };
         if(alls.length === 0)
@@ -158,7 +180,7 @@ define(["require","./deep"], function (require, deep) {
             var results = [];
             var errors = [];
             var doTest = function(unit){
-                console.log("*************** will do unit : ", unit.title);
+                console.log("\n\n\n*************** Executing unit : ", unit.title);
                 return deep.when(unit.run("*",options));
             };
             console.time("bunch");
@@ -167,7 +189,7 @@ define(["require","./deep"], function (require, deep) {
                 if(e)
                     report.errors.push(e);
                 report.success += s.success;
-                report.fails += s.fails;
+                report.failure += s.failure;
                 report.ommited += s.ommited;
                 report.numberOfTests += s.numberOfTests;
                 report.errors = report.errors.concat(s.errors);
@@ -178,6 +200,7 @@ define(["require","./deep"], function (require, deep) {
             };
             return d.always(always)
             .always(function(s,e){
+                console.log("\n\n\n___________________________________________________________________");
                 console.log("\n\n\n*******************************************************************");
                 console.log("************************** Bunch time : ***************************");
                 console.timeEnd("bunch");
@@ -185,13 +208,20 @@ define(["require","./deep"], function (require, deep) {
                     console.log("error while executings tests bunch : ", e);
                 console.log("*******************************************************************");
                 console.log("********** tests bunch arrived to end : final report : ************");
-                console.log("\n",report,"\n");
+                //console.log("\n",report,"\n");
+                console.log("\n\tErrors: ", report.errors);
+                console.log("\tNumber of units : ", report.numberOfUnits);
+                console.log("\tNumber of tests : ", report.numberOfTests);
+                console.log("\tsuccess : ", report.success,"/",report.numberOfTests);
+                console.log("\tfailure : ", report.failure,"/",report.numberOfTests);
+                console.log("\tommited : ", report.ommited,"/",report.numberOfTests);
+                //console.log(JSON.stringify(report, null, ' '));
                 console.log("*******************************************************************\n");
                 return report;
             });
         })
         .fail(function(error){
-            console.error("deep : Unit bunch failed to load : ", e);
+            console.error("deep : Unit bunch failed to load : ", error);
         });
     };
 
