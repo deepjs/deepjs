@@ -201,8 +201,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     var addInChain = function addInChain(handle) {
         var self = this;
-        if (self.deferred && (self.deferred.rejected || self.deferred.resolved))
-            throw deep.errors.Internal("you try to add handles in ended chain ! aborting and throw.");
+        if (self.deferred && self.deferred._promises && self.deferred._promises.length > 0)
+            throw deep.errors.ChainEnded("you try to add handles in ended chain ! aborting and throw.");
         self._queue.push(handle);
         if (self._initialised && !self._running && !self._executing)
             self._forceHandle();
@@ -307,11 +307,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         //console.log("deep.promise : ", arg)
         if (typeof arg === "undefined" || arg === null)
             return createImmediatePromise(arg);
+        if(arg._deep_chain_)
+            return arg.promise();
         if (typeof arg.then === 'function') //any promise compliant object
         {
             //if (arg._deep_promise_)
               //  return arg;
-
             //console.log("doing simple promise (no promise and then is present) on : ", arg);
             var def = deep.Deferred();
             arg.then(function (s) {
@@ -325,7 +326,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return arg.promise();
         if (typeof arg.promise === 'object')
             return arg.promise;
-
         return createImmediatePromise(arg);
     }
     deep.promise.immediate = createImmediatePromise;
@@ -829,7 +829,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         _forceHandle: function chainForce() {
             var self = this;
             if (this.deferred && (self.deferred.rejected || self.deferred.resolved || self.deferred.canceled))
-                throw deep.errors.Internal("chain has already been ended ! could'nt execute it further.");
+                throw deep.errors.ChainEnded("chain has already been ended ! could'nt execute it further.");
             forceHandle.apply(this);
             if(!this.deferred)
                 return;
@@ -2415,12 +2415,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     temp.push(r);
                     deep.query(entry.schema.links, "./*?rel=in=(" + relations.join(",") + ")")
                     .forEach(function (relation) {
-                        console.log("getRelations : got : ", relation)
+                        //console.log("getRelations : got : ", relation)
                         var path = deep.utils.interpret(relation.href, entry.value);
                         var parsed = deep.parseRequest(path);
                         var wrap = {
-                            rel: relation,
-                            href: parsed
+                            rel: relation
+                            //href: parsed
                         };
                         r[relation] = wrap;
                         alls.push(deep.get(parsed, {
@@ -2508,7 +2508,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     });
                     var d = deep.all(alls)
                     .done(function (results) {
-                        //console.log("mapRelations : results : ", results);
+                        //console.log("mapRelations : results : ");
+                        //console.log(JSON.stringify(results));
                         results.forEach(function (r) {
                             //console.log("do : ", r, " - on : ", entry.value)
                             deep.utils.setValueByPath(entry.value, r.path, r.result, delimitter);
