@@ -9,16 +9,17 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 
     var unit = {
         title:"deep/units/range",
+        stopOnError:false,
         tests : {
             "1-4":function(){
                 return deep([0,1,2,3,4,5])
                 .range(1,4)
-                .equal([1,2,3,4]);
+                .valuesEqual([1,2,3,4]);
             },
             "3-5":function(){
                 return deep([0,1,2,3,4,5])
                 .range(3,5)
-                .equal([3,4,5]);
+                .valuesEqual([3,4,5]);
             }
         }
     };
