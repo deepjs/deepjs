@@ -727,6 +727,38 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             };
             func._isDone_ = true;
             return addInChain.apply(this, [func]);
+        },
+        /**
+         * equal test strict equality on each entry value against provided object
+         *
+         *  Chain Success injection : the valid report
+         *  Chain Error injection : the unvalid report
+         *
+         *
+         * @method  equal
+         * @param  {*} obj      the object to test
+         * @param  {Function}   optional. callBack a callBack to manage report
+         * @chainable
+         * @return {deep.Chain}        this
+         */
+        equal: function chainEqual(obj) {
+            var self = this;
+            var func = function (s,e) {
+                //var toTest = deep.chain.val(self);
+                var ok = utils.deepEqual(s, obj);
+                var report = {
+                    equal: ok,
+                    value: s,
+                    needed: obj
+                };
+                if (ok)
+                    return report;
+                else
+                    return deep.errors.PreconditionFail("deep.equal failed ! ", report);
+            };
+            func._isDone_ = true;
+            addInChain.apply(this, [func]);
+            return self;
         }
     };
 
@@ -2110,22 +2142,23 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             addInChain.apply(this, [flattenBackgrounds]);
             return this;
         },
+
         /**
-         * equal test strict equality on each entry value against provided object
+         * valuesEqual test strict equality on each entry value against provided object
          *
-         *	Chain Success injection : the valid report
-         *	Chain Error injection : the unvalid report
+         *  Chain Success injection : the valid report
+         *  Chain Error injection : the unvalid report
          *
          *
          * @method  equal
          * @param  {*} obj      the object to test
-         * @param  {Function}	optional. callBack a callBack to manage report
+         * @param  {Function}   optional. callBack a callBack to manage report
          * @chainable
          * @return {deep.Chain}        this
          */
-        equal: function chainEqual(obj) {
+        valuesEqual: function chainEqual(obj) {
             var self = this;
-            var func = function () {
+            var func = function (s,e) {
                 var toTest = deep.chain.val(self);
                 var ok = utils.deepEqual(toTest, obj);
                 var report = {
@@ -2310,8 +2343,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         parsed.uri += "?" + constrain;
                     //console.log("mapOn : parsedUri with constrains : ",parsed.uri);
                     if (parsed.store !== null)
-                        return deep.when(parsed.store.get(parsed.uri))
-                            .done(function (results) {
+                        return deep.get(parsed)
+                        .done(function (results) {
                             results = [].concat(results);
                             return doMap(results, localKey, foreignKey, whereToStore);
                         });
@@ -2381,7 +2414,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     }
                     temp.push(r);
                     deep.query(entry.schema.links, "./*?rel=in=(" + relations.join(",") + ")")
-                        .forEach(function (relation) {
+                    .forEach(function (relation) {
+                        console.log("getRelations : got : ", relation)
                         var path = deep.utils.interpret(relation.href, entry.value);
                         var parsed = deep.parseRequest(path);
                         var wrap = {
@@ -2400,7 +2434,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 return deep.all(alls)
                     .done(function (s) {
                     //console.log("get relations : ", s)
-                    return temp;
+                    return s;
                 });
             }
             func._isDone_ = true;
@@ -2455,13 +2489,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 relations.push(i);
             //console.log("mapRelations :  relations : ", relations);
             var func = function (s, e) {
+                var promises = [];
                 self._nodes.forEach(function (entry) {
                     if (!entry.schema || !entry.schema.links)
                         return;
                     var alls = [];
-                    var count = 0;
+
                     deep.query(entry.schema.links, "./*?rel=in=(" + relations.join(",") + ")")
-                        .forEach(function (relation) {
+                    .forEach(function (relation) {
                         //console.log("do map relations on : ", relation);
                         var path = deep.interpret(relation.href, entry.value);
                         alls.push(deep.get(path, {
@@ -2470,19 +2505,24 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                                 path: map[relation.rel]
                             }
                         }));
-                        count++;
                     });
-                });
-                if (alls.length == 0)
-                    return;
-                return deep.all(alls)
+                    var d = deep.all(alls)
                     .done(function (results) {
-                    //console.log("mapRelations : results : ", results);
-                    results.forEach(function (r) {
-                        //console.log("do : ", r, " - on : ", entry.value)
-                        deep.utils.setValueByPath(entry.value, r.path, r.result, delimitter);
+                        //console.log("mapRelations : results : ", results);
+                        results.forEach(function (r) {
+                            //console.log("do : ", r, " - on : ", entry.value)
+                            deep.utils.setValueByPath(entry.value, r.path, r.result, delimitter);
+                        });
+                        return results;
                     });
-                    return results;
+                    promises.push(d);
+                });
+                if (promises.length == 0)
+                    return;
+                return deep.all(promises)
+                .done(function(results){
+                    if(!self._queried)
+                        return results.shift();
                 });
             }
             func._isDone_ = true;
@@ -2505,13 +2545,15 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 value._deep_entry = entry;
                 prom = value[functionName].apply(value, args);
                 if (prom && prom.then)
-                    prom.then(function () {
+                    prom.then(function (s) {
+                        //console.log("callFunctionFromValue : success : ",s)
                         delete value._deep_entry;
                     }, function () {
                         delete value._deep_entry;
                     });
                 else
                     delete value._deep_entry;
+                //console.log("callFunctionFromValue : prom : ", prom)
                 return prom;
             }
             return prom;
@@ -2948,15 +2990,23 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     require("./deep-ocm")(deep);
 
     deep.coreUnits = deep.coreUnits || [];
-    deep.coreUnits.push("js::deep/units/queries",
+    deep.coreUnits.push(
+        "js::deep/units/equals",
+        "js::deep/units/queries",
         "js::deep/units/collisions",
         "js::deep/units/colliders",
         "js::deep/units/compositions",
         "js::deep/units/flatten",
+        "js::deep/units/promises",
+        "js::deep/units/chain",
         "js::deep/units/replace",
         "js::deep/units/remove",
         "js::deep/units/interpret",
-        "js::deep/units/range");
+        "js::deep/units/range",
+        "js::deep/units/relations",
+        "js::deep/units/context",
+        "js::deep/units/ocm"
+    );
 
     //_________________________________________________________________________________
     return deep;
