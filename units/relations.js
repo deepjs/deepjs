@@ -61,7 +61,16 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     label:"hello"
                 }, schema3)
                 .getRelations("plant", "user")
-                .log();
+                .equal([
+                {
+                    "rel":{"href":"plant::{ plantId }","rel":"plant"},
+                    "result":{"id":"e1","title":"plant title"}
+                },
+                {
+                    "rel":{"href":"user::{ userId }","rel":"user"},
+                    "result":{"id":"e1","title":"user title"}
+                }
+                ]);
             },
             b:function(){
                 return deep({
@@ -73,12 +82,13 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     user:"test.user",
                     plant:"test.plant"
                 })
-                .log();
+                .equal([{"path":"test.plant","result":{"id":"e1","title":"plant title"}},{"path":"test.user","result":{"id":"e1","title":"user title"}}])
+                .valuesEqual({ "plantId": "e1", "userId": "e1", "label": "hello", "test": { "plant": { "id": "e1", "title": "plant title" }, "user": { "id": "e1", "title": "user title" } } });
             },
             c:function(){
                 return deep({ userId:"e1" })
                 .mapOn("user::?", "userId", "id", "myUser")
-                .log();
+                .valuesEqual( { "userId": "e1", "myUser": { "id": "e1", "title": "user title" } } );
             }
         }
     };
