@@ -1,6 +1,6 @@
 ### promise derecursification (or linearisation)
 
-To handle iteration on somethng that may be (or not) promises without recursive calls.
+To handle iteration on something that may be (or not) promises without recursive calls.
 
 Quite subtil : be sure you understand everything here... Realy important.
 
@@ -17,7 +17,7 @@ var done = function(s){
 	// ...
 	console.log("item : ",s);
 
-	// instead of calling recurive function here to handle more items : 
+	// instead of calling recursive function here to handle more items : 
 	// we add new handle(s) in chain that will be placed just after this one (they are inserted in front of handles queue when we use 'this' in 'done', 'fail' and 'always' chain handlers.)
 	
 	if(toIterates.length > 0)
