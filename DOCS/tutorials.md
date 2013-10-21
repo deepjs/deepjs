@@ -5,7 +5,7 @@ Tutorials
 * [basic-modelisation](./basic-modelisation.md)
 * [compositions](./compositions.md)
 * [colliders](./colliders.md)
-* [deep-query](./deep-query.md)
+* [deep-queries](./deep-queries.md)
 * [deep-rql](./deep-rql.md)
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
@@ -14,8 +14,8 @@ Tutorials
 #### Asynch, Promises and Chains
 * [promised and Chained asynch management](./asynch/async-management.md)
 * [deep chains](./asynch/chains.md)
-* [errors management](./asynch/errors-managements.md)
-* [chains and promises subtilities](./asynch/chain-promises-subtilities.md)
+* [errors management](./asynch/errors-management.md)
+* [chains and promises subtilities](./asynch/chaines-promises-subtilities.md)
 * [asynchrone context management](./asynch/asynch-context-management.md)
 
 #### Protocoles and Stores
@@ -36,6 +36,10 @@ Tutorials
 #### Browser concreets
 * [nodejs simple ](./nodejs/simple.md) 
 * [nodejs more complex](./nodejs/full.md)
+
+
+#### Tests Units
+* 
 
 #### Sandboxes
 * [deep-spa-sandbox](https://github.com/deepjs/deep-spa-sandbox)
