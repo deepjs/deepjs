@@ -72,6 +72,7 @@ an which return the function that use this collided function.
 
 	ex :
 ```javascript
+
 	var base = {
 		myFunc:function(arg)
 		{
@@ -90,7 +91,7 @@ an which return the function that use this collided function.
 
 	base.myFunc("hello");
 
-```javascript
+```
 
 ## deep.compose.parallele( func )
 
@@ -111,17 +112,24 @@ You'll maybe work on the same (sub)objects in the same time.
 ## compositions chaining
 
 You could do
+
 ```javascript
+
 	var obj = {
 		func:deep.compose.after(...).before(...).around(...)...
 	}
+
 ```
+
 It will wrap, in the order of writing, and immediately, the compositions themselves.
 You got finally an unique function that is itself a composition (and so could be applied later an other functions).
 
 So when you do :
+
 ```javascript
-deep.parallele(...).before(...) and deep.before(...).parallel(...)
+
+deep.parallele( /*...*/ ).before( /*...*/ ) and deep.before( /*...*/).parallel(/*...*/);
+
 ```
 it does not give the same result of execution.
 
@@ -132,3 +140,41 @@ In second : you wrap the collided function with a before, and then wrap the whol
 So the execution will be the parallelised call, but on one branche, there is two chained calls (the before and the collided function).
 
 Keep in mind that you WRAP FUNCTIONS, in the order of writing, and IMMEDIATELY.
+
+
+## Classes composition
+
+```javascript
+
+var AnotherClass = function(arg){
+	console.log("AnotherClass constructor : ", arg)
+	this.test = 1;
+}
+
+AnotherClass.prototype = {
+	hello:function(){
+		console.log("hello world");
+	}
+}
+
+var MyClass = deep.compose.Classes(function(arg, arg2){
+	// a constructor
+	console.log("MyClass constructor : ", arg1, arg2);
+},
+AnotherClass,
+{
+	// a prototype
+	title:"Added prototype title.",
+	test:2,
+	bye:function(){
+		console.log("bye bye!");
+	},
+	hello:deep.compose.after({
+		console.log("after hello world.")
+	})
+} /* ,... */ );
+
+var obj = new MyClass(1, 33);
+console.log("obj : ", obj);
+
+```

@@ -54,7 +54,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
         },
         stopOnError:false,
         tests : {
-            a:function(){
+            getRelations:function(){
                 return deep({
                     plantId:"e1",
                     userId:"e1",
@@ -72,7 +72,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 }
                 ]);
             },
-            b:function(){
+            mapRelations:function(){
                 return deep({
                     plantId:"e1",
                     userId:"e1",
@@ -85,10 +85,46 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .equal([{"path":"test.plant","result":{"id":"e1","title":"plant title"}},{"path":"test.user","result":{"id":"e1","title":"user title"}}])
                 .valuesEqual({ "plantId": "e1", "userId": "e1", "label": "hello", "test": { "plant": { "id": "e1", "title": "plant title" }, "user": { "id": "e1", "title": "user title" } } });
             },
-            c:function(){
+            mapOn1:function(){
                 return deep({ userId:"e1" })
                 .mapOn("user::?", "userId", "id", "myUser")
+                .log()
                 .valuesEqual( { "userId": "e1", "myUser": { "id": "e1", "title": "user title" } } );
+            },
+            mapOn2:function(){
+                return deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
+                .mapOn([
+                    {itemId:1, value:true},
+                    {itemId:2, value:"133"},
+                    {itemId:2, value:"hello"}
+                    ],
+                    "id","itemId","linkeds")
+                .log()
+                .equal([
+                    {
+                        title:"my title",
+                        id:1
+                    },
+                    {
+                        title:"my title 2",
+                        id:2
+                    }
+                ])
+                .valuesEqual([
+                    {
+                        title:"my title",
+                        id:1,
+                        linkeds:{itemId:1, value:true}
+                    },
+                    {
+                        title:"my title 2",
+                        id:2,
+                        linkeds:[
+                            {itemId:2, value:"133"},
+                            { itemId:2, value:"hello"}
+                        ]
+                    }
+                ]);
             }
         }
     };

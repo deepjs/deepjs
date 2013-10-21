@@ -21,7 +21,8 @@ define(["require","./deep"], function (require, deep) {
         clean : function(options){
             delete this.context;
         },
-        run : function(tests, options){
+        run : function(tests, options)
+        {
             options = options || {};
             tests = tests || [];
             if(!tests.forEach)
@@ -59,12 +60,11 @@ define(["require","./deep"], function (require, deep) {
                     valid:true
                 };
             }
-
-
             var results = [];
             var d = deep.when(this.setup(options));
             var closure = {};
-            var applyTest = function(fn){
+            var applyTest = function(fn)
+            {
                 console.log("\n- unit test runned : ", fn.key);
                 console.time(fn.key);
                 closure.fn = fn;
@@ -72,21 +72,19 @@ define(["require","./deep"], function (require, deep) {
                 .always(function(s,e){
                     console.timeEnd(fn.key);
                     if(e)
-                    {
                         console.error("****** test failed ! ******* : ",fn.key, " error : ", e);
-         
-                    }
                     else
                         console.log("\tok !");
                 });
             };
-            var done = function(r){
+            var done = function(r)
+            {
                 results.push(r);
                 if(functions.length > 0)
                     d.when(applyTest(functions.shift())).done(done).fail(fail);
             };
-            var fail = function(error){
-                //console.log("_______________________________________________ unit test fail : ",error);
+            var fail = function(error)
+            {
                 results.push(error);
                  errors.push({
                             unit:self.title,
@@ -98,7 +96,8 @@ define(["require","./deep"], function (require, deep) {
                     d.when(applyTest(functions.shift())).done(done).fail(fail);
                 return true;
             };
-            d.done(function(context){
+            d.done(function(context)
+            {
                 self.context = context || {};
                 console.log("\tsetup done.");
                 console.time("unit");
@@ -129,7 +128,8 @@ define(["require","./deep"], function (require, deep) {
                 
                 return self.clean();
             })
-            .always(function(s,e){
+            .always(function(s,e)
+            {
                 if(e)
                     console.log("error while cleanin test : ",self.title, " : ", e);
                 console.log("\n**************", self.title, " cleaned **************");

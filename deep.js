@@ -199,15 +199,15 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     deep.destructiveLoad = false;
 
-    var addInChain = function addInChain(handle) {
+    var addInChain = function (handle) {
         var self = this;
-        if (self.deferred && self.deferred._promises && self.deferred._promises.length > 0)
+        if (!this.oldQueue && self.deferred && self.deferred._promises && self.deferred._promises.length > 0)
             throw deep.errors.ChainEnded("you try to add handles in ended chain ! aborting and throw.");
         self._queue.push(handle);
         if (self._initialised && !self._running && !self._executing)
             self._forceHandle();
         return this;
-    }
+    };
 
     var forceHandle = function forceChainHandle() {
         if (!this._initialised)

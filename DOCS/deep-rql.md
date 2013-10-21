@@ -33,4 +33,4 @@ A simple but powerful, url compliant, query language oriented to retrieve Restfu
 ## License
 	authors : 
 		Gilles Coomans <gilles.coomans@gmail.com>
-	LGPL
+	LGPL 3.0

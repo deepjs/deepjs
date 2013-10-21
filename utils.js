@@ -252,7 +252,7 @@ define(function(require){
 		return obj;
 	}
 
-	utils.getObjectClass = function getObjectClass(obj) {
+	utils.getObjectClass = function (obj) {
 	    if (obj && obj.constructor && obj.constructor.toString) {
 	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
 	        if (arr && arr.length == 2)
@@ -261,7 +261,7 @@ define(function(require){
 	    return undefined;
 	}
 
-	utils.setValueByPath = function setValueByPath(object, path, value, pathDelimiter)
+	utils.setValueByPath = function (object, path, value, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";
@@ -279,7 +279,7 @@ define(function(require){
 		return tmp[parts.shift()] = value;
 	}
 
-	utils.retrieveValueByPath = function retrieveValueByPath(object, path, pathDelimiter)
+	utils.retrieveValueByPath = function (object, path, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";
@@ -299,7 +299,7 @@ define(function(require){
 		else return undefined;
 	}
 
-	utils.deletePropertyByPath = function deletePropertyByPath(object, path, pathDelimiter)
+	utils.deletePropertyByPath = function (object, path, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";

@@ -1,0 +1,1 @@
+ressources-stores.md

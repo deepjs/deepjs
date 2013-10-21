@@ -5,22 +5,13 @@
 
 		deep( root, schema )
 		
-			root : object || uri || function || promise || chain (which will be seen as a unique promise)
+			root : primitive_var || object || function || uri || promise || chain (which will be seen as a unique promise)
 				required
 				it's the root object from where you want to start the chain
 
 			schema : object || uri || function || promise
 				optional 
 				it's the root schema describing root object
-
-	## cancel and rejection of chain.
-
-		There are two functions, that are not chainable at all, that allow to cancel or reject a chain from the exterior.
-
-		when you firing one of those on a chain handler, it will look all the further chained handler after 'then' familly (all others will simply be ignored), and will forward the cancel/reject on the chain on the deferred associated.
-
-		it will empty the callQueue. Nothing more in the chain will be done.
-
 		
 	## modelisation 
 		
@@ -42,10 +33,6 @@
 
 			Apply any backgrounds property contained in current entries.
 			(seek recursively under current entries)
-
-		chain.schemaUp( retrievable, metaSchema )
-
-		chain.schemaBottom( retrievable, metaSchema )
 
 		chain.remove( query )
 
@@ -86,18 +73,17 @@
 
 	## read entries
 
-		chain.each( callBack, { resultType: null || full } )
+		chain.each( callBack )
 
 			callBack receive the current entry value (i.e. forEach equivalent)
-			resultType:"full"  will return the DeepQuery nodes themselves (not just the entries values)
 
 		chain.values( callBack )
 
 			callBack receive the array of current entries schemas
 
-		chain.paths( callBack )
+		chain.val( callBack )
 
-			callBack receive the array of current entries paths
+			callBack receive the holded object(s) (if chain hold a single object : will return this object. if chain hold an array : return this array)
 
 		chain.nodes( callBack )
 

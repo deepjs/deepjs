@@ -10,7 +10,6 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
     var unit = {
         title:"deep/units/colliders",
         stopOnError:false,
-        setup:function(){},
         tests : {
             "collider.replace":function(){
                 return deep({ b:[1,2,3] })
