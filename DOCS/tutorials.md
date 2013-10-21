@@ -12,14 +12,11 @@ Tutorials
 * [Object Capabilities Manager](./ocm.md)
 
 #### Asynch, Promises and Chains
-* [promised and Chained asynch management](./asynch/async-management.md)
-* [deep chains](./asynch/chains.md)
+* [promised and chained asynch management](./asynch/async-management.md)
+* [deep chain](./asynch/chains.md)
 * [errors management](./asynch/errors-management.md)
 * [chains and promises subtilities](./asynch/chaines-promises-subtilities.md)
 * [asynchrone context management](./asynch/asynch-context-management.md)
-
-#### JSON Schema usage
-* [validations](./json-schemas/validations.md)
 
 #### Protocoles and Stores
 * [native protocoles and stores](./stores/native-protocoles-and-stores.md)
@@ -27,18 +24,22 @@ Tutorials
 * [JSON/Object stores](./stores/objects-stores.md)
 * [list of externals modules](./modules.md)
 * [custom stores and protocoles](./stores/custom-stores.md)
+
+#### JSON Schema usage
+* [validations](./json-schemas/validations.md)
+* [relations management](./json-schemas/relations.md)
 * [custom schema properties](./json-schemas/custom-schema.md)
 
 #### Tests Units
-* [perform deep-core tests](./perfom-core-units.md)
+* [perform deep-core tests](../units/README.md)
 * [write your own](./custom-units.md)
 
 #### Nodejs concreets
-* [nodejs simple ](./nodejs/simple.md) 
+* [nodejs simple](./nodejs/simple.md) 
 * [nodejs more complex](./nodejs/full.md)
 
 #### Browser concreets
-* [browser simple ](./nodejs/simple.md) 
+* [browser simple](./nodejs/simple.md) 
 * [browser more complex](./nodejs/full.md)
 
 #### Sandboxes

@@ -90,7 +90,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .mapOn("user::?", "userId", "id", "myUser")
                 .log()
                 .valuesEqual( { "userId": "e1", "myUser": { "id": "e1", "title": "user title" } } );
-            },
+            }
+            /*,
             mapOn2:function(){
                 return deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
                 .mapOn([
@@ -125,7 +126,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                         ]
                     }
                 ]);
-            }
+            }*/
         }
     };
 
