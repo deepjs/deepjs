@@ -1105,7 +1105,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 });
                 return deep.all(res)
                 .done(function (res){
-                    console.log("load res : ", res)
+                    //console.log("load res : ", res)
                     if(!self._queried)
                         return res.shift();
                     return res;
