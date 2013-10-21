@@ -1,8 +1,9 @@
-# promise derecursification (or linearisation)
+### promise derecursification (or linearisation)
 
 To handle iteration on somethng that may be (or not) promises without recursive calls.
 
-Quite subtil : be sure you understand everything here... Really important.
+Quite subtil : be sure you understand everything here... Realy important.
+
 Try it in a js console to fuly understand what's happening.
 
 ```javascript
@@ -45,7 +46,7 @@ var iterator = deep.when(toIterates.shift())
 ```
 
 
-## natural conditional chain branching
+### natural conditional chain branching
 
 ```javascript
 

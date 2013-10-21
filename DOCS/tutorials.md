@@ -18,28 +18,28 @@ Tutorials
 * [chains and promises subtilities](./asynch/chaines-promises-subtilities.md)
 * [asynchrone context management](./asynch/asynch-context-management.md)
 
+#### JSON Schema usage
+* [validations](./json-schemas/validations.md)
+
 #### Protocoles and Stores
 * [native protocoles and stores](./stores/native-protocoles-and-stores.md)
 * [ressources stores](./stores/ressources-stores.md)
 * [JSON/Object stores](./stores/objects-stores.md)
 * [list of externals modules](./modules.md)
 * [custom stores and protocoles](./stores/custom-stores.md)
-
-#### JSON Schema usage
-* [validations](./json-schemas/validations.md)
 * [custom schema properties](./json-schemas/custom-schema.md)
+
+#### Tests Units
+* [perform deep-core tests](./perfom-core-units.md)
+* [write your own](./custom-units.md)
 
 #### Nodejs concreets
 * [nodejs simple ](./nodejs/simple.md) 
 * [nodejs more complex](./nodejs/full.md)
 
 #### Browser concreets
-* [nodejs simple ](./nodejs/simple.md) 
-* [nodejs more complex](./nodejs/full.md)
-
-
-#### Tests Units
-* 
+* [browser simple ](./nodejs/simple.md) 
+* [browser more complex](./nodejs/full.md)
 
 #### Sandboxes
 * [deep-spa-sandbox](https://github.com/deepjs/deep-spa-sandbox)
