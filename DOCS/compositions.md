@@ -1,4 +1,3 @@
-
 deep.compose : Chained Aspect Oriented Programming
 ==========================
 SEE DOCS/deep.md for full doc
@@ -147,31 +146,31 @@ Keep in mind that you WRAP FUNCTIONS, in the order of writing, and IMMEDIATELY.
 ```javascript
 
 var AnotherClass = function(arg){
-	console.log("AnotherClass constructor : ", arg)
-	this.test = 1;
+    console.log("AnotherClass constructor : ", arg)
+    this.test = 1;
 }
 
 AnotherClass.prototype = {
-	hello:function(){
-		console.log("hello world");
-	}
+    hello:function(){
+        console.log("hello world");
+    }
 }
 
-var MyClass = deep.compose.Classes(function(arg, arg2){
-	// a constructor
-	console.log("MyClass constructor : ", arg1, arg2);
+var MyClass = deep.compose.Classes(function(arg1, arg2){
+    // a constructor
+    console.log("MyClass constructor : ", arg1, arg2);
 },
 AnotherClass,
 {
-	// a prototype
-	title:"Added prototype title.",
-	test:2,
-	bye:function(){
-		console.log("bye bye!");
-	},
-	hello:deep.compose.after({
-		console.log("after hello world.")
-	})
+    // a prototype
+    title:"Added prototype title.",
+    test:2,
+    bye:function(){
+        console.log("bye bye!");
+    },
+    hello:deep.compose.after(function(){
+        console.log("after hello world.")
+    })
 } /* ,... */ );
 
 var obj = new MyClass(1, 33);
