@@ -246,16 +246,19 @@ define(function(require)
 				},
 				/**
 				* insert value in array at index
-				* @static
-				* @method insertAt
+			 	* @static
+			 	* @method insertAt
 				* @return {Function} the collider
 				*/
 				insertAt:function(what, index){
 					var a = function(value, parent, key){
+
 						if(!(value instanceof Array))
 							throw deep.errors.Internal("colliders.array.insertAt couldn't be applied : target is not an array.");
-						value.splice(index, 0, what);
-					};
+						
+						var args = [index, 0].concat(what);
+						value.splice.apply(value, args);
+					}
 					a._deep_collider = true;
 					return a;
 				}
