@@ -88,7 +88,7 @@ define(["require"], function (require) {
         },
         {
             /**
-             *
+             * @method init
              */
             init: deep.compose.parallele(function () {
                 var self = this;
@@ -244,6 +244,9 @@ define(["require"], function (require) {
                 if(this.collection._deep_ocm_)
                     col = this.collection();
                 return deep(col).range(start, end).store(this);
+            },
+            flush:function(){
+                this.collection = [];
             }
         });
 
@@ -374,11 +377,11 @@ define(["require"], function (require) {
                 return deep.when(res);
             },
             /**
-             * @method patch
-             * @param  {[type]} object
-             * @param  {[type]} id
-             * @return {[type]}
+             * @method fluch
              */
+            flush:function(){
+                this.root = {};
+            }
         });
 
         deep.store.Object.create = function(protocole, root, schema)
@@ -408,12 +411,13 @@ define(["require"], function (require) {
                     return deep.when(deep.errors.Store("no store found with : "+protocole));
                 handler.method = splitted.shift();
                 if(!handler.store[handler.method])
-                    return deep.when(deep.errors.Store("no method found in store found with : "+protocole));
+                    return deep.when(deep.errors.Store("no method found in store with : "+protocole));
             }
             if(handler.store._deep_ocm_)
                 handler.store = handler.store();
             if(typeof handler.store === 'function')
                 handler.store = {
+                    _deep_store_:true,
                     get:handler.store
                 };
             if(handler.store.init)
@@ -471,14 +475,13 @@ define(["require"], function (require) {
             }
             else
             {
-                store = deep.getStoreHandler(protoc, { noError:true });
+                store = deep.getStoreHandler(protoc);
             }
             //console.log("parseRequest : protocole used : ",protoc, " - uri :",uri);
             //console.log("parseRequest : store : ", store);
             var res = {
                 _deep_request_: true,
                 request: request,
-              //  queryThis: queryThis,
                 store: store,
                 protocole: protoc,
                 uri: uri

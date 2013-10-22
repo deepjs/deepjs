@@ -2,13 +2,13 @@
  *
  *
  * A other proposal for (json/object)-query which (as differences from official proposal):
- * 	- use simple slash delimitted syntax,
- * 	- could handle regular expression for step selection,
- * 	- could handle rql (for filtering) on each step selection,
- * 	- could be relative to where the query are placed in a object/json
- * 	- so could handle steps toward any ancestor
- * 	- could handle json-schema in rql filtering
- * 	- could handle ancestor in rql filtering
+ * - use simple slash delimitted syntax,
+ * - could handle regular expression for step selection,
+ * - could handle rql (for filtering) on each step selection,
+ * - could be relative to where the query are placed in a object/json
+ * - so could handle steps toward any ancestor
+ * - could handle json-schema in rql filtering
+ * - could handle ancestor in rql filtering
  *
  *
  *
@@ -16,7 +16,7 @@
 * @submodule deep-query
  * @author Gilles Coomans <gilles.coomans@gmail.com>
 */
-
+"use strict";
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
@@ -27,7 +27,7 @@ define(function defineDeepQuery(require)
 /*
     deep.coreUnits = deep.coreUnits || [];
     deep.coreUnits.push("js::deep/units/queries");
-*/		
+*/
 	var rqlQuery = deep.rql;// require("./deep-rql").query;
 	var utils = deep.utils; //require("./utils");
 	var QueryError = Error;
@@ -38,7 +38,7 @@ define(function defineDeepQuery(require)
 	 * @namespace deep
 	 * @constructor
 	 */
-	var DQ = function(){}
+	var DQ = function(){};
 
 	DQ.prototype.analyseEreg = function analyseEreg(path, parts)
 	{
@@ -70,7 +70,7 @@ define(function defineDeepQuery(require)
 					if(new RegExp(this.value,this.options).test(i))
 					{
 						var filtered = self.returnProperty(parent, i);
-						if(typeof filtered !== 'undefined' && filtered != null)
+						if(typeof filtered !== 'undefined' && filtered !== null)
 							res.push(filtered);
 					}
 				}
@@ -78,7 +78,7 @@ define(function defineDeepQuery(require)
 			}
 		});
 		return rest;
-	}
+	};
 /**
  * analyse path and return parsed paths objects
  * @method analyse
@@ -93,14 +93,14 @@ define(function defineDeepQuery(require)
 		this.asked = path;
 		while(rest.length > 0)
 		{
-			var rest = this.analyseMoves(rest, paths);
-			if(paths.length == 0)
+			rest = this.analyseMoves(rest, paths);
+			if(paths.length === 0)
 				throw new QueryError("deep-queries need at least one move.", path);
-			if(rest.length == 0)
+			if(rest.length === 0)
 				break;
 			rest = this.analyseSelector(rest, paths);
 			//console.log("selector analysed : rest : ",rest)
-			if(rest.length == 0)
+			if(rest.length === 0)
 				break;
 			if(rest[0]== "?")
 				rest = this.analyseRQL(rest,paths);
@@ -119,11 +119,11 @@ define(function defineDeepQuery(require)
 			})*/
 		if(console.flags && console.flags["deep-query"])
 		{
-			console.log("dq analayse : ", path)
+			console.log("dq analayse : ", path);
 			console.log(" : gives : "+JSON.stringify(paths, null, ' '));
 		}
 		return paths;
-	}
+	};
 
 	DQ.prototype.analyseRQL = function dqanalyseRQL(path, parts) {
 		if(path[0] != "?")
@@ -150,9 +150,10 @@ define(function defineDeepQuery(require)
 			type:"rql",
 			value:rql,
 			handler:function(items){
+				var res = null;
 				try{
 					//console.log("doRQLHANDLER : items : ", items)
-					var res = rqlQuery(items, rql, { prefix:"value", fromDeepQuery:true });
+					res = rqlQuery(items, rql, { prefix:"value", fromDeepQuery:true });
 					//console.log("doRQLHANDLER : res : ", res)
 				}
 				catch(e)
@@ -166,7 +167,7 @@ define(function defineDeepQuery(require)
 		//console.log("rql analyse gives : ", rql)
 
 		return path.substring(count);
-	}
+	};
 
 	DQ.prototype.analyseIndexAccess = function dqanalyseIndexAccess(path, parts)
 	{
@@ -182,19 +183,20 @@ define(function defineDeepQuery(require)
 				var st = this.start(parent);
 				if(st == -1)
 					return [];
+				var prop = null;
 				if(this.end === null)
 				{
 
-					var prop = self.returnProperty(parent, st);
-					if(prop != null && typeof prop !== 'undefined')
+					prop = self.returnProperty(parent, st);
+					if(prop !== null && typeof prop !== 'undefined')
 						return [prop];
 					return [];
 				}
 				var res = [];
 				for(var i = st; i <= this.end(parent); i += this.step(parent))
 				{
-					var prop = self.returnProperty(parent, i);
-					if(prop != null && typeof prop !== 'undefined')
+					prop = self.returnProperty(parent, i);
+					if(prop !== null && typeof prop !== 'undefined')
 						res.push(prop);
 				}
 				return res;
@@ -204,12 +206,12 @@ define(function defineDeepQuery(require)
 			step:function(parent){
 				return 1;
 			}
-		}
+		};
 		var pos = 0, value = null;
 		splitted.forEach(function (e) {
-			if(e == "")
+			if(e === "")
 			{
-				if(pos == 0)
+				if(pos === 0)
 					value = function(parent){
 						return 0;
 					};
@@ -219,17 +221,17 @@ define(function defineDeepQuery(require)
 							return parent.value.length-1;
 						else
 							return -1;
-					}
+					};
 				else
 					value = function(parent){
 						return 1;
-					}
+					};
 			}
 			else if(e.substring(0,8) == '@.length')
 			{
 				var rest = e.substring(8);
 				//console.log("got index with @.length : rest : ",rest)
-				if(rest.length == 0 || rest[0] != "-")
+				if(rest.length === 0 || rest[0] != "-")
 					throw new QueryError("when you use @.length : you could only use minus '-' operator followed by an integer.", path, parts);
 				var integ = parseInt(rest.substring(1));
 				if(isNaN(integ))
@@ -251,36 +253,37 @@ define(function defineDeepQuery(require)
 					throw new QueryError("bad index : index unknown", path, parts);
 				value = function(parent){
 					return integs;
-				}
+				};
 			}
-			if(pos == 0)
+			if(pos === 0)
 				range.start = value;
 			else if(pos == 1)
 				range.end = value;
 			else range.step = value;
 			pos++;
-		})
+		});
 		parts.push(range);
 		return path.substring(count);
-	}
+	};
 
 	DQ.prototype.analyseUnionAccess = function dqanalyseUnionAccess(path, parts)
 	{
 		if(path[0] != '[')
-			throw new QueryError("union access need to start with '['.", path, parts)
+			throw new QueryError("union access need to start with '['.", path, parts);
 		var inner = "";
 		var othis = this;
 		var count = 1;
 		while(path[count] != ']'  && count < path.length)
 			inner += path[count++];
 		var splitted = inner.split(",");
-		if(splitted.length == 0)
+		var self = this;
+		if(splitted.length === 0)
 		{
 			parts.push({
 				type:"selector",
 				value:"*",
 				handler:function (parent) {
-					return self.returnAllProps(parent)
+					return self.returnAllProps(parent);
 				}
 			});
 			return path.substring(count+1);
@@ -294,17 +297,17 @@ define(function defineDeepQuery(require)
 					var locals = selector.handler(parent);
 					if(locals)
 						res = res.concat(locals);
-				})
+				});
 				return res;
 				// make unique on path
 			}
-		}
+		};
 		splitted.forEach(function (spl) {
 			othis.analyseSelector(spl, union.selectors, true);
-		})
+		});
 		parts.push(union);
 		return path.substring(count+1);
-	}
+	};
 	/**
 	 * create a DeepQuery entry that hold info of objet node (path, value, ancestor, etc)
 	 * @method createEntry
@@ -314,7 +317,7 @@ define(function defineDeepQuery(require)
 	 */
 	DQ.prototype.createEntry = function  dqCeateEntry(key, ancestor)
 	{
-		var path = ancestor.path
+		var path = ancestor.path;
 		if(path[path.length-1] == '/')
 			path += key;
 		else
@@ -327,7 +330,7 @@ define(function defineDeepQuery(require)
 		if(ancestor.schema)
 			schema = retrieveFullSchemaByPath(ancestor.schema, key, "/");
 		//console.log("DQ.createEntry : "+path+" : schema : ",schema)
-		return this.cache[path] = {
+		var r = this.cache[path] = {
 			_isDQ_NODE_:true,
 			root:ancestor.root,
 			value:ancestor.value[key],
@@ -336,8 +339,9 @@ define(function defineDeepQuery(require)
 			ancestor:ancestor,
 			schema:schema,
 			depth:ancestor.depth+1
-		}
-	}
+		};
+		return r;
+	};
 	DQ.prototype.returnProperty = function dqreturnProperty(entry, key){
 		if(key == "_deep_entry")
 			return null;
@@ -351,8 +355,7 @@ define(function defineDeepQuery(require)
 			entry = null;
 		//console.log("returnProperty : ", key, " - on : ", obj, " - entry : ", entry)
 		return entry;
-
-	}
+	};
 	DQ.prototype.returnAllProps = function dqreturnAllProps(entry){
 		//if(typeof entry.value === "string")
 		//	return [this.createEntry('length', entry)];
@@ -371,13 +374,11 @@ define(function defineDeepQuery(require)
 				childs.push(ent);
 		}
 		return childs;
-	}
+	};
 	DQ.prototype.returnRecursiveProps = function dqreturnRecursiveProps(entry){
 		//console.log("recursive props : ", entry.path)
-
 		if(typeof entry.value === "string")
 			return [];
-
 		var obj = entry.value;
 		var childs = [];
 		var self = this;
@@ -394,14 +395,14 @@ define(function defineDeepQuery(require)
 				childs = childs.concat(self.returnRecursiveProps(child));
 		}
 		return childs;
-	}
+	};
 
 	DQ.prototype.analyseSelector = function dqanalyseSelector(path, parts, fromUnion)
 	{
 		//console.log("analyseSelector : ", path);
 		var count = 0;
 		var self = this;
-		if(path.length == 0)
+		if(path.length === 0)
 		{
 			if(parts.length > 1 && parts[parts.length-1].slashes == "//")
 				return path;
@@ -421,7 +422,7 @@ define(function defineDeepQuery(require)
 					if(parent)
 						return [parent];
 					return [];
-					return self.returnAllProps(parent);
+					//return self.returnAllProps(parent);
 				}
 			});
 			return path;
@@ -440,7 +441,7 @@ define(function defineDeepQuery(require)
 					if(parent)
 						return [parent];
 					return [];
-					return self.returnAllProps(parent);
+					//return self.returnAllProps(parent);
 				}
 			});
 			return path;
@@ -456,7 +457,7 @@ define(function defineDeepQuery(require)
 						return [parent];
 					return [];
 				}
-			})
+			});
 			//console.log("git drect access : ", path, JSON.stringify(parts));
 
 			return path.substring(1);
@@ -484,7 +485,7 @@ define(function defineDeepQuery(require)
 				type:"selector",
 				value:"*",
 				handler:function (parent) {
-					return self.returnAllProps(parent)
+					return self.returnAllProps(parent);
 				}
 			});
 			return path.substring(count);
@@ -496,13 +497,13 @@ define(function defineDeepQuery(require)
 			{
 			//	console.log("analyseSelector string handler : ", string, parent);
 				var res = self.returnProperty(parent, string);
-				if(res != null && typeof res !== 'undefined')
+				if(res !== null && typeof res !== 'undefined')
 					return [res];
 				return [];
 			}
-		})
+		});
 		return path.substring(count);
-	}
+	};
 
 	DQ.prototype.analyseMoves = function dqanalyseMoves(path, paths) {
 		var steps = [];
@@ -565,7 +566,7 @@ define(function defineDeepQuery(require)
 		}
 
 		return path.substring(a);
-	}
+	};
 
 	DQ.prototype.doMove = function dqdoMove(move, items, start)
 	{
@@ -604,10 +605,10 @@ define(function defineDeepQuery(require)
 			}
 			if(toDo.slashes == "//")
 				newItems = newItems.concat(self.returnRecursiveProps(item));
-		})
+		});
 		//console.log("DO MOVE gives : ", newItems);
 		return newItems;
-	}
+	};
 
 	/**
 	 *
@@ -634,7 +635,7 @@ define(function defineDeepQuery(require)
 			q = q.substring(1);
 		//console.log("DeepQuery : will do : ",q);
 
-		if(obj._isDQ_NODE_ == true)
+		if(obj._isDQ_NODE_ === true)
 		{
 			//console.log("DQ : start with _isDQ_NODE_")
 			this.root = this.cache["/"] = obj.root || obj;
@@ -648,7 +649,7 @@ define(function defineDeepQuery(require)
 		}
 		else
 		{
-			this.root = this.cache["/"] = DQ.createRootNode(obj, options.schema)
+			this.root = this.cache["/"] = DQ.createRootNode(obj, options.schema);
 			//this.root.root = this.root;
 			items = [this.cache["/"]];
 		}
@@ -671,7 +672,7 @@ define(function defineDeepQuery(require)
 		}
 
 		var parts = this.analyse(q);
-		if(parts.length == 0 || parts[0].type != "move")
+		if(parts.length === 0 || parts[0].type != "move")
 			throw new QueryError("query need to start with move : "+q);
 		var self = this;
 		var start = true;
@@ -725,7 +726,7 @@ define(function defineDeepQuery(require)
 		if(this.straightQuery)
 			return finalRes.shift();
 		return finalRes;
-	}
+	};
 
 	var globalQuerier = null;
 	/**
@@ -743,12 +744,12 @@ define(function defineDeepQuery(require)
 		if(!globalQuerier)
 			globalQuerier = new DQ();
 		return globalQuerier.query(root, path, options);
-	}
+	};
 
 	DQ.firstObjectWithProperty = function firstObjectWithProperty(entry, property){
 		//console.profile("firstObjectWithProperty")
 		if(!entry._isDQ_NODE_)
-			entry = DQ.createRootNode(entry)
+			entry = DQ.createRootNode(entry);
 		var value = entry.value;
 		if(value[property])
 			return entry;
@@ -759,11 +760,11 @@ define(function defineDeepQuery(require)
 			if(typeof value !== "object" || !value)
 				return false;
 			way.push(entry);
+			var ok = false;
 			if(value[property])
 				return true;
 			else
 			{
-				var ok = false;
 				if(value instanceof Array)
 				{
 					var index = 0;
@@ -787,12 +788,12 @@ define(function defineDeepQuery(require)
 				return true;
 			way.pop();
 			return false;
-		}
+		};
 		var ok = searchProp(entry);
 		if(ok)
 			return way.pop();
 		return null;
-	}
+	};
 /*
     DQ.firstObjectWithProperty = function firstObjectWithProperty(entry, property)
     {
@@ -896,7 +897,7 @@ define(function defineDeepQuery(require)
             current = stack.pop();
             var v = current.value;
             if(!v)
-            	continue;
+				continue;
             if(v[property] && (!first || !ommitRoot))
                 res.push(v);
             if(first)
@@ -924,7 +925,7 @@ define(function defineDeepQuery(require)
                 stack = stack.concat(r);
         }
         return res;
-    }
+    };
 /*
     DQ.preorder2 = function preorder2(root, path, res)
     {
@@ -992,7 +993,7 @@ define(function defineDeepQuery(require)
                 stack = stack.concat(r);
         }
         return res;
-    }
+    };
 
     DQ.inorder = function inorder(root)
     {
@@ -1024,11 +1025,11 @@ define(function defineDeepQuery(require)
                 }
         }
         return res;
-    }
+    };
 
 	DQ.createEntry = function  staticCreateEntry(key, ancestor)
 	{
-		var path = ancestor.path
+		var path = ancestor.path;
 		if(path[path.length-1] == '/')
 			path += key;
 		else
@@ -1050,8 +1051,8 @@ define(function defineDeepQuery(require)
 			ancestor:ancestor,
 			schema:schema,
 			depth:ancestor.depth+1
-		}
-	}
+		};
+	};
 	/**
 	 * create a root DeepQuery node
 	 *
@@ -1072,10 +1073,11 @@ define(function defineDeepQuery(require)
 			ancestor:null,
 			schema:schema,
 			depth:0
-		}
+		};
 		node.root = node;
 		return node;
-	}
+	};
 	return DQ;
-}
-})
+};
+});
+

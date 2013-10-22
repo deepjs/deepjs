@@ -48,7 +48,7 @@ define(function(require, exports, module){
 
 	function chain(before, after)
 	{
-		return function executeChain() {
+		return function composition() {
 			var self = this;
 			var args = arguments;
 			var def = deep.Deferred();
@@ -145,11 +145,9 @@ define(function(require, exports, module){
 		 */
 		before : function before(argument)
 		{
-			var wrapper = function beforeWrapper(previous)
-			{
+			this.stack.push(function (previous){
 				return chain(argument, previous);
-			};
-			this.stack.push(wrapper);
+			});
 			return this;
 		},
 		/**
@@ -187,11 +185,9 @@ define(function(require, exports, module){
 		 */
 		around : function around(wrapper)
 		{
-			var func = function aroundWrapper(previous)
-			{
+			this.stack.push(function (previous){
 				return wrapper(previous);
-			};
-			this.stack.push(func);
+			});
 			return this;
 		},
 		/**
@@ -227,11 +223,9 @@ define(function(require, exports, module){
 		*/
 		after : function after(argument)
 		{
-			var wrapper = function afterWrapper(previous)
-			{
+			this.stack.push(function (previous){
 				return chain(previous, argument);
-			};
-			this.stack.push(wrapper);
+			});
 			return this;
 		},
 		/**
@@ -243,10 +237,8 @@ define(function(require, exports, module){
 		 */
 		fail : function fail(fn)
 		{
-			var wrapper = function failWrapper(previous)
-			{
-				return function()
-				{
+			this.stack.push(function (previous){
+				return function(){
 					var self = this;
 					var args = arguments;
 					return deep.when(previous.apply(this, args))
@@ -255,8 +247,7 @@ define(function(require, exports, module){
 						return fn.apply(self, [error]);
 					});
 				};
-			};
-			this.stack.push(wrapper);
+			});
 			return this;
 		},
 		/**
@@ -393,10 +384,10 @@ define(function(require, exports, module){
 			decorator.replace(argument);
 			return start;
 		};
-		start.createIfNecessary = function createIfNecessary(arg) {
+		/*start.createIfNecessary = function createIfNecessary(arg) {
 			start.decorator.createIfNecessary = (typeof arg === 'undefined')?true:arg;
 			return start;
-		};
+		};*/
 		start.ifExists = function ifExists(arg) {
 			start.decorator.ifExists = (typeof arg === 'undefined')?true:arg;
 			return start;
@@ -466,6 +457,7 @@ define(function(require, exports, module){
 		},
 		/**
 		 * @method createIfNecessary
+		 * @deprecated
 		 * @chainable
 		 * @static
 		 * @return {compose} starter

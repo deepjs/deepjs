@@ -156,7 +156,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      * perform a (synched) deep-query query
      * @example
      *
-     * 		deep.query({ hello:"world", test:1 }, "/*?=world"); // will return ["world"]
+     * deep.query({ hello:"world", test:1 }, "/*?=world"); // will return ["world"]
      *
      * @method query
      * @param {Object} object any object to query
@@ -295,18 +295,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             }
             self._executing = false;
         }
-    }
+    };
 
-    function createImmediatePromise(result) {
-        var prom = new deep.Promise();
-        return prom._start(result);
-    }
 
 
     deep.promise = function deepPromise(arg) {
         //console.log("deep.promise : ", arg)
         if (typeof arg === "undefined" || arg === null)
-            return createImmediatePromise(arg);
+            return deep.promise.immediate(arg);
         if(arg._deep_chain_)
             return arg.promise();
         if (typeof arg.then === 'function') //any promise compliant object
@@ -319,16 +315,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 def.resolve(s);
             }, function (e) {
                 def.reject(e);
-            })
+            });
             return def.promise();
         }
         if (typeof arg.promise === "function") // deep.Deferred, deep.Chain and jquery deferred case
             return arg.promise();
         if (typeof arg.promise === 'object')
             return arg.promise;
-        return createImmediatePromise(arg);
-    }
-    deep.promise.immediate = createImmediatePromise;
+        return deep.promise.immediate(arg);
+    };
+    deep.promise.immediate = function (result) {
+        var prom = new deep.Promise();
+        return prom._start(result);
+    };
     /**
      * return a promise that will be fullfilled when arg are ready (resolve or immediat)
      * @for deep
@@ -351,7 +350,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         for (var i in arguments)
             arr = arr.concat(arguments[i]);
         if (arr.length === 0)
-            return createImmediatePromise([]);
+            return deep.promise.immediate([]);
         var def = deep.Deferred();
         var count = arr.length;
         var c = 0,
@@ -554,13 +553,15 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     if (res === self)
                         return;
                     return res;
-                }
+                };
                 if (typeof manager === 'string')
+                {
                     return deep.when(deep.get(manager))
                     .done(function (manager){
                         if(cond)
                             return applyCondition(manager);
                     });
+                }
                 return applyCondition(manager);
             };
             addInChain.call(this, func);
@@ -643,7 +644,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 if (args.length === 0) {
                     if (e)
                         if (deep.debug)
-                            deep.utils.dumpError(e)
+                            deep.utils.dumpError(e);
                         else if (e.report)
                         args.push("deep.log : error : (" + e.status + "): ", e.message, e.report);
                     else
@@ -797,11 +798,11 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     var brancher = function brancher(handler) {
         var self = this;
-        var brancher = {
+        var br = {
             branches: [],
             branch: function () {
                 if(this._ended)
-                    throw deep.errors.Chain("Branching failed : brancher has already bean ended. Could not add branches any more.")
+                    throw deep.errors.Chain("Branching failed : brancher has already bean ended. Could not add branches any more.");
                 var cloned = cloneHandler(handler, true);
                 this.branches.push(cloned);
                 return cloned;
@@ -811,7 +812,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 return deep.all(this.branches);
             }
         };
-        return brancher;
+        return br;
     };
 
     deep.BaseChain.prototype = {
@@ -886,7 +887,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          *  Inject function result in chain as success or error.
          *
-         * 	@example
+         * @example
          *	deep().branches( function(branches)
          *	{
          *		branches.branch().query(...).load().log()
@@ -921,12 +922,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             create._isDone_ = true;
             return addInChain.call(this, create);
         }
-    }
+    };
 
 
     deep.Chain = function ChainConstructor(options) {
         deep.BaseChain.call(this, options);
-    }
+    };
     deep.Chain.prototype = {};
 
     deep.utils.bottom(deep.Promise.prototype, deep.BaseChain.prototype);
@@ -935,7 +936,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     deep.Chain.addHandle = function addChainHandle(name, func) {
         deep.Chain.prototype[name] = func;
         return deep.Chain;
-    }
+    };
     //__________________________________________________________ HANDLES
 
 
@@ -943,15 +944,15 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         /**
          * will interpret entries values with context
          * @example
-         * 	 	deep("hello { name }").interpret({ name:"john" }).val();
-         *   	//will provide "hello john".
-         * 		deep({
-         *     		msg:"hello { name }"
-         * 		})
-         * 		.query("./msg")
-         * 		.interpret({ name:"john" })
-         * 		.logValues()
-         * 		.equal("hello john");
+         * deep("hello { name }").interpret({ name:"john" }).val();
+         * //will provide "hello john".
+         * deep({
+         *     msg:"hello { name }"
+         * })
+         * .query("./msg")
+         * .interpret({ name:"john" })
+         * .logValues()
+         * .equal("hello john");
          *
          * @method interpret
          * @chainable
@@ -965,9 +966,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     return deep.chain.transform(self, function (v) {
                         return deep.utils.interpret(v, context);
                     });
-                }
+                };
                 if (typeof context === 'string')
-                    return deep.when(deep.get(context)).done(applyContext)
+                    return deep.when(deep.get(context)).done(applyContext);
                 else
                     return applyContext(context);
             };
@@ -1016,7 +1017,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                             return toLoad.value();
                     } else
                         return toLoad.value;
-                }
+                };
                 var toLoads = [];
                 self._nodes.forEach(function (node) {
                     var e = node;
@@ -1040,13 +1041,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         /**
          *
          * if request is provided :
-         * 		try to retrieve 'request' and simply inject result in chain. request could be a ressource pointer OR a function to call to get something (maybe a promise tht will be manage before continuing chain)
-         * 	else
-         * 		will try to retrieve any entry.value strings (will not seek deeply) and replace associated entries values by loaded result.
-         * 		OR if entry.value is an object : look if there is any .load() function in it. If so : fire it.
+         *     try to retrieve 'request' and simply inject result in chain. request could be a ressource pointer OR a function to call to get something (maybe a promise tht will be manage before continuing chain)
+         * else
+         *     will try to retrieve any entry.value strings (will not seek deeply) and replace associated entries values by loaded result.
+         *     OR if entry.value is an object : look if there is any .load() function in it. If so : fire it.
          *
          * if context is provided : will try to 'interpret' (see .interpret) strings before retrieving them.
-         * 	(on request or entries values)
+         *     (on request or entries values)
          *
          * Chain success injection : array of loaded content.
          *
@@ -1075,16 +1076,17 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 {
                     self._nodes = deep.query(self._nodes[0], "./*", { resultType:"full"});
                     self._queried = true;
-                }    
+                }
                 var res = [];
 
                 var doLoad = function (v) {
                     //console.log("deep.load : node : ",v);
                     if (!v.value)
                         return v.value;
-                    if (v.value.load) 
+                    if (v.value.load)
                         return deep.when(callFunctionFromValue(v, "load"));
                     else if (typeof v.value === 'string')
+                    {
                         return deep.when(deep.get(v.value, {entry:v}))
                         .done(function(r){
                             //console.log("load res : ",r)
@@ -1092,14 +1094,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                             {
                                 if(v.ancestor)
                                     v.ancestor.value[v.key] = r;
-                                return v.value = r;
+                                v.value = r;
                             }
-                            else
-                                return r;
+                            return r;
                         });
+                    }
                     else
                         return v.value;
-                }
+                };
                 self._nodes.forEach(function(n){
                     res.push(doLoad(n));
                 });
@@ -1151,16 +1153,18 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         if (typeof r !== 'undefined')
                             nodes = nodes.concat(r);
                     } else
-                        self._nodes.forEach(function (r) {
-                            r = deep.query(r, q, {
+                        for(var j = 0; j < self._nodes.length; ++j)
+                        {
+                            var n = self._nodes[j];
+                            n = deep.query(n, q, {
                                 resultType: "full"
                             });
                             //console.log("deep2.Chain.query : res : ", r);
-                            if (r && r._isDQ_NODE_)
+                            if (n && n._isDQ_NODE_)
                                 straight = true;
-                            if (typeof r !== 'undefined')
-                                nodes = nodes.concat(r);
-                        })
+                            if (typeof n !== 'undefined')
+                                nodes = nodes.concat(n);
+                        }
                 }
                 if (nodes.length > 0)
                     self._nodes = deep.utils.arrayUnique(nodes, "path");
@@ -1172,7 +1176,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 else
                     self._queried = true;
                 return deep.chain.val(self);
-            }
+            };
             func._isDone_ = true;
             return addInChain.apply(self, [func]);
         },
@@ -1204,7 +1208,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          *  no callBack is present : just return the FIRST value of entries. It's a chain end handle.
          * If callback is provided : the FIRST entry  value will be passed as argument to callback.
-         * 		and so th chain could continue : the return of this handle is the deep handler.
+         *     and so th chain could continue : the return of this handle is the deep handler.
          *
          * transparent true
          *
@@ -1235,7 +1239,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          * if no callBack is present : just return the FIRST value of entries. It's a chain end handle.
          * If callback is provided : the FIRST entry  value will be passed as argument to callback.
-         * 		and so th chain could continue : the return of this handle is the deep handler.
+         *     and so th chain could continue : the return of this handle is the deep handler.
          *
          * transparent true
          *
@@ -1252,7 +1256,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return deep.chain.first(self, true);
                     else
                         return applyCallBackOrTreatment(callBack, deep.chain.first(self));
-                }
+                };
                 if (typeof callBack === 'string')
                     return deep.when(deep.get(callBack))
                         .done(shouldModify);
@@ -1272,7 +1276,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          * if no callBack is present : just return the FIRST value of entries. It's a chain end handle.
          * If callback is provided : the FIRST entry  value will be passed as argument to callback.
-         * 		and so th chain could continue : the return of this handle is the deep handler.
+         *     and so th chain could continue : the return of this handle is the deep handler.
          *
          * transparent true
          *
@@ -1289,7 +1293,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return deep.chain.last(self, true);
                     else
                         return applyCallBackOrTreatment(callBack, deep.chain.last(self));
-                }
+                };
                 if (typeof callBack === 'string')
                     return deep.when(deep.get(callBack))
                         .done(shouldModify);
@@ -1335,7 +1339,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          * if no callBack is present : just return the array of values of entries. It's a chain end handle.
          * If callback is provided : the entries values will be passed as argument to callback.
-         * 		and so th chain could continue : the return of this handle is the deep handler.
+         *     and so th chain could continue : the return of this handle is the deep handler.
          *
          * transparent true
          *
@@ -1385,7 +1389,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var func = function (s, e) {
                 var applyTransformer = function (transformer) {
                     return deep.chain.transform(self, transformer);
-                }
+                };
                 if (typeof transformer === 'string')
                     return deep.when(deep.get(transformer))
                         .done(applyTransformer);
@@ -1430,7 +1434,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     return callFunctionFromValue(node, funcRef, args);
                 else
                     return node;
-            }
+            };
             var create = function (s, e) {
 
                 if(!self._queried)
@@ -1548,7 +1552,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 if (self._queried)
                     return deep.chain.val(self);
                 return array;
-            }
+            };
             var create = function (s, e) {
                 if (args.length === 0)
                     args = ["+"];
@@ -1572,14 +1576,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 		 *
 		 *
 		 *  inject a rangeObject as chain success :
-		 *  	{
-		 *  		start:number,
-		 *  		end:number,
-		 *  		total:number,
-		 *  		results:Array,
-		 *  		hasNext:boolean,
-		 *  		hasPrevious:boolean
-		 *  	}
+		 *    {
+		 *           start:number,
+		 *           end:number,
+		 *           total:number,
+		 *           results:Array,
+		 *           hasNext:boolean,
+		 *           hasPrevious:boolean
+		 *    }
 		 * @example
 	deep([0,1,2,3,4,5])
 	.range(1,4)
@@ -1623,9 +1627,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         },
         /**
          * save current chain position. it means that it will save
-         * 	- current entries
-         * 	- current success and errors
-         * 	- current store (if any) in private queue before continuing.
+         * - current entries
+         * - current success and errors
+         * - current store (if any) in private queue before continuing.
          *
          *	asynch
          *	transparent true
@@ -1932,7 +1936,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 }
                 var doReplace = function (by) {
                     self._nodes.forEach(function (r) {
-                        var r = deep.query(r, what, {
+                        r = deep.query(r, what, {
                             resultType: "full"
                         });
                         if (!r)
@@ -1983,24 +1987,24 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 			var obj = {
 				email: 'test@test.com',
 				password: 'test54',
-			 	id: '51013dec530e96b112000001'
-			}
-			 var schema = {
-			 	properties:
-				{
-				  	id: { type: 'string', required: false, minLength: 1 },
-				    email: { type: 'string', required: true, minLength: 1 },
-				    password: { type: 'string', required: true, "private": true }
-				},
-			 	additionalProperties: false
-			}
+                id: '51013dec530e96b112000001'
+            }
+            var schema = {
+                properties:
+                {
+                    id: { type: 'string', required: false, minLength: 1 },
+                    email: { type: 'string', required: true, minLength: 1 },
+                    password: { type: 'string', required: true, "private": true }
+                },
+                additionalProperties: false
+            }
 
-			deep(obj, schema)
-			.remove(".//*?_schema.private=true")
-			.equal({
-				email: 'test@test.com',
-			 	id: '51013dec530e96b112000001'
-			 });
+            deep(obj, schema)
+            .remove(".//*?_schema.private=true")
+            .equal({
+            email: 'test@test.com',
+            id: '51013dec530e96b112000001'
+            });
 
 		 * @chainable
 		 * @method  remove
@@ -2023,8 +2027,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     }
                 }
                 self._nodes.forEach(function (r) {
-
-                    var r = deep.query(r, what, {
+                    r = deep.query(r, what, {
                         resultType: "full"
                     });
                     if (!r)
@@ -2048,13 +2051,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 		 * Errors injected : any flatten error
 		 * @example
 	var a = {
-	    obj:{
-	    	first:true
-	    },
-	    myFunc:function(){
-	        console.log("base myFunc");
-	        this.obj.a = true;
-	    }
+        obj:{
+            first:true
+        },
+        myFunc:function(){
+            console.log("base myFunc");
+            this.obj.a = true;
+        }
 	}
 
 	var b = {
@@ -2075,28 +2078,28 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 	.run("myFunc")
 	.query("./obj")
 	.equal({
-   		first:true,
-   		second:true,
+        first:true,
+        second:true,
         a:true,
         b:true
 	});
 	@example
 	deep({
-	    sub:{
-	        backgrounds:[b],
-	        obj:{
-	        	third:true
-	        }
-	    }
+        sub:{
+            backgrounds:[b],
+            obj:{
+                third:true
+            }
+        }
 	})
 	.flatten()
 	.query("/sub")
 	.run("myFunc")
 	.query("./obj")
 	.equal({
-    	first:true,
-   		second:true,
-   		third:true,
+        first:true,
+        second:true,
+        third:true,
         a:true,
         b:true
 	});
@@ -2130,7 +2133,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     if (node.value.backgrounds) {
                         var r = extendsBackgrounds(node);
                         if (r && r.then)
-                            alls.push(r)
+                            alls.push(r);
                     }
                 });
                 if (alls.length === 0)
@@ -2186,17 +2189,17 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          * @example
          *
-         * 	deep(1,{ type:"numbder"}).validate().log();
+         * deep(1,{ type:"numbder"}).validate().log();
          *
          * @example
          *
-         * 	deep(1).validate({ type:"numbder"}).log();
+         * deep(1).validate({ type:"numbder"}).log();
          *
          * @example
          *
-         * 	deep({
-         * 		//...
-         * 	}).validate("user::schema").log();
+         * deep({
+         *     //...
+         * }).validate("user::schema").log();
          *
          * @method  validate
          * @parame {Object,String} schema (optional) a schema object or a schema reference (deep json pointer)
@@ -2222,12 +2225,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return (self._queried) ? report : report.reports.shift();
                     else
                         return deep.errors.PreconditionFail("deep.validate failed ! ", report);
-                }
+                };
                 if (typeof schema === 'string')
                     return deep.when(deep.get(schema))
                         .done(runSchema);
                 else
-                    return runSchema(schema)
+                    return runSchema(schema);
             };
             func._isDone_ = true;
             func._name = "deep.Chain.validate";
@@ -2259,7 +2262,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     a = callBack;
                 if (a && (a.then || a.promise))
                     return deep.when(a)
-                        .done(doTest)
+                        .done(doTest);
                 return doTest(a);
             };
             func._isDone_ = true;
@@ -2274,28 +2277,28 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 		 *
 		 * @example
 
-	deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
-	.mapOn([
-	    {itemId:1, value:true},
-	    {itemId:2, value:"133"},
-	    {itemId:2, value:"hello"}
-	    ],
-	    "id","itemId","linkeds")
-	.valuesEqual([
-	    {
-	        title:"my title",
-	        id:1,
-	        linkeds:{itemId:1, value:true}
-	    },
-	    {
-	        title:"my title 2",
-	        id:2,
-	        linkeds:[
-	            {itemId:2, value:"133"},
-	            { itemId:2, value:"hello"}
-	        ]
-	    }
-	]);
+    deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
+    .mapOn([
+            {itemId:1, value:true},
+            {itemId:2, value:"133"},
+            {itemId:2, value:"hello"}
+        ],
+        "id","itemId","linkeds")
+        .valuesEqual([
+        {
+            title:"my title",
+            id:1,
+            linkeds:{itemId:1, value:true}
+        },
+        {
+            title:"my title 2",
+            id:2,
+            linkeds:[
+                {itemId:2, value:"133"},
+                { itemId:2, value:"hello"}
+            ]
+        }
+    ]);
 		 *
 		 * @method mapOn
 		 * @chainable
@@ -2369,30 +2372,30 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 		 * @method getRelations
 		 * @chainable
 		 * @example
-		 * 	var schema3 = {
-			    properties:{
-			        id:{ type:"string", required:false, indexed:true },
-			        label:{ type:"string" },
-			        plantId:{ type:"string" },
-			        userId:{ type:"string" }
-			    },
-			    links:[
-			        {
-			            href:"plant::{ plantId }",
-			            rel:"plant"
-			        },
-			        {
-			            href:"user::{ userId }",
-			            rel:"user"
-			        }
-			    ]
-			}
-			//____________________________
-			deep({
-			    plantId:"e1",
-			    userId:"e1",
-			    label:"hello"
-			}, schema3)
+		 * var schema3 = {
+                properties:{
+                    id:{ type:"string", required:false, indexed:true },
+                    label:{ type:"string" },
+                    plantId:{ type:"string" },
+                    userId:{ type:"string" }
+                },
+                links:[
+                    {
+                        href:"plant::{ plantId }",
+                        rel:"plant"
+                    },
+                    {
+                        href:"user::{ userId }",
+                        rel:"user"
+                    }
+                ]
+            }
+            //____________________________
+            deep({
+                plantId:"e1",
+                userId:"e1",
+                label:"hello"
+            }, schema3)
 			.getRelations("plant", "user")
 			.log();
 
@@ -2411,7 +2414,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     var r = {
                         value: entry.value,
                         schema: entry.schema
-                    }
+                    };
                     temp.push(r);
                     deep.query(entry.schema.links, "./*?rel=in=(" + relations.join(",") + ")")
                     .forEach(function (relation) {
@@ -2429,14 +2432,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         }));
                     });
                 });
-                if (alls.length == 0)
+                if (alls.length === 0)
                     return [s, e];
                 return deep.all(alls)
                     .done(function (s) {
                     //console.log("get relations : ", s)
                     return s;
                 });
-            }
+            };
             func._isDone_ = true;
             addInChain.apply(this, [func]);
             return this;
@@ -2448,32 +2451,32 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 		 * @method mapRelations
 		 * @chainable
 		 * @example
-		 * 	var schema3 = {
-			    properties:{
-			        id:{ type:"string", required:false, indexed:true },
-			        label:{ type:"string" },
-			        plantId:{ type:"string" },
-			        userId:{ type:"string" }
-			    },
-			    links:[
-			        {
-			            href:"plant::{ plantId }",
-			            rel:"plant"
-			        },
-			        {
-			            href:"user::{ userId }",
-			            rel:"user"
-			        }
-			    ]
-			}
-		  	deep({
-			    plantId:"e1",
-			    userId:"e1",
-			    label:"hello"
-			}, schema3)
-			.mapRelations({
-			    user:"relations.user",
-			    plant:"relations.plant"
+         * var schema3 = {
+                properties:{
+                id:{ type:"string", required:false, indexed:true },
+                label:{ type:"string" },
+                plantId:{ type:"string" },
+                userId:{ type:"string" }
+                },
+                links:[
+                {
+                    href:"plant::{ plantId }",
+                    rel:"plant"
+                },
+                {
+                    href:"user::{ userId }",
+                    rel:"user"
+                }
+                ]
+                }
+                deep({
+                plantId:"e1",
+                userId:"e1",
+                label:"hello"
+                }, schema3)
+                .mapRelations({
+                user:"relations.user",
+                plant:"relations.plant"
 			})
 			.logValues();
 		 * @param  {Object} map        the map (see examples)
@@ -2518,19 +2521,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     });
                     promises.push(d);
                 });
-                if (promises.length == 0)
+                if (promises.length === 0)
                     return;
                 return deep.all(promises)
                 .done(function(results){
                     if(!self._queried)
                         return results.shift();
                 });
-            }
+            };
             func._isDone_ = true;
             addInChain.apply(this, [func]);
             return this;
         }
-    }
+    };
 
         function callFunctionFromValue(entry, functionName, args) {
             if (!entry._isDQ_NODE_)
@@ -2626,13 +2629,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     return deep.when(r)
                         .done(recurse2);
                 return recurse2(toExtends);
-            };
+            }
             var r = extendsBackgrounds(toExtends);
             if (r && r.then)
                 return deep.when(r)
                     .done(recurse);
             return recurse(toExtends);
-        };
+        }
     /**
      * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
      *
@@ -2698,7 +2701,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 //console.log("will retrieve backgrounds : ", all);
                 return deep.all(all)
                     .done(extendedsLoaded);
-            }
+            };
             var backgrounds = value.backgrounds;
             delete value.backgrounds;
             var r = getBackgrounds(backgrounds);
@@ -2719,7 +2722,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return entry;
         }
         return entry;
-    };
+    }
 
     var applyCallBackOrTreatment = function (callBack, value) {
         var r = null;
@@ -2730,7 +2733,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         if (typeof r === 'undefined')
             return value;
         return r;
-    }
+    };
     deep.utils.up(fullAPI, deep.Chain.prototype);
 
     //________________________________________________________ DEEP CHAIN UTILITIES
@@ -2758,7 +2761,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 results: [],
                 nodes: null,
                 promise: null
-            }
+            };
             if (!handler._queried) {
                 transfo.nodes = handler._nodes[0];
                 if (transfo.nodes.value instanceof Array) {
@@ -2825,7 +2828,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var firstNode = handler._nodes[0];
             if (handler._queried || !(firstNode.value instanceof Array)) {
                 if (modifyNodes)
-                    handler._nodes = [firstNode]
+                    handler._nodes = [firstNode];
                 return firstNode.value;
             }
             var val = firstNode.value[0];
@@ -2843,7 +2846,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             if (handler._queried) {
                 var lastNode = handler._nodes[handler._nodes.length - 1];
                 if (modifyNodes)
-                    handler._nodes = [lastNode]
+                    handler._nodes = [lastNode];
                 return lastNode.value;
             }
             var firstNode = handler._nodes[0];
@@ -2941,7 +2944,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 console.log("deep.Chain state : ERROR : ", e);//JSON.stringify(e, null, ' '));
             else
                 console.log("deep.Chain state : SUCCESS : ", JSON.stringify(s, null, ' '));
-        }
+        };
         addInChain.apply(self, [func]);
         return this;
     });
@@ -2950,7 +2953,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         var self = this;
         var func = function (s, e) {
             return callBack(deep.chain.nodes(self));
-        }
+        };
         func._isDone_ = true;
         if (callBack)
             addInChain.apply(self, [func]);
@@ -2968,9 +2971,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     alls.push(v.init.apply(v, args));
                 else
                     alls.push(v);
-            })
+            });
             return deep.all(alls);
-        }
+        };
         func._isDone_ = true;
         addInChain.apply(self, [func]);
         return this;
