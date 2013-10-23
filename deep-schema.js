@@ -346,6 +346,86 @@ function(require, utils, promise, Querier){
 		return value;
 	}
 
+	Validator.prototype.castAndCheck = function (value, schema, valuePath)
+	{
+		//console.log("cast and check on : ", value, schema, valuePath);
+		if(!schema.type)
+			return value;
+		
+		var types = schema.type;
+		if(!types.forEach)
+			types = [types];
+
+		var error = null;
+
+		var fin = null;
+		var ok = false;
+		for (var i = 0; i < types.length; ++i)
+		{
+			var type = types[i];
+			switch(type)
+			{
+				case "number" :
+					fin = parseFloat(value);
+					if(!isNaN(fin) && fin !== Infinity)
+						ok = true;
+					break;
+				case "float" :
+					fin = parseFloat(value);
+					if(!isNaN(fin) && fin !== Infinity)
+						ok = true;
+					break;
+				case "integer" :
+					fin = parseInt(value);
+					if(!isNaN(fin) && fin !== Infinity)
+						ok = true;
+					break;
+				case "boolean" :
+					if(value == "true" || value == "1")
+					{
+						fin = true;
+						ok = true;
+					}
+					else if (value == "false" || value === "0")
+					{
+						fin = false;
+						ok = true;
+					}
+					break;
+				case "string" :
+					if(typeof value === 'string')
+					{
+						fin = value;
+						ok = true;
+					}
+					break;
+			}
+			if(ok)
+				break;
+		}
+
+		if(!ok)
+		{
+			var rep = { 
+				value:value, 
+				schema:schema, 
+				errorsMap:{
+				} 
+			}
+
+			rep.errorsMap[valuePath] = {
+				errors:[{ detail:"casting failed. need : "+types.join(", ")+"."}]
+			}
+
+			return deep.errors.PreconditionFail("casting failed", rep);
+		}
+		var report = deep.validate(fin, schema, { basePath:valuePath } );
+		if(!report.valid)
+			return deep.errors.PreconditionFail("cast and check failed : ", report);
+		return fin;
+	};
+
+
 	Validator.prototype.errors = null;
 	Validator.prototype.errorsMap = null;
 
@@ -357,6 +437,8 @@ function(require, utils, promise, Querier){
 	}
 
 	Validator.prototype.createError = function createError(message, value, type, schema, valuePath, schemaPath, schemaProperty){
+		if(valuePath[0] == ".")
+			valuePath = valuePath.substring(1);
 		if(!schemaProperty)
 			schemaProperty = ""
 		var detail = deep.utils.interpret(message, { value:value, type:type, path:valuePath, schema:schema, schemaPath:schemaPath, __this:this });
@@ -371,6 +453,7 @@ function(require, utils, promise, Querier){
 		}
 		if(!this.errorsMap)
 			this.errorsMap = {};
+		//console.log("deep-schema produce error : ", valuePath)
 		if(!this.errorsMap[valuePath])
 			this.errorsMap[valuePath] = {};
 		if(!this.errorsMap[valuePath].errors)
@@ -398,6 +481,8 @@ function(require, utils, promise, Querier){
 	
 	Validator.prototype.checkRef = function checkRef(value, schema, valuePath, schemaPath, nextValidation)
 	{
+		if(valuePath[0] == ".")
+			valuePath = valuePath.substring(1);
 		if(nextValidation == undefined)
 			nextValidation = this.validateProperty;
 		var othis = this;
@@ -538,7 +623,8 @@ function(require, utils, promise, Querier){
 
 	Validator.prototype.validateProperty = function (value, schema, valuePath, schemaPath)
 	{
-		//if(console.flags.validator) console.log("validator", "validateProperty : ",value, schema)
+		//if(console.flags.validator) 
+		//console.log("validateProperty : ",value, schema, valuePath, schemaPath);
 		var validations = [];
 		var type = this.getType(value);
 
@@ -763,38 +849,38 @@ function(require, utils, promise, Querier){
 			},
 			object:{
 				test:function(value){ return typeof value === 'object'; },
-				error:"{ path } need to be float. Value provided : { value }"
+				error:"{ path } need to be float."
 			},
 			"boolean":{
 				test:function(value){ return value === true || value === false; },
-				error:"{ path } need to be float. Value provided : { value }"
+				error:"{ path } need to be float."
 			},
 			number:{
 				test:function(value){
 			//	console.log("DEEP-SCHEMA : test number type of : ", value, typeof value);
 				 return typeof value === 'number' && !isNaN(value); 
 				},
-				error:"{ path } need to be float. Value provided : { value }"
+				error:"{ path } need to be float."
 			},
 			integer:{
 				test:function(value){	return typeof value === 'number' && parseInt(String(value)) != NaN; },
-				error:"{ path } need to be integer. Value provided : { value }"
+				error:"{ path } need to be integer."
 			},
 			"null":{
 				test:function(value){	return value === null; },
-				error:"{ path } need to be null. Value provided : { value }"
+				error:"{ path } need to be null."
 			},
 			string:{
 				test:function(value){ return typeof value === 'string'; },
-				error:"{ path } need to be string. Value provided : { value }"
+				error:"{ path } need to be string."
 			},
 			array:{
 				test:function(value){ return value instanceof Array; },
-				error:"{ path } need to be array. Value provided : { value }"
+				error:"{ path } need to be array."
 			},
 			schema:{
 				test:function(value){ return typeof value === 'object'; },
-				error:"{ path } need to be true. Value provided : { value }"
+				error:"{ path } need to be true."
 			}
 		},
 		dependencies:{
@@ -850,7 +936,7 @@ function(require, utils, promise, Querier){
 				//console.log("try interpret direct reg exp for format : "+schema.format)
 				return new RegExp(schema.format).test(String(value)); 
 			},
-			error:"{ path } unmatched format { schema.format }. Value provided : { value }"
+			error:"{ path } unmatched format { schema.format }."
 		},
 		pattern:{
 			schema:{ type:"string" },
@@ -862,7 +948,7 @@ function(require, utils, promise, Querier){
 					return this.doTest(this.lexic.__defaultPattern[schema.pattern], value, type, schema, valuePath, schemaPath, schemaPath+".pattern");	
 				return new RegExp(schema.pattern).searchInterpretable(String(value)); 
 			},
-			error:"{ path } unmatched pattern { schema.pattern }. Value provided : { value }"
+			error:"{ path } unmatched pattern { schema.pattern }."
 		},
 		minLength:{
 			schema:{ type:"integer" },
@@ -873,7 +959,7 @@ function(require, utils, promise, Querier){
 					return true;
 				return value.length >= schema.minLength; 
 			},
-			error:"{ path } need to be at least { schema.minLength } length. Value provided : { value }"
+			error:"{ path } need to be at least { schema.minLength } length."
 		},
 		maxLength:{
 			schema:{ type:"integer" },
@@ -883,7 +969,7 @@ function(require, utils, promise, Querier){
 				if(type != "array" && type != "string" && type != "integer") return true;
 				return value.length <= schema.maxLength; 
 			},
-			error:"{ path } need to be at max { schema.minLength } length. Value provided : { value }"
+			error:"{ path } need to be at max { schema.minLength } length."
 		},
 		minimum:{
 			schema:{ type:"number" },
@@ -894,7 +980,7 @@ function(require, utils, promise, Querier){
 				if(schema.exclusiveMinimum) return value > schema.minimum; 
 				return value >= schema.minimum;  
 			},
-			error:"{ path } need to be at least { schema.exclusiveMinimum }. Value provided : { value }"
+			error:"{ path } need to be at least { schema.exclusiveMinimum }."
 		},
 		maximum:{
 			schema:{ type:"number" },
@@ -905,7 +991,7 @@ function(require, utils, promise, Querier){
 				if(schema.exclusiveMaximum) return value < schema.maximum; 
 				return value <= schema.maximum;  
 			},
-			error:"{ path } need to be max { schema.exclusiveMaximum }. Value provided : { value }"
+			error:"{ path } need to be max { schema.exclusiveMaximum }."
 		},
 		minItems:{
 			schema:{ type:"integer" },
@@ -950,7 +1036,7 @@ function(require, utils, promise, Querier){
 					}
 				return ok;  
 			},
-			error:"{ path } need to be equal to one of those values { schema.enum|join_coma }. Value provided : { value }"
+			error:"{ path } need to be equal to one of those values { schema.enum|join_coma }."
 		},
 		disallow:{
 			schema:{
@@ -1149,7 +1235,7 @@ function(require, utils, promise, Querier){
 		}
 	}
 
-	var leafSpecific = {
+	var deepSpecific = {
 		
 		__defaultPattern:{
 			retrievable:{
@@ -1160,21 +1246,6 @@ function(require, utils, promise, Querier){
 				},
 				error:"need to be in 'retrievable' format. (see deep/deep-request/isRetrievable())"
 			}
-		},
-		merge:{
-			schema:{ type:["string", "boolean"] }
-		},
-		loadable:{
-			schema:{ type:"string", "enum":["deep", "direct", "none"] }
-		},
-		preload:{
-			schema:{ type:"boolean", required:false, "default":true }
-		},
-		reloadable:{
-			schema:{ type:"boolean" }
-		},
-		"interpretation-deepness":{
-			schema:{ type:"string", "enum":["deep", "direct", "none"] }
 		}
 	}
 
@@ -1329,6 +1400,9 @@ function(require, utils, promise, Querier){
 	
 	Validator.convertStringTo = function(obj, type){
 		return valider.convertStringTo(obj, type);
+	}
+	Validator.castAndCheck = function(value, schema, valuePath){
+		return valider.castAndCheck(value, schema, valuePath);
 	}
 	Validator.validate = function(obj, schema, options){
 		return valider.validate(obj, schema, options);
