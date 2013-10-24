@@ -674,7 +674,7 @@ function(require, utils, promise, Querier){
 	Validator.prototype.validateProperty = function (value, schema, valuePath, schemaPath)
 	{
 		//if(console.flags.validator) 
-		console.log("validateProperty : ",value, schema, valuePath, schemaPath);
+		//console.log("validateProperty : ",value, schema, valuePath, schemaPath);
 		var validations = [];
 		var type = this.getType(value);
 
@@ -707,7 +707,7 @@ function(require, utils, promise, Querier){
 		if(!types.push)
 			types = [types];
 
-		console.log("will test type in types : ",valuePath , type, types)
+		//console.log("will test type in types : ",valuePath , type, types)
 		var ok = false;
 		//
 		if(type == 'undefined' && !schema.required)
