@@ -6,7 +6,7 @@ Provides way to manage fine grained collision when applying to layer together.
 
 ### replace
 
-```javasscript
+```javascript
 
 deep({ b:[1,2,3] })
 .up({
@@ -19,7 +19,7 @@ deep({ b:[1,2,3] })
 
 ### array.insertAt
 
-```javasscript
+```javascript
 
 deep({ b:[1,2,3] })
 .up({
