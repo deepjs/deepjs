@@ -333,22 +333,13 @@ function(require, utils, promise, Querier){
 		if(schema["default"])
 			return deep.utils.copy(schema["default"]);
 
-		var res = null;
-
-		for (var i in schema)
+		var res = {};
+		for(var j in schema[i])
 		{
-			if(i == "default")
-				return schema[i];
-			else if(i == 'properties')
-			{
-				res = {};
-				for(var j in schema[i])
-				{
-					var sch = schema[i][j];
-					res[j] = this.createDefault(schema);
-				}
-			}
+			var sch = schema[i][j];
+			res[j] = this.createDefault(schema);
 		}
+			
 		return res;
 	}
 
