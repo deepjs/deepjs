@@ -30,7 +30,6 @@ var obj = {
 }
 
 
-deep.utils.sheet(sheet, obj)
-.log();
+deep.utils.sheet(sheet, obj).log();
 
 ```
