@@ -56,7 +56,7 @@ deep(obj2)
 Remarque : Any protocole that provide js objects should work. (as json:: if you load a related store - see [protocoles](./stores/native-protocoles-and-stores.md))
 
 
-## Internal inheritance examples
+## Internal inheritance example
 
 ```javascript
 
