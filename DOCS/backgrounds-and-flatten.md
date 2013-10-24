@@ -55,3 +55,26 @@ deep(obj2)
 
 Remarque : Any protocole that provide js objects should work. (as json:: if you load a related store - see [protocoles](./stores/native-protocoles-and-stores.md))
 
+
+## Internal inheritance examples
+
+```javascript
+
+var obj2 = {
+	a:{
+		hello:"world"
+	},
+	b:{
+		backgrounds:["this::../a"]
+	}
+	//...
+}
+
+deep(obj2)
+.flatten()
+//...
+
+```
+
+You could obviously mix objects, externals and internals refrences.
+
