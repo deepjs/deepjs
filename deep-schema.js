@@ -327,6 +327,32 @@ function(require, utils, promise, Querier){
 	}
 
 
+
+	Validator.prototype.createDefault = function (schema){
+
+		if(schema["default"])
+			return deep.utils.copy(schema["default"]);
+
+		var res = null;
+
+		for (var i in schema)
+		{
+			if(i == "default")
+				return schema[i];
+			else if(i == 'properties')
+			{
+				res = {};
+				for(var j in schema[i])
+				{
+					var sch = schema[i][j];
+					res[j] = this.createDefault(schema);
+				}
+			}
+		}
+		return res;
+	}
+
+
 	Validator.prototype.convertStringTo = function (value, type){
 
 		switch(type)
@@ -1397,6 +1423,11 @@ function(require, utils, promise, Querier){
 
 
 	var valider = new Validator();
+
+	Validator.createDefault = function(schema){
+
+		return valider.createDefault(schema);
+	}
 	
 	Validator.convertStringTo = function(obj, type){
 		return valider.convertStringTo(obj, type);
