@@ -329,20 +329,53 @@ function(require, utils, promise, Querier){
 
 
 	Validator.prototype.createDefault = function (schema){
-
+		console.log("schema createDefault : ", schema);
 		if(schema["default"])
 			return deep.utils.copy(schema["default"]);
-
-		var res = {};
-		for(var j in schema[i])
+		if(schema.type == 'object' && !schema.properties)
+			return {};
+		if(schema.properties)
 		{
-			var sch = schema[i][j];
-			res[j] = this.createDefault(schema);
+			var res = {};
+			for(var j in schema.properties)
+			{
+				var sch = schema.properties[j];
+				res[j] = this.createDefault(sch);
+			}
+			return res;
+		}
+		if(schema.type == 'array' && !schema.items)
+			return [];
+		if(schema.items)
+		{
+			var res = [];
+			res.push(this.createDefault(schema.items));
+			return res;
+		}
+		var type = schema.type;
+		if(type.forEach)
+			type = type[0];
+		switch(type)
+		{
+			case "string":
+				return "";
+			case "number":
+				return 0;
+			case "integer":
+				return 0;
+			case "float":
+				return 0.0;
+			case "boolean":
+				return true;
+			case "date":
+				return new Date();
+			case "null":
+				return null;
+			default :
+				return "unrecognised type";
 		}
 			
-		return res;
-	}
-
+	};
 
 	Validator.prototype.convertStringTo = function (value, type){
 
