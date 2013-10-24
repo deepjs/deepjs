@@ -1167,17 +1167,22 @@ define(function(require){
 		if(typeof destructive === 'undefined')
 			destructive = false;
 		var res = [];
-		for(var i in treatments)
+		var objs = [];
+		for(var i = 0; i < treatments.length;++i)
 		{
+			//console.log("load treatment loop : ", i, treatments[i]);
 			var treatment = null;
 
 			if(!destructive) 
 			{
 				treatment = deep.utils.copy(treatments[i]);
-				treatment.source = treatments[i];
+				//treatment.source = treatments[i];
 			}
 			else
 				treatment = treatments[i];
+
+			//console.log("load treatment loop 1 : ", treatment);
+
 
 			if(!treatment.how || treatment.condition === false)
 					continue;
@@ -1185,9 +1190,7 @@ define(function(require){
 				if(typeof treatment.condition === "function" && !treatment.condition.apply(context))
 					continue;
 
-
 			res.push(treatment);
-			var objs = [];
 			if(treatment.what)
 			{
 				//console.log("view controller . render : what : ", treatment.what)
@@ -1209,6 +1212,7 @@ define(function(require){
 				treatment.where = deep.interpret(treatment.where, context);
 				treatment.where = deep.get(treatment.where, { root:context._deep_entry || context });
 			}
+			//console.log("load treatments end loop : ", treatment);
 			objs.push(treatment.what, treatment.how, treatment.where);
 		}
 		//console.log("load treatment : ", objs)
