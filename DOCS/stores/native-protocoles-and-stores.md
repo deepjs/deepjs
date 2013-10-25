@@ -71,7 +71,7 @@ var obj2 = {
 
 deep(obj2)
 .flatten()
-.logValues();
+.logValues();  // will print : { hello:"world", test:12 }
 
 ```
 
@@ -96,7 +96,7 @@ var obj2 = {
 
 deep(obj2)
 .flatten()
-.logValues();
+.logValues(); // will print : { hello:"world", test:12 }
 
 ```
 
