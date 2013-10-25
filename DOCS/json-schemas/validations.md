@@ -26,7 +26,7 @@ console.log("report : ", report);
 
 ```
 
-## Trough chain 
+## Through chain 
 
 ```javascript
 
