@@ -43,7 +43,7 @@ deep(obj2)
 ```javascript
 
 var obj2 = {
-	backgrounds:["js::path/to/my/object/to/inherit", "instance::path/to/class/to/instanciate/then/applied"],
+	backgrounds:["js::path/to/my/object/to/inherit", "instance::path/to/class/to/instanciate/then/apply"],
 	//...
 }
 
