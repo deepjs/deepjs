@@ -7,7 +7,7 @@ Stores are, basicaly, objects collections manager which provides standard HTTP/R
 Protocoles are just a way to indicate, in ressources references, how and from where retrieve related ressources.
 So protocoles are just sugar to tell which ressources provider use.
 
-Stores and [simples functions](./custom-protocoles.md) could be such provider.
+Stores and [simples functions](./custom-protocoles.md) could be such providers.
 
 
 ## core protocoles 
