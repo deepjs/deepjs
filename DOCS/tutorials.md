@@ -24,7 +24,8 @@ Tutorials
 * [ressources stores](./stores/ressources-stores.md)
 * [JSON/Object stores](./stores/objects-stores.md)
 * [list of externals modules](./modules.md)
-* [custom stores and protocoles](./stores/custom-stores.md)
+* [custom protocoles](./stores/custom-protocoles.md)
+* [custom stores](./stores/custom-stores.md)
 
 #### JSON Schema usage
 * [validations](./json-schemas/validations.md)
