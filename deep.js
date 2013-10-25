@@ -1142,6 +1142,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
                 for (var i = 0; i < args.length; ++i) {
                     var q = args[i];
+                    //if(!self._queried && self._nodes[0].value && self._nodes[0].value.forEach)
+                      //  q = "./*/"+q;
                     if (q[0] === "?")
                         q = "./*" + q;
                     if (q[0] === '/') {
@@ -1179,30 +1181,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             };
             func._isDone_ = true;
             return addInChain.apply(self, [func]);
-        },
-        /**
-         * same as .query : but in place of holding queried entries : it return directly the query results.
-         * Is the synch version of the query handle.
-         *
-         * synch true
-         * transparent false
-         *
-         * @method  select
-         * @chainable
-         * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
-         * @return {deep.Chain} this
-         */
-        select: function (q) {
-            var src = this;
-            if (!(q instanceof Array))
-                q = [q];
-            var res = [];
-            src._nodes.forEach(function (r) {
-                q.forEach(function (qu) {
-                    res = res.concat(deep.query(r, qu));
-                });
-            });
-            return res;
         },
         /**
          *
@@ -2159,7 +2137,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          * @chainable
          * @return {deep.Chain}        this
          */
-        valuesEqual: function chainEqual(obj) {
+        valuesEqual: function (obj) {
             var self = this;
             var func = function (s,e) {
                 var toTest = deep.chain.val(self);
@@ -2313,6 +2291,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var doMap = function (what, localKey, foreignKey, whereToStore) {
                 var map = {};
                 what.forEach(function (w) {
+                    //console.log("mapOn : w :", w)
                     if (w === null)
                         return;
                     var val = w[foreignKey];
@@ -2325,6 +2304,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         map[val] = w;
                 });
                 self._nodes.forEach(function (entry) {
+                    //console.log(" finalise mapping : ", entry.value, localKey, map, entry.value[localKey])
+                    if(!self._queried && entry.value && entry.value.forEach)
+                        entry.value.forEach(function(item){
+                             if (map[item[localKey]])
+                                item[whereToStore || localKey] = map[item[localKey]];
+                        })
+                    else
                     if (map[entry.value[localKey]])
                         entry.value[whereToStore || localKey] = map[entry.value[localKey]];
                 });
@@ -2336,7 +2322,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 if (typeof what === 'string') {
                     var parsed = deep.parseRequest(what);
                     var cloned = cloneHandler(self, true);
-                    var foreigns = cloned.select("./" + localKey).join(",");
+                    //cloned.logValues();
+                    var localKeyQuery = localKey;
+                    if(!self._queried && self._nodes[0].value && self._nodes[0].value.forEach)
+                        localKeyQuery = "*/"+localKey;
+                    //console.log("____________________________ mapon :  query : ","./" + localKey);
+                    var foreigns = deep.chain.select(cloned, "./" + localKeyQuery).join(",");
+                    //console.log("_____________ foreigns : ", foreigns);
                     var constrain = foreignKey + "=in=(" + foreigns + ")";
                     if (parsed.uri === '!')
                         parsed.uri = "";
@@ -2740,6 +2732,32 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     deep.chain = {
         addInChain: addInChain,
+                /**
+         * same as .query : but in place of holding queried entries : it return directly the query results.
+         * Is the synch version of the query handle.
+         *
+         * synch true
+         * transparent false
+         *
+         * @method  select
+         * @chainable
+         * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
+         * @return {deep.Chain} this
+         */
+        select: function (handler, q) {
+            var self = handler;
+            if (!(q instanceof Array))
+                q = [q];
+            var res = [];
+            //console.log("deep.chain.select : handler : ", handler._nodes);
+            handler._nodes.forEach(function (r) {
+                q.forEach(function (qu) {
+                    //console.log("deep.Chain.select : ", qu);
+                    res = res.concat(deep.query(r, qu));
+                });
+            });
+            return res;
+        },
         stringify: function utilsStringify(handler, options) {
             options = options || {};
             var res = "";
