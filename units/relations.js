@@ -91,7 +91,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .log()
                 .valuesEqual( { "userId": "e1", "myUser": { "id": "e1", "title": "user title" } } );
             }
-            /*,
+            ,
             mapOn2:function(){
                 return deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
                 .mapOn([
@@ -104,11 +104,16 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .equal([
                     {
                         title:"my title",
-                        id:1
+                        id:1,
+                        linkeds:{itemId:1, value:true}
                     },
                     {
                         title:"my title 2",
-                        id:2
+                        id:2,
+                        linkeds:[
+                            {itemId:2, value:"133"},
+                            { itemId:2, value:"hello"}
+                        ]
                     }
                 ])
                 .valuesEqual([
@@ -126,7 +131,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                         ]
                     }
                 ]);
-            }*/
+            }
         }
     };
 

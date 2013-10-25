@@ -3027,7 +3027,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         "js::deep/units/range",
         "js::deep/units/relations",
         "js::deep/units/context",
-        "js::deep/units/ocm"
+        "js::deep/units/ocm",
+        "js::deep/units/sheets"
     );
 
     //_________________________________________________________________________________
