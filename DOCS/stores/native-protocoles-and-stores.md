@@ -10,7 +10,7 @@ So protocoles are just sugar to tell which ressources provider to use.
 Stores and [simples functions](./custom-protocoles.md) could be such providers.
 
 
-For a list of deepjs related stores and protocoles extension, see [modules](../modules)
+For a list of deepjs related stores and protocoles extension, see [modules](../modules.md)
 
 
 ## core protocoles 
