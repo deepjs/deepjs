@@ -14,6 +14,7 @@ Tutorials
 #### Asynch, Promises and Chains
 * [promised and chained asynch management](./asynch/async-management.md)
 * [deep chain](./asynch/chains.md)
+* [deep chain, arrays and queries](./array-management.md)
 * [errors management](./asynch/errors-management.md)
 * [chains and promises subtilities](./asynch/chaines-promises-subtilities.md)
 * [asynchrone context management](./asynch/asynch-context-management.md)
