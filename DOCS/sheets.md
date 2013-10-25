@@ -9,7 +9,7 @@ A list of queries (deep-queries by others) that apply something (and somehow) to
 
 ## Example 
 
-```javasript 
+```javascript 
 
 var sheet = {
     "dq.up::./!":{
