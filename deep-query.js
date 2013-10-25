@@ -106,17 +106,17 @@ define(function defineDeepQuery(require)
 				rest = this.analyseRQL(rest,paths);
 		}
 		var self = this;
-		/*if(paths.length > 0 && paths[paths.length-1].slashes == "/")
+		if(paths.length > 0 && paths[paths.length-1].slashes == "/")
 			paths.push({
 				type:"selector",
-				value:"!",
+				value:"*",
 				handler:function (parent) {
-					if(parent)
+					/*if(parent)
 						return [parent];
-					return [];
+					return [];*/
 					return self.returnAllProps(parent);
 				}
-			})*/
+			})
 		if(console.flags && console.flags["deep-query"])
 		{
 			console.log("dq analayse : ", path);
@@ -417,8 +417,9 @@ define(function defineDeepQuery(require)
 			else
 			parts.push({
 				type:"selector",
-				value:"!",
+				value:"*",
 				handler:function (parent) {
+					return self.returnAllProps(parent);
 					if(parent)
 						return [parent];
 					return [];
@@ -436,8 +437,9 @@ define(function defineDeepQuery(require)
 				return path;
 			parts.push({
 				type:"selector",
-				value:"!",
+				value:"*",
 				handler:function (parent) {
+					return self.returnAllProps(parent);
 					if(parent)
 						return [parent];
 					return [];
@@ -714,7 +716,7 @@ define(function defineDeepQuery(require)
 		//console.log("DQ :"+q+" raw results : ", items)
 		if(options.resultType == "full")
 		{
-			if(this.straightQuery)
+			if(this.straightQuery && items.length == 1)
 				return items.shift();
 			return items;
 		}
@@ -723,7 +725,7 @@ define(function defineDeepQuery(require)
         for(var i = 0; i < len; ++i)
             finalRes.push(items[i].value);
 		//console.log("QUERY "+q+" : straight ? ", straightQuery);
-		if(this.straightQuery)
+		if(this.straightQuery && items.length == 1)
 			return finalRes.shift();
 		return finalRes;
 	};
