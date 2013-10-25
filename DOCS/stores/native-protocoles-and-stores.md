@@ -5,7 +5,7 @@ Protocoles and stores are related but are not the same thing.
 Stores are, basicaly, objects collections manager which provides standard HTTP/Restful API to do their jobs.
 
 Protocoles are just a way to indicate, in ressources references, how and from where retrieve related ressources.
-So protocoles are just sugar to tell which ressources provider use.
+So protocoles are just sugar to tell which ressources provider to use.
 
 Stores and [simples functions](./custom-protocoles.md) could be such providers.
 
