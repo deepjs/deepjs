@@ -774,7 +774,7 @@ function(require, utils, promise, Querier){
 				}
 				else{	// merge array of schema found for this property (patterns and/or regular schema properties)
 					var res = {};
-					schemas.forEach(function deepCopySchema(e){   // merge : patterns in backgrounds, regular on top
+					schemas.forEach(function (e){   // merge : patterns in backgrounds, regular on top
 						utils.deepCopy(e, res);
 					})
 			 		validations.push(this.checkRef(value[i], res, valuePath+"."+i,  schemaPath+".(merged)properties."+i));
