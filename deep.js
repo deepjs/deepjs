@@ -754,7 +754,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     needed: obj
                 };
                 if (ok)
-                    return report;
+                    return s;
                 else
                     return deep.errors.PreconditionFail("deep.equal failed ! ", report);
             };

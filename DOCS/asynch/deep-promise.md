@@ -80,11 +80,17 @@ deep.when(true)
 .log();
 ```
 
+It does not modifiy promise state.
+
 ### .equal( obj )
 
-test success struct equality to obj. Useful for testcasing.
+Executed only if promise is in success state.
+
+Test success struct equality to obj. Useful for testcasing.
 
 If not equal, it inject a PreconditionFailed error (status 412) in promise, with equality report.
+
+If equal : it does not modifiy promise state.
 
 ### .when( something )
 
@@ -120,6 +126,7 @@ See [asynch-context-management](./asynch-context-management.md) for more details
 
 same thing as .log() above.
 But log current context without arguments.
+it does not modifiy promise state.
 
 ## Deferred
 
