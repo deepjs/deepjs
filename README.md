@@ -65,7 +65,7 @@ console.log('Server running at http://127.0.0.1:1337/');
 ```
 Then, open your browser, go to http://127.0.0.1:1337/, refresh few times, and try :
 
-http://127.0.0.1:1337/<an_id_of_an_item_in_collection>
+http://127.0.0.1:1337/_an_id_of_an_item_in_collection_
 
 or
 
