@@ -20,8 +20,8 @@ Tutorials
 * [asynchrone context management](./asynch/asynch-context-management.md)
 
 #### Protocoles and Stores
-* [native protocoles and stores](./stores/native-protocoles-and-stores.md)
-* [ressources stores](./stores/ressources-stores.md)
+* [native protocoles](./stores/native-protocoles.md)
+* [native stores](./stores/native-stores.md)
 * [JSON/Object stores](./stores/objects-stores.md)
 * [list of externals modules](./modules.md)
 * [custom protocoles](./stores/custom-protocoles.md)
