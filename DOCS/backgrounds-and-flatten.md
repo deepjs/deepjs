@@ -1,6 +1,6 @@
 # Backgrounds and flatten
 
-Even that is the more cpu consuming method provided by deep to fetch and apply inheritance between objects, it is realy useful in many cases.
+Even if that those tools are the more cpu consuming method provided by deep to fetch and apply inheritance between objects, it is realy useful in many cases, and often so smart.
 
 ## Simple example
 
