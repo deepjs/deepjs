@@ -22,7 +22,6 @@ Tutorials
 #### Protocoles and Stores
 * [native protocoles](./stores/native-protocoles.md)
 * [native stores](./stores/native-stores.md)
-* [JSON/Object stores](./stores/objects-stores.md)
 * [list of externals modules](./modules.md)
 * [custom protocoles](./stores/custom-protocoles.md)
 * [custom stores](./stores/custom-stores.md)
