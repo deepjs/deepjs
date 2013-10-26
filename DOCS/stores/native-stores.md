@@ -133,8 +133,8 @@ deep.store("myprotocole")
 /*
 output
 [
-  {"from":"2", "body":{ <put response body> }, "id": 1},
-  {"from":"3", "body":{ <put response body> }, "id": 2}
+  {"from":"e1", "body":{ <put response body> }, "id": 1},
+  {"from":"e2", "body":{ <put response body> }, "id": 2}
 ]
 */
 
