@@ -1,25 +1,5 @@
 # Errors management
 
-if you write : 
-
-```javascript
-deep(...)
-.flatten()
-.fail(function(error, handler, brancher){
-	// handle error of flatten.
-	throw error; 
-})
-.log()	
-.load()	
-.query("...")	
-.run(...)
-.fail(function(error){
-	// handle error of load or query or run.
-	// if the throw error wasn't there : it will also handle 'flatten' error.
-})
-...
-``` 
-
 
 Return rule : 
 	if returned value is :
