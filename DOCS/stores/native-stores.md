@@ -12,6 +12,8 @@ They are there to provides same homogeneous API to manage dummies objects as wel
 
 All collection's stores should respect exactly the same standard API and behaviour.
 
+Docs on object's stores (deep.store.Object) should come quickly.
+
 ## Simple usage
 
 ```javascript
@@ -113,3 +115,27 @@ deep.store("myprotocole")
 
 ```
 
+## BULK updates
+
+```javascript
+
+deep.store.Collection.create("myprotocole", [{ id:"e1", title:"hello" }, { id:"e2", title:"world" }]);
+
+//...
+
+deep.store("myprotocole")
+.bulk([
+  {to:"e1", method:"put", body:{title:"updated 2"}, id: 1},
+  {to:"e2", method:"put", body:{title:"updated 3"}, id: 2}
+])
+.log("bulk result : ")
+.log(); 
+/*
+output
+[
+  {"from":"2", "body":{ <put response body> }, "id": 1},
+  {"from":"3", "body":{ <put response body> }, "id": 2}
+]
+*/
+
+```
