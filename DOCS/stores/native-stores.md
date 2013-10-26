@@ -6,7 +6,7 @@ One for collection management (deep.store.Collection), and the other to object m
 Both provides the same standard HTTP/Restful API (get, post, put, patch, delete).
 And deep.store.Collection has additional standard restful compliant API : range, bulk and rpc.
 
-Queries are done in RQL for collection (see Kris Zyp : [https://github.com/persvr/rql](https://github.com/persvr/rql)), and with deep-queries for object store.
+Queries are done in RQL for collections stores (see Kris Zyp : [https://github.com/persvr/rql](https://github.com/persvr/rql)), and with deep-queries for object store.
 
 They are there to provides same homogeneous API to manage dummies objects or real databases or remote files or..., or to be the base classe for certain stores (as [deep-local-storage](https://github.com/deepjs/deep-local-storage)).
 
