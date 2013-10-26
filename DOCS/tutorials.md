@@ -12,11 +12,11 @@ Tutorials
 * [Object Capabilities Manager](./ocm.md)
 
 #### Asynch, Promises and Chains
-* [promised and chained asynch management](./asynch/async-management.md)
+* [promised and chained asynch management example](./asynch/async-management.md)
+* [deep promise](./asynch/deep-promise.md)
 * [deep chain](./asynch/chains.md)
 * [deep chain, arrays and queries](./array-management.md)
-* [errors management](./asynch/errors-management.md)
-* [chains and promises subtilities](./asynch/chaines-promises-subtilities.md)
+* [promises subtilities](./asynch/promises-subtilities.md)
 * [asynchrone context management](./asynch/asynch-context-management.md)
 
 #### Protocoles and Stores
