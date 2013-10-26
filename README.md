@@ -1,6 +1,6 @@
 #deepjs
 
-deepjs is a set of tools for managing standard javascripts functions, objects and promises.
+deepjs is a set of tools for managing standard javascript functions, objects and promises.
 
 Based on Layered and Chained Programmation approach, it provides, uses and mixes : 
 
@@ -20,7 +20,12 @@ See [tutorials](./DOCS/tutorials.md) page for details.
 Despite of the state of documentations and too few tescases, deep has now achieved a certain kind of maturity and stability.
 It is born through years of work and ideas, and has been named differently through its long history...
 
-All that to say that we are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 plateform that we know you will really enjoy.
+Real huge thanks to [Kris Zyp](https://github.com/kriszyp) and all his incredible work on promises, json-schema, compositions, RQL, OCM, Persvr, etc.
+Thanks also a lot to his bunch of articles on Thin-Server, No-SQL, mVC, etc. and all those realy smart architecural considerations that lead us trough our research...
+
+Without him, deepjs were impossible... So, we just say : Kris Zyp for president ! ;)
+
+We are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 plateform that we know you will realy enjoy.
 
 deepjs : simply made with love. 
 
@@ -33,18 +38,22 @@ deepjs : simply made with love.
 var http = require('http');
 var deep = require('deep');
 
-deep.store.Collection("myobjects", []);
+deep.store.Collection.create("myobjects", []);
+
+var titles = ["hello", "deepjs", "world"];
+var count = 0;
 
 http.createServer(function (req, response) {
 	deep
 	.store("myobjects")
-	.post({ title:"hello", date:new Date().valueOf() })
+	.post({ title:titles[++count%3], count:count })
 	.get(String(req.url).substring(1))
 	.done(function(res){
 		response.writeHead(200, {'Content-Type': 'application/json'});
 		response.end(JSON.stringify(res));
 	})
 	.fail(function(error){
+		console.log("error : ", error.toString());
 		response.writeHead(error.status || 500, {'Content-Type': 'application/json'});
 		response.end(JSON.stringify(error));
 	});
@@ -54,6 +63,19 @@ http.createServer(function (req, response) {
 console.log('Server running at http://127.0.0.1:1337/');
 
 ```
+Then, open your browser, go to http://127.0.0.1:1337/, refresh few times, and try :
+
+http://127.0.0.1:1337/<an_id_of_an_item_in_collection>
+
+or
+
+http://127.0.0.1:1337/?title=deepjs
+
+or
+
+http://127.0.0.1:1337/?count=lt=2
+
+
 
 ## Layered Aspect Oriented and Query Based programmation
 

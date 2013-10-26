@@ -1,8 +1,3 @@
-node simple
-=====
-
-```javascript
-
 var http = require('http');
 var deep = require('deep');
 
@@ -14,7 +9,7 @@ var count = 0;
 http.createServer(function (req, response) {
 	deep
 	.store("myobjects")
-	.post({ title:titles[++count%3], count:count })
+	.post({ title:titles[++count%3], date:new Date().valueOf(), count:count })
 	.get(String(req.url).substring(1))
 	.done(function(res){
 		response.writeHead(200, {'Content-Type': 'application/json'});
@@ -29,17 +24,4 @@ http.createServer(function (req, response) {
 .listen(1337, '127.0.0.1');
 
 console.log('Server running at http://127.0.0.1:1337/');
-
-```
-Then, open your browser, go to http://127.0.0.1:1337/, refresh few times, and try :
-
-http://127.0.0.1:1337/<an_id_of_an_item_in_collection>
-
-or
-
-http://127.0.0.1:1337/?title=deepjs
-
-or
-
-http://127.0.0.1:1337/?count=lt=2
 
