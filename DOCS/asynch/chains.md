@@ -1,5 +1,9 @@
+# deep chain
 
-# API doc : 
+A deep chain is like a Promise. It inherit directly from Promise API.
+
+
+
 
 	## start of chain
 

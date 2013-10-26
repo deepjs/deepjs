@@ -680,6 +680,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 }, ms);
                 return def.promise();
             };
+            func._isDone_ = true;
             return addInChain.apply(this, [func]);
         },
 
