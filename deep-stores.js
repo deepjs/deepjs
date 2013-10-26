@@ -85,6 +85,7 @@ define(["require"], function (require) {
                 this.schema = schema;
             if(options)
                 deep.utils.up(options, this);
+            this.collection = this.collection || [];
         },
         {
             /**
@@ -271,6 +272,7 @@ define(["require"], function (require) {
                 this.schema = schema;
             if(options)
                 deep.utils.up(options, this);
+            this.root = this.root || {};
         },
         {
             /**
@@ -1221,7 +1223,7 @@ define(["require"], function (require) {
                             schema = schema("post");
                         var report = deep.validate(content, schema);
                         if(!report.valid)
-                            return deep.when(deep.errors.PreconditionFail(report));
+                            return deep.when(deep.errors.PreconditionFail("post failed", report));
                     }
                     return old.call(this, content, opt);
                 };
