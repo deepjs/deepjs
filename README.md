@@ -2,7 +2,7 @@
 
 deepjs is a set of tools for managing standard javascripts functions, objects and promises.
 
-Based on Layered and/or Chained Programmation approach, it provides, uses and mixes : 
+Based on Layered and Chained Programmation approach, it provides, uses and mixes : 
 
 * Layered Aspect Oriented Programmation
 * Query Based Programmation including Code Sheet
@@ -17,7 +17,7 @@ As jquery (that is highly unobstrusive and ergonomic) works on standard DOM obje
 
 See [tutorials](./DOCS/tutorials.md) page for details.   
 
-Despite of the state of the documentations and too few tescases, deep has now achieved a certain kind of maturity and stability.
+Despite of the state of documentations and too few tescases, deep has now achieved a certain kind of maturity and stability.
 It is born through years of work and ideas, and has been named differently through its long history...
 
 All that to say that we are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 plateform that we know you will really enjoy.
