@@ -10,6 +10,7 @@ Queries are done in RQL for collections stores (see Kris Zyp : [https://github.c
 
 They are there to provides same homogeneous API to manage dummies objects as well as real databases or remote files or..., or to be the base classe for certain stores (as [deep-local-storage](https://github.com/deepjs/deep-local-storage)).
 
+All collection's stores should respect exactly the same standard API and behaviour.
 
 ## Simple usage
 
