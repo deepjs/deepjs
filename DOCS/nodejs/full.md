@@ -27,7 +27,7 @@ node full example
 			collectionName:"items",
 			schema:schema
 		},
-		dev:deep.store.Collection([], schema)
+		dev:deep.store.Collection.create(null, [], schema)
 	})
 	.flatten()
 	.done(function(store){
