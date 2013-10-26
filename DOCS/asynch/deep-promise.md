@@ -18,10 +18,10 @@ Callbacks return rule :
 
 if returned value is :
 
-* undefined : take previous success
-* an error : inject error as failure in chain
+* undefined : take previous success or error (so it does not modify current promise state)
+* an error : inject error as failure in chain (so change state to 'error')
 * a promise : wait promise resolution to either inject its success or its error in current chain.
-* any other type : inject it as success in chain
+* any other type : inject it as success in chain (so if the promise was in 'error' state : it's now in 'success' state)
 
 if an error is thrown : 
 * from within any handle : it depends if chain catch errors (by default, it catch them).
