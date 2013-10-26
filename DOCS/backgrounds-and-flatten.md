@@ -2,6 +2,14 @@
 
 Even if that those tools are the more cpu consuming method provided by deep to fetch and apply inheritance between objects, it is realy useful in many cases, and often so smart.
 
+And when I saying cpu consuming, don't be scared, it's quite fast now and we could optimise more soon...
+And as it should be only used at init of objects, it will not impact at all global performance of your app.
+
+So enjoy... ;)
+
+But if you use it with realy big objects, lot of recursion and externals datas, etc. 
+you may consider using sheets and other less cpu consumming methods provided by deepjs.
+
 ## Simple example
 
 ```javascript
