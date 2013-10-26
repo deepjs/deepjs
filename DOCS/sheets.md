@@ -5,7 +5,7 @@ Think about CSS...
 A css is just a list of queries (css selection query) that apply styles to matched DOM elements.
 
 A deep sheets it's all the same : 
-A list of queries (deep-queries by others) that apply something (and somehow) to matched javascripts objects and functions in a particular root object.
+A list of queries (deep-queries by others) that apply something (and somehow) to matched javascripts properties in a particular root object.
 
 ## Example 
 
