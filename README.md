@@ -23,7 +23,7 @@ It is born through years of work and ideas, and has been named differently throu
 Real huge thanks to [Kris Zyp](https://github.com/kriszyp) and all his incredible work on promises, json-schema, compositions, RQL, OCM, Persvr, etc.
 Thanks also a lot to his bunch of articles on Thin-Server, No-SQL, mVC, etc. and all those realy smart architecural considerations that lead us trough our research...
 
-Without him, deepjs were impossible... So, we just say : Kris Zyp for president ! ;)
+Without him, deepjs were impossible.
 
 We are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 plateform that we know you will realy enjoy.
 
