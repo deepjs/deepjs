@@ -2537,11 +2537,11 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             else if (!(args instanceof Array))
                 args = [args];
             //console.log("callFunctionFromValue : ", entry, functionName, args);
-            var prom;
+            var prom = null;
             if (value && value[functionName]) {
-                value._deep_entry = entry;
+                //value._deep_entry = entry;
                 prom = value[functionName].apply(value, args);
-                if (prom && prom.then)
+                /*if (prom && prom.then)
                     prom.then(function (s) {
                         //console.log("callFunctionFromValue : success : ",s)
                         delete value._deep_entry;
@@ -2550,7 +2550,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     });
                 else
                     delete value._deep_entry;
-                //console.log("callFunctionFromValue : prom : ", prom)
+                //console.log("callFunctionFromValue : prom : ", prom)*/
                 return prom;
             }
             return prom;
@@ -2568,9 +2568,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
             if (!value)
                 return undefined;
-            value._deep_entry = entry;
+            //value._deep_entry = entry;
             var prom = func.apply(value, args);
-            if (prom && prom.then)
+            /*if (prom && prom.then)
                 prom.then(function () {
                     delete value._deep_entry;
                 }, function () {
@@ -2578,6 +2578,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 });
             else
                 delete value._deep_entry;
+            */
             return prom;
         }
 
