@@ -257,153 +257,93 @@ How to load externals content.
 		Interpretation of strings : any strings that contain '{ myDottedPth }' are interpretable.
 		You give a context that will be used for replacement.
 		ex: "hello { name }"  with context {name:"john"}  will give "hello john".
+		
+		if context (required) is a retrievable : load it before interpretation.
 
 		ex : 
-
-		deep({ msg:"hello { name }" }).deepInterpret({ name:"john" }).logValues().equal({ msg:"hello john" });
-
-		//______
-
-		deep({
-		    msg:"hello { name }"
-		})
-		.query("./msg")
-		.interpret({ name:"john" })
-		.logValues()
-		.equal("hello john");
-
-		chain.interpret( context )
-
-			if context (required) is a retrievable : load it before interpretation.
-			
-		chain.deepInterpret( context )
-
-			recursively analyse current entries and seek after strings to interpret.
-			if context (required) is a retrievable : load it before interpretation.
-
-
-## fail, done and then
-
-		chain.fail( callback )
-
-			callback : null || function(errors, branchCreator){ ... } 
-			stopIfErrors: null(false) || true
-
-		chain.done( callback )
-
-			callback : null || function(success, branchCreator){ ... } 
-			stopIfErrors: null(false) || true
-
-		chain.then( callbackSuccess, callBackError )
-
-			callbackSuccess : null || function(successes, branchCreator){ ... } 
-			callbackError : null || function(errors, branchCreator){ ... } 
-			stopIfErrors: null(false) || true
+```javascript
+deep({
+    msg:"hello { name }"
+})
+.query("./msg")
+.interpret({ name:"john" })
+.logValues()
+.equal("hello john");
+```
 
 ## branches
 
-		chain.branches( func )
+### chain.branches( func )
 
-			the way to start a bunch of branches in the chained calls.
-			By default, if you don't return a promise all created branches are paralleles, 
-			the inital chain is not delayed until branches are ended.
-			If you want to delay the inital chain execution until all branches are completed : 
-			you could return 'branches' (see below) that will be converted in promise.
+the way to start a bunch of branches in the chained calls.
+By default, if you don't return a promise all created branches are paralleles, 
+the inital chain is not delayed until branches are ended.
+If you want to delay the inital chain execution until all branches are completed : 
+you could return 'branches' (see below) that will be converted in promise.
 
-			ex :
-			chain.branches( function(branches)
-			{
-				branches.branch().query(...).load().errors(console.log);
-				branches.branch().query(...).post().errors(console.log);
-				//...
-				return branches;
-			});
-
-			if you want to return a subset of branches promises : 
-			you could use deep.all([array_of_promises]) :
-
-				var branch = branches.create().myChain()...;
-				//...
-				return deep.all([deep.promise(branch), ...]);
-
+ex :
+```javascript 
+chain.branches( function(branches)
+{
+	branches.branch().query(...).load().errors(console.log);
+	branches.branch().query(...).post().errors(console.log);
+	//...
+	return branches;
+});
+```
+if you want to return a subset of branches promises : 
+you could use deep.all([array_of_promises]) :
+```javascript
+	var branch = branches.create().myChain()...;
+	//...
+	return deep.all([deep.promise(branch), ...]);
+```
 ## tests, equality and validation
 
-		chain.equal(needed, callBack)
 
-			test strict equality with 'needed' on each current entry.
-			callBack will receive the report.
-			if any entry not match and stopIfNotEquals : the chain is stoped.
-	
-		chain.valuesEqual(needed, callBack)
+### chain.valuesEqual(needed)
 
-			test strict equality b0,etween 'needed' and whole current entries values array.
-			So 'needed' need to be an array.
-			callBack will receive the report.
-			if the array does not match and stopIfNotEquals : the chain is stoped.
-	
-		chain.assertTrue( testFunc, options )
+test strict equality b0,etween 'needed' and whole current entries values array.
+So 'needed' need to be an array.
+callBack will receive the report.
+if the array does not match and stopIfNotEquals : the chain is stoped.
 
-			testFunc must return true 
-			options (optional) could contains : 
-				callBack : the callBack that will receive the report
-				args : the args that will be passed to test function
-				continueIfErrors : null||true
-	
-		chain.validate()
+### chain.assertTrue( testFunc, options )
 
-			validate current entries against their respective schema.
+testFunc must return true 
+options (optional) could contains : 
+	callBack : the callBack that will receive the report
+	args : the args that will be passed to test function
+	continueIfErrors : null||true
 
-	## push to ...
+### chain.validate()
 
-		chain.pushHandlerTo(array)
-
-		chain.pushNodesTo(array)
-
-		chain.pushValuesTo(array)
-
-		chain.pushPathsTo(array)
-
-		chain.pushSchemasTo(array)
-
+validate current entries against their respective schema.
+see [validation](../json-schemas/validations.md).
 
 # deep utils
 
-	## deep.promise
+## deep.utils
 
-		deep.when( obj )
+	deep.utils.up(src, target, schema)
 
-			if obj is a deferred (jquery or promised-io) : return its promise.
-			if obj is DeepHandler (a chainable object) : simply return it.
-			if obj is a branches creator (see chain.branches) : return all the branches promises (wait until last)
+	deep.utils.bottom(src, target, schema)
 
-		deep.all( array )
+	deep.utils.deepArrayFusion2(first, second, schema)
 
-			will return a chain that will wait until all promises contained in array are resolved.
-			will be rejected at first promise from array that are rejected 
- 
-	
-	## deep.utils
+	deep.utils.arrayUnique(arr, uniqueOn)
 
-		deep.utils.up(src, target, schema)
+	deep.utils.setValueByPath(object, path, value, pathDelimitter)
 
-		deep.utils.bottom(src, target, schema)
+	deep.utils.deletePropertyByPath(object, path, pathDelimitter)
 
-		deep.utils.deepArrayFusion2(first, second, schema)
+	deep.utils.retrieveValueByPath(object, path, pathDelimitter)
 
-		deep.utils.arrayUnique(arr, uniqueOn)
+	deep.utils.retrieveFullSchemaByPath(schema, path, pathDelimitter)
 
-		deep.utils.setValueByPath(object, path, value, pathDelimitter)
+## deep.query(root, query, options)
 
-		deep.utils.deletePropertyByPath(object, path, pathDelimitter)
-
-		deep.utils.retrieveValueByPath(object, path, pathDelimitter)
-
-		deep.utils.retrieveFullSchemaByPath(schema, path, pathDelimitter)
-
-	## deep.query(root, query, options)
-
-	## deep.rql(array, rql, options)
-
+## deep.rql(array, rql, options)
 
 # Lexic
 	
@@ -439,7 +379,7 @@ How to load externals content.
 
 		a deep query
 
-	current entries : 
+	current entries (or nodes) : 
 
 		the current set of elements that the handler hold and on what you could apply chained opertations.
 
@@ -454,14 +394,14 @@ deep("json::./json/simple.json").logValues("simple.json : ");
 //______
 
 deep("swig::./templates/simple.html")
-.run(null, {args:{ names:"john", zip:12 }})
+.run(null, { names:"john", zip:12 })
 .log();
 
 //______
 
 deep("swig::./templates/simple.html")
-.done( function( templates ){ 
-	$("#content-container").html( templates[0]( { names:"Deep", zip:1060 } ) ); 
+.done( function( template ){ 
+	$("#content-container").html( template( { names:"Deep", zip:1060 } ) ); 
 })
 .log();
 
