@@ -1,8 +1,91 @@
-### promise derecursification (or linearisation)
+# Promises subitlities
 
-To handle iteration on something that may be (or not) promises without recursive calls.
+Good promised pattern are sometimes quite subtils and here is some tips to use it more correctly.
 
-Quite subtil : be sure you understand everything here... Realy important.
+## Natural linearisation
+
+Use linear promises manegement in place of recursive promises call.
+
+good : 
+
+```javascript
+
+deep.when( something )
+.done(function(success){
+    // success = something
+    return something_else;
+})
+.done(function(success){
+    // success = something_else
+    return "hello";
+})
+.done(function(success){
+    // final success = "hello"
+});
+
+```
+
+bad:
+
+```javascript
+
+deep.when( something )
+.done(function(success){
+    // success = something
+    return deep.when( something_else )
+    .done(function(success){
+     	// success = something_else
+     	return "hello";
+	})
+})
+.done(function(success){
+     // final success = "hello"
+});
+
+```
+
+
+## Natural conditional branching
+
+A difference between deep.Promise and other promises (as I know today), is that here : done, fail and always callbacks are executed in chain environnement. i.e. when you use 'this' in such callbacks, you have access to chain handler (deep.Promise or deep.Chain) API.
+
+The cool trick here is that when such callback are executed, current queue (i.e. the functions that was placed in chain (through chain API) and that are not consummed yet) is backup and replaced by an empty queue.
+
+This empty queue could be filled as you want, from within callbacks, using 'this' to access chain (or promise) API.
+
+When such callbacks return, the previous queue is concatened at end of new queue.
+
+The effect is that all chain API's call, from within such callbacks, are queued in front of final queue, and so will be executed before previous queued handles.
+
+From chain point of view : you have inserted new handles between existent ones.
+
+example :
+
+```javascript
+
+
+	deep.when(true)
+	.done(function(s){
+		if(s)
+			this.done(function(s){
+				return "hello";
+			})
+		else
+			this.done(function(s){
+				return "bye";
+			});
+	})
+	.log("result : ")
+	.log();
+
+```
+
+
+## linear promise iteration
+
+To handle iteration on collection of objects (that may (or not) be promises) without recursive calls.
+
+Based on same considerations than above.
 
 Try it in a js console to fuly understand what's happening.
 
@@ -46,23 +129,4 @@ var iterator = deep.when(toIterates.shift())
 ```
 
 
-### natural conditional chain branching
 
-```javascript
-
-
-	deep.when(true)
-	.done(function(s){
-		if(s)
-			this.done(function(s){
-				return "hello";
-			})
-		else
-			this.done(function(s){
-				return "bye";
-			});
-	})
-	.log("result : ")
-	.log();
-
-```
