@@ -1,6 +1,6 @@
 # Promises subitlities
 
-Good promised pattern are sometimes quite subtils and here is some tips to use it more correctly.
+Good promised patterns are sometimes quite subtils and here is some tips to use it more correctly.
 
 ## Natural linearisation
 
