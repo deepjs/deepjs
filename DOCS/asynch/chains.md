@@ -125,102 +125,132 @@ Deep will try to retrieve the second argument, so you could give retrievable
 
 ### chain.query( query, errorIfEmpty )
 
-	select current entries.
-		if query start with any '.' : the query will be executed from current entries.
-		if query start with any '/' : the query will be executed from root object.
-	If errorsIfEmpty : It will produce chained error if results is empty
+select current entries.
+	if query start with any '.' : the query will be executed from current entries.
+	if query start with any '/' : the query will be executed from root object.
+If errorsIfEmpty : It will produce chained error if results is empty
 
 ### chain.first()
 
-	select the first element of current entries (remove others)
+select the first element of current entries (remove others)
 
 ### chain.last()
 
-	select the last element of current entries (remove others)
+select the last element of current entries (remove others)
 
 ### chain.parents( errorIfEmpty )
 
-	select the parents on current entries
+select the parents on current entries
 
 ### chain.deep(obj||uri||promise||handler||deep_query_node, schema||uri||promise)
 
-	continue chain with new root and (optional) schema
-
+continue chain with new root and (optional) schema
 
 ## read entries
 
 ### chain.each( callBack )
 
-callBack receive the current entry value (i.e. forEach equivalent)
+callBack receive each chain's node value (i.e. forEach equivalent)
 
 ### chain.values( callBack )
 
-callBack receive the array of current entries schemas
+callBack receive the array of current entries schemas. If chain holds a single object, it will be wrap in an array before injection.
 
 ### chain.val( callBack )
 
-	callBack receive the holded object(s) (if chain hold a single object : will return this object. if chain hold an array : return this array)
+callBack receive the holded object(s) (if chain hold a single object : will return this object. if chain hold an array : return this array)
 
 ### chain.nodes( callBack )
 
-	callBack receive the array of current entries themselves (DeepQuery nodes)
-
-### chain.schemas( callBack )
-
-	callBack receive the array of current entries schemas
+callBack receive the array of current nodes themselves (DeepQuery nodes)
 
 ## calls
 
-### chain.run( function || string, { reportCallBack : null||function, args : null||array })
+### chain.run( function || string, args : array )
 
-			if(arg1 == function)
-				arg1.apply(entries[i], args)    // if it's function : call it with each entry as "this"
-			else
-				entries[i][string](args) 		// if it's string : fire the corresponding method on any entry (if any)
+Will cycle on each chain's nodes and execute provided function if any.
+If no function (or string) is provided (or set to null), will look if node's value is a function, and so will fired it from its original context.
 
-			If the executed function return promise : the chain will wait 'resolve' or 'reject' before continue.
-			If promise is rejected : the error is injected in the chain and could be read by .errors(...).
-			If the executed function throw something, it will be catched by the chain and injected as error...
+
+```javascript
+if(typeof fn === 'function')
+	// if 'fn' is function : call it with each node's value as "this"
+	return fn.apply(this._nodes[i].value, args);
+
+else if(typeof fn === 'string' && typeof this._nodes[i].value[fn] === 'function')
+	// if 'fn' is string : fire the corresponding method on any entry (if any)
+	return this._nodes[i].value[fn].apply(this._nodes[i].value, args);
+
+else if(!fn && typeof this._nodes[i].value === 'function')
+	return this._nodes[i].value.apply(this._nodes[i].ancestor.value, args);
+	
+```
+
+If the executed function return promise : the chain will wait promise resolution (or rejection) before injecting its state in current chain.
+
+If the executed function throw something, it will be catched by the chain and injected as error.
+
+Usage examples :
+```javascript
+
+deep({
+	a:function(arg){
+		console.log("hello world : ", arg);
+	},
+	b:function(arg){
+		console.log("b say : Hi ! : ", arg)
+	},
+	title:"my object's title"
+})
+.run("a","deepjs powaaa!")
+.run(function(){
+	console.log("this is : ", this);
+})
+.query("/[a,b]")
+.run(null, "last call !");
+
+```
+output : 
+
+	hello world : deepjs powaaa!
+	this is : Object { title="my object's title", a=function(), b=function()}
+	hello world : last call !
+	b say : Hi ! : last call !
+
+
+Note that if fired function is runned multiple time (as with query in example above) and return promises,
+they are executed parallely, not serialy.
+
+So the chain fires function(s), wait for all results (promised or not) parallely, and inject the results as success (or error) in current chain.
+
 
 ### chain.exec(function, { reportCallBack : null||function, args : null||array })
 
-			will excute provided function without changing it's "this"
+will excute once provided function without changing it's environnement (i.e. with doing .apply or .call on function itself)
 
-			If the executed function return promise : the chain will wait 'resolve' or 'reject' before continue.
-			If promise is rejected : the error is injected in the chain and could be read by .errors(...).
-			If the executed function throw something, it will be catched by the chain and injected as error... 
+If the executed function return promise : the chain will wait 'resolve' or 'reject' before continue.
+If promise is rejected : the error is injected in the chain and could be read by .errors(...).
+If the executed function throw something, it will be catched by the chain and injected as error... 
 
 
 ## chain.logValues(title, { pretty:null || true })
 
 will log current entries
 
-## delay
-
-		chain.delay(ms)
-
-			will delay the execution of any followers in chain.
-
-		chain.wait( promise )
-
-			will delay the execution of any followers until the promise is resolved
-			continueIfRejected:null || false
-
 ## loads
 
-		How load externals content.
+How to load externals content.
 
-		chain.load( retrievable )
+### chain.load( context, destructive )
 
-			if retrievable is provided (optional) : load it and replace current entries values by it.
-			if no argument is provided, try to retrieve current entries values and replace by loaded contents (if any)
-			if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+	if no argument is provided, try to retrieve current entries values and replace by loaded contents (if any)
+	if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
-		chain.deepLoad( )
+### chain.deepLoad( context, destructive )
 
-			recursively analyse current entries and seek after string and functions.
-			Retrieve them (see retrievable) and place loaded content at same place.
-			if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+	recursively analyse current entries and seek after string and functions.
+	Retrieve them (see retrievable) and place loaded content at same place.
+	if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
 ## interpret
 
@@ -340,16 +370,12 @@ will log current entries
 
 	## deep.promise
 
-		deep.promise( obj )
+		deep.when( obj )
 
 			if obj is a deferred (jquery or promised-io) : return its promise.
 			if obj is DeepHandler (a chainable object) : simply return it.
 			if obj is a branches creator (see chain.branches) : return all the branches promises (wait until last)
 
-		deep.when( obj )
-
-			return a chain on the object. the chain act as deferred/promise. You could add then, done, fail, ... and catch the result.
-		
 		deep.all( array )
 
 			will return a chain that will wait until all promises contained in array are resolved.
@@ -423,7 +449,7 @@ will log current entries
 ```javascript
 //______
 
-deep("./json/simple.json").logValues("simple.json : ");
+deep("json::./json/simple.json").logValues("simple.json : ");
 
 //______
 
@@ -442,7 +468,7 @@ deep("swig::./templates/simple.html")
 //_________
 
 deep({template:"swig::./templates/simple.html"})
-.deepLoad()
+.deepLoad(null, true)
 .run(function(){
   return $("#content-container").html( this.template({ name:"john" } ));
 })
@@ -454,17 +480,16 @@ deep({
     template:"swig::./templates/simple.html", 
     datas:"json::./json/simple.json", 
     load:function(synchHandler){
-    	return deep(this).query("/[template,datas]").load();
+    	return deep(this).query("/[template,datas]").load(null, true);
     },
     render:function(){
-        $("#content-container").html(this.template(this));
+        $("#content-container").html(this.template(this.datas));
     },
     setBehaviour:function(){
 
 	}
 })
 .load()
-.root()
 .run("render")
 .run("setBehaviour")
 .log("____ refreshed");
@@ -472,25 +497,10 @@ deep({
 //_____
 
 
-var h = deep({})
-.delay(500)
-.log("first")
-.delay(500)
-.log("second");
-
-deep.when(h).then(function(suc){
-	console.log("success : ",suc);
-}, 
-function(arg){
-	console.log("errors : ",arg);
-});
-
-h.reject({msg:"test rejection"});
-
 ``` 
 
 
 # License
-	authors : 
+	author : 
 		Gilles Coomans <gilles.coomans@gmail.com>
-	LGPL
+	LGPL 3.0
