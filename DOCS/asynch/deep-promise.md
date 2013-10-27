@@ -12,7 +12,7 @@ Fondamentaly, there is two kinds of callback family :
 * .done(function(success){}) : callback will only be fired if promise state is a success
 * .fail(function(error){}) : callback will only be fired if promise state is an error
 
-Those two family could be used together with .then( doneCallBack, failCallBack ), which is exactly the same as doing .done(callBack).fail(callback)
+Those two families could be used together with .then( doneCallBack, failCallBack ), which is exactly the same as doing .done(callBack).fail(callback)
 
 The big difference from simple callback pattern (as nodejs abuse), is that the promise continue to hold its state, long time after primary events, and provides way (when adding a new callback when needed) to get its state at any time after primary events.
 
