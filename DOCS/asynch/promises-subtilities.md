@@ -4,7 +4,7 @@ Good promised pattern are sometimes quite subtils and here is some tips to use i
 
 ## Natural linearisation
 
-Use linear promises manegement in place of recursive promises call.
+Use linear promises management in place of recursive promises call.
 
 good : 
 
