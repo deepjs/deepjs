@@ -1,105 +1,177 @@
 # deep chain
 
-A deep chain is like a Promise. It inherit directly from Promise API.
+First, a deep chain is like a [Promise](./deep-promise.md). It inherit directly from Promise API.
+You could wait for the chain resolution or rejection.
+
+In addition of state (that promise API manage) a deep chain hold some values between chained callBacks and offer an API to manipulate them.
+
+Think about jquery. When your doing something like this : 
+
+```javascript 
+$('.my-selector').find('.other-selector').click(function(e){ ... });
+```
+Here, you selecting something in DOM elements, then doing a second query to find elements from the first results set, and finaly you attach a click handler to them. Simple...
+
+You could do something equivalent with deep.
+```javascript
+deep( anObject ).query("/my/query").query("./second/query").up(deep.compose.after(function(){ ... }));
+```
+Here you start from an arbitrary object (equivalent to root DOM in jquery), make queries to select something from this root, make a second query to select something from previously selected set, and finaly attach some functions to some objects (or compose them, etc.).
+
+So, jquery :
+* helps you to manipulate DOM's elements
+* allows you to select DOM's elements with a jquery selector (extension of CSS selector)
+* and a jquery handler holds DOM elements between call on this handler
+
+deepjs chain : 
+* helps you to manipulate standard javascript objects, values and functions
+* allows you to select js objects, values and functions with a deep-query
+* and a deep chain handler holds javascript objects, values and functions between call on this handler
+
+Same same... but different... ;)
+
+Now, keep in mind that deep chain it's not just there for sugar-chained-syntax as jquery does principaly.
+
+deep.Chain is mainly there to help you managing asynchrone stuffs.
+
+So as promise's API wait any promise returned from any chained callback before continuing, chain particular API do the same.
+And as much as possible, chain API hides difference between synch and asynch calls.
+
+example :
+
+```javascript
+
+var obj = {
+	func1:function(arg){
+		console.log("func1 : ", arg);
+		// we could return anything here, including promises
+		return "my arg was : "+arg;
+	},
+	func2:function(arg){
+		console.log("func2 : ", arg);
+		// we could return anything here, including promises
+		return "my arg was : "+arg;
+	}
+}
+
+// Without chain
+deep.when(obj.func1("hello"))
+.done(function(success){
+	console.log("func1 result : ", success);
+    return obj.func2("world");		// we use [natural promise linearisation](./promises-subtilities.md)
+})
+.done(function(success){
+	console.log("func2 result : ", success);
+    console.log("end of calls");
+});
 
 
+// with chain
+deep(obj)
+.run("func1", ["hello"])
+.log()
+.run("func2", ["world"])
+.log();
 
+```
 
-	## start of chain
+The fact here is that in real world, you often don't want to know if obj.func1 and obj.func2 return or not a promise (so maybe some asynch stuffs to fetch).
+So when using deep chain, you could use it transparently.
 
-		deep( root, schema )
+## start of chain
+
+```javascript
+deep( root, schema )
+``` 
+return a deep.Chain handler.
+
+root : primitive_var || object || array || function || uri || promise || chain (which will be seen as a unique promise)
+	required
+	it's the root object from where you want to start the chain
+
+schema : object || uri || function || promise
+	optional 
+	it's the root schema describing root object
 		
-			root : primitive_var || object || function || uri || promise || chain (which will be seen as a unique promise)
-				required
-				it's the root object from where you want to start the chain
-
-			schema : object || uri || function || promise
-				optional 
-				it's the root schema describing root object
+## modelisation 
 		
-	## modelisation 
-		
-		chain.up( objectToApplyUp || uri ) 
+### chain.up( object(s)ToApplyUp || uri(s) ) 
 
-			Apply object (deep-copy from up) on current entries. 
-			Load it if necessary.
-			Merge _schema and backgrounds if any. 
-			Keep protos as array.
+Apply object (deep-copy from up) on current entries. 
+Load them if necessary.
 
-		chain.bottom( objectToApplyBottom || uri )
+### chain.bottom( object(s)ToApplyBottom || uri(s) )
 
-			Apply object (deep-copy from bottom) on current entries. 
-			Load it if necessary.
-			Merge _schema and backgrounds if any. 
-			Keep any collided protos as array of protos.
+Apply object(s) (deep-copy from bottom) on current entries. 
+Load them if necessary.
 
-		chain.flatten()
+### chain.flatten()
 
-			Apply any backgrounds property contained in current entries.
-			(seek recursively under current entries)
+Apply any backgrounds properties contained in current entries.
+(seek recursively (deeply) under current entries).
+See [backgrounds-and-flatten.md](../backgrounds-and-flatten.md).
 
-		chain.remove( query )
+### chain.remove( query )
 
-			remove properties gived by query.
-			the root could not be removed.
+remove properties gived by query.
+the root could not be removed.
 
-		chain.replace( query, by )
+### chain.replace( query, by )
 
-			replace properties value gived by query by the second argument.
-			the root could not be replaced.
-			Deep will try to retrieve the second argument, so you could give retrievable
+replace properties value gived by query by the second argument.
+Deep will try to retrieve the second argument, so you could give retrievable
 
-	## navigation 
+## navigation 
 
-		chain.query( query, errorIfEmpty )
+### chain.query( query, errorIfEmpty )
 
-			select current entries.
-				if query start with any '.' : the query will be executed from current entries.
-				if query start with any '/' : the query will be executed from root object.
-			If errorsIfEmpty : It will produce chained error if results is empty
+	select current entries.
+		if query start with any '.' : the query will be executed from current entries.
+		if query start with any '/' : the query will be executed from root object.
+	If errorsIfEmpty : It will produce chained error if results is empty
 
-		chain.first()
+### chain.first()
 
-			select the first element of current entries (remove others)
+	select the first element of current entries (remove others)
 
-		chain.last()
+### chain.last()
 
-			select the last element of current entries (remove others)
+	select the last element of current entries (remove others)
 
-		chain.parents( errorIfEmpty )
+### chain.parents( errorIfEmpty )
 
-			select the parents on current entries
+	select the parents on current entries
 
-		chain.root(obj||uri||promise||handler||deep_query_node, schema||uri||promise)
+### chain.deep(obj||uri||promise||handler||deep_query_node, schema||uri||promise)
 
-			replace current root and his eventual schema before continue.
+	continue chain with new root and (optional) schema
 
 
-	## read entries
+## read entries
 
-		chain.each( callBack )
+### chain.each( callBack )
 
-			callBack receive the current entry value (i.e. forEach equivalent)
+callBack receive the current entry value (i.e. forEach equivalent)
 
-		chain.values( callBack )
+### chain.values( callBack )
 
-			callBack receive the array of current entries schemas
+callBack receive the array of current entries schemas
 
-		chain.val( callBack )
+### chain.val( callBack )
 
-			callBack receive the holded object(s) (if chain hold a single object : will return this object. if chain hold an array : return this array)
+	callBack receive the holded object(s) (if chain hold a single object : will return this object. if chain hold an array : return this array)
 
-		chain.nodes( callBack )
+### chain.nodes( callBack )
 
-			callBack receive the array of current entries themselves (DeepQuery nodes)
+	callBack receive the array of current entries themselves (DeepQuery nodes)
 
-		chain.schemas( callBack )
+### chain.schemas( callBack )
 
-			callBack receive the array of current entries schemas
+	callBack receive the array of current entries schemas
 
-	## calls
+## calls
 
-		chain.run( function || string, { reportCallBack : null||function, args : null||array })
+### chain.run( function || string, { reportCallBack : null||function, args : null||array })
 
 			if(arg1 == function)
 				arg1.apply(entries[i], args)    // if it's function : call it with each entry as "this"
@@ -110,7 +182,7 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 			If promise is rejected : the error is injected in the chain and could be read by .errors(...).
 			If the executed function throw something, it will be catched by the chain and injected as error...
 
-		chain.exec(function, { reportCallBack : null||function, args : null||array })
+### chain.exec(function, { reportCallBack : null||function, args : null||array })
 
 			will excute provided function without changing it's "this"
 
@@ -118,17 +190,12 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 			If promise is rejected : the error is injected in the chain and could be read by .errors(...).
 			If the executed function throw something, it will be catched by the chain and injected as error... 
 
-	## log
 
-		chain.log(arguments)
+## chain.logValues(title, { pretty:null || true })
 
-			will log arguments as console do it (separate args with simple ',')
+will log current entries
 
-		chain.logValues(title, { pretty:null || true })
-
-			will log current entries
-
-	## delay
+## delay
 
 		chain.delay(ms)
 
@@ -139,7 +206,7 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 			will delay the execution of any followers until the promise is resolved
 			continueIfRejected:null || false
 
-	## loads
+## loads
 
 		How load externals content.
 
@@ -155,7 +222,7 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 			Retrieve them (see retrievable) and place loaded content at same place.
 			if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
-	## interpret
+## interpret
 
 		Interpretation of strings : any strings that contain '{ myDottedPth }' are interpretable.
 		You give a context that will be used for replacement.
@@ -185,7 +252,7 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 			if context (required) is a retrievable : load it before interpretation.
 
 
-	## fail, done and then
+## fail, done and then
 
 		chain.fail( callback )
 
@@ -203,7 +270,7 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 			callbackError : null || function(errors, branchCreator){ ... } 
 			stopIfErrors: null(false) || true
 
-	## branches
+## branches
 
 		chain.branches( func )
 
@@ -229,7 +296,7 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 				//...
 				return deep.all([deep.promise(branch), ...]);
 
-	## tests, equality and validation
+## tests, equality and validation
 
 		chain.equal(needed, callBack)
 
@@ -268,18 +335,6 @@ A deep chain is like a Promise. It inherit directly from Promise API.
 
 		chain.pushSchemasTo(array)
 
-# deep(this)	
-
-		in any function/method of an object, you could use deep(this).myChain()...
-		It will start a new chain on the current object.
-
-		As when you use your chain, you could want to do queries that go anywhere else, from the ROOT, starting from 'this' :
-		deep need to know where 'this' is locate in the whole layer (and to know its parent etc.).
-
-		So if you use deep to fire a function somewhere in a layer, deep place the deep-query node needed 
-		to achieve relatives and absolutes queries in the object, just the time of the call (if deferred : will wait the resolution before removing the node).
-
-		So, if you want to do deep(this).query("../") from a method/function in your object, you NEED to fire this function/method through a chain.run() (see chain.run API)
 
 # deep utils
 
