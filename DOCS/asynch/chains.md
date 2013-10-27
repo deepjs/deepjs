@@ -1,5 +1,7 @@
 # deep chain
 
+[Back to tutorials](../tutorials.md)
+
 First, a deep chain is like a [Promise](./deep-promise.md). It inherit directly from Promise API.
 You could wait for the chain resolution or rejection.
 

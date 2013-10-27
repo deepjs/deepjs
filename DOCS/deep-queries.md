@@ -1,6 +1,8 @@
 deep-query : tools to query json/object structures. 
 ==========================
 
+[Back to tutorials](./tutorials.md)
+
 A other proposal for (json/object)-query which (as differences from official proposal):
 use simple slash delimitted syntax, 
 could handle regular expression for step selection, 

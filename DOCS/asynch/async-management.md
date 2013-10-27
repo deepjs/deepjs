@@ -1,5 +1,8 @@
 ## Promised and Chained asynch management
 
+[Back to tutorials](../tutorials.md)
+
+
 ```javascript
 var farmManager = {
 	animals : [

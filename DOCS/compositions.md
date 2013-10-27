@@ -1,6 +1,7 @@
 deep.compose : Chained Aspect Oriented Programming
 ==========================
-SEE DOCS/deep.md for full doc
+
+[Back to tutorials](./tutorials.md)
 
 When you collide two functions together, you could use deep.compose to manage how collision is resolved.
 Keep in mind that if you collide a simple function (up) on a composition (chained or not) : it mean : simply overwrite the composition by the function.

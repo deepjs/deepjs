@@ -1,5 +1,8 @@
 # Chain and Array management
 
+[Back to tutorials](./tutorials.md)
+
+
 ```javascript
 
 var array = [

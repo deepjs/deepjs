@@ -1,5 +1,8 @@
 # deep promise
 
+[Back to tutorials](../tutorials.md)
+
+
 A Promise manage successes and errors (its state) through chained notation.
 
 More exactly, a deep-promise, as all promises (thx Kris ;)), is a chain handler that inject a result (a success) or an error in chained callbacks, and manage callbacks response (maybe asynchronously) and use it to define it new state, that could be forwarded to more chained callbacks.

@@ -1,6 +1,8 @@
 Query based object manipulation
 ==========================
 
+[Back to tutorials](./tutorials.md)
+
 ```javascript
 	//-----------------Models
 	var land = {

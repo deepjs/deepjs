@@ -1,6 +1,8 @@
 deep-rql :
 ==========================
 
+[Back to tutorials](./tutorials.md)
+
 A deep oriented implementation of RQL for JavaScript arrays based on rql/js-array from Kris Zyp (https://github.com/persvr/rql).
 Base example:
 require("deep/deep-rql").query([{a:1},{a:3}], "a=3", {}) -> [{a:3}]

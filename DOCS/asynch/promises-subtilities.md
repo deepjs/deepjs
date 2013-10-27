@@ -1,5 +1,8 @@
 # Promises subtilities
 
+[Back to tutorials](../tutorials.md)
+
+
 Good promised patterns are sometimes quite subtils and here is some tips to use it more correctly.
 
 ## Natural linearisation

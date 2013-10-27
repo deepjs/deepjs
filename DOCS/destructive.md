@@ -1,5 +1,7 @@
 # Destructive vs Undestructive Load
 
+[Back to tutorials](./tutorials.md)
+
 There is to way to load datas from somewhere.
 
 Chain.load( context, destructive );

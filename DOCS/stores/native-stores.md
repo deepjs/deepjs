@@ -1,5 +1,7 @@
 # Native stores
 
+[Back to tutorials](../tutorials.md)
+
 deepjs come bundled with two memory stores.
 One for collection management (deep.store.Collection), and the other to object management (deep.store.Object)
 
