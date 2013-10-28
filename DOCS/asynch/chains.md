@@ -97,15 +97,27 @@ schema : object || uri || function || promise
 		
 ## modelisation 
 		
-### chain.up( object(s)ToApplyUp || uri(s) ) 
+### .up( aobj1, obj2, ... ) 
 
 Apply object (deep-copy from up) on current entries. 
 Load them if necessary.
 
-### chain.bottom( object(s)ToApplyBottom || uri(s) )
+```javascript
+deep({ test:1 })
+.up({ hello:"world" }, "js::/path/to/amd/object")
+.log(); // => { test:1, hello:'world', .... }
+```
+
+### .bottom( obj1, obj2, ... )
 
 Apply object(s) (deep-copy from bottom) on current entries. 
 Load them if necessary.
+
+```javascript
+deep({ test:1 })
+.bottom({ hello:"world" }, "js::/path/to/amd/object")
+.log(); // => { hello:'world', ...., test:1 }
+```
 
 ### chain.flatten()
 
