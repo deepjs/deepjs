@@ -329,7 +329,7 @@ function(require, utils, promise, Querier){
 
 
 	Validator.prototype.createDefault = function (schema){
-		console.log("schema createDefault : ", schema);
+		//console.log("schema createDefault : ", schema);
 		if(schema["default"])
 			return deep.utils.copy(schema["default"]);
 		if(schema.type == 'object' && !schema.properties)
