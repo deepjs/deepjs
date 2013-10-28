@@ -176,11 +176,11 @@ deep([1,2,deep("delayed").delay(10), new Error("hhh"),4])
 Could be used to iterate through functions as :
 
 ```javascript 
-deep.utils.iterate([function(arg){ return deep("hello "+arg).delay(5); }, function(arg){ return deep(arg+" world").delay(8); }], function(s){
-    console.log("done : s :",s);
+deep.utils.iterate([
+	function(arg){ return deep("hello "+arg).delay(5); }, 
+	function(arg){ return deep(arg+" world").delay(8); }
+], function(s){
     return s("deep");
-}, function(e){
-    console.log("fail : e: ",e);
 })
 .log(); // ==> ["hello deep", "deep world"]
 ```
