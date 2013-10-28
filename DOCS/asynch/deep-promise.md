@@ -144,3 +144,45 @@ How to use deferred.
 ### deep.get
 
 ### deep.getAll
+
+### promises iterator
+
+direct API
+
+```javascript 
+deep.utils.iterate([1,2,deep("delayed").delay(10), new Error("hhh"),4], function(s){
+    console.log("done : s :",s);
+    return "e"+s;
+}, function(e){
+    console.log("fail : e: ",e);
+    return "error managed";  // try to coment or not this line 
+})
+.log(); // ==> ["e1", "e2", "edelayed", "error managed", "e4"]
+```
+
+through chain :
+
+```javascript
+deep([1,2,deep("delayed").delay(10), new Error("hhh"),4])
+.iterate(function(s){
+    console.log("done : s :",s);
+    return "e"+s;
+}, function(e){
+    console.log("fail : e: ",e);
+    return "error managed";
+})
+.log(); // ==> ["e1", "e2", "edelayed", "error managed", "e4"]
+```
+
+Could be used to iterate through functions as :
+
+```javascript 
+deep.utils.iterate([function(arg){ return deep("hello "+arg).delay(5); }, function(arg){ return deep(arg+" world").delay(8); }], function(s){
+    console.log("done : s :",s);
+    return s("deep");
+}, function(e){
+    console.log("fail : e: ",e);
+})
+.log(); // ==> ["hello deep", "deep world"]
+```
+
