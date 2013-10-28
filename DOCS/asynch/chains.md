@@ -296,19 +296,17 @@ chain.branches( function(branches)
 if you want to return a subset of branches promises : 
 you could use deep.all([array_of_promises]) :
 ```javascript
-	var branch = branches.create().myChain()...;
+	var branch = branches.branch()...;
 	//...
-	return deep.all([deep.promise(branch), ...]);
+	return deep.all(branch, ...);
 ```
 ## tests, equality and validation
 
 
 ### chain.valuesEqual(needed)
 
-test strict equality b0,etween 'needed' and whole current entries values array.
-So 'needed' need to be an array.
-callBack will receive the report.
-if the array does not match and stopIfNotEquals : the chain is stoped.
+test strict equality between 'needed' object and current entry(ies) value(s).
+Same rules than [promise.equal(...)](./deep-promise.md)
 
 ### chain.assertTrue( testFunc, options )
 
@@ -327,6 +325,8 @@ see [validation](../json-schemas/validations.md).
 
 ## deep.utils
 
+deep utils API.
+
 	deep.utils.up(src, target, schema)
 
 	deep.utils.bottom(src, target, schema)
@@ -342,49 +342,6 @@ see [validation](../json-schemas/validations.md).
 	deep.utils.retrieveValueByPath(object, path, pathDelimitter)
 
 	deep.utils.retrieveFullSchemaByPath(schema, path, pathDelimitter)
-
-## deep.query(root, query, options)
-
-## deep.rql(array, rql, options)
-
-# Lexic
-	
-	deep-copy up(above,below)
-
-		apply object together as a stack of layer.
-		The values contained in the layer above will override any collided values from the layer below.
-		If the layer above contain deep.collider or deep.compose : they will be applied or wrapped.
-
-	deep-copy bottom(below,above)
-
-		apply object together as a stack of layer.
-		The values contained in the layer above will override any collided values from the layer below.
-		If the layer above contain deep.collider or deep.compose : they will be applied or wrapped.
-
-	chain
-
-		a chain of functions calls that manage synch/asynch for you
-
-	select
-
-		when we say "select values from queries in the deep handler", it mean : take the query result set as the current entries of the handler.
-
-	merge : see deep-copy
-
-	retrievable : 
-			any string in deep request format (ex: "swig::template.html", "json::/campaigns/?owner=15" )
-			any promise
-			any object
-			any function
-
-	query : 
-
-		a deep query
-
-	current entries (or nodes) : 
-
-		the current set of elements that the handler hold and on what you could apply chained opertations.
-
 
 # examples
 
