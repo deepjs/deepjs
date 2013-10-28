@@ -150,11 +150,12 @@ How to use deferred.
 direct API
 
 ```javascript 
-deep.utils.iterate([1,2,deep("delayed").delay(10), new Error("hhh"),4], function(s){
-    console.log("done : s :",s);
+deep.utils.iterate([
+	1,2,deep("delayed").delay(10), new Error("hhh"),4
+], 
+function(s){
     return "e"+s;
 }, function(e){
-    console.log("fail : e: ",e);
     return "error managed";  // try to coment or not this line 
 })
 .log(); // ==> ["e1", "e2", "edelayed", "error managed", "e4"]
@@ -165,10 +166,8 @@ through chain :
 ```javascript
 deep([1,2,deep("delayed").delay(10), new Error("hhh"),4])
 .iterate(function(s){
-    console.log("done : s :",s);
     return "e"+s;
 }, function(e){
-    console.log("fail : e: ",e);
     return "error managed";
 })
 .log(); // ==> ["e1", "e2", "edelayed", "error managed", "e4"]
@@ -190,15 +189,16 @@ deep.utils.iterate([function(arg){ return deep("hello "+arg).delay(5); }, functi
 ### wired asynch functions
 
 ```javascript 
-deep.utils.wired([function(arg){
-    return deep.when("arg was : "+arg).delay(5);
-},
-function(arg){
-    return new Error("plaf : "+arg);
-},
-function(arg){
-    return deep.when("arg 2 was : "+arg).delay(5);
-}
+deep.utils.wired([
+	function(arg){
+	    return deep.when("arg was : "+arg).delay(5);
+	},
+	function(arg){
+	    return new Error("plaf : "+arg);
+	},
+	function(arg){
+	    return deep.when("arg 2 was : "+arg).delay(5);
+	}
 ],
 "hello",
 {
@@ -210,24 +210,24 @@ function(s){
 function(e){
     return "error managed "+e.message;
 })
-.log();
+.log(); // => arg 2 was : error managed plaf : arg was : hello(successed)(successed)
 ``` 
 
 ```javascript
 deep({
     func1:function(arg1, arg2){
-        return ["arg1:"+arg1,"arg2:"+arg2];
+        return ["arg11:"+arg1,"arg21:"+arg2];
     },
     func2:function(arg1, arg2){
-        return ["arg1:"+arg1,"arg2:"+arg2];
+        return ["arg12:"+arg1,"arg22:"+arg2];
     },
     func3:function(arg1, arg2){
-        return ["arg1:"+arg1,"arg2:"+arg2];
+        return ["arg13:"+arg1,"arg23:"+arg2];
     }
 })
 .query("./(func.*)")
 .wired(["hello","world"])
-.log();
+.log(); // => ["arg13:arg12:arg11:hello", "arg23:arg22:arg21:world"]
 
 ```
 
