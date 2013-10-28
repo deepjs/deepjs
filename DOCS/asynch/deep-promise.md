@@ -205,12 +205,12 @@ deep.utils.wired([
     test:1
 },
 function(s){
-    return s + "(successed)";
+    return "{" + s + "}";
 },
 function(e){
-    return "error managed "+e.message;
+    return "{error managed "+e.message+"}";
 })
-.log(); // => arg 2 was : error managed plaf : arg was : hello(successed)(successed)
+.log(); // => {arg 2 was : {error managed plaf : {arg was : hello}}}
 ``` 
 
 ```javascript
