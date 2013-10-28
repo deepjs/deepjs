@@ -2886,7 +2886,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         values: function utilsValue(handler) {
             if (!handler._queried && (handler._nodes[0].value instanceof Array))
                 return handler._nodes[0].value;
-            console.log("values pass first test")
             var res = [];
             handler._nodes.forEach(function (e) {
                 res.push(e.value);
@@ -2912,6 +2911,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return res;
         },
         nodes: function utilsNodes(handler) {
+            console.log("deep.chain.nodes : ", handler._nodes[0]);
+            if (!handler._queried && handler._nodes[0].value instanceof Array)
+                return handler._nodes[0];
             var res = [];
             handler._nodes.forEach(function (e) {
                 res.push(e);
@@ -3000,11 +3002,26 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         return this;
     });
     deep.Chain.addHandle("iterate", function (done, fail) {
-        var args = arguments;
         var self = this;
         var func = function (s, e) {
             //console.log("deep.Chain.iterate : ",deep.chain.values(self))
             return deep.utils.iterate(deep.chain.values(self), done, fail);
+        };
+        func._isDone_ = true;
+        addInChain.apply(self, [func]);
+        return this;
+    });
+    deep.Chain.addHandle("wired", function (args, context, done, fail) {
+        var self = this;
+        var func = function (s, e) {
+            //console.log("deep.Chain.iterate : ",deep.chain.values(self))
+            var nodes = null;
+            if(!self._queried && self._nodes[0].value instanceof Array)
+                nodes = deep.query(self._nodes[0], "./*", { resultType:"full" });
+            else
+                nodes = deep.chain.nodes(self);
+            //console.log("wired nodes : ", nodes);
+            return deep.utils.wired(nodes, args, null, done, fail);
         };
         func._isDone_ = true;
         addInChain.apply(self, [func]);

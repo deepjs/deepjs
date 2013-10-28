@@ -186,3 +186,50 @@ deep.utils.iterate([function(arg){ return deep("hello "+arg).delay(5); }, functi
 .log(); // ==> ["hello deep", "deep world"]
 ```
 
+
+### wired asynch functions
+
+```javascript 
+deep.utils.wired([function(arg){
+    return deep.when("arg was : "+arg).delay(5);
+},
+function(arg){
+    return new Error("plaf : "+arg);
+},
+function(arg){
+    return deep.when("arg 2 was : "+arg).delay(5);
+}
+],
+"hello",
+{
+    test:1
+},
+function(s){
+    return s + "(successed)";
+},
+function(e){
+    return "error managed "+e.message;
+})
+.log();
+``` 
+
+```javascript
+deep({
+    func1:function(arg1, arg2){
+        return ["arg1:"+arg1,"arg2:"+arg2];
+    },
+    func2:function(arg1, arg2){
+        return ["arg1:"+arg1,"arg2:"+arg2];
+    },
+    func3:function(arg1, arg2){
+        return ["arg1:"+arg1,"arg2:"+arg2];
+    }
+})
+.query("./(func.*)")
+.wired(["hello","world"])
+.log();
+
+```
+
+
+

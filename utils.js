@@ -1331,7 +1331,7 @@ define(function(require){
 
 
 	utils.series = function(functions, context){
-        var self = context;
+        var self = context || {};
         var results = [];
         function doSeries(fn){
         	//console.log("do series on : ", fn)
@@ -1375,10 +1375,12 @@ define(function(require){
 			if(coll.length > 0)
 				this.done(function(s){ res.push(s); })
 				.when(coll.shift())
-				.done(doneAndIterate);
+				.done(doneAndIterate);				
 			return done.call(this, s);
 		};
 		var failAndIterate = function(e){
+			if(!fail)
+				return e;
 			if(coll.length > 0)
 				this.when(coll.shift())
 				.done(doneAndIterate);
@@ -1398,6 +1400,54 @@ define(function(require){
 		   res.push(s);
 		   return res;
 		});
+		return iterator;
+	}
+
+	utils.wired = function (functions, args, context, done, fail)
+	{
+		//console.log("wired : ", functions, args, context, done, fail);
+		var ctx = context || {};
+		if(args && !args.forEach)
+			args = [args];
+	    var coll = functions.concat([]);
+		var doneAndIterate = function(s){
+			//console.log("done and wired : ",s)
+			if(done)
+				this.done(function(s){
+					return done.call(this, s);
+				});
+			if(coll.length > 0)
+				this.done(function(s){
+					args = s;
+					if(args && !args.forEach)
+						args = [args];
+					this.when(coll.shift())
+					.done(doneAndIterate);
+				});
+			if(s._isDQ_NODE_)
+				return s.value.apply(context || (s.ancestor)?s.ancestor.value:{}, args);
+			return s.apply(ctx, args);
+		};
+		var failAndIterate = function(e){
+			if(!fail)
+				return e;
+			if(coll.length > 0)
+				this.when(coll.shift())
+				.done(doneAndIterate);
+			var self = this;	
+		    return deep.when(fail.call(this, e))
+			.done(function(s){
+			    if(typeof s === 'undefined' || s instanceof Error)
+			        return s || e;
+			    args = s;
+				if(args && !args.forEach)
+					args = [args];
+			    self.fail(failAndIterate);
+			});
+		};
+		var iterator = deep.when(coll.shift())
+		.done(doneAndIterate)
+		.fail(failAndIterate);
 		return iterator;
 	}
 
