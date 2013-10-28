@@ -97,7 +97,7 @@ schema : object || uri || function || promise
 		
 ## modelisation 
 		
-### .up( aobj1, obj2, ... ) 
+### .up( obj1, obj2, ... ) 
 
 Apply object (deep-copy from up) on current entries. 
 Load them if necessary.
@@ -119,68 +119,68 @@ deep({ test:1 })
 .log(); // => { hello:'world', ...., test:1 }
 ```
 
-### chain.flatten()
+### .flatten()
 
 Apply any backgrounds properties contained in current entries.
 (seek recursively (deeply) under current entries).
 See [backgrounds-and-flatten.md](../backgrounds-and-flatten.md).
 
-### chain.remove( query )
+### .remove( query )
 
 remove properties gived by query.
 the root could not be removed.
 
-### chain.replace( query, by )
+### .replace( query, by )
 
 replace properties value gived by query by the second argument.
 Deep will try to retrieve the second argument, so you could give retrievable
 
 ## navigation 
 
-### chain.query( query, errorIfEmpty )
+### .query( query, errorIfEmpty )
 
 select current entries.
 	if query start with any '.' : the query will be executed from current entries.
 	if query start with any '/' : the query will be executed from root object.
 If errorsIfEmpty : It will produce chained error if results is empty
 
-### chain.first()
+### .first()
 
 select the first element of current entries (remove others)
 
-### chain.last()
+### .last()
 
 select the last element of current entries (remove others)
 
-### chain.parents( errorIfEmpty )
+### .parents( errorIfEmpty )
 
 select the parents on current entries
 
-### chain.deep(obj||uri||promise||handler||deep_query_node, schema||uri||promise)
+### .deep(obj||uri||promise||handler||deep_query_node, schema||uri||promise)
 
 continue chain with new root and (optional) schema
 
 ## read entries
 
-### chain.each( callBack )
+### .each( callBack )
 
 callBack receive each chain's node value (i.e. forEach equivalent)
 
-### chain.values( callBack )
+### .values( callBack )
 
 callBack receive the array of current entries schemas. If chain holds a single object, it will be wrap in an array before injection.
 
-### chain.val( callBack )
+### .val( callBack )
 
 callBack receive the holded object(s) (if chain hold a single object : will return this object. if chain hold an array : return this array)
 
-### chain.nodes( callBack )
+### .nodes( callBack )
 
 callBack receive the array of current nodes themselves (DeepQuery nodes)
 
 ## calls
 
-### chain.run( function || string, args : array )
+### .run( function || string, args : array )
 
 Will cycle on each chain's nodes and execute provided function if any.
 If no function (or string) is provided (or set to null), will look if node's value is a function, and so will fired it from its original context.
