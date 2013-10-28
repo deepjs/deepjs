@@ -180,7 +180,7 @@ callBack receive the array of current nodes themselves (DeepQuery nodes)
 
 ## calls
 
-### .run( function || string, args : array )
+### .run( fn, args )
 
 Will cycle on each chain's nodes and execute provided function if any.
 If no function (or string) is provided (or set to null), will look if node's value is a function, and so will fired it from its original context.
@@ -239,7 +239,7 @@ they are executed parallely, not serialy.
 So the chain fires function(s), wait for all results (promised or not) parallely, and inject the results as success (or error) in current chain.
 
 
-### .exec(function, { reportCallBack : null||function, args : null||array })
+### .exec(function, args)
 
 will excute once provided function without changing it's environnement (i.e. with doing .apply or .call on function itself)
 
@@ -359,21 +359,21 @@ see [validation](../json-schemas/validations.md).
 
 deep utils API.
 
-	deep.utils.up(src, target, schema)
+deep.utils.up(src, target, schema)
 
-	deep.utils.bottom(src, target, schema)
+deep.utils.bottom(src, target, schema)
 
-	deep.utils.deepArrayFusion2(first, second, schema)
+deep.utils.deepArrayFusion2(first, second, schema)
 
-	deep.utils.arrayUnique(arr, uniqueOn)
+deep.utils.arrayUnique(arr, uniqueOn)
 
-	deep.utils.setValueByPath(object, path, value, pathDelimitter)
+deep.utils.setValueByPath(object, path, value, pathDelimitter)
 
-	deep.utils.deletePropertyByPath(object, path, pathDelimitter)
+deep.utils.deletePropertyByPath(object, path, pathDelimitter)
 
-	deep.utils.retrieveValueByPath(object, path, pathDelimitter)
+deep.utils.retrieveValueByPath(object, path, pathDelimitter)
 
-	deep.utils.retrieveFullSchemaByPath(schema, path, pathDelimitter)
+deep.utils.retrieveFullSchemaByPath(schema, path, pathDelimitter)
 
 # examples
 
