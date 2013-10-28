@@ -247,7 +247,7 @@ If promise is rejected : the error is injected in the chain and could be read by
 If the executed function throw something, it will be catched by the chain and injected as error... 
 
 
-## chain.logValues(title, { pretty:null || true })
+## .logValues(title, { pretty:null || true })
 
 will log current entries
 
@@ -257,14 +257,34 @@ How to load externals content.
 
 ### .load( context, destructive )
 
-	if no argument is provided, try to retrieve current entries values and replace by loaded contents (if any)
-	if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+if no argument is provided, try to retrieve current entries values and replace by loaded contents (if any)
+if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
 ### .deepLoad( context, destructive )
 
-	recursively analyse current entries and seek after string and functions.
-	Retrieve them (see retrievable) and place loaded content at same place.
-	if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+recursively analyse current entries and seek after string and functions.
+Retrieve them (see retrievable) and place loaded content at same place.
+if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+
+Destructive
+```javascript
+deep({template:"swig::./templates/simple.html"})
+.deepLoad(null, true)
+.run(function(){
+  return $("#content-container").html( this.template({ name:"john" } ));
+})
+.log();
+```
+Non destructive
+```javascript
+deep({template:"swig::./templates/simple.html", datas:"json::/json/path.json"})
+.deepLoad()
+.done(function(loaded){
+   return $("#content-container").html( loaded.template( loaded.datas ) );  
+})
+.log();
+```
+
 
 ## .interpret( context )
 
