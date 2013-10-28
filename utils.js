@@ -1450,8 +1450,6 @@ define(function(require){
 		.fail(failAndIterate);
 		return iterator;
 	}
-
-
 	return utils;
 }
 })
