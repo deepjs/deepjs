@@ -85,7 +85,6 @@ define(["require"], function (require) {
                 this.schema = schema;
             if(options)
                 deep.utils.up(options, this);
-            this.collection = this.collection || [];
         },
         {
             /**
@@ -94,6 +93,7 @@ define(["require"], function (require) {
             init: deep.compose.parallele(function () {
                 var self = this;
                 //console.log("deep.store.Collection.init : this.collection : ", this.collection, " - this.schema : ", this.schema);
+                this.collection = this.collection || [];
                 if (typeof this.collection === 'string' || typeof this.schema === 'string')
                     return deep(this)
                         .query("./[collection,schema]")
