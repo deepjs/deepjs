@@ -241,11 +241,8 @@ So the chain fires function(s), wait for all results (promised or not) parallely
 
 ### .exec(function, args)
 
-will excute once provided function without changing it's environnement (i.e. with doing .apply or .call on function itself)
-
-If the executed function return promise : the chain will wait 'resolve' or 'reject' before continue.
-If promise is rejected : the error is injected in the chain and could be read by .errors(...).
-If the executed function throw something, it will be catched by the chain and injected as error... 
+will excute provided (once) function without changing it's environnement (i.e. with doing .apply or .call on function itself)
+If the executed function(s) return promise(s) : the chain will wait promise(s) resolution (or rejection) before continuing.
 
 
 ## .logValues(title, { pretty:null || true })
