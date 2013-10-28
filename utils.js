@@ -1367,6 +1367,41 @@ define(function(require){
     	return replaced;
 	};
 
+	utils.iterate = function (collection, done, fail)
+	{
+	    var coll = collection.concat([]);
+		var res = [];
+		var doneAndIterate = function(s){
+			if(coll.length > 0)
+				this.done(function(s){ res.push(s); })
+				.when(coll.shift())
+				.done(doneAndIterate);
+			return done.call(this, s);
+		};
+		var failAndIterate = function(e){
+			if(coll.length > 0)
+				this.when(coll.shift())
+				.done(doneAndIterate);
+			var self = this;	
+		    return deep.when(fail.call(this, e))
+			.done(function(s){
+			    if(typeof s === 'undefined' || s instanceof Error)
+			        return s || e;
+			    res.push(s || e);
+			    self.fail(failAndIterate);
+			});
+		};
+		var iterator = deep.when(coll.shift())
+		.done(doneAndIterate)
+		.fail(failAndIterate)
+		.done(function(s){
+		   res.push(s);
+		   return res;
+		});
+		return iterator;
+	}
+
+
 	return utils;
 }
 })
