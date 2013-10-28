@@ -156,7 +156,7 @@ select the last element of current entries (remove others)
 
 select the parents on current entries
 
-### .deep(obj||uri||promise||handler||deep_query_node, schema||uri||promise)
+### .deep(root, schema)
 
 continue chain with new root and (optional) schema
 
@@ -238,7 +238,7 @@ they are executed parallely, not serialy.
 So the chain fires function(s), wait for all results (promised or not) parallely, and inject the results as success (or error) in current chain.
 
 
-### chain.exec(function, { reportCallBack : null||function, args : null||array })
+### .exec(function, { reportCallBack : null||function, args : null||array })
 
 will excute once provided function without changing it's environnement (i.e. with doing .apply or .call on function itself)
 
@@ -255,18 +255,18 @@ will log current entries
 
 How to load externals content.
 
-### chain.load( context, destructive )
+### .load( context, destructive )
 
 	if no argument is provided, try to retrieve current entries values and replace by loaded contents (if any)
 	if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
-### chain.deepLoad( context, destructive )
+### .deepLoad( context, destructive )
 
 	recursively analyse current entries and seek after string and functions.
 	Retrieve them (see retrievable) and place loaded content at same place.
 	if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
-## interpret
+## .interpret( context )
 
 		Interpretation of strings : any strings that contain '{ myDottedPth }' are interpretable.
 		You give a context that will be used for replacement.
@@ -287,7 +287,7 @@ deep({
 
 ## branches
 
-### chain.branches( func )
+### .branches( func )
 
 the way to start a bunch of branches in the chained calls.
 By default, if you don't return a promise all created branches are paralleles, 
@@ -315,12 +315,12 @@ you could use deep.all([array_of_promises]) :
 ## tests, equality and validation
 
 
-### chain.valuesEqual(needed)
+### .valuesEqual(needed)
 
 test strict equality between 'needed' object and current entry(ies) value(s).
 Same rules than [promise.equal(...)](./deep-promise.md)
 
-### chain.assertTrue( testFunc, options )
+### .assertTrue( testFunc, options )
 
 testFunc must return true 
 options (optional) could contains : 
@@ -328,9 +328,9 @@ options (optional) could contains :
 	args : the args that will be passed to test function
 	continueIfErrors : null||true
 
-### chain.validate()
+### .validate(schema)
 
-validate current entries against their respective schema.
+validate current entries against their respective schema or provided schema (optional).
 see [validation](../json-schemas/validations.md).
 
 # deep utils
