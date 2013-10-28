@@ -1,6 +1,5 @@
-# deep code sheets
-
 [Back to tutorials](./tutorials.md)
+# deep code sheets
 
 Think about CSS... 
 
@@ -40,3 +39,5 @@ deep.utils.sheet(sheet, obj).log();
 console.log("obj : ", JSON.stringify(obj));
 
 ```
+[Back to tutorials](./tutorials.md)
+
