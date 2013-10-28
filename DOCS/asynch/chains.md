@@ -186,6 +186,7 @@ Will cycle on each chain's nodes and execute provided function if any.
 If no function (or string) is provided (or set to null), will look if node's value is a function, and so will fired it from its original context.
 
 
+Run rules :
 ```javascript
 if(typeof fn === 'function')
 	// if 'fn' is function : call it with each node's value as "this"
@@ -266,7 +267,7 @@ recursively analyse current entries and seek after string and functions.
 Retrieve them (see retrievable) and place loaded content at same place.
 if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
 
-Destructive
+Destructive example :
 ```javascript
 deep({template:"swig::./templates/simple.html"})
 .deepLoad(null, true)
@@ -275,7 +276,7 @@ deep({template:"swig::./templates/simple.html"})
 })
 .log();
 ```
-Non destructive
+Non destructive example :
 ```javascript
 deep({template:"swig::./templates/simple.html", datas:"json::/json/path.json"})
 .deepLoad()
@@ -288,20 +289,19 @@ deep({template:"swig::./templates/simple.html", datas:"json::/json/path.json"})
 
 ## .interpret( context )
 
-		Interpretation of strings : any strings that contain '{ myDottedPth }' are interpretable.
-		You give a context that will be used for replacement.
-		ex: "hello { name }"  with context {name:"john"}  will give "hello john".
-		
-		if context (required) is a retrievable : load it before interpretation.
+Interpretation of strings : any strings that contain '{ myDottedPth }' are interpretable.
+You give a context that will be used for replacement.
+ex: "hello { name }"  with context {name:"john"}  will give "hello john".
 
-		ex : 
+if context (required) is a retrievable : load it before interpretation.
+
+ex : 
 ```javascript
 deep({
     msg:"hello { name }"
 })
 .query("./msg")
 .interpret({ name:"john" })
-.logValues()
 .equal("hello john");
 ```
 
