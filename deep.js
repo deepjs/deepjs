@@ -2884,8 +2884,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return firstNode.value;
         },
         values: function utilsValue(handler) {
-            //if (!handler._queried && (handler._nodes[0].value instanceof Array))
-              //  return [handler._nodes[0].value];
+            if (!handler._queried && (handler._nodes[0].value instanceof Array))
+                return handler._nodes[0].value;
+            console.log("values pass first test")
             var res = [];
             handler._nodes.forEach(function (e) {
                 res.push(e.value);
@@ -2993,6 +2994,17 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     alls.push(v);
             });
             return deep.all(alls);
+        };
+        func._isDone_ = true;
+        addInChain.apply(self, [func]);
+        return this;
+    });
+    deep.Chain.addHandle("iterate", function (done, fail) {
+        var args = arguments;
+        var self = this;
+        var func = function (s, e) {
+            //console.log("deep.Chain.iterate : ",deep.chain.values(self))
+            return deep.utils.iterate(deep.chain.values(self), done, fail);
         };
         func._isDone_ = true;
         addInChain.apply(self, [func]);
