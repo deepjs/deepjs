@@ -15,9 +15,9 @@ Queries are done :
 They provides base homogeneous API to manage dummies objects as well as real databases or remote files or..., 
 or to be the base classe for certain stores (as [deep-local-storage](https://github.com/deepjs/deep-local-storage)).
 
-All collection's stores should respect exactly the same standard API and behaviour.
+All collection-stores should respect exactly the same standard API and behaviour.
 
-Docs on object's stores (deep.store.Object) will come quickly.
+Docs on object-stores (deep.store.Object) will come quickly.
 
 ## Simple usage
 
