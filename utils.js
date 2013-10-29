@@ -1330,22 +1330,46 @@ define(function(require){
 	};
 
 
-	utils.series = function(functions, context){
-        var self = context || {};
-        var results = [];
-        function doSeries(fn){
-        	//console.log("do series on : ", fn)
-            return deep.when(fn.call(context))
-            .done(function(r){
-            	//console.log("do series ended : ", r);
-            	results.push(r);
-                if(functions.length > 0)
-                	return doSeries(functions.shift());
-                return results;
+    /**
+     * execute array of funcs sequencially
+     * @for deep.utils
+     * @static
+     * @method sequence
+     * @param  {String} funcs an array of functions to execute sequentially
+     * @param  {Object} args (optional) some args to pass to first functions
+     * @return {deep.Promise} a promise
+     */
+    utils.series = function (funcs, context, args) {
+        if (!funcs || funcs.length === 0)
+            return args;
+        var current = funcs.shift();
+        var def = deep.Deferred();
+        var context = {};
+        var doIt = function (r) {
+            deep.when(r).then(function (r) {
+                if (funcs.length === 0) {
+                    if (typeof r === 'undefined') {
+                        r = args;
+                        if (args.length == 1)
+                            r = args[0];
+                    }
+                    def.resolve(r);
+                    return r;
+                }
+                if (typeof r === 'undefined')
+                    r = args;
+                else
+                    r = [r];
+                current = funcs.shift();
+                doIt(current.apply(context, r));
+            }, function (error) {
+                if (!def.rejected && !def.resolved && !def.canceled)
+                    def.reject(error);
             });
         };
-        return doSeries(functions.shift());
-	}
+        doIt(current.apply(context, args));
+        return def.promise();
+    };
 
 	utils.replace = function(target, what, by){
 		var replaced = [];

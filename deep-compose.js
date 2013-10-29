@@ -604,50 +604,6 @@ define(function(require, exports, module){
 	// console.log("Deep-compose initialised");
 
 
-
-    //________________________________________________________ DEEP CHAIN UTILITIES
-
-    /**
-     * execute array of funcs sequencially
-     * @for deep
-     * @static
-     * @method sequence
-     * @param  {String} funcs an array of functions to execute sequentially
-     * @param  {Object} args (optional) some args to pass to first functions
-     * @return {deep.Chain} a handler that hold result
-     */
-    compose.sequence = function (funcs, args) {
-        if (!funcs || funcs.length === 0)
-            return args;
-        var current = funcs.shift();
-        var def = deep.Deferred();
-        var context = {};
-        var doIt = function (r) {
-            deep.when(r).then(function (r) {
-                if (funcs.length === 0) {
-                    if (typeof r === 'undefined') {
-                        r = args;
-                        if (args.length == 1)
-                            r = args[0];
-                    }
-                    def.resolve(r);
-                    return r;
-                }
-                if (typeof r === 'undefined')
-                    r = args;
-                else
-                    r = [r];
-                current = funcs.shift();
-                doIt(current.apply(context, r));
-            }, function (error) {
-                if (!def.rejected && !def.resolved && !def.canceled)
-                    def.reject(error);
-            });
-        };
-        doIt(current.apply(context, args));
-        return def.promise();
-    };
-
 	return compose;
 }
 });
