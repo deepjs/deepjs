@@ -4,7 +4,7 @@
   "author"        : "Gilles Coomans <gilles.coomans@gmail.com>",
   "description"   : "Powerful atomic tools for managing objects, functions and promises",
   "homepage"      : "http://www.deepjs.org",
-  "keywords"      : ["util", "promise", "asynch", "AOP", "query", "composition", "server", "client", "browser", "restful"],
+  "keywords"      : ["util", "promise", "asynch", "AOP", "query", "composition", "server", "client", "browser", "restful", "OCM"],
   "licenses": [
     "LGPL 3.0"
   ],
@@ -19,7 +19,8 @@
     "url":"https://github.com/deepjs/deepjs.git"
   },
   "dependencies": {
-    "rql": "*"
+    "rql": "*",
+    "amdefine":"*"
   },
   "main": "./deep.js",
   "mappings":{
