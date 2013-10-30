@@ -69,14 +69,14 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     var errors = require("./deep-errors")(deep);
 
     /**
-     * final namespace for deep/deep-compose
+     * final namespace for deepjs/deep-compose
      * @static
      * @property compose
      * @type {Object}
      */
     deep.compose = require("./deep-compose")(deep);
     /**
-     * final namespace for deep/deep-collider
+     * final namespace for deepjs/deep-collider
      * @static
      * @property collider
      * @type {Object}
@@ -91,7 +91,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     deep.rethrow = false;
     deep.metaSchema = {};
     /**
-     * final namespace for deep/utils
+     * final namespace for deepjs/utils
      * @static
      * @property utils
      * @type {Object}
@@ -112,7 +112,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     deep.rql = require("./deep-rql")(utils).query;
 
     /**
-     * final namespace for deep/deep-query
+     * final namespace for deepjs/deep-query
      * @static
      * @property Querier
      * @type {DeepQuery}
@@ -1590,9 +1590,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return utils.createRangeObject(0, 0, 0);
                     var val = self._nodes[0];
                     if (val.value instanceof Array) {
+                        self._queried = true;
                         rangeObject = utils.createRangeObject(start, end, val.value.length);
-                        rangeObject.results = val.value = val.value.slice(rangeObject.start, rangeObject.end + 1);
-                        self._nodes = deep.query(val.value, "./["+rangeObject.start+","+(rangeObject.end + 1)+"]", {resultType:"full"});
+                        rangeObject.results = val.value.slice(rangeObject.start, rangeObject.end + 1);
+                        rangeObject.count = rangeObject.results.length;
+                        rangeObject.query =  "./["+rangeObject.start+":"+(rangeObject.end)+"]";
+                        //console.log("deep.chain.range : ",rangeObject.query)
+                        self._nodes = deep.query(val, rangeObject.query, {resultType:"full"});
                         //console.log("chain range : not queried array : ", self._nodes)
                         return rangeObject;
                     }
@@ -2845,6 +2849,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 return undefined;
             if (handler._queried)
                 return this.values(handler);
+
             return handler._nodes[0].value;
         },
         first: function utilsFirst(handler, modifyNodes) {
@@ -3049,22 +3054,22 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     deep.coreUnits = deep.coreUnits || [];
     deep.coreUnits.push(
-        "js::deep/units/equals",
-        "js::deep/units/queries",
-        "js::deep/units/collisions",
-        "js::deep/units/colliders",
-        "js::deep/units/compositions",
-        "js::deep/units/flatten",
-        "js::deep/units/promises",
-        "js::deep/units/chain",
-        "js::deep/units/replace",
-        "js::deep/units/remove",
-        "js::deep/units/interpret",
-        "js::deep/units/range",
-        "js::deep/units/relations",
-        "js::deep/units/context",
-        "js::deep/units/ocm",
-        "js::deep/units/sheets"
+        "js::deepjs/units/equals",
+        "js::deepjs/units/queries",
+        "js::deepjs/units/collisions",
+        "js::deepjs/units/colliders",
+        "js::deepjs/units/compositions",
+        "js::deepjs/units/flatten",
+        "js::deepjs/units/promises",
+        "js::deepjs/units/chain",
+        "js::deepjs/units/replace",
+        "js::deepjs/units/remove",
+        "js::deepjs/units/interpret",
+        "js::deepjs/units/range",
+        "js::deepjs/units/relations",
+        "js::deepjs/units/context",
+        "js::deepjs/units/ocm",
+        "js::deepjs/units/sheets"
     );
 
     //_________________________________________________________________________________
