@@ -19,11 +19,13 @@ All collection-stores should respect exactly the same standard API and behaviour
 
 Docs on object-stores (deep.store.Object) will come quickly.
 
-## Simple usage
+## Collection Store API
+
+### Simple usage
 
 ```javascript
 
-deep.store.Collection.create("myprotocole");
+deep.store.Collection.create("myprotocole");  // native collection-memory-store
 
 //...
 
@@ -44,7 +46,7 @@ deep("myprotocole::?title=deepjs")
 
 ```
 
-## JSON schema usage
+### JSON schema usage
 
 ```javascript
 
@@ -71,7 +73,7 @@ deep.store("myprotocole")
 ```
 
 
-## Patch and put
+### Patch and put
 
 ```javascript
 
@@ -89,7 +91,7 @@ deep.store("myprotocole")
 ```
 
 
-## JSON-RPC example
+### JSON-RPC example
 
 ```javascript
 
@@ -120,7 +122,7 @@ deep.store("myprotocole")
 
 ```
 
-## BULK updates
+### BULK updates
 
 ```javascript
 
@@ -144,3 +146,53 @@ output
 */
 
 ```
+
+### Range
+
+```javascript
+
+deep.store.Collection.create("myprotocole", [
+	{ id:"e1", title:"hello" }, 
+	{ id:"e2", title:"deepjs" }, 
+	{ id:"e3", title:"restful" },
+	{ id:"e4", title:"tools" },
+]);
+
+//...
+
+deep.store("myprotocole")
+.range(1,2)
+.logValues() 	// => two nodes : { id:"e2", title:"deepjs" } and { id:"e3", title:"restful" }
+.log(); 		
+
+```
+
+the result injected in chain (that you could see with .log()) is an RangeResult object
+ i.e. : 
+
+ ```javascript
+
+var res = {
+	total:total,
+	start:0,
+	end:0,
+	hasNext:false,
+	hasPrevious:false,
+	next:function (width),
+	previous:function (width),
+	update:function (start, end, total)
+};
+
+ ```
+
+
+
+
+
+
+
+
+
+
+
+
