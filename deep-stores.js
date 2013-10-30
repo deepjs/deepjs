@@ -44,7 +44,10 @@ define(["require"], function (require) {
     
         deep.store = function (name) {
             //	console.log("deep.store(name) : ",name)
-            return deep({}).store(name);
+            return deep(deep.getStoreHandler(name)).transform(function(handler){
+                return handler.store;
+            })
+            .store(name);
         };
 
         /**
@@ -244,7 +247,7 @@ define(["require"], function (require) {
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-                return deep(col).range(start, end).store(this);
+                return deep(col).range(start, end);
             },
             flush:function(){
                 this.collection = [];
@@ -845,14 +848,14 @@ define(["require"], function (require) {
         });
 
         deep.Store.extendsChain = function (handler) {
-            handler.range = function (arg1, arg2, uri, options) {
+            handler.range = function (arg1, arg2, query, options) {
                 var self = this;
                 var func = function (s, e) {
                     var doAction = function(storeHandler){
                         var store = storeHandler.store;
                         if (!store.range)
                             return deep.errors.Store("provided store doesn't have RANGE. aborting RANGE !");
-                        return deep.when(store.range(arg1, arg2, uri, options))
+                        return deep.when(store.range(arg1, arg2, query, options))
                         .done(function (success) {
                             self._nodes = [deep.Querier.createRootNode(success)];
                         });
@@ -879,8 +882,12 @@ define(["require"], function (require) {
                             id = id.substring(1);
                         return deep.when(store.get(id, options))
                         .done(function (success) {
+                            console.log("success store get : ", success)
+                            if(success._deep_range_)
+                                self._nodes = [deep.Querier.createRootNode(success.results, null, { uri: id })];
+                            else
+                                self._nodes = [deep.Querier.createRootNode(success, null, { uri: id })];
                             self._success = success;
-                            self._nodes = [deep.Querier.createRootNode(success, null, { uri: id })];
                         });
                     };
                     return deep.getStoreHandler(self._store || self._storeName)
