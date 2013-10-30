@@ -917,44 +917,30 @@ define(function(require){
 
 	utils.createRangeObject = function (start, end, total) {
 		var res = {
+			_deep_range_:true,
 			total:total,
+			count:end-start,
 			start:0,
 			end:0,
 			hasNext:false,
-			hasPrevious:false,
-			next:function (width)
+			hasPrevious:false
+		};
+		function update (start, end, total)
+		{
+			this.total = total || this.total || 0;
+			if(this.total == 0)
 			{
-				if(!this.hasNext)
-					return this;
-				this.start += width;
-				this.end = this.start+(width-1);
-				return  this.update(this.start, this.end);
-			},
-			previous:function (width)
-			{
-				if(!this.hasPrevious)
-					return this;
-				this.start -= width;
-				this.end = this.start+(width-1);
-				return this.update(this.start, this.end);
-			},
-			update:function (start, end, total)
-			{
-				this.total = total || this.total || 0;
-				if(this.total == 0)
-				{
-					this.start = this.end = 0
-					return this;
-				}
-				this.start = Math.max(Math.min(this.total-1,start), 0);
-				this.end = Math.max(Math.min(end, this.total-1),0);
-				this.hasNext = (this.end < (this.total-1));
-				this.hasPrevious = (this.start > 0);
-				//console.log("update range  : res : ",this);
+				this.start = this.end = 0
 				return this;
 			}
-		};
-		res.update(start,end,total)
+			this.start = start;// Math.max(Math.min(this.total-1,start), 0);
+			this.end = end; //Math.max(Math.min(end, this.total-1),0);
+			this.hasNext = (this.end < (this.total-1));
+			this.hasPrevious = (this.start > 0);
+			//console.log("update range  : res : ",this);
+			return this;
+		}
+		update.call(res,start,end,total)
 		return res;
 	}
 
