@@ -1592,6 +1592,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     if (val.value instanceof Array) {
                         rangeObject = utils.createRangeObject(start, end, val.value.length);
                         rangeObject.results = val.value = val.value.slice(rangeObject.start, rangeObject.end + 1);
+                        self._nodes = deep.query(val.value, "./["+rangeObject.start+","+(rangeObject.end + 1)+"]", {resultType:"full"});
+                        //console.log("chain range : not queried array : ", self._nodes)
                         return rangeObject;
                     }
                     rangeObject = utils.createRangeObject(0, 0, 1);
