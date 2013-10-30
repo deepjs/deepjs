@@ -1,13 +1,14 @@
 {
   "name": "deep",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "author": "Gilles Coomans",
   "description": "Powerful atomic tools for managing objects, functions and promises",
   "licenses": [
+    "LGPL 3.0"
   ],
   "repository": {
     "type":"git",
-    "url":"git@github.com:nomocas/deepjs.git"
+    "url":"https://github.com/deepjs/deepjs.git"
   },
   "dependencies": {
     "rql": "*"
