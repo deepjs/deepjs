@@ -243,11 +243,19 @@ define(["require"], function (require) {
              * @param  {Number} end
              * @return {deep.Chain} a chain that hold the selected range and has injected values as success object.
              */
-            range: function (start, end) {
+            range: function (start, end, query) {
+                console.log("deep.store.Collection.range : ", start, end);
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-                return deep(col).range(start, end);
+                query = query || "";
+                query += "&limit("+((end-start)+1)+","+start+")";
+                var res = deep.query(col, "./*?"+query);
+                var rangeObject = deep.utils.createRangeObject(start, end, this.collection.length);
+                rangeObject.results = res;
+                rangeObject.query = query;
+                rangeObject.count = res.length;
+                return rangeObject;
             },
             flush:function(){
                 this.collection = [];
@@ -857,7 +865,10 @@ define(["require"], function (require) {
                             return deep.errors.Store("provided store doesn't have RANGE. aborting RANGE !");
                         return deep.when(store.range(arg1, arg2, query, options))
                         .done(function (success) {
-                            self._nodes = [deep.Querier.createRootNode(success)];
+                            if(success._deep_range_)
+                                self._nodes = [deep.Querier.createRootNode(success.results)];
+                            else
+                                self._nodes = [deep.Querier.createRootNode(success)];
                         });
                     };
                     return deep.getStoreHandler(self._store || self._storeName)
