@@ -416,6 +416,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         canceled: false,
         _success: null,
         _error: null,
+        ended:function(){
+            return this.rejected || this.resolved || this.canceled;
+        },
         /**
          * resolve the Deferred and so the associated promise
          * @method resolve
