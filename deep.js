@@ -646,18 +646,19 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var func = function chainLogHandle(s, e) {
                 if (args.length === 0) {
                     if (e)
+                    {
                         if (deep.debug)
                             deep.utils.dumpError(e);
                         else if (e.report)
-                        args.push("deep.log : error : (" + e.status + "): ", e.message, e.report);
-                    else
-                        args.push("deep.log : error : (" + e.status + "): ", e.message);
+                            args.push("deep.log : error : (" + e.status + "): ", e.message, e.report);
+                        else
+                            args.push("deep.log : error : (" + e.status + "): ", e.message);
+                    }
                     else
                         args.push("deep.log : success : ", s);
                 }
-                args.forEach(function (a) {
-                    console.log(a);
-                });
+                if(console)
+                    console.log.apply(console, args);
             };
             return addInChain.apply(this, [func]);
         },
@@ -1581,33 +1582,47 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 		 * @chainable
 		 * @return {deep.Chain} this
 		 */
-        range: function chainRange(start, end) {
+        range: function chainRange(start, end, query) {
             var self = this;
             var func = function (s, e) {
-                var rangeObject = null;
-                if (!self._queried) {
-                    if (self._nodes.length === 0)
-                        return utils.createRangeObject(0, 0, 0);
-                    var val = self._nodes[0];
-                    if (val.value instanceof Array) {
-                        self._queried = true;
-                        rangeObject = utils.createRangeObject(start, end, val.value.length);
-                        rangeObject.results = val.value.slice(rangeObject.start, rangeObject.end + 1);
-                        rangeObject.count = rangeObject.results.length;
-                        rangeObject.query =  "./["+rangeObject.start+":"+(rangeObject.end)+"]";
-                        //console.log("deep.chain.range : ",rangeObject.query)
-                        self._nodes = deep.query(val, rangeObject.query, {resultType:"full"});
-                        //console.log("chain range : not queried array : ", self._nodes)
-                        return rangeObject;
-                    }
-                    rangeObject = utils.createRangeObject(0, 0, 1);
-                    rangeObject.results = [val.value];
-                    return rangeObject;
+                var total, count, res;
+                if (self._nodes.length === 0)
+                    return utils.createRangeObject(start, end, 0, 0, []);
+
+                var val = self._nodes[0];
+                if(!self.queried && !(val.value instanceof Array))
+                    // no range and no query could be applied : only one object
+                    return deep.errors.Range("no range could be applied on chain : chain holds only on object (not an array).");
+
+
+                if(query)  // apply query, then slice
+                {
+                    if(self.queried)
+                        self._nodes = deep.chain.select(self, query, { resultType:"full" });
+                    else // (val instanceof Array) 
+                        self._nodes = deep.query(val.value, query, { resultType:"full"});
+                    //console.log("rabge after query : nodes: ", total, self._nodes.length);
+                    total = self._nodes.length;
+                    self._nodes = self._nodes.slice(start, end+1);
                 }
-                rangeObject = utils.createRangeObject(start, end, self._nodes.length);
-                self._nodes = self._nodes.slice(rangeObject.start, rangeObject.end + 1);
-                rangeObject.results = deep.chain.values(self);
-                return rangeObject;
+                else   // simple slice
+                {
+                    if(self.queried)
+                    {
+                        total = self._nodes.length;
+                        self._nodes = self._nodes.slice(start, end+1);
+                    }
+                    else  // (val instanceof Array) 
+                    {
+                        total = val.value.length;
+                        // ==> query = ./[start:end]
+                        self._nodes = deep.query(val, "./["+start+":"+end+"]", { resultType:"full"});
+                    }
+                }
+                self._queried = true;
+                count = self._nodes.length;
+                res = deep.chain.values(self);
+                return deep.utils.createRangeObject(start, end, total, count, res);
             };
             func._isDone_ = true;
             addInChain.apply(this, [func]);
@@ -2002,30 +2017,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         remove: function chainRemove(what) {
             var self = this;
             var func = function () {
-                var removed = [];
-
-                function finalise(r) {
-                    if (!r.ancestor)
-                        return;
-                    removed.push(r);
-                    if (r.ancestor.value instanceof Array)
-                        r.ancestor.value.splice(r.key, 1);
-                    else {
-                        delete r.ancestor.value[r.key];
-                    }
-                }
-                self._nodes.forEach(function (r) {
-                    r = deep.query(r, what, {
-                        resultType: "full"
-                    });
-                    if (!r)
-                        return r;
-                    if (r._isDQ_NODE_)
-                        finalise(r);
-                    else
-                        r.forEach(finalise);
-                });
-                return removed;
+                return deep.chain.remove(self, what);
             };
             func._isDone_ = true;
             addInChain.apply(this, [func]);
@@ -2755,7 +2747,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          * @param  {string} q the deep-query. Could be an ARRAY of Queries : the result will be the concatenation of all queries on all entries
          * @return {deep.Chain} this
          */
-        select: function (handler, q) {
+        select: function (handler, q, options) {
             var self = handler;
             if (!(q instanceof Array))
                 q = [q];
@@ -2764,7 +2756,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             handler._nodes.forEach(function (r) {
                 q.forEach(function (qu) {
                     //console.log("deep.Chain.select : ", qu);
-                    res = res.concat(deep.query(r, qu));
+                    res = res.concat(deep.query(r, qu, options));
                 });
             });
             return res;
@@ -2953,6 +2945,31 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 queried: handler._queried,
                 queue: (options.restartChain) ? handler.callQueue.concat([]) : null
             });
+        },
+        remove: function (handler, what) {
+            var removed = [];
+            function finalise(r) {
+                if (!r.ancestor)
+                    return;
+                removed.push(r);
+                if (r.ancestor.value instanceof Array)
+                    r.ancestor.value.splice(r.key, 1);
+                else {
+                    delete r.ancestor.value[r.key];
+                }
+            }
+            handler._nodes.forEach(function (r) {
+                r = deep.query(r, what, {
+                    resultType: "full"
+                });
+                if (!r)
+                    return r;
+                if (r._isDQ_NODE_)
+                    finalise(r);
+                else
+                    r.forEach(finalise);
+            });
+            return removed;
         }
     };
 
