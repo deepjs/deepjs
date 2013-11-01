@@ -6,7 +6,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors", "./deep-stores", "./deep-ocm"], function (require) {
+define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors", "./deep-stores", "./deep-ocm", "./stores/collection-store", "./stores/object-store"], function (require) {
     deep = function deepStart(obj, schema, options) {
         //console.log("start chain : ", obj)
         //if(obj && obj._deep_chain_ && obj.oldQueue)
@@ -3066,7 +3066,11 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 */
     //_________________________________________________________________________________
 
+    require("./deep-protocole")(deep);
+    require("./deep-sheet")(deep);
     require("./deep-stores")(deep);
+    require("./stores/collection-store")(deep);
+    require("./stores/object-store")(deep);
     require("./deep-ocm")(deep);
 
     deep.coreUnits = deep.coreUnits || [];
