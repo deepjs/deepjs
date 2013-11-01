@@ -875,7 +875,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
@@ -906,7 +906,7 @@ define(["require"], function (require) {
                 };
                 func._isDone_ = true;
                 deep.chain.addInChain.apply(this, [func]);
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 return self;
             };
             handler.post = function (object, options) {
@@ -925,7 +925,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
@@ -945,7 +945,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
@@ -965,7 +965,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
@@ -986,7 +986,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
@@ -1006,7 +1006,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
@@ -1027,7 +1027,7 @@ define(["require"], function (require) {
                     .done(doAction);
                 };
                 func._isDone_ = true;
-                self.range = deep.Chain.range;
+                //self.range = deep.Chain.prototype.range;
                 deep.chain.addInChain.apply(this, [func]);
                 return self;
             };
