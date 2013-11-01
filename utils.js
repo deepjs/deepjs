@@ -1276,37 +1276,30 @@ define(function(require){
 		});
 		return res;
 	};
-
-	/*
-		TODO : 
-
-		dq usage : 
-			- no stright queries allowed : we need to get allways a array results
-
-
-		json select and other querier : 
-			need to get path and/or ancestor/key to fully work
-
-	 */
 	
 	utils.sheet = function applySheet(sheet, entry, options)
 	{
 	 	options = options || {};
 	 	options.entry = entry;
 	 	var res = [];
+	 	var report = {};
 		for(var i in sheet)
 		{
 			var toApply = sheet[i];
-			deep.when(deep.get(i, options))
-			.pushHandlerTo(res)
+			var d = deep.get(i, options)
 			.done(function(handler){
-				//console.log("sheet handler : ", handler);
 				return handler(toApply, options);
+			})
+			.done(function(s){
+				report[i] = s;
 			});
+			res.push(d);
 		}
-		return deep.all(res);
+		return deep.all(res)
+		.done(function(success){
+		    return report;
+		});
 	};
-
 
 	utils.decorateUpFrom = function(src, target, properties)
 	{
@@ -1315,7 +1308,6 @@ define(function(require){
 				utils.up(src[prop], target[prop], null, target, prop);
 		});
 	};
-
 
     /**
      * execute array of funcs sequencially
@@ -1358,26 +1350,6 @@ define(function(require){
         return def.promise();
     };
 
-	utils.replace = function(target, what, by){
-		var replaced = [];
-        function finalise(r) {
-            if (!r.ancestor)
-                return;
-            r.ancestor.value[r.key] = r.value = by;
-            replaced.push(r);
-        }
-        var r = deep.query(target, what, { resultType: "full" });
-        if (!r)
-            return r;
-        if (r._isDQ_NODE_)
-        {
-            finalise(r);
-            return replaced.shift();
-        }
-        r.forEach(finalise);
-    	return replaced;
-	};
-
 	utils.iterate = function (collection, done, fail)
 	{
 	    var coll = collection.concat([]);
@@ -1412,7 +1384,7 @@ define(function(require){
 		   return res;
 		});
 		return iterator;
-	}
+	};
 
 	utils.wired = function (functions, args, context, done, fail)
 	{
@@ -1460,9 +1432,9 @@ define(function(require){
 		.done(doneAndIterate)
 		.fail(failAndIterate);
 		return iterator;
-	}
+	};
 
-
+	//_______________________________________________________ QUERY UTILS
 	utils.remove = function(obj, what){
 	    var removed = [];
         function finalise(r) {
@@ -1485,7 +1457,27 @@ define(function(require){
         else
             r.forEach(finalise);
         return removed;
-	}
+	};
+
+	utils.replace = function(target, what, by){
+		var replaced = [];
+        function finalise(r) {
+            if (!r.ancestor)
+                return;
+            r.ancestor.value[r.key] = r.value = by;
+            replaced.push(r);
+        }
+        var r = deep.query(target, what, { resultType: "full" });
+        if (!r)
+            return r;
+        if (r._isDQ_NODE_)
+        {
+            finalise(r);
+            return replaced.shift();
+        }
+        r.forEach(finalise);
+    	return replaced;
+	};
 	return utils;
 }
 })
