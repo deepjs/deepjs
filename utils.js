@@ -915,11 +915,12 @@ define(function(require){
 
 	//___________________________________________ RANGE RELATED
 
-	utils.createRangeObject = function (start, end, total) {
+	utils.createRangeObject = function (start, end, total, count, results) {
 		var res = {
 			_deep_range_:true,
 			total:total,
-			count:end-start,
+			count:count,
+			results:results,
 			start:0,
 			end:0,
 			hasNext:false,
@@ -1459,6 +1460,31 @@ define(function(require){
 		.done(doneAndIterate)
 		.fail(failAndIterate);
 		return iterator;
+	}
+
+
+	utils.remove = function(obj, what){
+	    var removed = [];
+        function finalise(r) {
+            if (!r.ancestor)
+                return;
+            removed.push(r);
+            if (r.ancestor.value instanceof Array)
+                r.ancestor.value.splice(r.key, 1);
+            else {
+                delete r.ancestor.value[r.key];
+            }
+        }
+        r = deep.query(obj, what, {
+            resultType: "full"
+        });
+        if (!r)
+            return r;
+        if (r._isDQ_NODE_)
+            finalise(r);
+        else
+            r.forEach(finalise);
+        return removed;
 	}
 	return utils;
 }
