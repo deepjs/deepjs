@@ -80,9 +80,9 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 			},
 			sheeter1:function(){
 				var sheet = {
-				"dq.sheeter::./*":  deep.sheeter
-									.up({ fromUp:"tools" })
-									.bottom({ fromBottom:"hello" })
+					"dq.sheeter::./*":  deep.sheeter
+										.up({ fromUp:"tools" })
+										.bottom({ fromBottom:"hello" })
 				};
 
 				var obj = {
