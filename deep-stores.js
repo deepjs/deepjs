@@ -124,7 +124,7 @@ return function(deep){
                         return deep.when(store.get(id, options))
                         .done(function (success) {
                             //console.log("success store get : ", success)
-                            if(success._deep_range_)
+                            if(success && success._deep_range_)
                                 self._nodes = [deep.Querier.createRootNode(success.results, null, { uri: id })];
                             else
                                 self._nodes = [deep.Querier.createRootNode(success, null, { uri: id })];
