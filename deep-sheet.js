@@ -31,7 +31,10 @@ return function(deep){
             {
                 var sheeter = getSheeter(this);
                 sheeter.queue.push(function(entry){
-                    return deep(entry).load(context, destructive);
+                    return deep(entry).load(context, destructive)
+                    .done(function(success){
+                         return entry;
+                    });
                 });
                 return sheeter;
             },
@@ -50,6 +53,47 @@ return function(deep){
                 sheeter.queue.push(function(entry){
                     var d = deep(entry);
                     return d.bottom.apply(d, args);
+                });
+                return sheeter;
+            },
+            flatten:function(){
+                var sheeter = getSheeter(this);
+                sheeter.queue.push(function(entry){
+                    return deep(entry).flatten();
+                });
+                return sheeter;
+            },
+            sheet:function(){
+                var args = arguments;
+                var sheeter = getSheeter(this);
+                sheeter.queue.push(function(entry){
+                    var d = deep(entry);
+                    return d.sheet.apply(d, args)
+                    .done(function(success){
+                        return entry;
+                    });
+                });
+                return sheeter;
+            },
+            transform:function(fn){
+                var sheeter = getSheeter(this);
+                sheeter.queue.push(function(item){
+                    var value = item;
+                    if(item._isDQ_NODE_)
+                        value = item.value;
+                    var r = fn(value);
+                    return deep.when(r)
+                    .done(function(r){
+                        if(item._isDQ_NODE_)
+                        {
+                            if(item.ancestor)
+                                item.ancestor.value[item.key] = r;
+                            item.value = r;
+                        }
+                        else
+                            item = r;
+                        return r;
+                    });
                 });
                 return sheeter;
             }
@@ -231,11 +275,24 @@ return function(deep){
                                     if(item._isDQ_NODE_)
                                         value = item.value;
                                     var r = fn(value);
-                                    if(item.ancestor)
-                                        item.ancestor.value[item.key] = r;
+                                    if(r && (r.then || r.promise))
+                                        r = deep.when(r)
+                                        .done(function(r){
+                                            if(item._isDQ_NODE_)
+                                            {
+                                                item.value = r;
+                                                if(item.ancestor)
+                                                    item.ancestor.value[item.key] = r;
+                                            }
+                                        });
+                                    else if(item._isDQ_NODE_){
+                                        item.value = r;
+                                        if(item.ancestor)
+                                            item.ancestor.value[item.key] = r;
+                                    }
                                     res.push(r);
                                 });
-                            return res;
+                            return deep.all(res);
                         });
                     };
                 },
@@ -274,7 +331,7 @@ return function(deep){
                                 ok = r.every(function(item){
                                     return deep.utils.deepEqual(item, compare);
                                 });
-                            return ok || new Error("sheet equality failed");
+                            return ok || deep.errors.PreconditionFail("sheet equality failed");
                         });
                     };
                 }
