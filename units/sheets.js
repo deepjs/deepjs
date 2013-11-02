@@ -44,9 +44,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 						return "e"+input;
 					}
 				};
-				var obj = [1,2,3,4,5];
-
-				return deep(obj).sheet(sheet)
+				return deep([1,2,3,4,5])
+				.sheet(sheet)
 				.equal({
 					"dq.transform::./*": [
 						"e1",
@@ -64,9 +63,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 						return "e"+input;
 					}
 				};
-				var obj = [1,2,3,4,5];
-
-				return deep(obj).sheet(sheet)
+				return deep([1,2,3,4,5]).sheet(sheet)
 				.equal({
 					"dq.through::./*": [
 						"e1",
@@ -84,14 +81,11 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 										.up({ fromUp:"tools" })
 										.bottom({ fromBottom:"hello" })
 				};
-
-				var obj = {
+				return deep({
 					a:{
 						base:"deepjs"
 					}
-				};
-
-				return deep(obj)
+				})
 				.sheet(sheet)
 				.equal({
 					"dq.sheeter::./*": [
@@ -109,6 +103,40 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 						"fromUp": "tools"
 					}
 				});
+			},
+			"sheeter.flatten":function(){
+				var sheet = {
+					"dq.sheeter::./a/b":deep.sheeter.flatten()
+				};
+				return deep({
+					a:{
+						b:{
+							backgrounds:["this::../c"],
+							hello:"world"
+						},
+						c:{
+							test:"inherited"
+						}
+					}
+				})
+				.sheet(sheet)
+				.equal({"dq.sheeter::./a/b":[{"test":"inherited","hello":"world"}]})
+				.valuesEqual({"a":{"b":{"test":"inherited","hello":"world"},"c":{"test":"inherited"}}});
+			},
+			"sheeter.transform":function(){
+				var sheet = {
+					"dq.sheeter::./a/b":deep.sheeter.transform(function(input){
+						return "e : " + input;
+					})
+				};
+				return deep({
+					a:{
+						b:"hello world"
+					}
+				})
+				.sheet(sheet)
+				.equal( {"dq.sheeter::./a/b":["e : hello world"]} )
+				.valuesEqual( {"a":{"b":"e : hello world"}} );
 			}
         }
     };
