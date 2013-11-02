@@ -1449,25 +1449,23 @@ function(require, utils, promise, Querier){
 	var valider = new Validator();
 
 	Validator.createDefault = function(schema){
-
 		return valider.createDefault(schema);
-	}
-	
+	};
 	Validator.convertStringTo = function(obj, type){
 		return valider.convertStringTo(obj, type);
-	}
+	};
 	Validator.castAndCheck = function(value, schema, valuePath){
 		return valider.castAndCheck(value, schema, valuePath);
-	}
+	};
 	Validator.validate = function(obj, schema, options){
 		return valider.validate(obj, schema, options);
-	}
+	};
 	Validator.getType = function(value){
 		return valider.getType(value);
-	}
+	};
 	Validator.partialValidation = function(obj, schema, options){
 		return valider.partialValidation(obj, schema, options);
-	}
+	};
 	return Validator;
 }
 });
