@@ -134,13 +134,6 @@ deep.utils.sheet(sheet, obj).log();
 
 ```
 
+For more details on native sheet's protocole, see [sheets](../sheets.md)
 
-List of sheets related sub-protocoles :
-
-* dq.up:: 	
-* dq.bottom::
-* dq.call::
-* dq.transform::
-
-More work on this should be done soon.
 
