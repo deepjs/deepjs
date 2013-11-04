@@ -1,8 +1,7 @@
 // main.js : load all first dependencies
 require.config({
-	 baseUrl: "/libs/"
+	baseUrl: "/libs/"
 });
-require([ "app.js", "../deep.js"], function( app, deep ) {
-	 console.log("deep ? ", deep);
-  	app();
+require([ "app.js", "deepjs/deep"], function( app, deep ) {
+	app();
 });
