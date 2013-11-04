@@ -31,7 +31,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                  "start": 2,
                  "end": 4,
                  "hasNext": true,
-                 "hasPrevious": true
+                 "hasPrevious": true,
+                 "query":""
                 })
                 .valuesEqual(["heaven","helicopter","heat"]);
             },
@@ -49,7 +50,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                  "start": 2,
                  "end": 5,
                  "hasNext": false,
-                 "hasPrevious": true
+                 "hasPrevious": true,
+                 "query":"./?=match=(hel)"
                 })
                 .valuesEqual(["helicopter"]);
             }

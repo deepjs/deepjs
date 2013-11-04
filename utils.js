@@ -915,7 +915,7 @@ define(function(require){
 
 	//___________________________________________ RANGE RELATED
 
-	utils.createRangeObject = function (start, end, total, count, results) {
+	utils.createRangeObject = function (start, end, total, count, results, query) {
 		var res = {
 			_deep_range_:true,
 			total:total,
@@ -924,7 +924,8 @@ define(function(require){
 			start:0,
 			end:0,
 			hasNext:false,
-			hasPrevious:false
+			hasPrevious:false,
+			query:query || ""
 		};
 		function update (start, end, total)
 		{

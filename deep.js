@@ -1622,7 +1622,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 self._queried = true;
                 count = self._nodes.length;
                 res = deep.chain.values(self);
-                return deep.utils.createRangeObject(start, end, total, count, res);
+                return deep.utils.createRangeObject(start, end, total, count, res, query);
             };
             func._isDone_ = true;
             addInChain.apply(this, [func]);

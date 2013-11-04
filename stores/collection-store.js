@@ -177,18 +177,14 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
              * @return {deep.Chain} a chain that hold the selected range and has injected values as success object.
              */
             range: function (start, end, query) {
-                console.log("deep.store.Collection.range : ", start, end);
+                //console.log("deep.store.Collection.range : ", start, end);
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
                 query = query || "";
                 query += "&limit("+((end-start)+1)+","+start+")";
                 var res = deep.query(col, "./*?"+query);
-                var rangeObject = deep.utils.createRangeObject(start, end, this.collection.length);
-                rangeObject.results = res;
-                rangeObject.query = query;
-                rangeObject.count = res.length;
-                return rangeObject;
+                return deep.utils.createRangeObject(start, end, this.collection.length, res.length, res, query);
             },
             flush:function(){
                 this.collection = [];
