@@ -795,7 +795,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             _queried: handler._queried,
             _error: handler._error,
             _context: handler._context,
-            _success: handler._success
+            _success: handler._success,
+            _store:handler._store
         });
         newHandler._initialised = true;
         return newHandler;
@@ -846,44 +847,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     self.deferred.resolve(self._success);
         },
 
-        /**
-         *
-         * log current chain entries  with optional title
-         *
-         * full option means print full entry in place of just entry.value
-         * pretty option means print pretty json (indented)
-         *
-         * transparent true
-         *
-         * @method  logValues
-         * @chainable
-         * @param title (optional) the title you want
-         * @param options (optional) could contain : 'full':true|false, 'pretty':true|false
-         * @return {deep.Chain} this
-         */
-        logValues: function chainLogValues(title, options) {
-            var self = this;
-            options = options || {};
-            var func = function (success, error) {
-                console.log(title || "deep.logValues : ", " (" + self._nodes.length + " values)");
-                self._nodes.forEach(function (e) {
-                    var val = e;
-                    var entry = null;
-                    if (e.value) {
-                        entry = e.value._deep_entry;
-                        delete e.value._deep_entry;
-                    }
-                    if (!options.full)
-                        val = e.value;
-                    if (options.pretty)
-                        val = JSON.stringify(val, null, ' ');
-                    console.log("\t- entry : (" + e.path + ") : ", val);
-                    if (entry && e.value)
-                        e.value._deep_entry = entry;
-                });
-            };
-            return addInChain.apply(this, [func]);
-        },
+
         //_____________________________________________________________  BRANCHES
         /**
          * asynch handler for chain branches creation
@@ -926,6 +890,73 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             };
             create._isDone_ = true;
             return addInChain.call(this, create);
+        },
+                /**
+         * save current chain position. it means that it will save
+         * - current entries
+         * - current success and errors
+         * - current store (if any) in private queue before continuing.
+         *
+         *  asynch
+         *  transparent true
+         *
+         * @method  position
+         * @param  name the name of position (its id/label)
+         * @param  options optional object (no options for the moment)
+         * @return {deep.Chain} this
+         */
+        position: function chainPosition(name, options) {
+            var self = this;
+            var func = function (s, e) {
+                deep.chain.position(self, name, options);
+            };
+            func._isDone_ = true;
+            addInChain.apply(this, [func]);
+            return this;
+        },
+        /**
+         * go back to a previously saved position (see .position).
+         * If no name is provided : go back to last position (if any)
+         *
+         * throw an error if no position founded.
+         *
+         * inject chain values as chain success
+         *
+         * @method  back
+         * @chainable
+         * @param  {String} name the name of the last position asked
+         * @param   {Object}    options   (optional - no options for the moment)
+         * @return {deep.Chain}
+         */
+        back: function chainBack(name, options) {
+            var self = this;
+            var func = function (s, e) {
+                var position = null;
+                if (name) {
+                    var pos = self.positions.concat([]),
+                        ok = false;
+                    while (true && pos.length > 0)
+                    {
+                        position = pos.pop();
+                        if (position.name == name) {
+                            ok = true;
+                            break;
+                        }
+                    }
+                    if (pos.length === 0 && !ok)
+                        position = null;
+                } else
+                    position = self.positions[self.position.length - 1];
+                if (!position)
+                    return deep.errors.Internal("chain handler error : no positions to go back with name : " + name);
+                self._nodes = position.entries;
+                self._store = position.store;
+                self._queried = position.queried;
+                return position;
+            };
+            func._isDone_ = true;
+            addInChain.apply(this, [func]);
+            return this;
         }
     };
 
@@ -946,6 +977,44 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
 
     var fullAPI = {
+        /**
+         *
+         * log current chain entries  with optional title
+         *
+         * full option means print full entry in place of just entry.value
+         * pretty option means print pretty json (indented)
+         *
+         * transparent true
+         *
+         * @method  logValues
+         * @chainable
+         * @param title (optional) the title you want
+         * @param options (optional) could contain : 'full':true|false, 'pretty':true|false
+         * @return {deep.Chain} this
+         */
+        logValues: function chainLogValues(title, options) {
+            var self = this;
+            options = options || {};
+            var func = function (success, error) {
+                console.log(title || "deep.logValues : ", " (" + self._nodes.length + " values)");
+                self._nodes.forEach(function (e) {
+                    var val = e;
+                    var entry = null;
+                    if (e.value) {
+                        entry = e.value._deep_entry;
+                        delete e.value._deep_entry;
+                    }
+                    if (!options.full)
+                        val = e.value;
+                    if (options.pretty)
+                        val = JSON.stringify(val, null, ' ');
+                    console.log("\t- entry : (" + e.path + ") : ", val);
+                    if (entry && e.value)
+                        e.value._deep_entry = entry;
+                });
+            };
+            return addInChain.apply(this, [func]);
+        },
         /**
          * will interpret entries values with context
          * @example
@@ -1628,73 +1697,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             addInChain.apply(this, [func]);
             return this;
         },
-        /**
-         * save current chain position. it means that it will save
-         * - current entries
-         * - current success and errors
-         * - current store (if any) in private queue before continuing.
-         *
-         *	asynch
-         *	transparent true
-         *
-         * @method  position
-         * @param  name the name of position (its id/label)
-         * @param  options optional object (no options for the moment)
-         * @return {deep.Chain} this
-         */
-        position: function chainPosition(name, options) {
-            var self = this;
-            var func = function (s, e) {
-                deep.chain.position(self, name, options);
-            };
-            func._isDone_ = true;
-            addInChain.apply(this, [func]);
-            return this;
-        },
-        /**
-         * go back to a previously saved position (see .position).
-         * If no name is provided : go back to last position (if any)
-         *
-         * throw an error if no position founded.
-         *
-         * inject chain values as chain success
-         *
-         * @method  back
-         * @chainable
-         * @param  {String} name the name of the last position asked
-         * @param   {Object}	options   (optional - no options for the moment)
-         * @return {deep.Chain}
-         */
-        back: function chainBack(name, options) {
-            var self = this;
-            var func = function (s, e) {
-                var position = null;
-                if (name) {
-                    var pos = self.positions.concat([]),
-                        ok = false;
-                    while (true && pos.length > 0)
-                    {
-                        position = pos.pop();
-                        if (position.name == name) {
-                            ok = true;
-                            break;
-                        }
-                    }
-                    if (pos.length === 0 && !ok)
-                        position = null;
-                } else
-                    position = self.positions[self.position.length - 1];
-                if (!position)
-                    return deep.errors.Internal("chain handler error : no positions to go back with name : " + name);
-                self._nodes = position.entries;
-                self._store = position.store;
-                self._queried = position.queried;
-                return position;
-            };
-            func._isDone_ = true;
-            addInChain.apply(this, [func]);
-            return this;
-        },
+
         //_________________________________________________________________________________________
 
 
