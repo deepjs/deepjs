@@ -183,6 +183,7 @@ define(["require","./deep"], function (require, deep) {
                 console.log("\n\n\n*************** Executing unit : ", unit.title);
                 return deep.when(unit.run("*",options));
             };
+            var startTime = new Date().getTime();
             console.time("bunch");
             var d = deep.when(doTest(units.shift()));
             var always = function(s,e){
@@ -200,6 +201,7 @@ define(["require","./deep"], function (require, deep) {
             };
             return d.always(always)
             .always(function(s,e){
+                report.time = new Date().getTime() - startTime;
                 console.log("\n\n\n___________________________________________________________________");
                 console.log("\n*******************************************************************");
                 console.log("************************** Bunch time : ***************************");
@@ -215,6 +217,7 @@ define(["require","./deep"], function (require, deep) {
                 console.log("\tsuccess : ", report.success,"/",report.numberOfTests);
                 console.log("\tfailure : ", report.failure,"/",report.numberOfTests);
                 console.log("\tommited : ", report.ommited,"/",report.numberOfTests);
+                console.log("\ttime : ", report.time);
                 //console.log(JSON.stringify(report, null, ' '));
                 console.log("\n*******************************************************************");
                 console.log("*******************************************************************");
