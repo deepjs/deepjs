@@ -207,12 +207,12 @@ define(function(require){
 			res = {};
 			for(var i in obj)
 			{
-				if(i == "_deep_entry")
-					continue;
+				//if(i == "_deep_entry")
+				//	continue;
                 var v = obj[i];
 				if(obj.hasOwnProperty(i))
                     if(typeof v === 'object')
-					   res[i] = copy(v);
+						res[i] = copy(v);
                     else
                         res[i] = v;
 			}
@@ -227,7 +227,7 @@ define(function(require){
 		else
 			res = obj;
 		return res;
-	}
+	};
 
 	utils.simpleCopy = function simpleCopy(obj)
 	{
@@ -242,31 +242,31 @@ define(function(require){
 			var res = {};
 			for(var i in obj)
 			{
-				if(i == "_deep_entry")
-					continue;
+				//if(i == "_deep_entry")
+				//	continue;
 				if(obj.hasOwnProperty(i))
 					res[i] = obj[i];
 			}
 			return res;
 		}
 		return obj;
-	}
+	};
 
 	utils.getObjectClass = function (obj) {
-	    if (obj && obj.constructor && obj.constructor.toString) {
-	        var arr = obj.constructor.toString().match(/function\s*(\w+)/);
-	        if (arr && arr.length == 2)
-	            return arr[1];
-	    }
-	    return undefined;
-	}
+		if (obj && obj.constructor && obj.constructor.toString) {
+			var arr = obj.constructor.toString().match(/function\s*(\w+)/);
+			if (arr && arr.length == 2)
+				return arr[1];
+		}
+		return undefined;
+	};
 
 	utils.setValueByPath = function (object, path, value, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
+		if(pathDelimiter == "/" && (parts[0] === "" || parts[0] == "."))
 			parts.shift();
 		var tmp = object;
 		while(parts.length>1)
@@ -276,15 +276,16 @@ define(function(require){
 				tmp[part] = {};
 			tmp = tmp[part];
 		}
-		return tmp[parts.shift()] = value;
-	}
+		tmp[parts.shift()] = value;
+		return value;
+	};
 
 	utils.retrieveValueByPath = function (object, path, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
+		if(pathDelimiter == "/" && (parts[0] === "" || parts[0] == "."))
 			parts.shift();
 		var tmp = object;
 		while(parts.length>1)
@@ -297,14 +298,14 @@ define(function(require){
 		if(tmp)
 			return tmp[parts.shift()];
 		else return undefined;
-	}
+	};
 
 	utils.deletePropertyByPath = function (object, path, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
+		if(pathDelimiter == "/" && (parts[0] === "" || parts[0] == "."))
 			parts.shift();
 		var tmp = object;
 		while(parts.length>1)
@@ -315,8 +316,7 @@ define(function(require){
 			tmp = tmp[part];
 		}
 		delete tmp[parts.shift()];
-	}
-
+	};
 
 	utils.retrieveSchemaByPath = function retrieveSchemaByPath(schema, path, pathDelimiter)
 	{
@@ -324,7 +324,7 @@ define(function(require){
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			pathDelimiter = "/";
 		var parts = path.split(pathDelimiter||".");
-		if(pathDelimiter == "/" && (parts[0] == "" || parts[0] == "."))
+		if(pathDelimiter == "/" && (parts[0] === "" || parts[0] == "."))
 			parts.shift();
 		var tmp = schema;
 		while(parts.length>1)
@@ -338,14 +338,14 @@ define(function(require){
 			return tmp.properties[parts.shift()];
 		else
 			return undefined;
-	}
+	};
 	/*
 		Does not make a deep-copy if collision : just if collid : make unique
 	*/
 	utils.arrayUnique = function arrayUnique(arr1, uniqueOn){
 		if(!arr1.forEach)
 			return arr1;
-		var map = {}
+		var map = {};
 		var count = 0;
 		var arr = [];
 		arr1.forEach(function(a){
@@ -354,19 +354,19 @@ define(function(require){
 				val = utils.retrieveValueByPath(a,uniqueOn);
 			else if(a.uri)
 				val = a.uri;
-			if(val == null || val == undefined)
+			if(val === null || val === undefined)
 				val = String(a);
 			if(typeof map[val] === 'undefined')
 			{
 				map[val] = true;
 				arr.push(a);
 			}
-		})
+		});
 		return arr;
-	}
+	};
 
 	utils.arrayFusion = function arrayFusion(arr1, arr2, uniqueOn){
-		var map = {}
+		var map = {};
 		var count = 0;
 		var arr = [];
 		if(arr1 && arr1.length > 0)
@@ -377,23 +377,23 @@ define(function(require){
 				val = utils.retrieveValueByPath(a,uniqueOn);
 			else if(a.uri)
 				val = a.uri;
-			if(val == null || val == undefined)
+			if(val === null || val === undefined)
 				val = String(a);
 			map[val] = true;
-		})
+		});
 		arr2.forEach(function(a){
 			var val = null;
 			if(uniqueOn)
 				val = utils.retrieveValueByPath(a,uniqueOn);
 			else if(a.uri)
 				val = a.uri;
-			if(val == null || val == undefined)
+			if(val === null || val === undefined)
 				val = String(a);
 			if(typeof map[val] === 'undefined')
 				arr.push(a);
-		})
+		});
 		return arr;
-	}
+	};
 
 	utils.inArray = function inArray(what, inArr)
 	{
@@ -403,49 +403,49 @@ define(function(require){
 		var test = {};
 		inArr.forEach(function(e){
 			test[e] = true;
-		})
+		});
 		if(what.forEach)
 		{
 			var okCount = 0;
 			what.forEach(function(e){
 				if(typeof test[e] !== 'undefined')
 					okCount++;
-			})
+			});
 			if(okCount == what.length)
 				return true;
 			return false;
 		}
 		else if(test[what])
-			return true
+			return true;
 		return false;
-	}
+	};
 
 	utils.getJSPrimitiveType = function getJSPrimitiveType(obj)
 	{
 		if(obj instanceof Array)
-			return "array"
+			return "array";
 		return typeof obj;
-	}
+	};
 
 	utils.deepEqual = function deepEqual(a,b, ordered)
 	{
-		if(ordered == undefined)
+		if(ordered === undefined)
 			ordered = true;
 		if(typeof a !== typeof b)
 			return false;
 		if(typeof a === 'object')
 		{
-			if(a == null && a !== b)
+			if(a === null && a !== b)
 				return false;
-			if(b == null && a !== b)
+			if(b === null && a !== b)
 				return false;
 			var ok = true;
 			var tmpA = [];
 			var tmpB = [];
 			for(var i in b)
 			{
-				if(i == "_deep_entry")
-					continue;
+				//if(i == "_deep_entry")
+				//	continue;
 				if(!b.hasOwnProperty(i))
 					continue;
 				if(typeof a[i] === 'undefined')
@@ -457,8 +457,8 @@ define(function(require){
 			}
 			for(var i in a)
 			{
-				if(i == "_deep_entry")
-					continue;
+				//if(i == "_deep_entry")
+				//	continue;
 				if(!a.hasOwnProperty(i))
 					continue;
 				tmpA.push(i);
@@ -473,7 +473,7 @@ define(function(require){
 		else if(a !== b)
 			return false;
 		return true;
-	}
+	};
 	//var result = {};
 
 	var retrieveFullSchemaByPath = utils.retrieveFullSchemaByPath =  function retrieveFullSchemaByPath(schema, path, delimitter)
@@ -483,9 +483,9 @@ define(function(require){
 		if(path[0] == "/" || path.substring(0,1) == "./")
 			delimitter = "/";
 		var parts = path.split(delimitter||".");
-		if(delimitter == "/" && (parts[0] == "" || parts[0] == "."))
+		if(delimitter == "/" && (parts[0] === "" || parts[0] == "."))
 			parts.shift();
-		 // console.log("retrieveSchemaByPath : ", parts, schema);
+		// console.log("retrieveSchemaByPath : ", parts, schema);
 		var tmp = schema;
 		while(parts.length>1)
 		{
@@ -511,7 +511,7 @@ define(function(require){
 			if(tmp.type == "array")
 			{
 				tmp = tmp.items || {};
-				res.push(tmp)
+				res.push(tmp);
 			}
 			// TODO : gestion pattern items
 		}
@@ -523,12 +523,12 @@ define(function(require){
 			if(tmp.patternProperties)
 				for(var i in tmp.patternProperties)
 					if(new RegExp(i).test(lastPart))
-						res.push(tmp.patternProperties[i])
+						res.push(tmp.patternProperties[i]);
 
-			 // console.log("after test last part pattern props : ", res);
+			// console.log("after test last part pattern props : ", res);
 
-			if(res.length ==0)
-				if (tmp.additionalProperties == undefined || tmp.additionalProperties == false)
+			if(res.length === 0)
+				if (tmp.additionalProperties === undefined || tmp.additionalProperties === false)
 					return undefined;
 				else
 					return tmp.additionalProperties;
@@ -542,14 +542,14 @@ define(function(require){
 			});
 		else if(res.length == 1)
 			finalSchema = res[0];
-		 // console.log("retrieveSchemaByPath : finally : ", path, finalSchema);
+		// console.log("retrieveSchemaByPath : finally : ", path, finalSchema);
 
 		return finalSchema;
-	}
+	};
 
 	utils.deepArrayFusion = function deepArrayFusion(arr1, arr2, schema, fromBottom)
 	{
-		var map = {}
+		var map = {};
 		var count = 0;
 		var arr = [];
 		var itemsSchema = {};
@@ -578,10 +578,10 @@ define(function(require){
 			//	val = a.name;
 			else if(a.id)
 				val = a.id;
-			if(val == null || val == undefined)
+			if(val === null || val === undefined)
 				val = String(a);
 			map[val] = {ref:a, index:count++};
-		})
+		});
 		//console.log("array fusion map :", map);
 		arr2.forEach(function(a){
 			var val = null;
@@ -593,7 +593,7 @@ define(function(require){
 			//	val = a.name;
 			else if(a.id)
 				val = a.id;
-			if(val == null || val == undefined)
+			if(val === null || val === undefined)
 				val = String(a);
 			if(!map[val])
 				arr.push(a);
@@ -605,7 +605,7 @@ define(function(require){
 		//console.log("array fusion  :", arr);
 
 		return arr;
-	}
+	};
 
 
 
@@ -622,7 +622,7 @@ define(function(require){
 	var up = function up(src, target, schema, parent, key)
 	{
         //console.log("up : ", src, target, parent, key)
-       	// if(src && src._deep_shared_)
+		// if(src && src._deep_shared_)
         //   console.log("_____________ GOT SHARED");
 		if( typeof src === 'undefined' )
 			return target;
@@ -715,7 +715,6 @@ define(function(require){
 				if(parent && key)
 					parent[key] = result;
 				return result;
-				break;
 			case 'object' :
 
 				if(src instanceof RegExp)
@@ -734,10 +733,10 @@ define(function(require){
 
 				for(var i in src)
 				{
-					if(i == "_deep_entry")
-						continue;
+					//if(i == "_deep_entry")
+					//	continue;
 
-					if(src[i] == null)
+					if(src[i] === null)
 					{
 
 						target[i] = null;
@@ -759,13 +758,12 @@ define(function(require){
 						target[i] = src[i];
 				}
 				return target;
-				break;
 			default :
 				if(parent && key)
 					parent[key] = src;
 				return src;
 		}
-	}
+	};
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
@@ -774,7 +772,7 @@ define(function(require){
           //   console.log("got botom shared");
 		if(src === null || typeof src === "undefined")
 			return target;
-		if(target == null)
+		if(target === null)
 			return target;
 		if(typeof target === 'undefined')
 		{
@@ -843,41 +841,40 @@ define(function(require){
 					parent[key] = result;
 				//console.log("array fusion bottom rsult : ", result, parent, key)
 				return result;
-				break;
 			case 'object' :
 				// console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
                 /*if(src && src._deep_shared_)
                 {
                     if(parent && key)
-				        parent[key] = src;
+						parent[key] = src;
 
                 }*/
 				var oldProps = {};
 				for(var i in target)
 				{
-					if(i == "_deep_entry")
-						continue;
+					//if(i == "_deep_entry")
+					//	continue;
 					oldProps[i] = target[i];
 					delete target[i];
 				}
-				for(var i in src)
+				for(i in src)
 				{
-					if(i == "_deep_entry")
-						continue;
+					//if(i == "_deep_entry")
+					//	continue;
                     //console.log("bottom : copy source : ",src[i])
 					target[i] = utils.copy(src[i]);
 				}
 
-				for(var i in oldProps)
-				{	
+				for(i in oldProps)
+				{
                     //console.log("i of oldprops in bottom : ", i)
                     //if(oldProps[i] && oldProps[i]._deep_shared_)
                       //  console.log("____________ got shared at bottom object");
                      var oldProperty = oldProps[i];
                      var targetProp = target[i];
-					if(i == "_deep_entry")
-						continue;
-					if(oldProperty == null)
+					//if(i == "_deep_entry")
+					//	continue;
+					if(oldProperty === null)
 					{
 						target[i] = null;
 						continue;
@@ -896,20 +893,19 @@ define(function(require){
 						target[i] = oldProperty;
 				}
 				return target;
-				break;
 			default :
 				return target;
 		}
-	}
+	};
 
 	var deepCopy = utils.deepCopy = function deepCopy(source, target, overwrite, schema, parent, key)
 	{
-		overwrite = (overwrite != null && overwrite != undefined)?overwrite:true;
+		overwrite = (overwrite !== null && overwrite !== undefined)?overwrite:true;
 	//	console.log("deep-copy : ",source, " in ", target, " - ow : ", overwrite, " - parent ", parent, " - key : ", key)
 		if(overwrite)
 			return utils.up(source, target, schema, parent, key);
 		return utils.bottom(source, target, schema, parent, key);
-	}
+	};
 	utils.up = up;
 	utils.bottom = bottom;
 
@@ -930,9 +926,9 @@ define(function(require){
 		function update (start, end, total)
 		{
 			this.total = total || this.total || 0;
-			if(this.total == 0)
+			if(this.total === 0)
 			{
-				this.start = this.end = 0
+				this.start = this.end = 0;
 				return this;
 			}
 			this.start = start;// Math.max(Math.min(this.total-1,start), 0);
@@ -942,9 +938,9 @@ define(function(require){
 			//console.log("update range  : res : ",this);
 			return this;
 		}
-		update.call(res,start,end,total)
+		update.call(res,start,end,total);
 		return res;
-	}
+	};
 
 	//_________________________________________________ HTTP RELATED
 
@@ -960,12 +956,12 @@ define(function(require){
 		if (typeof res === 'string')
 			return JSON.parse(res);
 		return res;
-	}
+	};
 
 	utils.parseBody = function (body, headers)
 	{
 
-		if(typeof body === 'undefined' || body == null)
+		if(typeof body === 'undefined' || body === null)
 			return null;
 		var res = body;
 		if(res instanceof Array)
@@ -973,7 +969,7 @@ define(function(require){
 			res = "";
 			body.forEach(function(b){
 				res += b.toString();
-			})
+			});
 		}
 		body = res;
 
@@ -986,13 +982,10 @@ define(function(require){
 		{
 			case "application/json-rpc" :
 				return utils.parseJson(body);
-				break;
 			case "application/json" :
 				return utils.parseJson(body);
-				break;
 			case "application/javascript" :   // TODO : should be parsed by json-extended parser
 				return utils.parseJson(body);
-				break;
 			default :
 				return body;
 		}
@@ -1000,7 +993,7 @@ define(function(require){
 		catch(e){
 			return new Error("error while parsing body : "+JSON.stringify(e));
 		}
-	}
+	};
 
 	function parseUri (str)
 	{
@@ -1015,7 +1008,7 @@ define(function(require){
 			if ($1) uri[o.q.name][$1] = $2;
 		});
 		return uri;
-	};
+	}
 
 	parseUri.options = {
 		strictMode: true,
@@ -1034,10 +1027,10 @@ define(function(require){
 	{
 		var obj = parseUri(url);
 		if(obj.search)
-		    obj.search = "?"+obj.search;
+			obj.search = "?"+obj.search;
 		obj.path = obj.pathname+obj.search;
 		return obj;
-	}
+	};
 
 	//_____________________________________________________  ERROR RELATED
 
@@ -1046,37 +1039,37 @@ define(function(require){
 		if (typeof err === 'object' && err !== null)
 		{
 
-			console.log("\n\n**************************** (deep) Error Dump : \n")
+			console.log("\n\n**************************** (deep) Error Dump : \n");
 			if (err.status)
-			  console.log('\nStatus: ' + err.status)
+				console.log('\nStatus: ' + err.status);
 			if (err.message)
-			  console.log('\nMessage: ' + err.message)
+				console.log('\nMessage: ' + err.message);
 			if (err.stack)
 			{
-			  console.log('\nStacktrace:')
-			  console.log('====================')
-			  console.log(err.stack);
+				console.log('\nStacktrace:');
+				console.log('====================');
+				console.log(err.stack);
 			}
 			if (err.report)
 			{
-			  console.log('\nReport:')
-			  console.log('====================')
-			  console.log(err.report);
-			  console.log('============================================================')
+				console.log('\nReport:');
+				console.log('====================');
+				console.log(err.report);
+				console.log('============================================================');
 			}
 		}
 		else
 			console.warn('dumpError :: argument is not an object : ',err);
-	}
+	};
 
 	utils.logItemsProperty = function (array, prop) {
 		var r = [];
 		array.forEach(function (a) {
 			console.log("deep.logItemsProperty : ",prop, a[prop]);
 			r.push(a[prop]);
-		})
+		});
 		return r;
-	}
+	};
 
     utils.execTreatment = function(context)
 	{
@@ -1093,7 +1086,7 @@ define(function(require){
 		{
 			var what = deep.interpret(this.what, context);
 			objs.push(deep.get(what, {
-				root: context._deep_entry || context
+				root: context
 			}));
 		}
 		else if (typeof this.what === 'function')
@@ -1105,13 +1098,13 @@ define(function(require){
 		{
 			var how = deep.interpret(this.how, context);
 			objs.push(deep.get(how, {
-				root: context._deep_entry || context
+				root: context
 			}));
 		}
 		if (typeof this.where === "string") {
 			var where = deep.interpret(this.where, context);
 			objs.push(deep.get(where, {
-				root: context._deep_entry || context,
+				root:  context,
 				acceptQueryThis: true
 			}));
 		}
@@ -1161,7 +1154,7 @@ define(function(require){
 			//console.log("load treatment loop : ", i, treatments[i]);
 			var treatment = null;
 
-			if(!destructive) 
+			if(!destructive)
 			{
 				treatment = deep.utils.copy(treatments[i]);
 				//treatment.source = treatments[i];
@@ -1185,7 +1178,7 @@ define(function(require){
 				if(typeof treatment.what === 'string')
 				{
 					treatment.what = deep.interpret(treatment.what, context);
-					treatment.what = deep.get(treatment.what, { root:context._deep_entry || context });
+					treatment.what = deep.get(treatment.what, { root:context });
 				}
 				else if(typeof treatment.what === 'function')
 					treatment.what = treatment.what.apply(context);
@@ -1193,12 +1186,12 @@ define(function(require){
 			if(typeof treatment.how === "string")
 			{
 				treatment.how = deep.interpret(treatment.how, context);
-				treatment.how = deep.get(treatment.how, { root:context._deep_entry || context });
+				treatment.how = deep.get(treatment.how, { root:context });
 			}
 			if(typeof treatment.where === "string")
 			{
 				treatment.where = deep.interpret(treatment.where, context);
-				treatment.where = deep.get(treatment.where, { root:context._deep_entry || context });
+				treatment.where = deep.get(treatment.where, { root: context });
 			}
 			//console.log("load treatments end loop : ", treatment);
 			objs.push(treatment.what, treatment.how, treatment.where);
@@ -1280,10 +1273,10 @@ define(function(require){
 	
 	utils.sheet = function applySheet(sheet, entry, options)
 	{
-	 	options = options || {};
-	 	options.entry = entry;
-	 	var res = [];
-	 	var report = {};
+		options = options || {};
+		options.entry = entry;
+		var res = [];
+		var report = {};
 		for(var i in sheet)
 		{
 			var toApply = sheet[i];
@@ -1298,7 +1291,7 @@ define(function(require){
 		}
 		return deep.all(res)
 		.done(function(success){
-		    return report;
+			return report;
 		});
 	};
 
@@ -1324,7 +1317,7 @@ define(function(require){
             return args;
         var current = funcs.shift();
         var def = deep.Deferred();
-        var context = {};
+        context = context || {};
         var doIt = function (r) {
             deep.when(r).then(function (r) {
                 if (funcs.length === 0) {
@@ -1353,13 +1346,13 @@ define(function(require){
 
 	utils.iterate = function (collection, done, fail)
 	{
-	    var coll = collection.concat([]);
+		var coll = collection.concat([]);
 		var res = [];
 		var doneAndIterate = function(s){
 			if(coll.length > 0)
 				this.done(function(s){ res.push(s); })
 				.when(coll.shift())
-				.done(doneAndIterate);				
+				.done(doneAndIterate);
 			return done.call(this, s);
 		};
 		var failAndIterate = function(e){
@@ -1368,21 +1361,21 @@ define(function(require){
 			if(coll.length > 0)
 				this.when(coll.shift())
 				.done(doneAndIterate);
-			var self = this;	
-		    return deep.when(fail.call(this, e))
+			var self = this;
+			return deep.when(fail.call(this, e))
 			.done(function(s){
-			    if(typeof s === 'undefined' || s instanceof Error)
-			        return s || e;
-			    res.push(s || e);
-			    self.fail(failAndIterate);
+				if(typeof s === 'undefined' || s instanceof Error)
+					return s || e;
+				res.push(s || e);
+				self.fail(failAndIterate);
 			});
 		};
 		var iterator = deep.when(coll.shift())
 		.done(doneAndIterate)
 		.fail(failAndIterate)
 		.done(function(s){
-		   res.push(s);
-		   return res;
+			res.push(s);
+			return res;
 		});
 		return iterator;
 	};
@@ -1393,7 +1386,7 @@ define(function(require){
 		var ctx = context || {};
 		if(args && !args.forEach)
 			args = [args];
-	    var coll = functions.concat([]);
+		var coll = functions.concat([]);
 		var doneAndIterate = function(s){
 			//console.log("done and wired : ",s)
 			if(done)
@@ -1418,15 +1411,15 @@ define(function(require){
 			if(coll.length > 0)
 				this.when(coll.shift())
 				.done(doneAndIterate);
-			var self = this;	
-		    return deep.when(fail.call(this, e))
+			var self = this;
+			return deep.when(fail.call(this, e))
 			.done(function(s){
-			    if(typeof s === 'undefined' || s instanceof Error)
-			        return s || e;
-			    args = s;
+				if(typeof s === 'undefined' || s instanceof Error)
+					return s || e;
+				args = s;
 				if(args && !args.forEach)
 					args = [args];
-			    self.fail(failAndIterate);
+				self.fail(failAndIterate);
 			});
 		};
 		var iterator = deep.when(coll.shift())
@@ -1437,7 +1430,7 @@ define(function(require){
 
 	//_______________________________________________________ QUERY UTILS
 	utils.remove = function(obj, what){
-	    var removed = [];
+		var removed = [];
         function finalise(r) {
             if (!r.ancestor)
                 return;
@@ -1477,8 +1470,8 @@ define(function(require){
             return replaced.shift();
         }
         r.forEach(finalise);
-    	return replaced;
+		return replaced;
 	};
 	return utils;
-}
-})
+};
+});
