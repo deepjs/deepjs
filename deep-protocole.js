@@ -38,6 +38,8 @@ define(["require","./deep"], function (require, deep) {
             method:"get",
             store:null
         };
+        if(protocole._deep_ocm_)
+            protocole = protocole();
         if(typeof protocole === 'object')
             handler.store = protocole;
         else if(deep.protocoles[protocole])
