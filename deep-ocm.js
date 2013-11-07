@@ -14,23 +14,17 @@ define(["require"], function (require){
     /**
          * OCM for the mass !!
          * return an Object Capabilities Manager
-         * @param  {String} protocole the name of the protocole associated with this manager
          * @param  {Object} layer (optional) initial layer
-         * @param  {Function} init any function that will be fired on newly compiled object
-         * @modeNode(arg) {String}  (optional) any mode to follow (doc will come soon)
+         * @param  {Object} options : { group:"string", init:Func, protocole:"string" }.  init = any function that will be fired on newly compiled object
          * @return {deep.OCM} an Object Capabilities Manager
          */
-        deep.ocm = function(protocole, layer, init, modeNode)
+        deep.ocm = function(layer, options)
         {
+            //console.log("deep.ocm : ", layer, options);
             //console.log("deep.context : ", deep.context)
-            if(typeof protocole !== 'string')
-            {
-                modeNode = init;
-                init = layer;
-                layer = protocole;
-            }
+            options = options || {};
             var params = {
-                modeNode:modeNode,
+                group:options.group,
                 layer:layer || {},
                 currentModes:null,
                 compiled:{},
@@ -55,7 +49,7 @@ define(["require"], function (require){
                     }
                     return res;
                 },
-                init:init
+                init:options.init
             };
             var m = function()
             {
@@ -63,12 +57,12 @@ define(["require"], function (require){
                 if(modes.length === 0 || params.blocked)
                     if(params.currentModes && params.currentModes.length > 0)
                         modes = params.currentModes;
-                    else if (params.modeNode && deep.ocm.modeNodes[params.modeNode] )
-                        modes = deep.ocm.modeNodes[params.modeNode];
-                    else if ( deep.context.mode && deep.context.mode.length > 0 )
-                        modes = deep.context.mode;
+                    else if ( deep.context.modes && deep.context.modes[params.group] )
+                        modes = deep.context.modes[params.group];
                     else
                         throw deep.errors.OCM("You need to set a mode before using ocm objects : ", deep.context);
+                if(!modes.forEach)
+                    modes = [modes];
                 var joined = modes;
                 if(typeof modes.join === 'function')
                     joined = modes.join(".");
@@ -81,24 +75,25 @@ define(["require"], function (require){
                     params.init.call(compiled);
                 return compiled;
             };
-            deep.ocm.instances.push(m);
-            if(protocole)
+            //deep.ocm.instances.push(m);
+            if(options.protocole)
             {
-                m.name = protocole;
-                deep.protocoles[protocole] = function(request, options){
-                    console.log("ocm protocole : ", protocole, request.uri, options);
-                    return deep.query(m(),request.uri, options);
+                m.name = options.protocole;
+                deep.protocoles[options.protocole] = function(request, opt){
+                    console.log("ocm protocole : ", options.protocole, request.uri, opt);
+                    return deep.query(m(),request.uri, opt);
                 };
             }
             m._deep_ocm_ = true;
+            m._deep_upper_ = true;
             m.multiMode = function(yes){
                 params.multiMode = yes;
             };
-            m.modeNode = function (arg)
+            m.group = function (arg)
             {
                 if(params.blocked)
                     return m();
-                params.modeNode = arg;
+                params.group = arg;
                 return m;
             };
             m.mode = function (arg)
@@ -140,56 +135,59 @@ define(["require"], function (require){
                 var d = deep(params.layer);
                 return d.bottom.apply(d,arguments);
             };
+            m.clone = function(){
+                var o = null;
+                if(typeof protocole === 'string')
+                    o = deep.ocm(deep.utils.copy(params.layer), options);
+                else
+                    o = deep.ocm(deep.utils.copy(params.layer), options);
+                o.multiMode(params.multiMode);
+                if(params.currentModes)
+                    o.mode(params.currentModes);
+                return o;
+            };
             return m;
         };
-        deep.ocm.instances = [];
+        //deep.ocm.instances = [];
         deep.ocm.nocache = false;
 
-        deep.ocm.modeNodes = {
-
-        };
-
         // deep mode management
-        deep.mode = function(args){
-            var mode = (args)?Array.prototype.slice.apply(arguments):null;
-            return deep({}).mode(mode);
+        deep.modes = function(obj){
+            return deep({}).modes(obj);
         };
 
-        deep.Chain.addHandle("mode", function(arg)
+        deep.Chain.addHandle("modes", function(arg)
         {
             // console.log("chain.mode : ", arguments, deep.context);
             var self = this;
-            var args = arguments;
             var func = function(s,e)
             {
                 if(!self._contextCopied)
                     deep.context = self._context = deep.utils.simpleCopy(self._context);
                 self._contextCopied = true;
-                if(arg instanceof Array)
-                    self._context.mode = arg;
-                else
-                    self._context.mode = (arg)?Array.prototype.slice.apply(args):null;
+
+                for(var i in deep.context.modes)
+                    if(!arg[i] && deep.context.modes.hasOwnProperty(i))
+                        arg[i] = deep.context.modes[i];
+                deep.context.modes = arg;
                 // console.log("deep.context.mode setted : ",deep.context.mode);  
             };
             func._isDone_ = true;
             deep.chain.addInChain.apply(self,[func]);
             return this;
         });
-        deep.generalMode = function(arg){
+        deep.setModes = function(arg){
             // console.log("generalMode : ", arguments)
             deep.context = deep.utils.simpleCopy(deep.context);
-            if(arguments.length > 1)
-                deep.context.mode = Array.prototype.slice.apply(arguments);
-            else
-            {
-                if(arg instanceof Array)
-                   deep.context.mode = arg;
-                else
-                    deep.context.mode = [arg];
-            }
+            for(var i in deep.context.modes)
+                if(!arg[i] && deep.context.modes.hasOwnProperty(i))
+                    arg[i] = deep.context.modes[i];
+                deep.context.modes = arg;
         };
         //_____________________________________________________________
 
         return deep;
 	};
 });
+
+

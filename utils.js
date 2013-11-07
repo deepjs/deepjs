@@ -181,6 +181,8 @@ define(function(require){
         if(!obj)
             return obj;
 		var res = null;
+		if(typeof obj.clone === 'function')
+			return obj.clone();
 		if(obj.forEach)
 		{
             if(obj._deep_shared_)
@@ -632,6 +634,19 @@ define(function(require){
 				parent[key] = null;
 			return null;
 		}
+		if(target && target._deep_upper_)
+		{
+			target.up(src);
+			return target;
+		}
+		if(src && src._deep_upper_)
+		{
+			src = src.clone();
+			src.bottom(target);
+			if(parent)
+				parent[key] = src;
+			return src;
+		}
 		// console.log("deepUp : objects not nulls.")
 		var result = null;
 		var srcType = utils.getJSPrimitiveType(src);
@@ -767,7 +782,7 @@ define(function(require){
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
-		// console.log("utils.bottom : objects ", src, target)
+		//console.log("utils.bottom : objects ", src, target)
         // if(src && src._deep_shared_)
           //   console.log("got botom shared");
 		if(src === null || typeof src === "undefined")
@@ -781,6 +796,21 @@ define(function(require){
 			if(parent && key)
 				parent[key] = target;
 			return target;
+		}
+		if(target._deep_upper_ && target.bottom)
+		{
+			//console.log("bottom on _deep_upper_");
+			target.bottom(src);
+			return target;
+		}
+		if(src && src._deep_upper_)
+		{
+			//console.log("bottom on _deep_upper_");
+			src = src.clone();
+			src.up(target);
+			if(parent)
+				parent[key] = src;
+			return src;
 		}
 		//console.log("utils.bottom : objects not nulls.")
 		var result= null;
