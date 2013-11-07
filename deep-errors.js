@@ -151,6 +151,13 @@ define(function(require)
 				error.report = report;
 				error.toString = toString;
 				return error;
+			},
+			Login:function  (msg, report, fileName, lineNum) {
+				var error = new Error("LoginError : "+msg, fileName, lineNum);
+				error.status = 400;
+				error.report = report;
+				error.toString = toString;
+				return error;
 			}
 		};
 		return deep;
