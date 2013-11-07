@@ -116,12 +116,10 @@ define(function defineDeepQuery(require)
 					return [];*/
 					return self.returnAllProps(parent);
 				}
-			})
-		if(console.flags && console.flags["deep-query"])
-		{
-			console.log("dq analayse : ", path);
-			console.log(" : gives : "+JSON.stringify(paths, null, ' '));
-		}
+			});
+		
+		//console.log("dq analayse : ", path);
+		//console.log(" : gives : "+JSON.stringify(paths, null, ' '));
 		return paths;
 	};
 
