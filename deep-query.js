@@ -65,8 +65,8 @@ define(function defineDeepQuery(require)
 				{
 					//if(!parent.value.hasOwnProperty(i))
 					//	continue;
-					if(i == "_deep_entry")
-						continue;
+					//if(i == "_deep_entry")
+					//	continue;
 					if(new RegExp(this.value,this.options).test(i))
 					{
 						var filtered = self.returnProperty(parent, i);
@@ -343,8 +343,8 @@ define(function defineDeepQuery(require)
 		return r;
 	};
 	DQ.prototype.returnProperty = function dqreturnProperty(entry, key){
-		if(key == "_deep_entry")
-			return null;
+		//if(key == "_deep_entry")
+		//	return null;
 		if(typeof entry.value === 'string' && key !== 'length')
 			return null;
 		var obj = entry.value;
@@ -365,7 +365,7 @@ define(function defineDeepQuery(require)
 		var childs = [];
 		for(var i in obj)
 		{
-			if(i == "_deep_entry" || i == "_deep_shared_")
+			if( i == "_deep_shared_")
 				continue;
 			if(!obj.hasOwnProperty(i))
 				continue;
@@ -386,8 +386,8 @@ define(function defineDeepQuery(require)
 		{
 			if(!obj.hasOwnProperty(i))
 				continue;
-			if(i == "_deep_entry")
-				continue;
+			//if(i == "_deep_entry")
+			//	continue;
 			var child = self.createEntry(i, entry);
 			if(typeof child !== "undefined")
 				childs.push(child);
@@ -643,12 +643,12 @@ define(function defineDeepQuery(require)
 			this.root = this.cache["/"] = obj.root || obj;
 			items = [obj];
 		}
-		else if(obj._deep_entry)
+		/*else if(obj._deep_entry)
 		{
 			//console.log("DQ : start with object with _deep_entry ")
 			this.root = this.cache["/"] = obj._deep_entry.root;
 			items = [obj._deep_entry];
-		}
+		}*/
 		else
 		{
 			this.root = this.cache["/"] = DQ.createRootNode(obj, options.schema);
@@ -779,7 +779,7 @@ define(function defineDeepQuery(require)
 				else
 					for(var i in value)
 					{
-						if(!value.hasOwnProperty(i) || i == "_deep_entry" || typeof value[i] !== 'object' )
+						if(!value.hasOwnProperty(i) || typeof value[i] !== 'object' )
 							continue;
 						ok = searchProp(DQ.createEntry(i, entry));
 						if(ok)
@@ -919,7 +919,7 @@ define(function defineDeepQuery(require)
                 for(var i in v)
                 {
                     var va = v[i];
-                    if(i == "_deep_entry" || typeof va !== 'object' || i == property || !v.hasOwnProperty(i) || (typeof jQuery !== 'undefined' && va instanceof jQuery))
+                    if(typeof va !== 'object' || i == property || !v.hasOwnProperty(i) || (typeof jQuery !== 'undefined' && va instanceof jQuery))
                         continue;
                     r.unshift({ path:current.path+i+'/', value:va });
                 }
@@ -987,7 +987,7 @@ define(function defineDeepQuery(require)
                 for(var i in v)
                 {
                     var va = v[i];
-                    if(i == "_deep_entry" || typeof va !== 'object')
+                    if( typeof va !== 'object')
                         continue;
                     r.unshift({ path:current.path+i+'/', value:va });
                 }
@@ -1021,7 +1021,7 @@ define(function defineDeepQuery(require)
                 for(var i in v)
                 {
                     var va = v[i];
-                    if(i == "_deep_entry" || typeof va !== 'object')
+                    if( typeof va !== 'object')
                         continue;
                     stack.push({ path:current.path+i+'/', value:va });
                 }

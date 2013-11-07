@@ -33,11 +33,11 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     h.store(obj);
                     deep.Store.extendsChain(h);
                 }
-                else if (obj && obj._deep_entry)
+                /*else if (obj && obj._deep_entry)
                 {
                     r = obj._deep_entry.value;
                     h._nodes = [obj._deep_entry];
-                }
+                }*/
                 else
                     h._nodes = [deep.Querier.createRootNode(obj, schema, options)];
                 h._root = h._nodes[0];
@@ -1000,17 +1000,12 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 self._nodes.forEach(function (e) {
                     var val = e;
                     var entry = null;
-                    if (e.value) {
-                        entry = e.value._deep_entry;
-                        delete e.value._deep_entry;
-                    }
+                    
                     if (!options.full)
                         val = e.value;
                     if (options.pretty)
                         val = JSON.stringify(val, null, ' ');
                     console.log("\t- entry : (" + e.path + ") : ", val);
-                    if (entry && e.value)
-                        e.value._deep_entry = entry;
                 });
             };
             return addInChain.apply(this, [func]);
