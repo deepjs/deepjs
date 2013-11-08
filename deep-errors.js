@@ -20,6 +20,20 @@ define(function(require)
 	return function(deep)
 	{
 		deep.errors = {
+			Error:function(status, msg, report, fileName, lineNum){
+				var error = new Error(msg, fileName, lineNum);
+				error.status = status;
+				error.report = report;
+				error.toString = toString;
+				return error;
+			},
+			MethodNotAllowed:function(msg, report, fileName, lineNum){
+				var error = new Error(msg, fileName, lineNum);
+				error.status = 405;
+				error.report = report;
+				error.toString = toString;
+				return error;
+			},
 			Internal:function(msg, report, fileName, lineNum){
 				var error = new Error(msg, fileName, lineNum);
 				error.status = 500;
