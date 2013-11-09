@@ -343,18 +343,19 @@ return function(deep){
                     }
                 },
                 patch:function (content, opt) {
+                    //console.log("ObjectSheet patch : ", content, opt);
                     opt = opt || {};
                     deep.utils.decorateUpFrom(this, opt, ["baseURI"]);
                     opt.id = opt.id || content.id;
                     if(!opt.id)
                         return deep.when(deep.errors.Patch("json stores need id on PATCH"));
-                    //console.log("patch : ", content, opt);
                     var self = this;
                     return self.get(opt.id, opt)
                     .fail(function(error){
                         return deep.when(deep.errors.Patch("object doesn't exists : please POST in place of PATCH. path : "+opt.id, error));
                     })
                     .done(function(data){
+                        //console.log("patch : get object : ", data);
                         data = deep.utils.copy(data);
                         if(opt.query)
                         {
