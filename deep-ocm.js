@@ -76,10 +76,10 @@ define(["require"], function (require){
                 return compiled;
             };
             //deep.ocm.instances.push(m);
-            if(options.protocole)
+            if(options.protocol)
             {
-                m.name = options.protocole;
-                deep.protocoles[options.protocole] = m;
+                m.name = options.protocol;
+                deep.protocoles[options.protocol] = m;
             }
             m._deep_ocm_ = true;
             m._deep_upper_ = true;

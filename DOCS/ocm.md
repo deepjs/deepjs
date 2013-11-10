@@ -77,6 +77,7 @@ console.log("mode2 + mode1 : ", myManager("mode2", "mode1"));
 
 ```
 
+Remarque : 'Compilation' of resulted object is done only once and kept securely in closures.
 
 ## Mode group, context and hierarchy
 
@@ -164,11 +165,11 @@ console.log("deep.context.modes : ", deep.context.modes); // => {}
 
 ## Associate OCM with deep-protocol
 
-Depending on what you want to obtain through protocol.
+Depending on what you want to obtain through protocol...
 
 ### Object store on ocm.
 
-When you want to obtain a simple queriable object, which has a structure depending on a certain mode and usable from anywhere, you could simply use an OCM manager as root of an object store.
+When you want to obtain a simple queriable object, which has a structure depending on a certain mode and usable from anywhere, you could simply use an OCM manager as root of an deep.store.Object store.
 
 ```javascript
 
@@ -225,15 +226,16 @@ deep("myprotoc::my_id").log(); //=> "mode1 result for id : my_id"
 
 ```
 
+## Shared objects
 
+## Init after modes 'compilation'
 
 ## when to use OCM
 
-
 ## example for a store (browser or server side)
-
 
 ## example in GUI
 
+## Additive vs. Restrictive Modelisation
 
-# Security consideration
+## Security considerations

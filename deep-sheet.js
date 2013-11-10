@@ -2,7 +2,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","./deep", "./utils"], function (require, deep) {
+define(["require"], function (require, deep) {
     
 return function(deep){
       function getSheeter(obj){
