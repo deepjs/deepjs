@@ -30,13 +30,13 @@ deepjs chain :
 * allows you to select js objects, values and functions with a deep-query
 * and a deep chain handler holds javascript objects, values and functions between call on this handler
 
-Same same... but different... ;)
+Same same... but different...
 
 Now, keep in mind that deep chain it's not just there for sugar-chained-syntax as jquery does principaly.
 
 deep.Chain is mainly there to help you managing asynchrone stuffs.
 
-So as promise's API wait any promise returned from any chained callback before continuing, chain particular API do the same.
+So as promise's API wait resolution of any promise returned from any chained callback before continuing, chain particular API do the same.
 And as much as possible, chain API hides difference between synch and asynch calls.
 
 example :
