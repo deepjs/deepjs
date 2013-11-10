@@ -79,10 +79,7 @@ define(["require"], function (require){
             if(options.protocole)
             {
                 m.name = options.protocole;
-                deep.protocoles[options.protocole] = function(request, opt){
-                    console.log("ocm protocole : ", options.protocole, request.uri, opt);
-                    return deep.query(m(),request.uri, opt);
-                };
+                deep.protocoles[options.protocole] = m;
             }
             m._deep_ocm_ = true;
             m._deep_upper_ = true;

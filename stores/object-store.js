@@ -34,6 +34,7 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
              * @return {deep.Chain} depending on first argument : return an object or an array of objects
              */
             get: function (id, options) {
+                //console.log("deep.storeObject.get : ", id, options);
                 //if(id === "" || !id || id === "*")
                 var root = this.root || this;
                 if(root._deep_ocm_)
@@ -138,9 +139,9 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
             }
         });
 
-        deep.store.Object.create = function(protocole, root, schema)
+        deep.store.Object.create = function(protocole, root, schema, options)
         {
-            return new deep.store.Object(protocole, root, schema);
+            return new deep.store.Object(protocole, root, schema, options);
         };
 
         deep.utils.sheet(deep.store.ObjectSheet, deep.store.Object.prototype);

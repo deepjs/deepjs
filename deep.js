@@ -3064,7 +3064,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 */
     //_________________________________________________________________________________
 
-    require("./deep-protocole")(deep);
+    require("./deep-protocol")(deep);
     require("./deep-sheet")(deep);
     require("./deep-stores")(deep);
     require("./stores/collection-store")(deep);

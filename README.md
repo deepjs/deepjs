@@ -11,7 +11,7 @@ Based on Layered and Chained Programmation approach, it provides, uses and mixes
 * Homogeneous HTTP Rest compliant ressources management
 * Modularisation by Protocole approach
 
-It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework.
+It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous between server and browser sides.
 
 As jquery (that is highly unobstrusive and ergonomic) works on standard DOM objects, deepjs works on standard js objects and functions structures.
 

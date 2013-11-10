@@ -12,7 +12,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require", "./deep", "./deep-protocole", "./deep-sheet"], function (require) {
+define(["require", "./deep", "./deep-protocol", "./deep-sheet"], function (require) {
 
 return function(deep){
 

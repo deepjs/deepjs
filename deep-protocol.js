@@ -33,7 +33,7 @@ define(["require","./deep"], function (require, deep) {
 
     deep.protocole.getStoreHandler = function(protocole)
     {
-        //console.log("deep.protocole.getStoreHandler : protocle : ", protocole);
+        //console.log("deep.protocole.getStoreHandler : protocol : ", protocole);
         var handler = {
             method:"get",
             store:null
