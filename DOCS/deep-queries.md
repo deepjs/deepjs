@@ -16,16 +16,19 @@ could handle ancestor in rql filtering
 ## Queries examples:  the result is always the result of the last step.
 
 /foo/bar/
+
 From root : Select from root the property foo then give me the property bar in it
 
 
 ../foo/bar?zoo.name//price?=in=(12,55)
+
 From ME (somewhere in a json/object) : Give me in my parent the property named foo
 On this, give me 'bar' which has a property 'zoo' which has a property 'name'
 On this give me any price (at any sublevel) equal to 12 or 55
 
 
 //(p.+)gi/../../foo//bar?=3
+
 From root : Give me recursively any property which its name correspond to (p.+)gi.
 on this, take the parent of its parent (if any).
 on this : take 'foo'.
@@ -33,6 +36,7 @@ on this : recursively take any property named bar and equal to 3
 
 
 /?foo=2&bar/(myArray.*)?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&_parent.taxerate=lt=0.12&_schema.type=string
+
 From root : Give me any property. 
 On this : give me those which have a property named foo and equal to 2 AND has a property named bar (different of undefined, null, false, or 0).
 On this : select any property named myArray.* (RegExp) where length > 10.
