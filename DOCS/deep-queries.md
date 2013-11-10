@@ -20,11 +20,13 @@ could handle ancestor in rql filtering
 From root : Select from root the property foo then give me the property bar in it
 
 
+
 ../foo/bar?zoo.name//price?=in=(12,55)
 
 From ME (somewhere in a json/object) : Give me in my parent the property named foo
 On this, give me 'bar' which has a property 'zoo' which has a property 'name'
 On this give me any price (at any sublevel) equal to 12 or 55
+
 
 
 //(p.+)gi/../../foo//bar?=3
@@ -33,6 +35,7 @@ From root : Give me recursively any property which its name correspond to (p.+)g
 on this, take the parent of its parent (if any).
 on this : take 'foo'.
 on this : recursively take any property named bar and equal to 3
+
 
 
 /?foo=2&bar/(myArray.*)?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&_parent.taxerate=lt=0.12&_schema.type=string
@@ -44,6 +47,7 @@ On this : give me property (if any) named 1 or 3 or an index equal to parent.len
 On this : Recursively give me any property where its name correspond to (^p.*)g AND where its value is either 'hello' or 'bye'
 	AND its parent has a property taxerate less than 0,12
 	AND its type is 'string'
+
 
 
 ## Syntaxe
