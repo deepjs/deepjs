@@ -28,150 +28,69 @@ define(function(require)
 				return error;
 			},
 			MethodNotAllowed:function(msg, report, fileName, lineNum){
-				var error = new Error(msg, fileName, lineNum);
-				error.status = 405;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(405, msg, report, fileName, lineNum);
 			},
 			Internal:function(msg, report, fileName, lineNum){
-				var error = new Error(msg, fileName, lineNum);
-				error.status = 500;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(500, msg, report, fileName, lineNum);
 			},
 			PreconditionFail:function(msg, report, fileName, lineNum)
 			{
-				var error = new Error(msg, fileName, lineNum);
-				error.status = 412;
-				error.report = report;
-				error.toString = toString;
-				//console.log("precondition failed : ", error.toString());
-				return error;
+				return this.Error(412, msg, report, fileName, lineNum);
 			},
 			NotFound:function(msg, report, fileName, lineNum)
 			{
-				var error = new Error(msg, fileName, lineNum);
-				error.status = 404;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(404, msg, report, fileName, lineNum);
 			},
 			Forbidden:function(msg, report, fileName, lineNum)
 			{
-				var error = new Error(msg, fileName, lineNum);
-				error.status = 403;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(403, msg, report, fileName, lineNum);
 			},
 			Range:function(msg, report, fileName, lineNum)
 			{
-				var error = new Error(msg, fileName, lineNum);
-				error.status = 416;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(416, msg, report, fileName, lineNum);
 			},
 			Assertion:function(msg, report, fileName, lineNum)
 			{
-				var error = new Error("AssertionError : "+msg, fileName, lineNum);
-				error.status = 412;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(412, msg, report, fileName, lineNum);
 			},
 			Mode:function  (msg, report, fileName, lineNum) {
-				var error = new Error("ModeError : "+msg, fileName, lineNum);
-				error.status = 500;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(500, "ModeError : "+msg, report, fileName, lineNum);
 			},
 			Watch:function  (msg, report, fileName, lineNum) {
-				var error = new Error("FileWatchError : "+msg, fileName, lineNum);
-				error.status = 500;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(500, "FileWatchError : "+msg, report, fileName, lineNum);
 			},
 			Store:function  (msg, report, fileName, lineNum) {
-				var error = new Error("StoreError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.toString = toString;
-				error.report = report;
-				return error;
+				return this.Error(400, "StoreError : "+msg, report, fileName, lineNum);
 			},
 			Protocole:function  (msg, report, fileName, lineNum) {
-				var error = new Error("ProtocoleError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "ProtocoleError : "+msg, report, fileName, lineNum);
 			},
 			OCM:function  (msg, report, fileName, lineNum) {
-				var error = new Error("OCMError : "+msg, fileName, lineNum);
-				error.status = 403;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(403, "OCMError : "+msg, report, fileName, lineNum);
 			},
 			Post:function  (msg, report, fileName, lineNum) {
-				var error = new Error("PostError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "PostError : "+msg, report, fileName, lineNum);
 			},
 			Put:function  (msg, report, fileName, lineNum) {
-				var error = new Error("PutError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "PutError : "+msg, report, fileName, lineNum);
 			},
 			Patch:function  (msg, report, fileName, lineNum) {
-				var error = new Error("PatchError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "PatchError : "+msg, report, fileName, lineNum);
 			},
 			Delete:function  (msg, report, fileName, lineNum) {
-				var error = new Error("DeleteError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "DeleteError : "+msg, report, fileName, lineNum);
 			},
 			RPC:function  (msg, report, fileName, lineNum) {
-				var error = new Error("RPCError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "RPCError : "+msg, report, fileName, lineNum);
 			},
 			ChainEnded:function  (msg, report, fileName, lineNum) {
-				var error = new Error("ChainEndedError : "+msg, fileName, lineNum);
-				error.status = 1001;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(1001, "ChainEndedError : "+msg, report, fileName, lineNum);
 			},
 			ChainListened:function  (msg, report, fileName, lineNum) {
-				var error = new Error("ChainListenedError : "+msg, fileName, lineNum);
-				error.status = 1002;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(1002, "ChainListenedError : "+msg, report, fileName, lineNum);
 			},
 			Login:function  (msg, report, fileName, lineNum) {
-				var error = new Error("LoginError : "+msg, fileName, lineNum);
-				error.status = 400;
-				error.report = report;
-				error.toString = toString;
-				return error;
+				return this.Error(400, "LoginError : "+msg, report, fileName, lineNum);
 			}
 		};
 		return deep;
