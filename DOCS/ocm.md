@@ -197,7 +197,7 @@ deep("myprotoc::/title").log(); //=> "hello mode1"
 ### OCM store
 
 To define a store with a particular behaviour for particular mode(s) (e.g. current user role(s)),
-you could define the OCM manager as a protocol.
+you could define the OCM manager directky with a protocol. (or associate the manager to its protocole later with deep.protocole(name, obj))
 
 ```javascript
 
@@ -228,7 +228,12 @@ deep("myprotoc::my_id").log(); //=> "mode1 result for id : my_id"
 
 ## Shared objects
 
-## Init after modes 'compilation'
+
+## Backgrounds classes instances and constructor/init considerations
+
+example with deep.store.Collection
+
+### Init after modes 'compilation'
 
 ## when to use OCM
 
@@ -236,6 +241,6 @@ deep("myprotoc::my_id").log(); //=> "mode1 result for id : my_id"
 
 ## example in GUI
 
-## Additive vs. Restrictive Modelisation
+## Additive vs. Restrictive modelisation
 
 ## Security considerations
