@@ -1,6 +1,6 @@
 [Back to tutorials](./tutorials.md)
 
-# OCM for the mass
+# OCM made simple.
 
 Keep in mind that OCM, here (in deepjs), means Object Capabilities Manager.
 
