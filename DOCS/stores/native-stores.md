@@ -135,7 +135,6 @@ deep.store("myprotocole")
   {to:"e1", method:"put", body:{title:"updated 2"}, id: 1},
   {to:"e2", method:"put", body:{title:"updated 3"}, id: 2}
 ])
-.log("bulk result : ")
 .log(); 
 /*
 output
