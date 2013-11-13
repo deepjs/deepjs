@@ -173,14 +173,12 @@ the result injected in chain (that you could see with .log()) is an RangeResult 
  ```javascript
 
 var res = {
-	total:total,
-	start:0,
-	end:0,
-	hasNext:false,
-	hasPrevious:false,
-	next:function (width),
-	previous:function (width),
-	update:function (start, end, total)
+	total:4,
+	start:1,
+	end:2,
+	count:2
+	hasNext:true,
+	hasPrevious:true
 };
 
  ```
