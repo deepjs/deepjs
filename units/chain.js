@@ -52,7 +52,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     d.log(); // error : chain was ended
                 })
                 .fail(function(e){
-                console.log("eneded chain error : ", e.status);
+                console.log("ended chain error : ", e.status);
                     if(e.status === 1001)
                         return true;
                 });
