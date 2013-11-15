@@ -411,7 +411,7 @@ define(function(require, exports, module){
 			var args = arguments;
 			function Constructor(){
 				// console.log("Compose Classes constructor : ", this);
-				for(var i in args)
+				for(var i = 0; i < args.length; ++i)
 				{
 					var cl = args[i];
 					if(typeof cl === 'function')
@@ -423,7 +423,7 @@ define(function(require, exports, module){
 				}
 			}
 			var prototype = {};
-			for(var i in args)
+			for(var i = 0; i < args.length; ++i)
 			{
 				var cl = args[i];
 				if(typeof cl === 'function')
