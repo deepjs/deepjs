@@ -13,9 +13,9 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
         setup:function(){},
         tests : {
             delayed_arg_injection:function(){
-                return deep.when(deep(" world ").delay(5))
-                .then(function(arg){
-                    return deep.when(deep(1).delay(6))
+                return deep.when(deep.when(" world ").delay(5))
+                .done(function(arg){
+                    return deep.when(deep.when(1).delay(6))
                     .then(function(arg2){
                         return "hello"+arg+arg2;
                     });
