@@ -6,7 +6,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors", "./deep-stores", "./deep-ocm", "./stores/collection-store", "./stores/object-store"], function (require) {
+define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors", "./deep-stores", "./deep-ocm", "./stores/collection-store", "./stores/object-store", "./deep-protocol", "./deep-sheet"], function (require) {
     deep = function deepStart(obj, schema, options) {
         //console.log("start chain : ", obj)
         //if(obj && obj._deep_chain_ && obj.oldQueue)
@@ -347,7 +347,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      */
     deep.all = function deepAll() {
         var arr = [];
-        for (var i in arguments)
+        for (var i  = 0; i < arguments.length; ++i)
             arr = arr.concat(arguments[i]);
         if (arr.length === 0)
             return deep.promise.immediate([]);
@@ -472,6 +472,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         options = options || {};
         this._context = deep.context;
         this._queue = [];
+        this.oldQueue = null;
+        
         this._deep_promise_ = true;
         this._running = false;
         this._executing = false;
@@ -774,6 +776,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         this._deep_chain_ = true;
         this._context = options._context || deep.context;
         this._queue = [];
+        this.oldQueue = null;
         this._queried = options._queried;
         this._nodes = options._nodes; // || [deep.Querier.createRootNode(this._value, options.schema, options)];
         this._success = options._success || null;
@@ -2771,7 +2774,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return res;
         },
         clear: function utilsClear(handler) {
-            handler.oldQueue = [];
+            handler.oldQueue = null;
             handler.callQueue = [];
             return handler;
         },
