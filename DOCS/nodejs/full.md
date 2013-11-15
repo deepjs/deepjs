@@ -5,7 +5,7 @@ node more complex example
 
 ```javascript
 	var http = require('http'),
-		deep = require("deep");
+		deep = require("deepjs");
 	require("deep-swig").createDefault();
 
 	//______________________________________________________ schema
