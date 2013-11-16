@@ -58,6 +58,54 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 				});
 				return deep.when([myManager("mode1", "mode2"), myManager("mode2", "mode1")])
 				.equal([ { test:1, title:"hello world"}, { title:"hello world", test:1 }]);
+			},
+			setGroup:function()
+			{
+				var myManager = deep.ocm({
+					mode1:{
+						test:1
+					},
+					mode2:{
+						title:"hello world"
+					}
+				});
+
+				myManager.group("myGroup");
+
+
+				deep.setModes({ "myGroup":["mode2", "mode1"]}); // set modes in current deep.context
+
+
+				return deep.modes({ "myGroup":"mode1" }) // start a chain with provided modes
+				.delay(5)
+				.done(function(success){
+					return myManager();
+				})
+				.equal({test:1})
+				.modes({ "myGroup":"mode2"} )
+				.delay(5)
+				.done(function(success){
+					return myManager();
+				})
+				.equal({ title:"hello world"});
+			},
+			groupCollection:function(){
+				return deep.modes({
+					group1:"mode1"
+				})
+				.done(function(success){
+					return deep.modes({ group2:"mode2" })
+					.delay(5)
+					.done(function(success){
+						return deep.context.modes;
+					})
+					.equal({ group2:"mode2", group1:"mode1" });
+				})
+				.delay(5)
+				.done(function(success){
+					return deep.context.modes;
+				})
+				.equal({ group1:"mode1" });
 			}
         }
     };
