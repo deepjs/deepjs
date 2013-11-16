@@ -26,7 +26,7 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
             /**
              * @method init
              */
-            init: deep.compose.parallele(function () {
+            init: deep.compose.after(function () {
                 var self = this;
                 //console.log("deep.store.Collection.init : this.collection : ", this.collection, " - this.schema : ", this.schema);
                 this.collection = this.collection || [];

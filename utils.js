@@ -431,6 +431,7 @@ define(function(require){
 
 	utils.deepEqual = function deepEqual(a,b, ordered)
 	{
+		//console.log("deepEqual : ",JSON.stringify(a),JSON.stringify(b));
 		if(ordered === undefined)
 			ordered = true;
 		if(typeof a !== typeof b)
@@ -441,35 +442,54 @@ define(function(require){
 				return false;
 			if(b === null && a !== b)
 				return false;
+
 			var ok = true;
 			var tmpA = [];
 			var tmpB = [];
-			for(var i in b)
-			{
-				//if(i == "_deep_entry")
-				//	continue;
-				if(!b.hasOwnProperty(i))
-					continue;
-				if(typeof a[i] === 'undefined')
-					return false;
-				ok = ok && utils.deepEqual(a[i], b[i]);
-				if(!ok)
-					return false;
-				tmpB.push(i);
-			}
-			for(var i in a)
-			{
-				//if(i == "_deep_entry")
-				//	continue;
-				if(!a.hasOwnProperty(i))
-					continue;
-				tmpA.push(i);
-			}
-			if(tmpA.length != tmpB.length)
+
+            if(typeof a.forEach === 'function')
+            {
+                if(typeof b.forEach !== 'function' ||  a.length !== b.length)
+                    return false;
+                var count = 0;
+                ok = ok && a.every(function(e){
+                    return utils.deepEqual(e, b[count++]);
+                });
+                if(!ok)
+                    return false;
+            }
+            else
+            {
+                for(var i in b)
+                {
+                    //console.log("deepEqual :b[i] : ",i);
+                    //if(i == "_deep_entry")
+                    //	continue;
+                    if(!b.hasOwnProperty(i))
+                        continue;
+                    if(typeof a[i] === 'undefined')
+                        return false;
+                    ok = ok && utils.deepEqual(a[i], b[i]);
+                    if(!ok)
+                        return false;
+                    tmpB.push(i);
+                }
+                for(var i in a)
+                {
+                    //console.log("deepEqual :a[i] : ",i);
+                    //if(i == "_deep_entry")
+                    //	continue;
+                    if(!a.hasOwnProperty(i))
+                        continue;
+                    tmpA.push(i);
+                }
+            }
+			if(tmpA.length !== tmpB.length)
 				return false;
+            //console.log("will try ordered : ", JSON.stringify(tmpB), JSON.stringify(tmpA))
 			if(ordered)
 				for(var j = 0; j < tmpB.length; ++j)
-					if(tmpB[j] != tmpA[j])
+					if(tmpB[j] !== tmpA[j])
 						return false;
 		}
 		else if(a !== b)

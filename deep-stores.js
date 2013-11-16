@@ -34,9 +34,10 @@ return function(deep){
     
         deep.store = function (name) {
             //	console.log("deep.store(name) : ",name)
-            return deep(deep.protocole.getStoreHandler(name)).transform(function(handler){
+            return deep(deep.protocole.getStoreHandler(name).store)
+            /*.transform(function(handler){
                 return handler.store;
-            })
+            })*/
             .store(name);
         };
 
