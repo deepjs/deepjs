@@ -11,6 +11,10 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
         title:"deep/units/chain",
         stopOnError:false,
         tests : {
+            promise_on_chain:function(){
+                return deep.when(deep("hello").delay(5))
+                .equal("hello");
+            },
             delayed_run_return:function(){
                 return deep({
                     a:true
