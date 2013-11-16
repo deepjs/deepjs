@@ -75,6 +75,124 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .run()
                 .query("/res")
                 .equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"]);
+            },
+            after:function(){
+                var closure = { test:"" };
+                var a = {
+                    test:function(){
+                        closure.test += "hello test";
+                        return closure.test;
+                    }
+                };
+                var b = {
+                    test:deep.compose.after(function(){
+                        closure.test += " : after";
+                        return closure.test;
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep.when(a.test())
+                .equal("hello test : after");
+            },
+            delayed_after:function(){
+                var closure = { test:"" };
+                var a = {
+                    test:function(){
+                        closure.test += "hello test";
+                        return deep.when(closure.test).delay(2);
+                    }
+                };
+                var b = {
+                    test:deep.compose.after(function(){
+                        closure.test += " : after";
+                        return deep.when(closure.test).delay(1);
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep.when(a.test())
+                .equal( "hello test : after" );
+            },
+            around:function(){
+                var a = {
+                    test:function(){
+                        return "test";
+                    }
+                };
+                var b = {
+                    test:deep.compose.around(function(old){
+                        return function(){
+                            return "hello "+ old.apply(this) + " around";
+                        };
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep.when(a.test())
+                .equal("hello test around");
+            },
+            before:function(){
+                var closure = { test:"" };
+                var a = {
+                    test:function(){
+                        closure.test += "hello test";
+                    }
+                };
+                var b = {
+                    test:deep.compose.before(function(){
+                        closure.test += "before : ";
+                    })
+                };
+                deep.utils.up(b,a);
+                a.test();
+                return deep(closure.test)
+                .equal("before : hello test");
+            },
+            delayed_before:function(){
+                var closure = { test:"" };
+                var a = {
+                    test:function(){
+                        closure.test += "hello test";
+                        return deep(closure.test).delay(1);
+                    }
+                };
+                var b = {
+                    test:deep.compose.before(function(){
+                        closure.test += "before : ";
+                        return deep(closure.test).delay(1);
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep.when(a.test())
+                .equal("before : hello test");
+            },
+            parallele:function(){
+                var a = {
+                    test:function(){
+                        return "hello test";
+                    }
+                };
+                var b = {
+                    test:deep.compose.parallele(function(){
+                        return "hello parallele";
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep.when(a.test())
+                .equal(["hello parallele", "hello test"]);
+            },
+            delayed_parallele:function(){
+                var a = {
+                    test:function(){
+                        return deep.when("hello test").delay(2);
+                    }
+                };
+                var b = {
+                    test:deep.compose.parallele(function(){
+                        return deep.when("hello parallele").delay(3);
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep.when(a.test())
+                .equal(["hello parallele", "hello test"]);
             }
         }
     };
