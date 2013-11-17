@@ -5,27 +5,26 @@
   "description"   : "Powerful atomic tools for managing objects, functions and promises",
   "homepage"      : "http://www.deepjs.org",
   "keywords"      : ["util", "promise", "asynch", "AOP", "query", "composition", "server", "client", "browser", "restful", "OCM"],
+  "contributors": ["Philippe Delabye <phil@chemicalrules.net>"],
   "licenses": [
-    "LGPL 3.0"
-  ],
-  "maintainers": [
     {
-      "name": "Philippe Delabye",
-      "email": "phil@chemicalrules.net"
-    }
+         "type": "LGPLv3.0",
+         "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
+     }
   ],
+  "directories": {
+    "lib": "."
+  },
   "repository": {
     "type":"git",
     "url":"https://github.com/deepjs/deepjs.git"
   },
   "dependencies": {
-    "rql": "*",
+    "rql": ">=0.3.1",
     "amdefine":"*"
   },
   "main": "./deep.js",
   "mappings":{
-    "rql": "http://github.com/kriszyp/rql/zipball/v0.3.1",
-    "amdefine":"*"
   },
   "engines": {
         "node": ">=0.10.0"

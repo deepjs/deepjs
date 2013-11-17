@@ -1,15 +1,15 @@
 #deepjs
 
-deepjs is a set of tools for managing standard javascript functions, objects and promises.
+deepjs is a set of tools for managing standard javascript functions, objects, persistent collections and promises.
 
 Based on Layered and Chained Programmation approach, it provides, uses and mixes : 
 
 * Layered Aspect Oriented Programmation
 * Query Based Programmation including Code Sheet
 * Object Capabilities Management (or Model)
-* Full Promised and Chained asynch management
-* Homogeneous HTTP Rest compliant ressources management
-* Modularisation by Protocole approach
+* Full promised and chained asynch management
+* Homogeneous HTTP/Rest ressources management
+* Modularisation by Protocol approach
 
 It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous between server and browser sides.
 
@@ -17,15 +17,12 @@ As jquery (that is highly unobstrusive and ergonomic) works on standard DOM obje
 
 See [tutorials](./DOCS/tutorials.md) page for details.   
 
-Despite of the state of documentations and too few tescases, deep has now achieved a certain kind of maturity and stability.
-It is born through years of work and ideas, and has been named differently through its long history...
+Despite of documentations state and too few tescases, deep has now achieved a certain kind of maturity and stability. It is born through years of work and ideas, and has been named differently through its long history...
 
 Real huge thanks to [Kris Zyp](https://github.com/kriszyp) and all his incredible work on promises, json-schema, compositions, RQL, OCM, Persvr, etc.
 Thanks also a lot to his bunch of articles on Thin-Server, No-SQL, mVC, etc. and all those realy smart architecural considerations that lead us trough our research...
 
-Without him, deepjs were impossible.
-
-We are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, a full, totaly new and almost battle ready, astonishing web 3.0 plateform that we know you will realy enjoy.
+We are now polishing last little things and working hard on documentation and testcases to provide, as quick as possible, an astonishing, totaly new and almost battle ready web 3.0 plateform that we know you will realy enjoy.
 
 deepjs : simply made with love. 
 
@@ -70,7 +67,6 @@ or
 http://127.0.0.1:1337/?title=deepjs
 or
 http://127.0.0.1:1337/?count=lt=2
-
 
 
 ## Layered Aspect Oriented and Query Based programmation
@@ -134,7 +130,7 @@ http://127.0.0.1:1337/?count=lt=2
 
 ```
 
-
+See [tutorials](./DOCS/tutorials.md) page for details.   
 
 
 
