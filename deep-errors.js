@@ -33,25 +33,29 @@ define(function(require)
 			Internal:function(msg, report, fileName, lineNum){
 				return this.Error(500, msg, report, fileName, lineNum);
 			},
-			PreconditionFail:function(msg, report, fileName, lineNum)
-			{
+			PreconditionFail:function(msg, report, fileName, lineNum){
 				return this.Error(412, msg, report, fileName, lineNum);
 			},
-			NotFound:function(msg, report, fileName, lineNum)
-			{
+			NotFound:function(msg, report, fileName, lineNum){
 				return this.Error(404, msg, report, fileName, lineNum);
 			},
-			Forbidden:function(msg, report, fileName, lineNum)
-			{
+			Forbidden:function(msg, report, fileName, lineNum){
 				return this.Error(403, msg, report, fileName, lineNum);
 			},
-			Range:function(msg, report, fileName, lineNum)
-			{
+			Range:function(msg, report, fileName, lineNum){
 				return this.Error(416, msg, report, fileName, lineNum);
 			},
-			Assertion:function(msg, report, fileName, lineNum)
-			{
-				return this.Error(412, msg, report, fileName, lineNum);
+			Conflict:function  (msg, report, fileName, lineNum) {
+				return this.Error(409, "ConflictError : "+msg, report, fileName, lineNum);
+			},
+			Unsupported:function  (msg, report, fileName, lineNum) {
+				return this.Error(415, "UnsupportedMediaTypeError : "+msg, report, fileName, lineNum);
+			},
+			NotAcceptable:function  (msg, report, fileName, lineNum) {
+				return this.Error(406, "NotAcceptableError : "+msg, report, fileName, lineNum);
+			},
+			Unauthorized:function  (msg, report, fileName, lineNum) {
+				return this.Error(401, "UnauthorizedError : "+msg, report, fileName, lineNum);
 			},
 			Mode:function  (msg, report, fileName, lineNum) {
 				return this.Error(500, "ModeError : "+msg, report, fileName, lineNum);
