@@ -143,7 +143,7 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                     col = this.collection();
                 var res = deep.query(col, "./*?id=" + object.id);
                 if (res && res.length > 0)
-                    return deep.when(deep.errors.Store("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
+                    return deep.when(deep.errors.Conflict("deep.store.Collection.post : An object has the same id before post : please put in place : object : ", object));
                 col.push(object);
                 return deep.when(object);
             },
