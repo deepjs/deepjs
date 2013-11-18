@@ -64,6 +64,10 @@ return function(deep){
             }
         };
       
+        deep.Store.forbidden = function(any, options)
+        {
+            return deep.when(deep.errors.Forbidden());
+        };
 
         //______________________________________________________________________ CHAIN DECORATION
         deep.Chain.addHandle("store", function (name) {
