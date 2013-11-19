@@ -7,7 +7,7 @@ node simple
 ```javascript
 
 var http = require('http');
-var deep = require('deep');
+var deep = require('deepjs');
 
 deep.store.Collection.create("myobjects", []);
 
