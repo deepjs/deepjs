@@ -620,7 +620,7 @@ define(function(require){
 			if(!map[val])
 				arr.push(a);
 			else if(fromBottom)
-				arr[map[val].index] = utils.bottom(a, map[val].ref, itemsSchema);
+				arr[map[val].index] = utils.bottom(map[val].ref, a, itemsSchema);
 			else
 				arr[map[val].index] = utils.up(a, map[val].ref, itemsSchema);
 		});
@@ -899,24 +899,6 @@ define(function(require){
 						parent[key] = src;
 
                 }*/
-				/*
-				
-				var oldProps = {};
-				for(var i in target)
-				{
-					//if(i == "_deep_entry")
-					//	continue;
-					oldProps[i] = target[i];
-					delete target[i];
-				}
-				for(i in src)
-				{
-					//if(i == "_deep_entry")
-					//	continue;
-                    //console.log("bottom : copy source : ",src[i])
-					target[i] = utils.copy(src[i]);
-				}
-				*/
 			
 				for(var i in src)
 				{
@@ -957,33 +939,6 @@ define(function(require){
 					target[i] = copied[i];
 				}
 				//console.log("bottom result : ", target);
-				/*for(i in oldProps)
-				{
-                    //console.log("i of oldprops in bottom : ", i)
-                    //if(oldProps[i] && oldProps[i]._deep_shared_)
-                      //  console.log("____________ got shared at bottom object");
-                     var oldProperty = oldProps[i];
-                     var targetProp = target[i];
-					//if(i == "_deep_entry")
-					//	continue;
-					if(oldProperty === null)
-					{
-						target[i] = null;
-						continue;
-					}
-					if(oldProperty && oldProperty._deep_colliderRemove)
-					{
-						delete target[i];
-						continue;
-					}
-					var sch = {};
-					if(schema)
-						sch = retrieveFullSchemaByPath(schema, i);
-					if(typeof oldProperty === 'object' || typeof oldProperty === 'function')
-						target[i] = utils.up(oldProperty, targetProp, sch, target, i);
-					else //if(typeof targetProp === 'undefined')
-						target[i] = oldProperty;
-				}*/
 				return target;
 			default :
 				return target;
