@@ -81,6 +81,39 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                   }
                  ]
                 });
+            },
+            bottom_deep_ocm_:function(){
+              var autre = {
+                  test:{
+                      b:{
+                          yee:true
+                      }
+                  }
+              };
+              var obj = {
+                  backgrounds:[autre],
+                  test:deep.ocm({
+                      a:{
+                          title:"hello a"
+                      },
+                      b:{
+                          backgrounds:["this::../a"],
+                          titleb:"bye"
+                      }
+                  })
+              };
+
+              var tt = obj.test;
+
+              return deep(obj)
+              .flatten()
+              .done(function(success){
+                  return obj.test.flatten();
+              })
+              .done(function(success){
+                  return tt("b");
+              })
+              .equal( { title:"hello a", yee:true, titleb:"bye"} );
             }
         }
     };
