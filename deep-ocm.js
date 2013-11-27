@@ -44,7 +44,7 @@ define(["require"], function (require){
                         });
                     if(res === null)
                     {
-                        console.warn("OCM : no associate mode found with : ", modes, " for protocole : ", protocole);
+                        console.warn("OCM : no associate mode found with : ", modes, " for protocole : ", options.protocol);
                         return {};
                     }
                     return res;
