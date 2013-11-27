@@ -193,7 +193,89 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 deep.utils.up(b,a);
                 return deep.when(a.test())
                 .equal(["hello parallele", "hello test"]);
+            },
+            before_alone:function(){
+                var a = {
+                    test:deep.compose.before(function(){
+                        return "hello";
+                    })
+                };
+                return deep.when(a.test()).equal("hello");
+            },
+            before_alone_with_arg:function(){
+                var a = {
+                    test:deep.compose.before(function(arg){
+                        return "hello";
+                    })
+                };
+                return deep.when(a.test()).equal("hello");
+            },
+            before_replace_arg:function(){
+                var b = {
+                    test:function(arg){
+                       return "hello : "+arg;
+                    }
+                };
+                var a = {
+                    test:deep.compose.before(function(arg){
+                       return "weee";
+                    })
+                };
+
+                deep.utils.bottom(b, a);
+
+                return deep.when(a.test("bloup")).equal("hello : weee");
+            },
+             before_dont_replace_arg:function(){
+                var b = {
+                    test:function(arg){
+                       return "hello : "+arg;
+                    }
+                };
+                var a = {
+                    test:deep.compose.before(function(arg){
+                       // return nothing so arg are forwarded
+                    })
+                };
+
+                deep.utils.bottom(b, a);
+
+                return deep.when(a.test("bloup")).equal("hello : bloup");
+            },
+            after_forward_result : function(){
+                var b = {
+                    test:function(arg){
+                       return "hello : "+arg;
+                    }
+                };
+                var a = {
+                    test:deep.compose.after(function(arg){
+                       // return nothing so result are not changed
+                    })
+                };
+
+                deep.utils.bottom(b, a);
+
+                return deep.when(a.test("bloup")).equal("hello : bloup");
+            },
+            after_receive_forwarded_arg:function(){
+                var b = {
+                    test:function(arg){
+                       return "hello : "+arg;
+                    }
+                };
+                var a = {
+                    test:deep.compose.after(function(arg){
+                        return arg+"!";
+                    })
+                };
+
+                deep.utils.bottom(b, a);
+
+                return deep.when(a.test("bloup")).equal("hello : bloup!");
             }
+
+
         }
     };
 

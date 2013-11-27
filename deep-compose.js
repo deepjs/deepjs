@@ -53,34 +53,23 @@ define(function(require, exports, module){
 			var args = arguments;
 			var def = deep.Deferred();
 			var r = before.apply(this, args);
-			//console.log("chain.first : result == ", r)
+			console.log("chain.first : result == ", r);
 
-			if(typeof r === 'undefined')
+			if(typeof r === 'undefined' || !r.then)
 			{
-				//console.log("chain.first : result == undefined")
-				r = after.apply(self,args);
-				//console.log("chain.second : result : ", r)
-				if(typeof r === 'undefined')
+				var subarg = args;
+				if(r && !r.then)
+					subarg = [r];
+				var r2 = after.apply(self,subarg);
+				if(typeof r2 === 'undefined')
 					return r;
-				if(!r.then)
-					return r;
-				deep.when(r)
-				.done(function (suc) {
-					def.resolve(suc);
-				}).fail(function (error) {
-					def.reject(error);
-				});
-			}
-			else if(r && !r.then)
-			{
-				r = after.apply(self,[r]);
-				if(typeof r === 'undefined')
-					return r;
-				if(!r.then)
-					return r;
-				deep.when(r)
+				if(!r2.then)
+					return r2;
+				deep.when(r2)
 				.done(function (suc) {
 					//	console.log("chain.second.deep.when : result : ", suc)
+					if(typeof suc === "undefined")
+						return def.resolve(r);
 					def.resolve(suc);
 				}).fail(function (error) {
 					def.reject(error);
@@ -96,12 +85,14 @@ define(function(require, exports, module){
 					var argus = args ;
 					if(typeof r !== 'undefined' )
 						argus = [r];
-					r = after.apply(self,argus);
-					if(typeof r === 'undefined' )
+					var r2 = after.apply(self,argus);
+					if(typeof r2 === 'undefined' )
 						return	def.resolve(r);
-					if(!r.then)
-						return def.resolve(r);
-					deep.when(r).then(function (suc) {
+					if(!r2.then)
+						return def.resolve(r2);
+					deep.when(r2).then(function (suc) {
+						if(typeof suc === "undefined")
+							return def.resolve(r);
 						def.resolve(suc);
 					}, function (error) {
 						def.reject(error);
@@ -352,8 +343,8 @@ define(function(require, exports, module){
 		decorator = decorator || new Composer();
 		var start = function start() {
 			//if(!decorator.createIfNecessary)
-			//	throw new Error("Decorator not applied ! (start)");
-			return compose.wrap(function(){}, decorator).apply(this, arguments);
+				//throw new Error("Decorator not applied ! (start)");
+			return compose.wrap(function(arg){ return arg; }, decorator).apply(this, arguments);
 		};
 		start.decorator = decorator;
 		start.after = function startAfter(argument) {
