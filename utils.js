@@ -899,6 +899,8 @@ define(function(require){
 						parent[key] = src;
 
                 }*/
+				/*
+				
 				var oldProps = {};
 				for(var i in target)
 				{
@@ -914,8 +916,48 @@ define(function(require){
                     //console.log("bottom : copy source : ",src[i])
 					target[i] = utils.copy(src[i]);
 				}
+				*/
+			
+				for(var i in src)
+				{
+					if(!src.hasOwnProperty(i))
+						continue;
+					if(src[i] !== null)
+					{
+						var sch = {};
+						if(schema)
+							sch = retrieveFullSchemaByPath(schema, i);
+						if(typeof target[i] === 'undefined')
+							target[i] = utils.copy(src[i]);
+						else if(typeof src[i] === 'object' || typeof src[i] === 'function')
+							target[i] = utils.bottom(src[i], target[i], sch, target, i);
+					}
+				}
+				//console.log("bottom will copy : ", target, " - src : ", src);
+				var copied = utils.simpleCopy(target);
+				//console.log("bottom have copied : ", copied);
+				for(var i in target)
+				{
+					if(!target.hasOwnProperty(i))
+						continue;
+					delete target[i];
+				}
 
-				for(i in oldProps)
+				for(var i in src)
+				{
+					if(!src.hasOwnProperty(i))
+						continue;
+					target[i] = copied[i];
+					delete copied[i];
+				}
+				for(var i in copied)
+				{
+					if(!copied.hasOwnProperty(i))
+						continue;
+					target[i] = copied[i];
+				}
+				//console.log("bottom result : ", target);
+				/*for(i in oldProps)
 				{
                     //console.log("i of oldprops in bottom : ", i)
                     //if(oldProps[i] && oldProps[i]._deep_shared_)
@@ -941,7 +983,7 @@ define(function(require){
 						target[i] = utils.up(oldProperty, targetProp, sch, target, i);
 					else //if(typeof targetProp === 'undefined')
 						target[i] = oldProperty;
-				}
+				}*/
 				return target;
 			default :
 				return target;
