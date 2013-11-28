@@ -802,20 +802,25 @@ define(function(require){
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
-		//console.log("utils.bottom : objects ", src, target)
+		//console.log("utils.bottom : objects ", src.init?true:null, target)
         // if(src && src._deep_shared_)
           //   console.log("got botom shared");
 		if(src === null || typeof src === "undefined")
 			return target;
 		if(target === null)
 			return target;
+		var srcType = utils.getJSPrimitiveType(src);
 		if(typeof target === 'undefined')
 		{
-            //console.log("bottom : target undefined : copy src : ",src)
-			target = utils.copy(src);
-			if(parent && key)
-				parent[key] = target;
-			return target;
+
+           //	console.log("bottom : target undefined : copy src : ",src)
+            if(srcType !== 'function')
+            {
+				target = utils.copy(src);
+				if(parent && key)
+					parent[key] = target;
+				return target;
+			}
 		}
 		if(target._deep_upper_ && target.bottom)
 		{
@@ -832,9 +837,16 @@ define(function(require){
 				parent[key] = src;
 			return src;
 		}
+		if(srcType === 'function' && typeof target === 'undefined')
+		{
+			//console.log("function as asource and target undefined")
+			target = src;
+			if(parent && key)
+				parent[key] = target;
+			return target;
+		}
 		//console.log("utils.bottom : objects not nulls.")
 		var result= null;
-		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
 		// console.log("utils.bottom : objects types : ", srcType, targetType);
 		if ( targetType === 'function')
@@ -892,7 +904,7 @@ define(function(require){
 				//console.log("array fusion bottom rsult : ", result, parent, key)
 				return result;
 			case 'object' :
-				// console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
+				//console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
                 /*if(src && src._deep_shared_)
                 {
                     if(parent && key)
@@ -902,8 +914,10 @@ define(function(require){
 			
 				for(var i in src)
 				{
-					if(!src.hasOwnProperty(i))
+					//console.log("bomttom object : from src try : : ",i);
+					if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
 						continue;
+					//console.log("bomttom object : from src : do : ",i);
 					if(src[i] !== null)
 					{
 						var sch = {};
@@ -921,14 +935,14 @@ define(function(require){
 				var i = null;
 				for(i in target)
 				{
-					if(!target.hasOwnProperty(i))
+					if(!target.hasOwnProperty(i) && typeof target[i] !== 'function')
 						continue;
 					delete target[i];
 				}
 
 				for(i in src)
 				{
-					if(!src.hasOwnProperty(i))
+					if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
 						continue;
 					target[i] = copied[i];
 					delete copied[i];
@@ -936,7 +950,7 @@ define(function(require){
 
 				for(i in copied)
 				{
-					if(!copied.hasOwnProperty(i))
+					if(!copied.hasOwnProperty(i) && typeof copied[i] !== 'function')
 						continue;
 					target[i] = copied[i];
 				}
