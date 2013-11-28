@@ -53,7 +53,7 @@ define(function(require, exports, module){
 			var args = arguments;
 			var def = deep.Deferred();
 			var r = before.apply(this, args);
-			console.log("chain.first : result == ", r);
+			//console.log("chain.first : result == ", r);
 
 			if(typeof r === 'undefined' || !r.then)
 			{
@@ -401,7 +401,7 @@ define(function(require, exports, module){
 		Classes:function(){
 			var args = arguments;
 			function Constructor(){
-				// console.log("Compose Classes constructor : ", this);
+				//console.log("Compose Classes constructor : ", this);
 				for(var i = 0; i < args.length; ++i)
 				{
 					var cl = args[i];
@@ -420,10 +420,10 @@ define(function(require, exports, module){
 				if(typeof cl === 'function')
 				{
 					if(cl.prototype)
-						deep.utils.up(cl.prototype, prototype);
+						prototype = deep.utils.up(cl.prototype, prototype);
 				}
 				else 
-					deep.utils.up(cl, prototype);
+					prototype = deep.utils.up(cl, prototype);
 			}	
 			Constructor.prototype = prototype;
 			// console.log("before composer return classes : ", Constructor.prototype)

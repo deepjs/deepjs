@@ -2538,7 +2538,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 args = [];
             else if (!(args instanceof Array))
                 args = [args];
-            //console.log("callFunctionFromValue : ", entry, functionName, args);
+            //console.log("callFunctionFromValue : ", entry.value, args);
             var prom = null;
             if (value && value[functionName]) {
                 //value._deep_entry = entry;
@@ -2914,7 +2914,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return res;
         },
         nodes: function utilsNodes(handler) {
-            console.log("deep.chain.nodes : ", handler._nodes[0]);
+            //console.log("deep.chain.nodes : ", handler._nodes[0]);
             if (!handler._queried && handler._nodes[0].value instanceof Array)
                 return handler._nodes[0];
             var res = [];
