@@ -1519,6 +1519,170 @@ define(function(require){
         r.forEach(finalise);
 		return replaced;
 	};
+
+	utils.flatten = function utilsFlatten(node) {
+        var self = node;
+        var flattenChilds = function () {
+            var r = extendsChilds(node);
+            return deep.when(r);
+        };
+        if (!node.value || typeof node.value !== 'object')
+            return node;
+        var d = deep.when(1), r = null;
+        if (node.value.backgrounds)
+			d.done(function(){
+				return extendsBackgrounds(node);
+			});
+        if (node.value.foregrounds)
+			d.done(function(){
+				return extendsForegrounds(node);
+			});
+		return d.done(flattenChilds);
+    };
+
+      /**
+	 * will perform the backgrounds application on any backgrounds properties at any level
+	 *
+	 *	not intend to be call directly by programmer. use at your own risk : Use deep.Chain.flatten() instead.
+	 *
+	 * @method  extendsChilds
+
+	 * @private
+	 * @param  {DeepEntry} entry from where seeking after backgrounds properties
+	 * @return {deep.Promise} a promise
+	 */
+    function extendsChilds(entry) {
+        if (!entry._isDQ_NODE_)
+            throw deep.errors.Internal("you couldn't only extends backgrounds of query node.");
+        var toExtends = deep.Querier.firstObjectWithProperty(entry, "backgrounds");
+        if (!toExtends)
+            return entry;
+        //console.log("extends Childs : first child with backgournds : ", toExtends, " - entry.root ? : ", entry.root, " - toextends.root : ", toExtends.root);
+
+        function finalise() {
+            if (toExtends.ancestor)
+                toExtends.ancestor[toExtends.key] = toExtends.value;
+            return entry;
+        }
+
+        function recurse2(toExt) {
+            if (toExtends.ancestor)
+                delete toExtends.ancestor[toExtends.key];
+            var r = extendsChilds(entry);
+            if (r && r.then)
+                return deep.when(r)
+                    .done(finalise);
+            return finalise();
+        }
+
+        function recurse(toExt) {
+            var r = extendsChilds(toExtends);
+            if (r && r.then)
+                return deep.when(r)
+                    .done(recurse2);
+            return recurse2(toExtends);
+        }
+        var r = extendsBackgrounds(toExtends);
+        if (r && r.then)
+            return deep.when(r)
+                .done(recurse);
+        return recurse(toExtends);
+    }
+    /**
+     * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
+     *
+     *	not intend to be call directly by programmer. use at your own risk : Use deep.Chain.flatten() instead.
+     *
+     * @method  extendsBackgrounds
+     * @private
+     * @param  {DeepEntry} entry from where seeking after backgrounds properties
+     * @return {deep.Promise} a promise
+     */
+    function extendsBackgrounds(entry) {
+        //console.log("extends backgrounds of : ", entry, " - root ?  : ", entry.root)
+        if (!entry._isDQ_NODE_)
+            throw deep.errors.Internal("you couldn't only extends backgrounds of query node.");
+        var self = this;
+        var value = entry.value;
+        if (value.backgrounds) {
+            var getBackgrounds = function (backgrounds) {
+                //console.log("try retrieve backgrounds : ", backgrounds);
+                var all = [];
+                var needLoad = false;
+                backgrounds.forEach(function (b) {
+                    if (typeof b === 'string') {
+                        var rget = deep.get(b, {
+                            entry: entry
+                        });
+                        //console.log("background get result : ",rget);
+                        all.push(rget);
+
+                        if (rget && rget.then) {
+                            needLoad = true;
+                        }
+                    } else
+                        all.push(b);
+                });
+
+                function extendedsLoaded(extendeds) {
+                    var stack = [];
+                    var needRecursion = false;
+                    extendeds.forEach(function (s) {
+                        if (s && s.backgrounds) {
+                            stack.push(getBackgrounds(s.backgrounds));
+                            needRecursion = true;
+                        }
+                    });
+                    if (!needRecursion)
+                        return extendeds;
+                    return deep.all(stack)
+                        .done(function (stack) {
+                        var finalStack = [];
+                        extendeds.forEach(function (s) {
+                            if (s && s.backgrounds) {
+                                finalStack = finalStack.concat(stack.shift());
+                                delete s.backgrounds;
+                            }
+                            finalStack.push(s);
+                        });
+                        return finalStack;
+                    });
+                }
+                if (!needLoad)
+                    return extendedsLoaded(all);
+                //console.log("will retrieve backgrounds : ", all);
+                return deep.all(all)
+                    .done(extendedsLoaded);
+            };
+            var backgrounds = value.backgrounds;
+            delete value.backgrounds;
+            var r = getBackgrounds(backgrounds);
+            if (r && r.then)
+                return deep.when(r)
+                    .done(function extendedsLoaded(extendeds) {
+                    //console.log("final backgrounds stack : ", extendeds);
+                    extendeds.reverse();
+                    extendeds.forEach(function (s) {
+                        utils.bottom(s, entry.value);
+                    });
+                    return entry;
+                });
+            //console.log("final backgrounds stack : ", r);
+            r.forEach(function (s) {
+                utils.bottom(s, entry.value);
+            });
+            return entry;
+        }
+        return entry;
+    }
+
+
+
 	return utils;
 };
 });
+
+
+
+
+
