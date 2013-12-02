@@ -592,7 +592,7 @@ function(require, utils, promise, Querier){
 				console.log("value : \n", JSON.stringify(this.value));
 				console.log("errors : \n");
 				for(var i in this.errorsMap)
-					console.log(this.errorsMap[i]);
+					console.log(i, this.errorsMap[i].errors);
 
 			}
 		}
