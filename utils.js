@@ -1537,7 +1537,7 @@ define(function(require){
 	utils.flatten = function utilsFlatten(node) {
         var self = node;
         var flattenChilds = function () {
-            var r = extendsChilds(node);
+            var r = utils.extendsChilds(node);
             return deep.when(r);
         };
         if (!node.value || typeof node.value !== 'object')
@@ -1545,11 +1545,11 @@ define(function(require){
         var d = deep.when(1), r = null;
         if (node.value.backgrounds)
 			d.done(function(){
-				return extendsBackgrounds(node);
+				return utils.extendsBackgrounds(node);
 			});
         if (node.value.foregrounds)
 			d.done(function(){
-				return extendsForegrounds(node);
+				return utils.extendsForegrounds(node);
 			});
 		return d.done(flattenChilds);
     };
@@ -1565,13 +1565,13 @@ define(function(require){
 	 * @param  {DeepEntry} entry from where seeking after backgrounds properties
 	 * @return {deep.Promise} a promise
 	 */
-    function extendsChilds(entry) {
+    utils.extendsChilds = function(entry) {
         if (!entry._isDQ_NODE_)
-            throw deep.errors.Internal("you couldn't only extends backgrounds of query node.");
+            entry = deep.Querier.createRootNode(entry, {});
         var toExtends = deep.Querier.firstObjectWithProperty(entry, "backgrounds");
         if (!toExtends)
             return entry;
-        //console.log("extends Childs : first child with backgournds : ", toExtends, " - entry.root ? : ", entry.root, " - toextends.root : ", toExtends.root);
+       // console.log("extends Childs : first child with backgournds : ", toExtends, " - entry.root ? : ", entry.root, " - toextends.root : ", toExtends.root);
 
         function finalise() {
             if (toExtends.ancestor)
@@ -1582,25 +1582,19 @@ define(function(require){
         function recurse2(toExt) {
             if (toExtends.ancestor)
                 delete toExtends.ancestor[toExtends.key];
-            var r = extendsChilds(entry);
-            if (r && r.then)
-                return deep.when(r)
-                    .done(finalise);
-            return finalise();
+            var r = utils.extendsChilds(entry);
+            return deep.when(r)
+                .done(finalise);
         }
 
         function recurse(toExt) {
-            var r = extendsChilds(toExtends);
-            if (r && r.then)
-                return deep.when(r)
-                    .done(recurse2);
-            return recurse2(toExtends);
-        }
-        var r = extendsBackgrounds(toExtends);
-        if (r && r.then)
+            var r = utils.extendsChilds(toExtends);
             return deep.when(r)
-                .done(recurse);
-        return recurse(toExtends);
+                .done(recurse2);
+        }
+        var r = utils.extendsBackgrounds(toExtends);
+        return deep.when(r)
+            .done(recurse);
     }
     /**
      * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
@@ -1612,10 +1606,10 @@ define(function(require){
      * @param  {DeepEntry} entry from where seeking after backgrounds properties
      * @return {deep.Promise} a promise
      */
-    function extendsBackgrounds(entry) {
+    utils.extendsBackgrounds = function(entry) {
         //console.log("extends backgrounds of : ", entry, " - root ?  : ", entry.root)
         if (!entry._isDQ_NODE_)
-            throw deep.errors.Internal("you couldn't only extends backgrounds of query node.");
+            entry = deep.Querier.createRootNode(entry, {});
         var self = this;
         var value = entry.value;
         if (value.backgrounds) {
@@ -1628,12 +1622,9 @@ define(function(require){
                         var rget = deep.get(b, {
                             entry: entry
                         });
-                        //console.log("background get result : ",rget);
+                        //console.log("background : "+b+" : get result : ",rget._success);
                         all.push(rget);
-
-                        if (rget && rget.then) {
-                            needLoad = true;
-                        }
+                        needLoad = true;
                     } else
                         all.push(b);
                 });
@@ -1655,10 +1646,10 @@ define(function(require){
                         extendeds.forEach(function (s) {
                             if (s && s.backgrounds) {
                                 finalStack = finalStack.concat(stack.shift());
-                                delete s.backgrounds;
                             }
                             finalStack.push(s);
                         });
+                		//console.log("will have getted backgrounds : ", finalStack);
                         return finalStack;
                     });
                 }
@@ -1674,10 +1665,11 @@ define(function(require){
             if (r && r.then)
                 return deep.when(r)
                     .done(function extendedsLoaded(extendeds) {
-                    //console.log("final backgrounds stack : ", extendeds);
+                    //console.log("final backgrounds stack : ", extendeds, " on : ",entry.value);
                     extendeds.reverse();
                     extendeds.forEach(function (s) {
                         utils.bottom(s, entry.value);
+                        delete entry.value.backgrounds;
                     });
                     return entry;
                 });
