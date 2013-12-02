@@ -212,7 +212,7 @@ define(function(require){
 				//if(i == "_deep_entry")
 				//	continue;
                 var v = obj[i];
-				if(obj.hasOwnProperty(i))
+				//if(obj.hasOwnProperty(i))
                     if(typeof v === 'object')
 						res[i] = copy(v);
                     else
@@ -246,7 +246,7 @@ define(function(require){
 			{
 				//if(i == "_deep_entry")
 				//	continue;
-				if(obj.hasOwnProperty(i))
+				//if(obj.hasOwnProperty(i))
 					res[i] = obj[i];
 			}
 			return res;
@@ -465,8 +465,8 @@ define(function(require){
                     //console.log("deepEqual :b[i] : ",i);
                     //if(i == "_deep_entry")
                     //	continue;
-                    if(!b.hasOwnProperty(i))
-                        continue;
+                    //if(!b.hasOwnProperty(i))
+                      //  continue;
                     if(typeof a[i] === 'undefined')
                         return false;
                     ok = ok && utils.deepEqual(a[i], b[i]);
@@ -479,8 +479,8 @@ define(function(require){
                     //console.log("deepEqual :a[i] : ",i);
                     //if(i == "_deep_entry")
                     //	continue;
-                    if(!a.hasOwnProperty(i))
-                        continue;
+                    //if(!a.hasOwnProperty(i))
+                      //  continue;
                     tmpA.push(i);
                 }
             }
@@ -915,8 +915,8 @@ define(function(require){
 				for(var i in src)
 				{
 					//console.log("bomttom object : from src try : : ",i);
-					if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
-						continue;
+					//if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
+					//	continue;
 					//console.log("bomttom object : from src : do : ",i);
 					if(src[i] !== null)
 					{
@@ -935,23 +935,23 @@ define(function(require){
 				var i = null;
 				for(i in target)
 				{
-					if(!target.hasOwnProperty(i) && typeof target[i] !== 'function')
-						continue;
+					//if(!target.hasOwnProperty(i) && typeof target[i] !== 'function')
+					//	continue;
 					delete target[i];
 				}
 
 				for(i in src)
 				{
-					if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
-						continue;
+					//if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
+					//	continue;
 					target[i] = copied[i];
 					delete copied[i];
 				}
 
 				for(i in copied)
 				{
-					if(!copied.hasOwnProperty(i) && typeof copied[i] !== 'function')
-						continue;
+					//if(!copied.hasOwnProperty(i) && typeof copied[i] !== 'function')
+					//	continue;
 					target[i] = copied[i];
 				}
 				//console.log("bottom result : ", target);

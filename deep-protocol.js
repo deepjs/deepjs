@@ -31,13 +31,14 @@ define(["require","./deep"], function (require, deep) {
   
     //_______________________________________________________________________________ GET/GET ALL  REQUESTS
 
-    deep.protocole.getStoreHandler = function(protocole)
+    deep.protocole.getStoreHandler = function(protocole, opt)
     {
         //console.log("deep.protocole.getStoreHandler : protocol : ", protocole);
         var handler = {
             method:"get",
             store:null
         };
+        opt = opt || {};
         if(protocole._deep_ocm_)
             protocole = protocole();
         if(typeof protocole === 'object')
@@ -54,14 +55,14 @@ define(["require","./deep"], function (require, deep) {
             if(!handler.store[handler.method])
                 return deep.when(deep.errors.Store("no method found in store with : "+protocole));
         }
-        if(handler.store._deep_ocm_)
+        if(handler.store._deep_ocm_ && !opt.ignoreOCM)
             handler.store = handler.store();
         if(typeof handler.store === 'function')
             handler.store = {
                 _deep_store_:true,
                 get:handler.store
             };
-        if(handler.store.init)
+        if(handler.store.init && !opt.ignoreInit)
             return deep.when(handler.store.init())
             .done(function(){
                 return handler;

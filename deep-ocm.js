@@ -153,10 +153,16 @@ define(["require"], function (require){
             return deep({}).modes(obj);
         };
 
-        deep.Chain.addHandle("modes", function(arg)
+        deep.Chain.addHandle("modes", function(arg, arg2)
         {
             // console.log("chain.mode : ", arguments, deep.context);
             var self = this;
+            if(typeof arg === 'string')
+            {
+                var obj = {};
+                obj[arg] = arg2;
+                arg = obj;
+            }
             var func = function(s,e)
             {
                 if(!self._contextCopied)
@@ -167,14 +173,21 @@ define(["require"], function (require){
                     if(!arg[i] && deep.context.modes.hasOwnProperty(i))
                         arg[i] = deep.context.modes[i];
                 deep.context.modes = arg;
+                return s;
                 // console.log("deep.context.mode setted : ",deep.context.mode);  
             };
             func._isDone_ = true;
             deep.chain.addInChain.apply(self,[func]);
             return this;
         });
-        deep.setModes = function(arg){
+        deep.setModes = function(arg, arg2){
             // console.log("generalMode : ", arguments)
+            if(typeof arg === 'string')
+            {
+                var obj = {};
+                obj[arg] = arg2;
+                arg = obj;
+            }
             deep.context = deep.utils.simpleCopy(deep.context);
             for(var i in deep.context.modes)
                 if(!arg[i] && deep.context.modes.hasOwnProperty(i))

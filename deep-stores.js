@@ -33,9 +33,10 @@ return function(deep){
 	 */
     
         deep.store = function (name) {
-            // console.log("deep.store(name) : ",name)
-            return deep(deep.protocole.getStoreHandler(name))
+            //console.log("deep.store(name) : ",name)
+            return deep(deep.protocole.getStoreHandler(name))//, { ignoreInit:true, ignoreOCM:true}))
             .transform(function(handler){
+                //console.log("store getted : ", handler.store);
                 return handler.store;
             })
             .store(name);
