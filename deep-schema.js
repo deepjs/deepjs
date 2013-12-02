@@ -584,7 +584,17 @@ function(require, utils, promise, Querier){
 			schema:schema,
 			value:value,
 			date:Date.now(),
-			valid:(othis.errors.length == 0)
+			valid:(othis.errors.length == 0),
+			toString:function(){
+				console.log("\n\nValidationReport : \n");
+				console.log("valid : \n", this.valid);
+				console.log("schema : \n", JSON.stringify(this.schema));
+				console.log("value : \n", JSON.stringify(this.value));
+				console.log("errors : \n");
+				for(var i in this.errorsMap)
+					console.log(this.errorsMap[i]);
+
+			}
 		}
 		return report;
 	}
