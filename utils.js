@@ -23,7 +23,7 @@ define(function(require){
 	utils.rethrow = function (error) {
 		//console.log("ksss")
 		throw error;
-	}
+	};
 	utils.arrayInsert = function(array, index) {
 		array.splice.apply(array, [index, 0].concat(
 			Array.prototype.slice.call(arguments, 1)));
@@ -36,11 +36,11 @@ define(function(require){
 	 * interpret a string with a context : means fetch in context and replace in string any variable-string-format (e.g. { my.property.in.my.context })
 	 * founded in string
 	 * @example
-	 * 		var interpreted = deep.utils.interpret("hello { name }", { name:"john" });
+	 *		var interpreted = deep.utils.interpret("hello { name }", { name:"john" });
 	 *
 	 * @example
-	 * 		// equivalent of first example
-	 * 		var interpreted = deep("hello { name }").interpret({ name:"john" }).val();
+	 *		// equivalent of first example
+	 *		var interpreted = deep("hello { name }").interpret({ name:"john" }).val();
 	 *
 	 * @method interpret
 	 * @category stringUtils
@@ -85,7 +85,7 @@ define(function(require){
 		if(text.substring(0,1) == "/")
 			return text.substring(1);
 		return text;
-	}
+	};
 
 	utils.catchParenthesis = function(path)
 	{
@@ -110,28 +110,28 @@ define(function(require){
 		}
 		count++;
 		return { value:res, rest:path.substring(count)};
-	}
+	};
 
 	function trim_words(theString, numWords, maxChar)
 	{
-	    expString = theString.split(/\s+/,numWords);
-	    if(expString.length == 1)
-	    {
+		expString = theString.split(/\s+/,numWords);
+		if(expString.length == 1)
+		{
 			maxChar = maxChar || 10;
-	    	if(expString[0].length > maxChar)
-	    		return theString.substring(0,maxChar)
-	    	return expString[0];
-	    }
-	    theNewString=expString.join(" ");
-	    if(theNewString.length < theString.length && theNewString[theNewString.length-1] != ".")
+			if(expString[0].length > maxChar)
+				return theString.substring(0,maxChar);
+			return expString[0];
+		}
+		theNewString=expString.join(" ");
+		if(theNewString.length < theString.length && theNewString[theNewString.length-1] != ".")
 			theNewString += "...";
-	    return theNewString;
+		return theNewString;
 	}
 
 	utils.trimWords = function(string, numWords, maxChar)
 	{
 		return trim_words(string.replace(/<[^>]*>/gi, ""), numWords, maxChar);
-	}
+	};
 
 	//_________________________________________________________________ OBJECTS/ARRAY RELATED
 
@@ -158,14 +158,14 @@ define(function(require){
 	utils.cloneFunction = function(fct)
 	{
 		//console.log("cloneFunction : fct.decorator = ", fct.decorator)
-	    var clone = function() {
-	        return fct.apply(this, arguments);
-	    };
-	    clone.prototype = fct.prototype;
-	    for (property in fct)
-	        if (fct.hasOwnProperty(property))
-	            clone[property] = utils.copy(fct[property]);
-	    return clone;
+		var clone = function() {
+			return fct.apply(this, arguments);
+		};
+		clone.prototype = fct.prototype;
+		for (var property in fct)
+			if (fct.hasOwnProperty(property))
+				clone[property] = utils.copy(fct[property]);
+		return clone;
 	};
 
 	/**
@@ -193,7 +193,7 @@ define(function(require){
             {
                 var e = obj[i];
                 if(typeof e === 'object')
-				    res.push(copy(e));
+					res.push(copy(e));
                 else
                     res.push(e);
             }
@@ -802,20 +802,25 @@ define(function(require){
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
-		//console.log("utils.bottom : objects ", src, target)
+		//console.log("utils.bottom : objects ", src.init?true:null, target)
         // if(src && src._deep_shared_)
           //   console.log("got botom shared");
 		if(src === null || typeof src === "undefined")
 			return target;
 		if(target === null)
 			return target;
+		var srcType = utils.getJSPrimitiveType(src);
 		if(typeof target === 'undefined')
 		{
-            //console.log("bottom : target undefined : copy src : ",src)
-			target = utils.copy(src);
-			if(parent && key)
-				parent[key] = target;
-			return target;
+
+           //	console.log("bottom : target undefined : copy src : ",src)
+            if(srcType !== 'function')
+            {
+				target = utils.copy(src);
+				if(parent && key)
+					parent[key] = target;
+				return target;
+			}
 		}
 		if(target._deep_upper_ && target.bottom)
 		{
@@ -832,9 +837,16 @@ define(function(require){
 				parent[key] = src;
 			return src;
 		}
+		if(srcType === 'function' && typeof target === 'undefined')
+		{
+			//console.log("function as asource and target undefined")
+			target = src;
+			if(parent && key)
+				parent[key] = target;
+			return target;
+		}
 		//console.log("utils.bottom : objects not nulls.")
 		var result= null;
-		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
 		// console.log("utils.bottom : objects types : ", srcType, targetType);
 		if ( targetType === 'function')
@@ -892,7 +904,7 @@ define(function(require){
 				//console.log("array fusion bottom rsult : ", result, parent, key)
 				return result;
 			case 'object' :
-				// console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
+				//console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
                 /*if(src && src._deep_shared_)
                 {
                     if(parent && key)
@@ -902,8 +914,10 @@ define(function(require){
 			
 				for(var i in src)
 				{
-					if(!src.hasOwnProperty(i))
+					//console.log("bomttom object : from src try : : ",i);
+					if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
 						continue;
+					//console.log("bomttom object : from src : do : ",i);
 					if(src[i] !== null)
 					{
 						var sch = {};
@@ -918,23 +932,25 @@ define(function(require){
 				//console.log("bottom will copy : ", target, " - src : ", src);
 				var copied = utils.simpleCopy(target);
 				//console.log("bottom have copied : ", copied);
-				for(var i in target)
+				var i = null;
+				for(i in target)
 				{
-					if(!target.hasOwnProperty(i))
+					if(!target.hasOwnProperty(i) && typeof target[i] !== 'function')
 						continue;
 					delete target[i];
 				}
 
-				for(var i in src)
+				for(i in src)
 				{
-					if(!src.hasOwnProperty(i))
+					if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
 						continue;
 					target[i] = copied[i];
 					delete copied[i];
 				}
-				for(var i in copied)
+
+				for(i in copied)
 				{
-					if(!copied.hasOwnProperty(i))
+					if(!copied.hasOwnProperty(i) && typeof copied[i] !== 'function')
 						continue;
 					target[i] = copied[i];
 				}
@@ -1324,18 +1340,16 @@ define(function(require){
 		options.entry = entry;
 		var res = [];
 		var report = {};
-		for(var i in sheet)
-		{
-			var toApply = sheet[i];
+		Object.keys(sheet).forEach(function(i){
 			var d = deep.get(i, options)
 			.done(function(handler){
-				return handler(toApply, options);
+				return handler(sheet[i], options);
 			})
 			.done(function(s){
 				report[i] = s;
 			});
 			res.push(d);
-		}
+		});
 		return deep.all(res)
 		.done(function(success){
 			return report;
@@ -1488,15 +1502,15 @@ define(function(require){
                 delete r.ancestor.value[r.key];
             }
         }
-        r = deep.query(obj, what, {
-            resultType: "full"
-        });
+        r = deep.query(obj, what, { resultType: "full" });
         if (!r)
             return r;
         if (r._isDQ_NODE_)
+        {
             finalise(r);
-        else
-            r.forEach(finalise);
+            return removed.shift();
+        }
+        r.forEach(finalise);
         return removed;
 	};
 
