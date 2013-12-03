@@ -1649,7 +1649,7 @@ define(function(require){
                             }
                             finalStack.push(s);
                         });
-                		//console.log("will have getted backgrounds : ", finalStack);
+						//console.log("will have getted backgrounds : ", finalStack);
                         return finalStack;
                     });
                 }
@@ -1665,12 +1665,14 @@ define(function(require){
             if (r && r.then)
                 return deep.when(r)
                     .done(function extendedsLoaded(extendeds) {
+                    var temp = {};
                     //console.log("final backgrounds stack : ", extendeds, " on : ",entry.value);
-                    extendeds.reverse();
+                    //extendeds.reverse();
                     extendeds.forEach(function (s) {
-                        utils.bottom(s, entry.value);
-                        delete entry.value.backgrounds;
+                        utils.up(s, temp);
                     });
+                    utils.bottom(temp, entry.value);
+					delete entry.value.backgrounds;
                     return entry;
                 });
             //console.log("final backgrounds stack : ", r);
