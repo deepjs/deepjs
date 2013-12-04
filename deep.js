@@ -196,6 +196,25 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      */
     deep.globalHaders = {};
 
+    // deep mode management
+    deep.modes = function(obj){
+        return deep({}).modes(obj);
+    };
+
+    deep.setModes = function(arg, arg2){
+        // console.log("generalMode : ", arguments)
+        if(typeof arg === 'string')
+        {
+            var obj = {};
+            obj[arg] = arg2;
+            arg = obj;
+        }
+        deep.context = deep.utils.simpleCopy(deep.context);
+        for(var i in deep.context.modes)
+            if(!arg[i] && deep.context.modes.hasOwnProperty(i))
+                arg[i] = deep.context.modes[i];
+            deep.context.modes = arg;
+    };
 
     deep.destructiveLoad = false;
 
@@ -298,11 +317,18 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     };
 
 
-
-    deep.promise = function deepPromise(arg) {
+    /**
+     * return a promise that will be fullfilled when arg are ready (resolve or immediat)
+     * @for deep
+     * @static
+     * @method when
+     * @param  {Object} arg an object to waiting for
+     * @return {deep.Promise} a promise
+     */
+    deep.when = function deepPromise(arg) {
         //console.log("deep.promise : ", arg)
         if (typeof arg === "undefined" || arg === null)
-            return deep.promise.immediate(arg);
+            return deep.when.immediate(arg);
         if(arg._deep_chain_)
             return arg.promise();
         if (typeof arg.then === 'function') //any promise compliant object
@@ -322,21 +348,13 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             return arg.promise();
         if (typeof arg.promise === 'object')
             return arg.promise;
-        return deep.promise.immediate(arg);
+        return deep.when.immediate(arg);
     };
-    deep.promise.immediate = function (result) {
+    deep.when.immediate = function (result) {
         var prom = new deep.Promise();
         return prom._start(result);
     };
-    /**
-     * return a promise that will be fullfilled when arg are ready (resolve or immediat)
-     * @for deep
-     * @static
-     * @method when
-     * @param  {Object} arg an object to waiting for
-     * @return {deep.Promise} a promise
-     */
-    deep.when = deep.promise;
+
     /**
      * return a promise that will be fullfilled when all args are ready (resolve or immediat)
      * @for deep
@@ -350,7 +368,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         for (var i  = 0; i < arguments.length; ++i)
             arr = arr.concat(arguments[i]);
         if (arr.length === 0)
-            return deep.promise.immediate([]);
+            return deep.when.immediate([]);
         var def = deep.Deferred();
         var count = arr.length;
         var c = 0,
@@ -767,6 +785,33 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             func._isDone_ = true;
             addInChain.apply(this, [func]);
             return self;
+        },
+        modes : function(arg, arg2)
+        {
+            // console.log("chain.mode : ", arguments, deep.context);
+            var self = this;
+            if(typeof arg === 'string')
+            {
+                var obj = {};
+                obj[arg] = arg2;
+                arg = obj;
+            }
+            var func = function(s,e)
+            {
+                if(!self._contextCopied)
+                    deep.context = self._context = deep.utils.simpleCopy(self._context);
+                self._contextCopied = true;
+
+                for(var i in deep.context.modes)
+                    if(!arg[i] && deep.context.modes.hasOwnProperty(i))
+                        arg[i] = deep.context.modes[i];
+                deep.context.modes = arg;
+                return s;
+                // console.log("deep.context.mode setted : ",deep.context.mode);  
+            };
+            func._isDone_ = true;
+            deep.chain.addInChain.apply(self,[func]);
+            return this;
         }
     };
 
@@ -873,7 +918,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
          *
          *		var branch = branches.branch().myChain()...;
          *		//...
-         *		return deep.all([deep.promise(branch), ...]);
+         *		return deep.all([deep.when(branch), ...]);
          *
          * @method  branches
          * @async
