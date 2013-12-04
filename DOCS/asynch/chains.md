@@ -256,13 +256,13 @@ How to load externals content.
 ### .load( context, destructive )
 
 if no argument is provided, try to retrieve current entries values and replace by loaded contents (if any)
-if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+if any throw or reject when loading : the error is injected in the chain (and could be catched with .fail( .. )).
 
 ### .deepLoad( context, destructive )
 
 recursively analyse current entries and seek after string and functions.
 Retrieve them (see retrievable) and place loaded content at same place.
-if any throw or reject when loading : the error is injected in the chain (and could be catched with .errors( .. )).
+if any throw or reject when loading : the error is injected in the chain (and could be catched with .fail( .. )).
 
 Destructive example :
 ```javascript
@@ -316,8 +316,8 @@ ex :
 ```javascript 
 chain.branches( function(branches)
 {
-	branches.branch().query(...).load().errors(console.log);
-	branches.branch().query(...).post().errors(console.log);
+	branches.branch().query(...).load().fail(console.log);
+	branches.branch().query(...).post().fail(console.log);
 	//...
 	return branches;
 });
