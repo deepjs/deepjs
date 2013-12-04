@@ -76,7 +76,8 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                     r = r.shift();
                 if(typeof r === 'undefined')
                     return deep.when(deep.errors.NotFound());
-                return deep.when(r);
+
+                return deep.when(deep.utils.copy(r));
             },
             /**
              * @method put
@@ -157,7 +158,7 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-                var removed = deep(col).remove("./*?id=" + id).done();
+                var removed = deep.utils.remove(col, "./*?id=" + id);
                 if (removed)
                     removed = removed.shift();
                 return deep.when(removed);
