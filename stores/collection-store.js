@@ -95,20 +95,20 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 if(this.collection._deep_ocm_)
                     col = this.collection();
 
-                var r = deep.query(col, "./*?id=" + id, { resultType: "full" });
+                var r = this.getForUpdate("./*?id=" + id);
                 if (!r || r.length === 0)
                     return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
                 r = r.shift();
                 if(options.query)
                 {
-                    r.value = deep.utils.copy(r.value);
-                    deep.utils.replace(r.value, options.query, object);
+                    r = deep.utils.copy(r);
+                    deep.utils.replace(r, options.query, object);
                 }
                 else
                 {
                     if(!object.id)
                         object.id = options.id;
-                    r.value = object;
+                    r = object;
                 }
 
                 var schema = this.schema;
@@ -116,14 +116,12 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 {
                     if(schema._deep_ocm_)
                         schema = schema("put");
-                    var report = deep.validate(r.value, schema);
+                    var report = deep.validate(r, schema);
                     if(!report.valid)
                         return deep.when(deep.errors.PreconditionFail(report));
                 }
-
-                if (r.ancestor)
-                    r.ancestor.value[r.key] = r.value;
-                return deep.when(r.value);
+                deep.utils.replace(col, "./*?id=" + id, r);
+                return deep.when(r);
             },
             /**
              * @method post
