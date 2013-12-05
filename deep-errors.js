@@ -135,6 +135,15 @@ define(function(require)
 					msg = "OCM";
 				return this.Error(403, "OCMError : "+msg, report, fileName, lineNum);
 			},
+			Owner:function  (msg, report, fileName, lineNum) {
+				if(typeof msg === 'object')
+					report = msg;
+				if(!msg)
+					msg = "OwnerError";
+				else
+					msg = "OwnerError : "+msg;
+				return this.Error(403, msg, report, fileName, lineNum);
+			},
 			Post:function  (msg, report, fileName, lineNum) {
 				if(typeof msg === 'object')
 					report = msg;
