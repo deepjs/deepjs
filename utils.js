@@ -302,6 +302,33 @@ define(function(require){
 		else return undefined;
 	};
 
+
+
+	utils.getValuesQueryBySchemaPath = function (object, schemaPath, pathDelimiter)
+	{
+		//	 /properties/adresses/items
+		//    /addresses/[]
+		
+		if(path[0] == "/" || path.substring(0,1) == "./")
+			pathDelimiter = "/";
+
+		if(pathDelimiter == '/')
+		{
+			schemaPath = schemaPath.replace(/\/properties/,'');
+			schemaPath = schemaPath.replace(/\/items/,'[]');
+		}
+		else
+
+		{
+			schemaPath = schemaPath.replace(/\./,'/');
+			schemaPath = schemaPath.replace(/\/properties/,'');
+			schemaPath = schemaPath.replace(/\/items/,'[]');
+			schemapPath = '/'+schemaPath;
+		}
+		return schemaPath;
+	};
+
+
 	utils.deletePropertyByPath = function (object, path, pathDelimiter)
 	{
 		if(path[0] == "/" || path.substring(0,1) == "./")
