@@ -183,12 +183,13 @@ return function(deep)
         this._context = deep.context;
         this._queue = [];
         this.oldQueue = null;
-        
-        this._deep_promise_ = true;
+        this._success = options._success || null;
+        this._error = options._error || null;
         this._running = false;
         this._executing = false;
         this._initialised = false;
         this._rethrow = (typeof options.rethrow !== "undefined") ? options.rethrow : deep.rethrow;
+        this._deep_promise_ = true;
     };
 
     deep.Promise.prototype = {
@@ -462,7 +463,7 @@ return function(deep)
             var self = this;
             var func = function chainLogHandle(s, e) {
                if(key)
-                    console.log("deep.chain.context : ", self._context[key]);
+                    console.log("deep.chain.context."+key+" : ", self._context[key]);
                 else
                     console.log("deep.chain.context : ", self._context);
             };
@@ -504,7 +505,7 @@ return function(deep)
             var self = this;
             var func = function (s,e) {
                 //var toTest = deep.chain.val(self);
-                var ok = utils.deepEqual(s, obj);
+                var ok = deep.utils.deepEqual(s, obj);
                 var report = {
                     equal: ok,
                     value: s,
@@ -518,6 +519,40 @@ return function(deep)
             func._isDone_ = true;
             deep.utils.addInChain.apply(this, [func]);
             return self;
+        },
+
+        /**
+         * set current context modes. See OCM docs and Asynch context management.
+         * @param  {String|Object} arg  if it's an object : will use it as a map. If it's a string : use it as key (need second arguments)
+         * @param  {String} arg2 (optional) the value for the key (if provided)
+         * @return {deep.Chain}        this
+         */
+        modes : function(arg, arg2)
+        {
+            // console.log("chain.mode : ", arguments, deep.context);
+            var self = this;
+            if(typeof arg === 'string')
+            {
+                var obj = {};
+                obj[arg] = arg2;
+                arg = obj;
+            }
+            var func = function(s,e)
+            {
+                if(!self._contextCopied)
+                    deep.context = self._context = deep.utils.simpleCopy(self._context);
+                self._contextCopied = true;
+
+                for(var i in deep.context.modes)
+                    if(!arg[i] && deep.context.modes.hasOwnProperty(i))
+                        arg[i] = deep.context.modes[i];
+                deep.context.modes = arg;
+                return s;
+                // console.log("deep.context.mode setted : ",deep.context.mode);  
+            };
+            func._isDone_ = true;
+            deep.chain.addInChain.apply(self,[func]);
+            return this;
         }
     };
 
