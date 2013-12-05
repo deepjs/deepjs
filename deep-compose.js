@@ -55,12 +55,21 @@ define(function(require, exports, module){
 			var r = before.apply(this, args);
 			//console.log("chain.first : result == ", r);
 
+			if(r instanceof Error)
+				return r;
+
 			if(typeof r === 'undefined' || !r.then)
 			{
+				//console.log("________________  !r || !r.then")
 				var subarg = args;
-				if(r && !r.then)
-					subarg = [r];
+				if(r)
+					if(!r.forEach)
+						subarg = [r];
+					else
+						subarg = r;
+				//console.log("before second call : args : ", subarg);
 				var r2 = after.apply(self,subarg);
+				//console.log("chain composition : after : r2 : ",r2);
 				if(typeof r2 === 'undefined')
 					return r;
 				if(!r2.then)
@@ -77,13 +86,13 @@ define(function(require, exports, module){
 			}
 			else
 			{
-				//console.log("________________BEFORE deep.when___________");
+				//console.log("________________r && r.then___________");
 				deep.when(r)
 				.done(function (r)
 				{
 					//console.log("after : deep.when(first) res : ", r);
 					var argus = args ;
-					if(typeof r !== 'undefined' )
+					if(typeof r !== 'undefined' ||  !r.forEach)
 						argus = [r];
 					var r2 = after.apply(self,argus);
 					if(typeof r2 === 'undefined' )
