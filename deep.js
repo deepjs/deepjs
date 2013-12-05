@@ -795,7 +795,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     self._queried = false;
                 else
                     self._queried = true;
-                return deep.chain.val(self);
+                self._success = deep.chain.val(self);
+                return;
             };
             func._isDone_ = true;
             return addInChain.apply(self, [func]);
@@ -2488,7 +2489,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         "js::deepjs/units/relations",
         "js::deepjs/units/context",
         "js::deepjs/units/ocm",
-        "js::deepjs/units/sheets"
+        "js::deepjs/units/sheets",
+        "js::deepjs/units/collections"
     );
 
     //_________________________________________________________________________________
