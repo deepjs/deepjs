@@ -318,41 +318,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
 
     require("./promise")(deep);
 
-    deep.BaseChain = function BaseChainConstructor(options) {
-        options = options || {};
-        this._rethrow = (typeof options.rethrow !== "undefined") ? options.rethrow : deep.rethrow;
-        this._deep_chain_ = true;
-        this._context = options._context || deep.context;
-        this._queue = [];
-        this.oldQueue = null;
-        this._queried = options._queried;
-        this._nodes = options._nodes; // || [deep.Querier.createRootNode(this._value, options.schema, options)];
-        this._success = options._success || null;
-        this._error = options._error || null;
-        this.positions = [];
-        this._queried = false;
-        this.deferred = null;//deep.Deferred();
-    };
-
-    function cloneHandler(handler, cloneValues) {
-        //console.log("cloneHandler : ", handler, cloneValues);
-        var newRes = [];
-        if (cloneValues)
-            newRes = newRes.concat(handler._nodes);
-        var newHandler = new deep.Chain({
-            _root: handler._root,
-            _rethrow: handler.rethrow,
-            _nodes: newRes,
-            _queried: handler._queried,
-            _error: handler._error,
-            _context: handler._context,
-            _success: handler._success,
-            _store:handler._store
-        });
-        newHandler._initialised = true;
-        return newHandler;
-    }
-
     var brancher = function brancher(handler) {
         var self = this;
         var br = {
@@ -360,7 +325,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             branch: function () {
                 if(this._ended)
                     throw deep.errors.Chain("Branching failed : brancher has already bean ended. Could not add branches any more.");
-                var cloned = cloneHandler(handler, true);
+                var cloned = handler.clone(true);
                 this.branches.push(cloned);
                 return cloned;
             },
@@ -372,7 +337,22 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         return br;
     };
 
-    deep.BaseChain.prototype = {
+    deep.BaseChain = deep.compose.Classes(function BaseChainConstructor(options) {
+        options = options || {};
+        this._context = options._context || deep.context;
+        this._queue = [];
+        this.oldQueue = null;
+        this._rethrow = (typeof options.rethrow !== "undefined") ? options.rethrow : deep.rethrow;
+        this._success = options._success || null;
+        this._error = options._error || null;
+
+        this._deep_chain_ = true;
+        this._queried = options._queried;
+        this._nodes = options._nodes; // || [deep.Querier.createRootNode(this._value, options.schema, options)];
+        this.positions = [];
+        this.deferred = null;//deep.Deferred();
+    },
+    {
         _nodes: null,
         promise: function () {
             if(!this.deferred)
@@ -386,10 +366,10 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         },
         _forceHandle: function chainForce() {
             var self = this;
-            if (this.deferred && (self.deferred.rejected || self.deferred.resolved || self.deferred.canceled))
+            if (self.deferred && (self.deferred.rejected || self.deferred.resolved || self.deferred.canceled))
                 throw deep.errors.ChainEnded("chain has already been ended ! could'nt execute it further.");
             forceHandle.apply(this);
-            if(!this.deferred)
+            if(!self.deferred)
                 return;
             if (self._queue.length === 0 && !self._running)
                 if (self._error)
@@ -397,7 +377,25 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 else
                     self.deferred.resolve(self._success);
         },
-
+        clone:function(cloneValues) {
+            //console.log("deep.Chain.clone : ", handler, cloneValues);
+            var handler = this;
+            var newRes = [];
+            if (cloneValues)
+                newRes = newRes.concat(handler._nodes);
+            var newHandler = new deep.Chain({
+                _root: handler._root,
+                _rethrow: handler.rethrow,
+                _nodes: newRes,
+                _queried: handler._queried,
+                _error: handler._error,
+                _context: handler._context,
+                _success: handler._success,
+                _store:handler._store
+            });
+            newHandler._initialised = true;
+            return newHandler;
+        },
 
         //_____________________________________________________________  BRANCHES
         /**
@@ -509,7 +507,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             addInChain.apply(this, [func]);
             return this;
         }
-    };
+    });
 
 
     deep.Chain = function ChainConstructor(options) {
@@ -1858,7 +1856,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     return deep.chain.values(self);
                 if (typeof what === 'string') {
                     var parsed = deep.parseRequest(what);
-                    var cloned = cloneHandler(self, true);
+                    var cloned = self.clone(true);
                     //cloned.logValues();
                     var localKeyQuery = localKey;
                     if(!self._queried && self._nodes[0].value && self._nodes[0].value.forEach)
