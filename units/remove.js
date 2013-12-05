@@ -76,6 +76,31 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 					email: 'test@test.com',
 					id: '51013dec530e96b112000001'
 				}]);
+			},
+			d:function(){
+				var objs = [{
+					email: 'test@test.com',
+					password: 'test54',
+					id: '51013dec530e96b112000001'
+				}];
+				var schema2 = {
+					type:"array",
+					items:{
+						properties:
+						{
+							id: { type: 'string', required: false, minLength: 1 },
+							email: { type: 'string', required: true, minLength: 1 },
+							password: { type: 'string', required: true, "readOnly": true }
+						},
+						additionalProperties: false
+					}
+				};
+				return deep(objs, schema2)
+				.remove(".//?_schema.readOnly=true")
+				.valuesEqual([{
+					email: 'test@test.com',
+					id: '51013dec530e96b112000001'
+				}]);
            }
         }
     };
