@@ -1517,7 +1517,7 @@ define(function(require){
 	};
 
 	//_______________________________________________________ QUERY UTILS
-	utils.remove = function(obj, what){
+	utils.remove = function(obj, what, schema){
 		var removed = [];
         function finalise(r) {
             if (!r.ancestor)
@@ -1529,7 +1529,8 @@ define(function(require){
                 delete r.ancestor.value[r.key];
             }
         }
-        r = deep.query(obj, what, { resultType: "full" });
+        r = deep.query(obj, what, { resultType: "full", schema:schema });
+        //console.log("deep.utils.remove : ", obj, what, r);
         if (!r)
             return r;
         if (r._isDQ_NODE_)
@@ -1541,7 +1542,7 @@ define(function(require){
         return removed;
 	};
 
-	utils.replace = function(target, what, by){
+	utils.replace = function(target, what, by, schema){
 		var replaced = [];
         function finalise(r) {
             if (!r.ancestor)
@@ -1549,7 +1550,7 @@ define(function(require){
             r.ancestor.value[r.key] = r.value = by;
             replaced.push(r);
         }
-        var r = deep.query(target, what, { resultType: "full" });
+        var r = deep.query(target, what, { resultType: "full", schema:schema });
         if (!r)
             return r;
         if (r._isDQ_NODE_)

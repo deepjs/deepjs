@@ -95,10 +95,13 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 if(this.collection._deep_ocm_)
                     col = this.collection();
 
-                var r = this.getForUpdate("./*?id=" + id);
+                var r = this.getForUpdate("./*?id=" + id, options);
                 if (!r || r.length === 0)
                     return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
-                r = r.shift();
+                if(!options.retrievedValue)
+                    r = r.shift();
+                //console.log("collection put : get old : ", r, object);
+                var old = r;
                 if(options.query)
                 {
                     r = deep.utils.copy(r);
@@ -116,6 +119,12 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 {
                     if(schema._deep_ocm_)
                         schema = schema("put");
+
+                    var check = this.checkForUpdate(old, r, options);
+                    //console.log("after check : ", check);
+                    if(check instanceof Error)
+                        return deep.when(check);
+
                     var report = deep.validate(r, schema);
                     if(!report.valid)
                         return deep.when(deep.errors.PreconditionFail(report));

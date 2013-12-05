@@ -343,17 +343,19 @@ return function(deep){
 
         deep.store.ObjectSheet = {
             "dq.up::./[get,post,put,patch]":deep.compose.after(function(result){
+                //console.log("private check : ", this.schema, result);
                 if(!this.schema)
                     return result;
-                deep.utils.remove(result, ".//?_schema.private=true");
+                var res = deep.utils.remove(result, ".//!?_schema.private=true", this.schema);
+                //console.log("res : ", res);
                 return result;
             }),
-            "dq.up::./put":deep.compose.before(function(object, options){
+            /*"dq.up::./put":deep.compose.before(function(object, options){
                 var r = this.checkForUpdate(object, options);
                 if(r instanceof Error)
                     return r;
                 return [object, options];
-            }),
+            }),*/
             "dq.up::./!":{
                 config:{
                     //ownerRestiction:true
@@ -364,33 +366,35 @@ return function(deep){
                     }
                 },
                 checkForUpdate:function(object, data, opt){
+                    //console.log("check for update : ", object, data, deep.context);
                     if(!this.schema)
                         return true;
-                    if(this.schema.ownerRestiction === true)
+                    if(this.schema.ownerRestriction === true)
                         if(deep.context.session && deep.context.session.remoteUser)
                         {
+                            //console.log("check owner on session : ", object.userID, deep.context.session.remoteUser.id)
                             if(object.userID !== deep.context.session.remoteUser.id)
                                 return deep.errors.Owner();
                         }
-                    var nodes = deep.query(this.schema, ".//!?readonly=true", { resultType:'full'});
+                        else
+                            return deep.errors.Owner();
 
-                    if(!nodes)
+                    var nodes = deep.query(data, ".//?_schema.readOnly=true", { resultType:'full', schema:this.schema });
+                    //console.log("nodes :", nodes);
+                    if(!nodes || nodes.length == 0)
                         return true;
                     var ok = nodes.every(function(e){
-                        var q = getValuesQueryBySchemaPath(object, e.path, '/');
-                        var objs = deep.query(data, q, { resultType:'full', allowStraightQueries:false });
-                        if(!objs)
+                        var toCheck = deep.query(object, e.path);
+                        //console.log("check readOnly : ", toCheck, e.path, e.value)
+                        if(!toCheck)
                             return true;
-                        return objs.every(function(o){
-                            var val = deep.utils.retrieveValueByPath(object, o.path, '/');
-                            return deep.utils.deepEqual(val, o.value);
-                        });
+                        return deep.utils.deepEqual(toCheck, e.value);
                     });
                     if(!ok)
                         return deep.errors.PreconditionFail();
                     return true;
                 },
-                getForUpdate:function(id, object, opt){
+                getForUpdate:function(id, opt){
                     var data = null;
                     if(opt.retrievedValue)
                         data = opt.retrievedValue;
@@ -406,10 +410,10 @@ return function(deep){
                     opt.id = opt.id || content.id;
                     if(!opt.id)
                         return deep.when(deep.errors.Patch("json stores need id on PATCH"));
-                    return this.getForUpdate(opt.id, content, opt)
-                    .done(function(data){
-                        //console.log("patch : get object : ", data);
-                        data = deep.utils.copy(data);
+                    return this.getForUpdate(opt.id, opt)
+                    .done(function(datas){
+                        ///console.log("patch : get object : ", datas);
+                        var data = deep.utils.copy(datas);
                         
                         if(opt.query)
                         {
@@ -426,11 +430,11 @@ return function(deep){
                             deep.utils.up(content, data);
                         }
                         //console.log("patch will put : ", data, opt);
-                        opt.retrievedValue = data;
+                        opt.retrievedValue = datas;
                         return self.put(data, opt);
                     })
                     .fail(function(error){
-                        return deep.when(deep.errors.Patch("oerror on : "+opt.id, error));
+                        return deep.when(error);
                     });
                 },
                 rpc:function(method, args, id, options)
