@@ -342,27 +342,75 @@ return function(deep){
         };
 
         deep.store.ObjectSheet = {
+            "dq.up::./[get,post,put,patch]":deep.compose.after(function(result){
+                if(!this.schema)
+                    return result;
+                deep.utils.remove(result, ".//?_schema.private=true");
+                return result;
+            }),
+            "dq.up::./put":deep.compose.before(function(object, options){
+                var r = this.checkForUpdate(object, options);
+                if(r instanceof Error)
+                    return r;
+                return [object, options];
+            }),
             "dq.up::./!":{
+                config:{
+                    //ownerRestiction:true
+                },
                 methods:{
                     relation:function(handler, relationName){
                         return handler.relation(relationName);
                     }
                 },
+                checkForUpdate:function(object, data, opt){
+                    if(!this.schema)
+                        return true;
+                    if(this.schema.ownerRestiction === true)
+                        if(deep.context.session && deep.context.session.remoteUser)
+                        {
+                            if(object.userID !== deep.context.session.remoteUser.id)
+                                return deep.errors.Owner();
+                        }
+                    var nodes = deep.query(this.schema, ".//!?readonly=true", { resultType:'full'});
+
+                    if(!nodes)
+                        return true;
+                    var ok = nodes.every(function(e){
+                        var q = getValuesQueryBySchemaPath(object, e.path, '/');
+                        var objs = deep.query(data, q, { resultType:'full', allowStraightQueries:false });
+                        if(!objs)
+                            return true;
+                        return objs.every(function(o){
+                            var val = deep.utils.retrieveValueByPath(object, o.path, '/');
+                            return deep.utils.deepEqual(val, o.value);
+                        });
+                    });
+                    if(!ok)
+                        return deep.errors.PreconditionFail();
+                    return true;
+                },
+                getForUpdate:function(id, object, opt){
+                    var data = null;
+                    if(opt.retrievedValue)
+                        data = opt.retrievedValue;
+                    else
+                        data = this.get(id, opt);
+                    return data;
+                },
                 patch:function (content, opt) {
                     //console.log("ObjectSheet patch : ", content, opt);
                     opt = opt || {};
+                    var self = this;
                     deep.utils.decorateUpFrom(this, opt, ["baseURI"]);
                     opt.id = opt.id || content.id;
                     if(!opt.id)
                         return deep.when(deep.errors.Patch("json stores need id on PATCH"));
-                    var self = this;
-                    return self.get(opt.id, opt)
-                    .fail(function(error){
-                        return deep.when(deep.errors.Patch("object doesn't exists : please POST in place of PATCH. path : "+opt.id, error));
-                    })
+                    return this.getForUpdate(opt.id, content, opt)
                     .done(function(data){
                         //console.log("patch : get object : ", data);
                         data = deep.utils.copy(data);
+                        
                         if(opt.query)
                         {
                             deep.query(data, opt.query, { resultType:"full", allowStraightQueries:false })
@@ -378,7 +426,11 @@ return function(deep){
                             deep.utils.up(content, data);
                         }
                         //console.log("patch will put : ", data, opt);
+                        opt.retrievedValue = data;
                         return self.put(data, opt);
+                    })
+                    .fail(function(error){
+                        return deep.when(deep.errors.Patch("oerror on : "+opt.id, error));
                     });
                 },
                 rpc:function(method, args, id, options)
@@ -470,11 +522,19 @@ return function(deep){
             'dq.up::./post':deep.compose.around(function(old){
                 return function (content, opt) {
                     opt = opt || {};
-                    var schema = this.schema;
+                    var schema = this.schema || opt.schema;
                     if(schema)
                     {
                         if(schema._deep_ocm_)
                             schema = schema("post");
+
+                        if(schema.ownerRestiction === true)
+                        {
+                            if(!deep.context || !deep.context.session || !deep.context.session.remoteUser)
+                                return deep.when(deep.errors.Owner());
+                            if(content.userID !== deep.context.session.remoteUser.id)
+                                return deep.when(deep.errors.Owner());
+                        }
                         var report = deep.validate(content, schema);
                         if(!report.valid)
                             return deep.when(deep.errors.PreconditionFail("post failed", report));
