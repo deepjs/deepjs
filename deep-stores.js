@@ -341,8 +341,12 @@ return function(deep){
             })
         };
 
+        /*
+         *  
+         */
+
         deep.store.ObjectSheet = {
-            "dq.up::./[get,post,put,patch]":deep.compose.after(function(result){
+            "dq.up::./[post,put,patch]":deep.compose.after(function(result){
                 //console.log("private check : ", this.schema, result);
                 if(!this.schema)
                     return result;
@@ -350,12 +354,48 @@ return function(deep){
                 //console.log("res : ", res);
                 return result;
             }),
-            /*"dq.up::./put":deep.compose.before(function(object, options){
-                var r = this.checkForUpdate(object, options);
-                if(r instanceof Error)
-                    return r;
-                return [object, options];
-            }),*/
+            "dq.up::./get":deep.compose.around(function(old){
+                return function(id, options){
+                    var schema = this.schema;
+
+                    if(schema && schema.ownerRestriction === true)
+                        if(!deep.context.session || !deep.context.session.remoteUser)
+                            return deep.when(deep.errors.Owner());
+
+                    return deep.when(old.apply(this, [id, options]))
+                    .done(function(res){
+                        //console.log("private check : ", schema, res);
+                        if(!schema)
+                            return res;
+                        if(id && id[0] == '?')
+                        {
+                            if(schema.ownerRestriction === true)
+                                deep.utils.remove(res, './*?userID='+deep.context.session.remoteUser.id);
+                            deep.utils.remove(res, ".//!?_schema.private=true", { type:"array", items:schema });
+                        }
+                        else {
+                            if(schema.ownerRestriction === true && res.userID !== deep.context.session.remoteUser.id)
+                                return deep.errors.Owner();
+                            deep.utils.remove(res, ".//!?_schema.private=true", schema);
+                        }
+                        //console.log("res : ", res);
+                        return res;
+                    });
+                };
+            }),
+            "dq.up::./del":deep.compose.before(function(id, options)
+            { 
+                if(this.schema && this.schema.ownerRestriction)
+                {
+                    if(!deep.context.session || !deep.context.session.remoteUser)
+                        return deep.when(deep.errors.Owner());
+                    if(id[0] == '?')
+                        id += "&userID="+deep.context.session.remoteUser.id;
+                    else
+                        id = "?id="+id+"&userID="+deep.context.session.remoteUser.id;
+                }
+                return [id, options];
+            }),
             "dq.up::./!":{
                 config:{
                     //ownerRestiction:true
@@ -365,23 +405,12 @@ return function(deep){
                         return handler.relation(relationName);
                     }
                 },
-                checkForUpdate:function(object, data, opt){
-                    //console.log("check for update : ", object, data, deep.context);
+                checkReadOnly:function(object, data){
                     if(!this.schema)
                         return true;
-                    if(this.schema.ownerRestriction === true)
-                        if(deep.context.session && deep.context.session.remoteUser)
-                        {
-                            //console.log("check owner on session : ", object.userID, deep.context.session.remoteUser.id)
-                            if(object.userID !== deep.context.session.remoteUser.id)
-                                return deep.errors.Owner();
-                        }
-                        else
-                            return deep.errors.Owner();
-
                     var nodes = deep.query(data, ".//?_schema.readOnly=true", { resultType:'full', schema:this.schema });
                     //console.log("nodes :", nodes);
-                    if(!nodes || nodes.length == 0)
+                    if(!nodes || nodes.length === 0)
                         return true;
                     var ok = nodes.every(function(e){
                         var toCheck = deep.query(object, e.path);
@@ -393,6 +422,24 @@ return function(deep){
                     if(!ok)
                         return deep.errors.PreconditionFail();
                     return true;
+                },
+                checkOwnerShip:function(object){
+                    if(!this.schema)
+                        return true;
+                    if(this.schema.ownerRestriction === true)
+                        if(deep.context.session && deep.context.session.remoteUser)
+                        {
+                            //console.log("check owner on session : ", object.userID, deep.context.session.remoteUser.id)
+                            if(object.userID !== deep.context.session.remoteUser.id)
+                                return deep.errors.Owner();
+                        }
+                        else
+                            return deep.errors.Owner();
+                    return true;
+                },
+                checkForUpdate:function(object, data){
+                    //console.log("check for update : ", object, data, deep.context);
+                    return this.checkOwnerShip(object, data) && this.checkReadOnly(object, data);
                 },
                 getForUpdate:function(id, opt){
                     var data = null;
@@ -410,9 +457,9 @@ return function(deep){
                     opt.id = opt.id || content.id;
                     if(!opt.id)
                         return deep.when(deep.errors.Patch("json stores need id on PATCH"));
-                    return this.getForUpdate(opt.id, opt)
+                    return deep.when(this.getForUpdate(opt.id, opt))
                     .done(function(datas){
-                        ///console.log("patch : get object : ", datas);
+                        //console.log("patch : get object : ", datas);
                         var data = deep.utils.copy(datas);
                         
                         if(opt.query)

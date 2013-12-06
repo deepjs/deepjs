@@ -94,43 +94,45 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-
-                var r = this.getForUpdate("./*?id=" + id, options);
-                if (!r || r.length === 0)
-                    return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
-                if(!options.retrievedValue)
-                    r = r.shift();
-                //console.log("collection put : get old : ", r, object);
-                var old = r;
-                if(options.query)
-                {
-                    r = deep.utils.copy(r);
-                    deep.utils.replace(r, options.query, object);
-                }
-                else
-                {
-                    if(!object.id)
-                        object.id = options.id;
-                    r = object;
-                }
-
                 var schema = this.schema;
-                if(schema)
-                {
-                    if(schema._deep_ocm_)
-                        schema = schema("put");
+                var self = this;
+                return deep.when(this.getForUpdate(id, options))
+                .done(function(r){
+                    if (!r || r.length === 0)
+                        return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
+                    //if(!options.retrievedValue)
+                     //   r = r.shift();
+                    //console.log("collection put : get old : ", r, object);
+                    var old = r;
+                    if(options.query)
+                    {
+                        r = deep.utils.copy(r);
+                        deep.utils.replace(r, options.query, object);
+                    }
+                    else
+                    {
+                        if(!object.id)
+                            object.id = options.id;
+                        r = object;
+                    }
 
-                    var check = this.checkForUpdate(old, r, options);
-                    //console.log("after check : ", check);
-                    if(check instanceof Error)
-                        return deep.when(check);
+                    if(schema)
+                    {
+                        if(schema._deep_ocm_)
+                            schema = schema("put");
 
-                    var report = deep.validate(r, schema);
-                    if(!report.valid)
-                        return deep.when(deep.errors.PreconditionFail(report));
-                }
-                deep.utils.replace(col, "./*?id=" + id, r);
-                return deep.when(r);
+                        var check = self.checkForUpdate(old, r, options);
+                        //console.log("after check : ", check);
+                        if(check instanceof Error)
+                            return deep.when(check);
+
+                        var report = deep.validate(r, schema);
+                        if(!report.valid)
+                            return deep.when(deep.errors.PreconditionFail(report));
+                    }
+                    deep.utils.replace(col, "./*?id=" + id, r);
+                    return r;
+                });
             },
             /**
              * @method post
@@ -165,10 +167,18 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-                var removed = deep.utils.remove(col, "./*?id=" + id);
-                if (removed)
-                    removed = removed.shift();
-                return deep.when(removed);
+                if(!id)
+                    return deep.when(deep.errors.Delete("delete need an id or a query"));
+                var q = null;
+                if(id[0] == '?')
+                    q = "./*"+id;
+                else
+                    q = "./*?id=" + id;
+                //console.log("collection delete : ", q)
+                var removed = deep.utils.remove(col, q);
+                if (!removed || removed.length == 0)
+                    return deep.when(false);
+                return deep.when(true);
             },
             /**
              * @method patch
