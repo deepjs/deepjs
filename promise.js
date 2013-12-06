@@ -15,7 +15,7 @@ return function(deep)
      * @static
      * @method when
      * @param  {Object} arg an object to waiting for
-     * @return {deep.when} a promise
+     * @return {deep.Promise} a promise
      */
     deep.when = function deepPromise(arg) {
         //console.log("deep.when : ", arg)
@@ -43,7 +43,7 @@ return function(deep)
         return deep.when.immediate(arg);
     };
     deep.when.immediate = function (result) {
-        var prom = new deep.when();
+        var prom = new deep.Promise();
         return prom._start(result);
     };
 
@@ -53,7 +53,7 @@ return function(deep)
      * @static
      * @method all
      * @param  {Object} arg an array of objects to waiting for
-     * @return {deep.when} a promise
+     * @return {deep.Promise} a promise
      */
     deep.all = function deepAll() {
         var arr = [];
@@ -166,10 +166,10 @@ return function(deep)
         /**
          * return a promise for this deferred
          * @method promise
-         * @return {deep.when}
+         * @return {deep.Promise}
          */
         promise: function promiseDef() {
-            var prom = new deep.when();
+            var prom = new deep.Promise();
             //console.log("deep2.Deffered.promise : ", prom, " r,r,c : ", this.rejected, this.resolved, this.canceled)
             if (this.resolved || this.rejected || this.canceled)
                 return prom._start(this._success, this._error);
@@ -178,7 +178,7 @@ return function(deep)
         }
     };
 
-    deep.when = function deepPromiseConstructor(options) {
+    deep.Promise = function deepPromiseConstructor(options) {
         options = options || {};
         this._context = deep.context;
         this._queue = [];
@@ -192,7 +192,7 @@ return function(deep)
         this._deep_promise_ = true;
     };
 
-    deep.when.prototype = {
+    deep.Promise.prototype = {
         _forceHandle: deep.utils.forceHandle,
         _queue: null,
         _success: null,

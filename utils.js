@@ -1398,7 +1398,7 @@ define(function(require){
      * @method sequence
      * @param  {String} funcs an array of functions to execute sequentially
      * @param  {Object} args (optional) some args to pass to first functions
-     * @return {deep.when} a promise
+     * @return {deep.Promise} a promise
      */
     utils.series = function (funcs, context, args) {
         if (!funcs || funcs.length === 0)
@@ -1591,7 +1591,7 @@ define(function(require){
 
 	 * @private
 	 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-	 * @return {deep.when} a promise
+	 * @return {deep.Promise} a promise
 	 */
     utils.extendsChilds = function(entry) {
         if (!entry._isDQ_NODE_)
@@ -1632,7 +1632,7 @@ define(function(require){
      * @method  extendsBackgrounds
      * @private
      * @param  {DeepEntry} entry from where seeking after backgrounds properties
-     * @return {deep.when} a promise
+     * @return {deep.Promise} a promise
      */
     utils.extendsBackgrounds = function(entry) {
         //console.log("extends backgrounds of : ", entry, " - root ?  : ", entry.root)

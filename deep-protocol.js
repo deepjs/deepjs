@@ -192,6 +192,7 @@ define(["require","./deep"], function (require, deep) {
             else
                 return res;
         };
+        //console.log("before crash : ", infos.store)
         return deep.when(infos.store)
         .done(doAction);
     };
