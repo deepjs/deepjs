@@ -199,10 +199,25 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                 var col = this.collection;
                 if(this.collection._deep_ocm_)
                     col = this.collection();
-                query = query || "";
-                query += "&limit("+((end-start)+1)+","+start+")";
-                var res = deep.query(col, "./*?"+query);
-                return deep.utils.createRangeObject(start, end, this.collection.length, res.length, res, query);
+                  var res = null;
+                  var total = 0;
+                  query = query || "";
+
+                  if(query)
+                  {
+                    res = deep.query(col, "./*"+query);
+                    total = res.length;
+                    res = res.slice(start, end+1);
+                    end = start+res.length-1;
+                  }
+                  else
+                  {
+                    res = col.slice(start, end+1);
+                    total = col.length;
+                  }
+                  query += "&limit("+((end-start)+1)+","+start+")";
+
+                  return deep.utils.createRangeObject(start, end, total, res.length, deep.utils.copy(res), query);
             },
             flush:function(){
                 this.collection = [];
