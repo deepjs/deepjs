@@ -515,7 +515,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     };
     deep.Chain.prototype = {};
 
-    deep.utils.bottom(deep.Promise.prototype, deep.BaseChain.prototype);
+    deep.utils.bottom(deep.when.prototype, deep.BaseChain.prototype);
     deep.utils.bottom(deep.BaseChain.prototype, deep.Chain.prototype);
 
     deep.Chain.addHandle = function addChainHandle(name, func) {

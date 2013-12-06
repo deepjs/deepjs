@@ -57,7 +57,7 @@
             "modules": {},
             "classes": {
                 "deep.Deferred": 1,
-                "deep.Promise": 1
+                "deep.when": 1
             },
             "fors": {
                 "deep": 1,
@@ -205,7 +205,7 @@
                 "deep.Composer": 1,
                 "deep.compose": 1,
                 "deep.Deferred": 1,
-                "deep.Promise": 1,
+                "deep.when": 1,
                 "deep.deep": 1,
                 "deep.Query": 1,
                 "deep.roles": 1,
@@ -531,9 +531,9 @@
             "description": "A deep implementation of Deferred object (see promise on web)",
             "is_constructor": 1
         },
-        "deep.Promise": {
-            "name": "deep.Promise",
-            "shortname": "deep.Promise",
+        "deep.when": {
+            "name": "deep.when",
+            "shortname": "deep.when",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -1527,7 +1527,7 @@
             "name": "promise",
             "return": {
                 "description": "",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.Deferred",
             "module": "deep",
@@ -1550,7 +1550,7 @@
                 "description": "this",
                 "type": "deep.Deferred"
             },
-            "class": "deep.Promise",
+            "class": "deep.when",
             "module": "deep",
             "namespace": "deep"
         },
@@ -1571,7 +1571,7 @@
                 "description": "this",
                 "type": "deep.Deferred"
             },
-            "class": "deep.Promise",
+            "class": "deep.when",
             "module": "deep",
             "namespace": "deep"
         },
@@ -1597,7 +1597,7 @@
                 "description": "this",
                 "type": "deep.Deferred"
             },
-            "class": "deep.Promise",
+            "class": "deep.when",
             "module": "deep",
             "namespace": "deep"
         },
@@ -1610,7 +1610,7 @@
                 "description": "",
                 "type": "[type]"
             },
-            "class": "deep.Promise",
+            "class": "deep.when",
             "module": "deep",
             "namespace": "deep"
         },
@@ -1629,7 +1629,7 @@
             ],
             "return": {
                 "description": "a promise",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.deep",
             "module": "deep"
@@ -1650,7 +1650,7 @@
             ],
             "return": {
                 "description": "a promise",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.deep",
             "module": "deep",
@@ -1672,7 +1672,7 @@
             ],
             "return": {
                 "description": "a promise",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.deep",
             "module": "deep",
@@ -2757,7 +2757,7 @@
             "line": 628,
             "description": "asynch handler for chain branches creation\n\nif you return the branches function (the branch creator) : the chain will wait until all the branches are done before continuing\n\n Inject function result in chain as success or error.",
             "example": [
-                "\n\tchain.branches( function(branches)\n\t{\n\t\tbranches.branch().query(...).load().log()\n\t\tbranches.branch().query(...).post().log();\n\t\t//...\n\t\treturn branches;\n\t});\n\n\t// if you want to return a subset of branches promises : \n\t// you could use deep.all([array_of_promises]) :\n\n\t\tvar branch = branches.branch().myChain()...;\n\t\t//...\n\t\treturn deep.all([deep.promise(branch), ...]);"
+                "\n\tchain.branches( function(branches)\n\t{\n\t\tbranches.branch().query(...).load().log()\n\t\tbranches.branch().query(...).post().log();\n\t\t//...\n\t\treturn branches;\n\t});\n\n\t// if you want to return a subset of branches promises : \n\t// you could use deep.all([array_of_promises]) :\n\n\t\tvar branch = branches.branch().myChain()...;\n\t\t//...\n\t\treturn deep.all([deep.when(branch), ...]);"
             ],
             "itemtype": "method",
             "name": "branches",
@@ -2788,7 +2788,7 @@
                 {
                     "name": "prom",
                     "description": "the promise to waiting for",
-                    "type": "deep.Promise"
+                    "type": "deep.when"
                 }
             ],
             "chainable": 1,
@@ -3280,7 +3280,7 @@
             ],
             "return": {
                 "description": "a promise",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.Chain",
             "module": "deep",
@@ -3303,7 +3303,7 @@
             ],
             "return": {
                 "description": "a promise",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.Chain",
             "module": "deep",
@@ -3879,7 +3879,7 @@
             "description": "return a promise for the chain.",
             "return": {
                 "description": "",
-                "type": "deep.Promise"
+                "type": "deep.when"
             },
             "class": "deep.Chain",
             "module": "deep",

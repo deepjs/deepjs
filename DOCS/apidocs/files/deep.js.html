@@ -61,7 +61,7 @@
             
                 <li><a href="../classes/deep.Deferred.html">deep.Deferred</a></li>
             
-                <li><a href="../classes/deep.Promise.html">deep.Promise</a></li>
+                <li><a href="../classes/deep.when.html">deep.when</a></li>
             
                 <li><a href="../classes/deep.Query.html">deep.Query</a></li>
             
@@ -800,7 +800,7 @@ function(require)
 		*
 		*		var branch = branches.branch().myChain()...;
 		*		//...
-		*		return deep.all([deep.promise(branch), ...]);
+		*		return deep.all([deep.when(branch), ...]);
 		 * 
 		 * @method  branches
 		 * @async
@@ -853,7 +853,7 @@ function(require)
 		 *	transparent false
 		 * 
 		 * @method  when
-		 * @param  {deep.Promise} prom the promise to waiting for
+		 * @param  {deep.when} prom the promise to waiting for
 		 * @chainable
 		 * @return {deep.Chain}
 		 */
@@ -1624,7 +1624,7 @@ function(require)
 		
 		 * @private
 		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-		 * @return {deep.Promise} a promise
+		 * @return {deep.when} a promise
 		 */
 		extendsChilds : function(entry)
 		{
@@ -1657,7 +1657,7 @@ function(require)
 		 * @method  extendsBackgrounds
 		 * @private
 		 * @param  {DeepEntry} entry from where seeking after backgrounds properties
-		 * @return {deep.Promise} a promise
+		 * @return {deep.when} a promise
 		 */
 		extendsBackgrounds:function (entry)
 		{
@@ -3082,7 +3082,7 @@ function(require)
 		},
 		/**
 		 * return a promise for the chain.
-		 * @return {deep.Promise}
+		 * @return {deep.when}
 		 */
 		promise:function () {
 			this._listened = true;

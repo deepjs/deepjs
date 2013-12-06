@@ -15,6 +15,36 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
             delete deep.context.session;
         },
         tests : {
+            get:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                return deep.store(store)
+                .get("u1")
+                .equal({ id:"u1", email:"gilles.coomans@gmail.com" });
+            },
+            post:function(){
+                var store = deep.store.Collection.create(null, []);
+                return deep.store(store)
+                .post({ id:"u1", email:"gilles.coomans@gmail.com" })
+                .equal({ id:"u1", email:"gilles.coomans@gmail.com" })
+                .get("u1")
+                .equal({ id:"u1", email:"gilles.coomans@gmail.com" });
+            },
+            put:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com" }]);
+                return deep.store(store)
+                .put({ id:"u1", email:"gilles@gmail.com" })
+                .equal({ id:"u1", email:"gilles@gmail.com" })
+                .get("u1")
+                .equal({ id:"u1", email:"gilles@gmail.com" });
+            },
+            patch:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com" }]);
+                return deep.store(store)
+                .patch({ email:"gilles@gmail.com" }, { id:"u1"})
+                .equal({ id:"u1", email:"gilles@gmail.com" })
+                .get("u1")
+                .equal({ id:"u1", email:"gilles@gmail.com" });
+            },
            "privateGet":function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
                     properties:{

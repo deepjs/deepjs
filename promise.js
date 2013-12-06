@@ -15,10 +15,10 @@ return function(deep)
      * @static
      * @method when
      * @param  {Object} arg an object to waiting for
-     * @return {deep.Promise} a promise
+     * @return {deep.when} a promise
      */
     deep.when = function deepPromise(arg) {
-        //console.log("deep.promise : ", arg)
+        //console.log("deep.when : ", arg)
         if (typeof arg === "undefined" || arg === null)
             return deep.when.immediate(arg);
         if(arg._deep_chain_)
@@ -43,7 +43,7 @@ return function(deep)
         return deep.when.immediate(arg);
     };
     deep.when.immediate = function (result) {
-        var prom = new deep.Promise();
+        var prom = new deep.when();
         return prom._start(result);
     };
 
@@ -53,7 +53,7 @@ return function(deep)
      * @static
      * @method all
      * @param  {Object} arg an array of objects to waiting for
-     * @return {deep.Promise} a promise
+     * @return {deep.when} a promise
      */
     deep.all = function deepAll() {
         var arr = [];
@@ -166,10 +166,10 @@ return function(deep)
         /**
          * return a promise for this deferred
          * @method promise
-         * @return {deep.Promise}
+         * @return {deep.when}
          */
         promise: function promiseDef() {
-            var prom = new deep.Promise();
+            var prom = new deep.when();
             //console.log("deep2.Deffered.promise : ", prom, " r,r,c : ", this.rejected, this.resolved, this.canceled)
             if (this.resolved || this.rejected || this.canceled)
                 return prom._start(this._success, this._error);
@@ -178,7 +178,7 @@ return function(deep)
         }
     };
 
-    deep.Promise = function deepPromiseConstructor(options) {
+    deep.when = function deepPromiseConstructor(options) {
         options = options || {};
         this._context = deep.context;
         this._queue = [];
@@ -192,7 +192,7 @@ return function(deep)
         this._deep_promise_ = true;
     };
 
-    deep.Promise.prototype = {
+    deep.when.prototype = {
         _forceHandle: deep.utils.forceHandle,
         _queue: null,
         _success: null,
@@ -476,7 +476,7 @@ return function(deep)
          *  transparent false
          *
          * @method  when
-         * @param  {deep.Promise} prom the promise to waiting for
+         * @param  {deep.when} prom the promise to waiting for
          * @chainable
          * @return {deep.Chain}
          */

@@ -50,7 +50,7 @@ deep.when( something )
 
 ## Natural conditional branching
 
-A difference between deep.Promise and other promises (as I know today), is that here : done, fail and always callbacks are executed in chain environnement. i.e. when you use 'this' in such callbacks, you have access to chain handler (deep.Promise or deep.Chain) API.
+A difference between deep.when and other promises (as I know today), is that here : done, fail and always callbacks are executed in chain environnement. i.e. when you use 'this' in such callbacks, you have access to chain handler (deep.when or deep.Chain) API.
 
 The cool trick here is that when such callback are executed, current queue (i.e. the functions that was placed in chain (through chain API) and that are not consummed yet) is backup and replaced by an empty queue.
 

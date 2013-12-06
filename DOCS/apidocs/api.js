@@ -5,7 +5,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "deep.Chain",
         "deep.Composer",
         "deep.Deferred",
-        "deep.Promise",
+        "deep.when",
         "deep.Query",
         "deep.Role",
         "deep.Validator",
