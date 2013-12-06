@@ -2757,7 +2757,7 @@
             "line": 628,
             "description": "asynch handler for chain branches creation\n\nif you return the branches function (the branch creator) : the chain will wait until all the branches are done before continuing\n\n Inject function result in chain as success or error.",
             "example": [
-                "\n\tchain.branches( function(branches)\n\t{\n\t\tbranches.branch().query(...).load().log()\n\t\tbranches.branch().query(...).post().log();\n\t\t//...\n\t\treturn branches;\n\t});\n\n\t// if you want to return a subset of branches promises : \n\t// you could use deep.all([array_of_promises]) :\n\n\t\tvar branch = branches.branch().myChain()...;\n\t\t//...\n\t\treturn deep.all([deep.promise(branch), ...]);"
+                "\n\tchain.branches( function(branches)\n\t{\n\t\tbranches.branch().query(...).load().log()\n\t\tbranches.branch().query(...).post().log();\n\t\t//...\n\t\treturn branches;\n\t});\n\n\t// if you want to return a subset of branches promises : \n\t// you could use deep.all([array_of_promises]) :\n\n\t\tvar branch = branches.branch().myChain()...;\n\t\t//...\n\t\treturn deep.all([deep.when(branch), ...]);"
             ],
             "itemtype": "method",
             "name": "branches",

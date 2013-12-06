@@ -18,7 +18,7 @@ return function(deep)
      * @return {deep.Promise} a promise
      */
     deep.when = function deepPromise(arg) {
-        //console.log("deep.promise : ", arg)
+        //console.log("deep.when : ", arg)
         if (typeof arg === "undefined" || arg === null)
             return deep.when.immediate(arg);
         if(arg._deep_chain_)

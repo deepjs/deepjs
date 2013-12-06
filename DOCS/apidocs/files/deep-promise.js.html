@@ -306,16 +306,16 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			var self = this;
 			var	func = function(s,e)
 			{
-				//console.log(&quot;deep.promise.done : &quot;,s,e)
+				//console.log(&quot;deep.when.done : &quot;,s,e)
 				if(e || !callBack || s instanceof Error)
 				{
-					//console.log(&quot;deep.promise.done : but error : &quot;,e)
+					//console.log(&quot;deep.when.done : but error : &quot;,e)
 					forceNextPromiseHandler(self, s, e);
 					return;
 				}
 				var r = callBack(s);
 				if(r &amp;&amp; (r instanceof deep.Chain || r._isBRANCHES_ || r.promise))
-					r = deep.promise(r);
+					r = deep.when(r);
 				if(r &amp;&amp; typeof r.then === &#x27;function&#x27;)
 					r.then(function (argument)
 					{
@@ -350,7 +350,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			//console.log(&quot;add fail in defInterface&quot;)
 			var func = function(s,e)
 			{
-				//console.log(&quot;deep.promise.fail : &quot;,s,e)
+				//console.log(&quot;deep.when.fail : &quot;,s,e)
 				if((e === null || typeof e === &#x27;undefined&#x27;) || !callBack)
 				{
 					forceNextPromiseHandler(self, s, null);
@@ -465,7 +465,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 			}
 			catch(e)
 			{
-				var msg = &quot;Internal deep.promise error : &quot;;
+				var msg = &quot;Internal deep.when error : &quot;;
 				//console.error(msg, e);
 				if(deep.rethrow)
 					throw e;
@@ -523,9 +523,9 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 	 * @param  {Object} arg  an object on when create a promise
 	 * @return {deep.Promise} a promise
 	 */
-	deep.promise = function(arg)
+	deep.when = function(arg)
 	{
-		//console.log(&quot;deep.promise : &quot;, arg)
+		//console.log(&quot;deep.when : &quot;, arg)
 		if(typeof arg === &quot;undefined&quot; || arg === null)
 			return createImmediatePromise(arg);
 		if(arg._isBRANCHES_)		// chain.branches case
@@ -556,7 +556,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 	 * @param  {Object} arg an object to waiting for
 	 * @return {deep.Promise} a promise
 	 */
-	deep.when = deep.promise;
+	deep.when = deep.when;
 	/**
 	 * return a promise that will be fullfilled when all args are ready (resolve or immediat)
 	 * @for deep
@@ -617,7 +617,7 @@ define([&quot;require&quot;, &quot;deep/deep&quot;], function (require){
 	};
 
 	promise.when = deep.when;
-	promise.promise = deep.promise;
+	promise.promise = deep.when;
 	promise.all = deep.all;
 
 	return deep;

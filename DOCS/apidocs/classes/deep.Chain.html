@@ -1162,7 +1162,7 @@ transparent : not relevant</p>
 
     var branch = branches.branch().myChain()...;
     //...
-    return deep.all([deep.promise(branch), ...]);
+    return deep.all([deep.when(branch), ...]);
 </code></pre>
             </div>
         </div>
