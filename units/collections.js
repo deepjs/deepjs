@@ -3,14 +3,13 @@ if (typeof define !== 'function') {
 }
 
 define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
-    
-    //_______________________________________________________________ GENERIC STORE TEST CASES
-
 
     var unit = {
         title:"deepjs/units/collections",
         stopOnError:false,
-        setup:function(){},
+        setup:function(){
+            delete deep.context.session;
+        },
         clean:function(){
             delete deep.context.session;
         },
@@ -38,6 +37,53 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .get("u1")
                 .equal({ id:"u1", email:"gilles.coomans@gmail.com" });
             },
+            postErrorIfExists:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                return deep.store(store)
+                .post({ id:"u1", email:"gilles.coomans@gmail.com" })
+                .fail(function(error){
+                    if(error && error.status == 409)   // conflict
+                        return "lolipop";
+                })
+                .equal("lolipop");
+            },
+            postProduceId:function(){
+                var store = deep.store.Collection.create(null, []);
+                return deep.store(store)
+                .post({ id:"u1", email:"gilles.coomans@gmail.com" })
+                .done(function(s){
+                    if(!s.id || typeof s.id !== "string")
+                        return deep.errors.Internal("no id produced by deep.store.Collection on post");
+                });
+            },
+            postValidationFailed:function(){
+                var store = deep.store.Collection.create(null, [], {
+                    properties:{
+                        id:{ type:"string", required:true },
+                        title:{ type:"string", required:true }
+                    },
+                    additionalProperties:false
+                });
+                return deep.store(store)
+                .post({ id:"u1", titles:"gilles.coomans@gmail.com" })
+                .fail(function(error){
+                    if(error && error.status == 412)   // Precondition
+                        return "lolipop";
+                })
+                .equal("lolipop");
+            },
+            postValidationOk:function(){
+                var store = deep.store.Collection.create(null, [], {
+                    properties:{
+                        id:{ type:"string", required:true },
+                        title:{ type:"string", required:true }
+                    },
+                    additionalProperties:false
+                });
+                return deep.store(store)
+                .post({ id:"u1", title:"gilles.coomans@gmail.com" })
+                .equal({ id:"u1", title:"gilles.coomans@gmail.com" });
+            },
             put:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
@@ -47,14 +93,80 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
             },
+            putWithQuery:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
+                return deep.store(store)
+                .put("gilles@gmail.com", { id:"u1", query:"/email"})
+                .equal({ id:"u1", email:"gilles@gmail.com" })
+                .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
+                .get("u1")
+                .equal({ id:"u1", email:"gilles@gmail.com" });
+            },
+            putErrorIfNotExists:function(){
+                var store = deep.store.Collection.create(null, []);
+                return deep.store(store)
+                .put({ id:"u1", email:"gilles@gmail.com" })
+                .fail(function(error){
+                     if(error.status == 404)    // not found
+                        return "lolipop";
+                })
+                .equal("lolipop");
+            },
+            putValidationFailed:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", title:"testezzzzz" }], {
+                    properties:{
+                        id:{ type:"string", required:true },
+                        title:{ type:"string", required:true }
+                    },
+                    additionalProperties:false
+                });
+                return deep.store(store)
+                .put({ id:"u1", titles:"test" })
+                .fail(function(error){
+                    if(error && error.status == 412)   // Precondition
+                        return "lolipop";
+                })
+                .equal("lolipop");
+            },
+            putValidationOk:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", title:"testezzzzz" }], {
+                    properties:{
+                        id:{ type:"string", required:true },
+                        title:{ type:"string", required:true }
+                    },
+                    additionalProperties:false
+                });
+                return deep.store(store)
+                .put({ id:"u1", title:"test" })
+                .equal({ id:"u1", title:"test" });
+            },
             patch:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com" }]);
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
                 .patch({ email:"gilles@gmail.com" }, { id:"u1"})
                 .equal({ id:"u1", email:"gilles@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
+            },
+            patchWithQuery:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
+                return deep.store(store)
+                .patch("gilles@gmail.com", { id:"u1", query:"/email"})
+                .equal({ id:"u1", email:"gilles@gmail.com" })
+                .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
+                .get("u1")
+                .equal({ id:"u1", email:"gilles@gmail.com" });
+            },
+            patchErrorIfNotExists:function(){
+                var store = deep.store.Collection.create(null, []);
+                return deep.store(store)
+                .patch({ email:"gilles@gmail.com" }, { id:"u1"})
+                .fail(function(error){
+                    if(error.status == 404) // not found
+                        return "lolipop";
+                })
+                .equal("lolipop");
             },
             del:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com" }]);
@@ -68,6 +180,12 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                         return "lolipop";
                 })
                 .equal("lolipop");
+            },
+            delFalseIfNotExists:function(){
+                var store = deep.store.Collection.create(null, []);
+                return deep.store(store)
+                .del('u1')
+                .equal(false);
             },
             range:function(){
                 var store = deep.store.Collection.create(null, [
@@ -159,6 +277,28 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     args:[1456, "world"],
                     base:"was there before"
                 });
+            },
+            rpcErrorIfNotExists:function(){
+                var checker = {};
+                var store = deep.store.Collection.create(null, [{ id:"u1", base:"was there before"}], null, {
+                    methods:{
+                        testrpc:function(handler, arg1, arg2)
+                        {
+                            checker.throughRPC = true;
+                            checker.args = [arg1, arg2];
+                            checker.base = this.base;
+                            this.decorated = "hello rpc";
+                            return handler.save();
+                        }
+                    }
+                });
+                return deep.store(store)
+                .rpc("testrpc", [1456, "world"], "u2")
+                .fail(function(error){
+                     if(error.status == 404)    // not found
+                        return "lolipop";
+                })
+                .equal("lolipop");
             },
             rpcCopy:function(){
                 var checker = {};
@@ -266,8 +406,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .post({ id:"u2", email:"john.doe@gmail.com", password:"test"})
                 .equal({ id:"u2", email:"john.doe@gmail.com" });
-           },
-           privatePatch:function(){
+            },
+            privatePatch:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
                     properties:{
                         password:{ type:"string", "private":true }
@@ -276,8 +416,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .patch({ id:"u1", email:"john.doe@gmail.com" })
                 .equal({ id:"u1", email:"john.doe@gmail.com" });
-           },
-           readOnly:function(){
+            },
+            readOnly:function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", title:"hello" }], {
                     properties:{
                         title:{ readOnly:true, type:"string" }
@@ -286,22 +426,22 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .patch({ id:"i1", title:"should produce error" })
                 .fail(function(e){
-                    if(e && e.status == 412)
+                    if(e && e.status == 412)    // Precondition
                         return "lolipop";
                 })
                 .equal("lolipop");
-           },
-           ownerPatchFail:function(){
+            },
+            ownerPatchFail:function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:true
                 });
                 return deep.store(store)
                 .patch({ id:"i1", label:"yesssss" })
                 .fail(function(e){
-                    if(e && e.status == 403)
-                        return true;
+                    if(e && e.status == 403)    // forbidden
+                        return "choxy";
                 })
-                .equal(true);
+                .equal("choxy");
             },
             "ownerPatchOk":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
@@ -325,10 +465,10 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .put({ id:"i1", label:"yesssss", userID:"u1" })
                 .fail(function(e){
-                    if(e && e.status == 403)
-                        return true;
+                    if(e && e.status == 403)    // forbidden
+                        return "ploup";
                 })
-                .equal(true);
+                .equal("ploup");
             },
             "ownerPutOk":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
@@ -337,7 +477,6 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 deep.context.session = {
                     remoteUser:{ id:"u1" }
                 };
-
                 return deep.store(store)
                 .put({ id:"i1", label:"yesssss", userID:"u1" })
                 .equal({ id:"i1", label:"yesssss", userID:"u1"});
