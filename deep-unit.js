@@ -33,23 +33,30 @@ define(["require","./deep"], function (require, deep) {
             var stopOnError = this.stopOnError;
             if(typeof options.stopOnError !== 'undefined')
                 stopOnError = options.stopOnError;
-            if(console.group)
-                console.group("unit : "+this.title);
-            console.log("\n\n**********************************************************");
-            console.log("*****  deep-unit : will run : ", this.title, " *****");
-            console.log("\tStop on error ? ", stopOnError );
-            console.log("\tNumber of tests : ",functions.length,"\n" );
+            if(options.verbose !== false)
+            {
+                if(console.group)
+                    console.group("unit : "+this.title);
+
+                console.log("\n\n**********************************************************");
+                console.log("*****  deep-unit : will run : ", this.title, " *****");
+                console.log("\tStop on error ? ", stopOnError );
+                console.log("\tNumber of tests : ",functions.length,"\n" );
+            }
             //console.log("\tContext : ",context,"\n\n" );
             var errors = [];
             var self = this;
             
             if(functions.length === 0)
             {
-                console.log("**********************************************************");
-                console.log("************* Nothing to do : aborting unit **************");
-                console.log("**********************************************************");
-                if(console.groupEnd)
-                    console.groupEnd();
+                if(options.verbose !== false)
+                {
+                    console.log("**********************************************************");
+                    console.log("************* Nothing to do : aborting unit **************");
+                    console.log("**********************************************************");
+                    if(console.groupEnd)
+                        console.groupEnd();
+                }
                 return {
                     title:self.title,
                     numberOfTests:0,
@@ -65,16 +72,21 @@ define(["require","./deep"], function (require, deep) {
             var closure = {};
             var applyTest = function(fn)
             {
-                console.log("\n- unit test runned : ", fn.key);
-                console.time(fn.key);
+                if(options.verbose !== false)
+                {
+                    console.log("\n- unit test runned : ", fn.key);
+                    console.time(fn.key);
+                }
                 closure.fn = fn;
                 return deep.when(fn.value.call(self.context))
                 .always(function(s,e){
-                    console.timeEnd(fn.key);
-                    if(e)
-                        console.error("****** test failed ! ******* : ",fn.key, " error : ", e);
-                    else
-                        console.log("\tok !");
+                    if(options.verbose !== false)
+                        console.timeEnd(fn.key);
+                    if(options.verbose !== false)
+                        if(e)
+                            console.error("****** test failed ! ******* : ",fn.key, " error : ", e);
+                        else
+                            console.log("\tok !");
                 });
             };
             var done = function(r)
@@ -91,7 +103,7 @@ define(["require","./deep"], function (require, deep) {
                             test:closure.fn.key,
                             error:error
                         });
-                deep.utils.dumpError(error);
+                //deep.utils.dumpError(error);
                 if(!stopOnError && functions.length > 0)
                     d.when(applyTest(functions.shift())).done(done).fail(fail);
                 return true;
@@ -99,8 +111,11 @@ define(["require","./deep"], function (require, deep) {
             d.done(function(context)
             {
                 self.context = context || {};
-                console.log("\tsetup done.");
-                console.time("unit");
+                if(options.verbose !== false)
+                {
+                    console.log("\tsetup done.");
+                    console.time("unit");
+                }
                 this.when(applyTest(functions.shift()))
                 .done(done)
                 .fail(fail);
@@ -108,34 +123,39 @@ define(["require","./deep"], function (require, deep) {
             .always(function(s,e)
             {
                 //console.log("_______________________________________________ unit test result : ",s,e);
-                console.log("\n*************", self.title, " : time ****************");
-                console.timeEnd("unit");
-                if(e || results.length < numberOfTests || errors.length > 0)
-                    console.warn("*************",self.title," : FAILED **************");
-                else
-                    console.log("*************",self.title," : PASSED **************");
-                
-                if(errors.length > 0)
+                if(options.verbose !== false)
                 {
-                    console.log("\n\tErrors : ");
-                    console.log("\t", e || errors);
-                }
+                    console.log("\n*************", self.title, " : time ****************");
+                    console.timeEnd("unit");
+                    if(e || results.length < numberOfTests || errors.length > 0)
+                        console.warn("*************",self.title," : FAILED **************");
+                    else
+                        console.log("*************",self.title," : PASSED **************");
+                    
+                    if(errors.length > 0)
+                    {
+                        console.log("\n\tErrors : ");
+                        console.log("\t", e || errors);
+                    }
 
-                console.log("\n\tNumber of tests : ", numberOfTests);
-                console.log("\tsuccess : ", results.length-errors.length,"/",numberOfTests);
-                console.log("\tfailure : ", errors.length,"/",numberOfTests);
-                console.log("\tommited : ", numberOfTests-results.length,"/",numberOfTests);
-                
+                    console.log("\n\tNumber of tests : ", numberOfTests);
+                    console.log("\tsuccess : ", results.length-errors.length,"/",numberOfTests);
+                    console.log("\tfailure : ", errors.length,"/",numberOfTests);
+                    console.log("\tommited : ", numberOfTests-results.length,"/",numberOfTests);
+                }
                 return self.clean();
             })
             .always(function(s,e)
             {
-                if(e)
-                    console.log("error while cleanin test : ",self.title, " : ", e);
-                console.log("\n**************", self.title, " cleaned **************");
-                console.log("***********************************************************");
-                if(console.groupEnd)
-                    console.groupEnd();
+                if(options.verbose !== false)
+                {
+                    if(e)
+                        console.log("error while cleanin test : ",self.title, " : ", e);
+                    console.log("\n**************", self.title, " cleaned **************");
+                    console.log("***********************************************************");
+                    if(console.groupEnd)
+                        console.groupEnd();
+                }
                 return {
                     title:self.title,
                     numberOfTests:numberOfTests,
@@ -153,8 +173,12 @@ define(["require","./deep"], function (require, deep) {
 
   
     Unit.run = function(units, options){
-        console.log("\n*******************************************************************");
-        console.log("*************************** Units Bunch ****************************");
+        options = options || {};
+        //if(options.verbose !== false)
+        //{
+            console.log("\n*******************************************************************");
+            console.log("*************************** Units Bunch ****************************");
+        //}
         var alls = [];
         if(!units.forEach)
             units = [units];
@@ -180,11 +204,14 @@ define(["require","./deep"], function (require, deep) {
             var results = [];
             var errors = [];
             var doTest = function(unit){
-                console.log("\n\n\n*************** Executing unit : ", unit.title);
+                if(options.verbose !== false)
+                    console.log("\n\n\n*************** Executing unit : ", unit.title);
                 return deep.when(unit.run("*",options));
             };
             var startTime = new Date().getTime();
-            console.time("bunch");
+
+            //if(options.verbose !== false)
+                console.time("bunch");
             var d = deep.when(doTest(units.shift()));
             var always = function(s,e){
                 if(e)
@@ -202,26 +229,29 @@ define(["require","./deep"], function (require, deep) {
             return d.always(always)
             .always(function(s,e){
                 report.time = new Date().getTime() - startTime;
-                console.log("\n\n\n___________________________________________________________________");
-                console.log("\n*******************************************************************");
-                console.log("************************** Bunch time : ***************************");
-                console.timeEnd("bunch");
-                if(e)
-                    console.log("error while executings tests bunch : ", e);
-                console.log("*******************************************************************");
-                console.log("********** tests bunch arrived to end : final report : ************");
-                //console.log("\n",report,"\n");
-                console.log("\n\tErrors: ", report.errors);
-                console.log("\tNumber of units : ", report.numberOfUnits);
-                console.log("\tNumber of tests : ", report.numberOfTests);
-                console.log("\tsuccess : ", report.success,"/",report.numberOfTests);
-                console.log("\tfailure : ", report.failure,"/",report.numberOfTests);
-                console.log("\tommited : ", report.ommited,"/",report.numberOfTests);
-                console.log("\ttime : ", report.time);
-                //console.log(JSON.stringify(report, null, ' '));
-                console.log("\n*******************************************************************");
-                console.log("*******************************************************************");
-                console.log("___________________________________________________________________\n\n");
+                //if(options.verbose !== false)
+                //{
+                    console.log("\n\n\n___________________________________________________________________");
+                    console.log("\n*******************************************************************");
+                    console.log("************************** Bunch time : ***************************");
+                    console.timeEnd("bunch");
+                    if(e)
+                        console.log("error while executings tests bunch : ", e);
+                    console.log("*******************************************************************");
+                    console.log("********** tests bunch arrived to end : final report : ************");
+                    //console.log("\n",report,"\n");
+                    console.log("\n\tErrors: ", report.errors);
+                    console.log("\tNumber of units : ", report.numberOfUnits);
+                    console.log("\tNumber of tests : ", report.numberOfTests);
+                    console.log("\tsuccess : ", report.success,"/",report.numberOfTests);
+                    console.log("\tfailure : ", report.failure,"/",report.numberOfTests);
+                    console.log("\tommited : ", report.ommited,"/",report.numberOfTests);
+                    console.log("\ttime : ", report.time);
+                    //console.log(JSON.stringify(report, null, ' '));
+                    console.log("\n*******************************************************************");
+                    console.log("*******************************************************************");
+                    console.log("___________________________________________________________________\n\n");
+                //}
                 return report;
             });
         })
