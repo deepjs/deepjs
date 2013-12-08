@@ -96,13 +96,10 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                     col = this.collection();
                 var schema = this.schema;
                 var self = this;
-                return deep.when(this.getForUpdate(id, options))
+                return deep.when(this.get(id, options)) // check ownership at get
                 .done(function(r){
                     if (!r || r.length === 0)
-                        return deep.when(deep.errors.NotFound("no items found in collection with : " + id));
-                    //if(!options.retrievedValue)
-                     //   r = r.shift();
-                    //console.log("collection put : get old : ", r, object);
+                        return deep.errors.NotFound("no items found in collection with : " + id);
                     var old = r;
                     if(options.query)
                     {
@@ -120,19 +117,63 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                     {
                         if(schema._deep_ocm_)
                             schema = schema("put");
-
-                        var check = self.checkForUpdate(old, r, options);
+                        var check = self.checkReadOnly(old, r, options);
                         //console.log("after check : ", check);
                         if(check instanceof Error)
                             return deep.when(check);
 
                         var report = deep.validate(r, schema);
                         if(!report.valid)
-                            return deep.when(deep.errors.PreconditionFail(report));
+                            return deep.errors.PreconditionFail("", report);
                     }
                     deep.utils.replace(col, "./*?id=" + id, r);
                     return r;
                 });
+            },
+            patch:function (content, opt) {
+              //console.log("ObjectSheet patch : ", content, opt);
+              opt = opt || {};
+              var self = this;
+              deep.utils.decorateUpFrom(this, opt, ["baseURI"]);
+              var id = opt.id = opt.id || content.id;
+              if(!opt.id)
+                  return deep.when(deep.errors.Patch("json stores need id on PATCH"));
+              return deep.when(this.get(id, opt)) // check ownership at get
+              .done(function(datas){
+                  if (!datas || datas.length === 0)
+                    return deep.errors.NotFound("no items found in collection with : " + id);
+                  var data = deep.utils.copy(datas);
+                  
+                  if(opt.query)
+                  {
+                      deep.query(data, opt.query, { resultType:"full", allowStraightQueries:false })
+                      .forEach(function(entry){
+                          entry.value = deep.utils.up(content, entry.value);
+                          if(entry.ancestor)
+                              entry.ancestor.value[entry.key] = entry.value;
+                      });
+                      delete opt.query;
+                  }
+                  else
+                      deep.utils.up(content, data);
+                  var schema = self.schema;
+                  if(schema)
+                  {
+                      if(schema._deep_ocm_)
+                          schema = schema("patch");
+                      var check = self.checkReadOnly(datas, data, opt);
+                      if(check instanceof Error)
+                          return deep.when(check);
+                      var report = deep.validate(data, schema);
+                      if(!report.valid)
+                          return deep.errors.PreconditionFail(report);
+                  }
+                  var col = self.collection;
+                  if(self.collection._deep_ocm_)
+                      col = self.collection();
+                  deep.utils.replace(col, "./*?id=" + id, data);
+                  return data;
+              });
             },
             /**
              * @method post
@@ -169,6 +210,15 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                     col = this.collection();
                 if(!id)
                     return deep.when(deep.errors.Delete("delete need an id or a query"));
+                if(this.schema && this.schema.ownerRestriction)
+                {
+                    if(!deep.context.session || !deep.context.session.remoteUser)
+                        return deep.when(deep.errors.Owner());
+                    if(id[0] == '?')
+                        id += "&userID="+deep.context.session.remoteUser.id;
+                    else
+                        id = "?id="+id+"&userID="+deep.context.session.remoteUser.id;
+                }
                 var q = null;
                 if(id[0] == '?')
                     q = "./*"+id;
@@ -215,7 +265,7 @@ define(["require", "../deep", "../deep-stores"], function (require, deep) {
                     res = col.slice(start, end+1);
                     total = col.length;
                   }
-                  query += "&limit("+((end-start)+1)+","+start+")";
+                  query += "&limit("+(res.length)+","+start+")";
 
                   return deep.utils.createRangeObject(start, end, total, res.length, deep.utils.copy(res), query);
             },
