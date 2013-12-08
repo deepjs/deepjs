@@ -47,7 +47,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 })
                 .equal("lolipop");
             },
-            postProduceId:function(){
+            postProducesId:function(){
                 var store = deep.store.Collection.create(null, []);
                 return deep.store(store)
                 .post({ id:"u1", email:"gilles.coomans@gmail.com" })
@@ -60,12 +60,11 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 var store = deep.store.Collection.create(null, [], {
                     properties:{
                         id:{ type:"string", required:true },
-                        title:{ type:"string", required:true }
-                    },
-                    additionalProperties:false
+                        title:{ type:"number", required:true }
+                    }
                 });
                 return deep.store(store)
-                .post({ id:"u1", titles:"gilles.coomans@gmail.com" })
+                .post({ id:"u1", title:"gilles.coomans@gmail.com" })
                 .fail(function(error){
                     if(error && error.status == 412)   // Precondition
                         return "lolipop";
@@ -77,8 +76,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     properties:{
                         id:{ type:"string", required:true },
                         title:{ type:"string", required:true }
-                    },
-                    additionalProperties:false
+                    }
                 });
                 return deep.store(store)
                 .post({ id:"u1", title:"gilles.coomans@gmail.com" })
@@ -196,7 +194,6 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     { id:"u5", count:5 },
                     { id:"u6", count:6 }
                 ]);
-
                 return deep.store(store)
                 .range(2,4)
                 .equal({ _deep_range_: true,
@@ -229,7 +226,6 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                     { id:"u5", count:5 },
                     { id:"u6", count:6 }
                 ]);
-
                 return deep.store(store)
                 .range(2,4, '?count=ge=3')
                 .equal({ _deep_range_: true,
@@ -296,6 +292,28 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 .rpc("testrpc", [1456, "world"], "u2")
                 .fail(function(error){
                      if(error.status == 404)    // not found
+                        return "lolipop";
+                })
+                .equal("lolipop");
+            },
+            rpcMethodNotAllowed:function(){
+                var checker = {};
+                var store = deep.store.Collection.create(null, [{ id:"u1", base:"was there before"}], null, {
+                    methods:{
+                        testrpc:function(handler, arg1, arg2)
+                        {
+                            checker.throughRPC = true;
+                            checker.args = [arg1, arg2];
+                            checker.base = this.base;
+                            this.decorated = "hello rpc";
+                            return handler.save();
+                        }
+                    }
+                });
+                return deep.store(store)
+                .rpc("testrpco", [1456, "world"], "u2")
+                .fail(function(error){
+                     if(error.status == 405)    // not found
                         return "lolipop";
                 })
                 .equal("lolipop");
