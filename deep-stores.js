@@ -169,6 +169,7 @@ return function(deep){
                 var self = this;
                 var func = function (s, e) {
                     var doAction = function(storeHandler){
+                        //console.log("deep.context on chain put : ", deep.context);
                         var store = storeHandler.store;
                         if (!store.put)
                             return deep.errors.Store("provided store doesn't have PUT. aborting PUT !");
@@ -189,11 +190,12 @@ return function(deep){
                 var self = this;
                 var func = function (s, e) {
                     var doAction = function(storeHandler){
+                        //console.log("deep.context on chain patch : ", deep.context);
                         var store = storeHandler.store;
                         if (!store.patch)
                             return deep.errors.Store("provided store doesn't have PATCH. aborting PATCH !");
                         return deep.when(store.patch(object || deep.chain.val(self), id, options))
-                            .done(function (success) {
+                        .done(function (success) {
                             self._nodes = [deep.Querier.createRootNode(success)];
                         });
                     };
@@ -383,7 +385,7 @@ return function(deep){
                     });
                 };
             }),
-            "dq.up::./del":deep.compose.before(function(id, options)
+            /*"dq.up::./del":deep.compose.before(function(id, options)
             { 
                 if(this.schema && this.schema.ownerRestriction)
                 {
@@ -395,8 +397,8 @@ return function(deep){
                         id = "?id="+id+"&userID="+deep.context.session.remoteUser.id;
                 }
                 return [id, options];
-            }),
-            "dq.up::./!":{
+            }),*/
+            "dq.bottom::./!":{
                 config:{
                     //ownerRestiction:true
                 },
@@ -423,7 +425,7 @@ return function(deep){
                         return deep.errors.PreconditionFail();
                     return true;
                 },
-                checkOwnerShip:function(object){
+                checkOwnership:function(object){
                     if(!this.schema)
                         return true;
                     if(this.schema.ownerRestriction === true)
@@ -439,7 +441,7 @@ return function(deep){
                 },
                 checkForUpdate:function(object, data){
                     //console.log("check for update : ", object, data, deep.context);
-                    return this.checkOwnerShip(object, data) && this.checkReadOnly(object, data);
+                    return this.checkOwnership(object, data) && this.checkReadOnly(object, data);
                 },
                 getForUpdate:function(id, opt){
                     var data = null;
@@ -489,14 +491,14 @@ return function(deep){
                     var self = this;
                     options = options || {};
                     if(!this.methods[method])
-                        return deep.when(deep.errors.RPC("no method found with : "+method+". Aborting rpc call !"));
+                        return deep.when(deep.errors.MethodNotAllowed("no method found with : "+method+". Aborting rpc call !"));
                     return this.get(id)
                     .done(function(object){
                         object = deep.utils.copy(object);
                         args.unshift({
                             call:function (method, args) {
                                 if(!self.methods[method])
-                                    return deep.errors.RPC("no method found with : "+method+". Aborting rpc call !");
+                                    return deep.errors.MethodNotAllowed("no method found with : "+method+". Aborting rpc call !");
                                 return self.methods[method].apply(object, args);
                             },
                             save:function(){
@@ -595,7 +597,7 @@ return function(deep){
             })
         };
         return deep;
-    }
+    };
 });
 
 
