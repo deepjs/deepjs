@@ -271,8 +271,77 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 };
 
                 deep.utils.bottom(b, a);
-
-                return deep.when(a.test("bloup")).equal("hello : bloup!");
+                return deep.when(a.test("bloup"))
+                .equal("hello : bloup!");
+            },
+            argsBefore:function(){
+                var checker = {};
+                var a = {
+                    test:function(arg1, arg2){
+                        checker.fromA = [arg1, arg2];
+                        return ["A1:"+arg1, "A2:"+arg2];
+                    }
+                };
+                var b = {
+                    test:deep.compose.before(function(arg1, arg2){
+                        checker.fromB = [arg1, arg2];
+                        return ["B1:"+arg1, "B2:"+arg2];
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep(a.test("hello","world"))
+                .equal(["A1:B1:hello", "A2:B2:world"])
+                .deep(checker)
+                .equal({
+                    fromB:["hello","world"],
+                    fromA:["B1:hello", "B2:world"]
+                });
+            },
+            argsAfter:function(){
+                var checker = {};
+                var a = {
+                    test:function(arg1, arg2){
+                        checker.fromA = [arg1, arg2];
+                        return ["A1:"+arg1, "A2:"+arg2];
+                    }
+                };
+                var b = {
+                    test:deep.compose.after(function(arg1, arg2){
+                        checker.fromB = [arg1, arg2];
+                        return ["B1:"+arg1, "B2:"+arg2];
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep(a.test("hello","world"))
+                .equal(["B1:A1:hello", "B2:A2:world"])
+                .deep(checker)
+                .equal({
+                    fromA:["hello","world"],
+                    fromB:["A1:hello", "A2:world"]
+                });
+            },
+            argsAfterUndefined:function(){
+                var checker = {};
+                var a = {
+                    test:function(arg1, arg2){
+                        checker.fromA = [arg1, arg2];
+                        //return ["A1:"+arg1, "A2:"+arg2];
+                    }
+                };
+                var b = {
+                    test:deep.compose.after(function(arg1, arg2){
+                        checker.fromB = [arg1, arg2];
+                        return ["B1:"+arg1, "B2:"+arg2];
+                    })
+                };
+                deep.utils.up(b,a);
+                return deep(a.test("hello","world"))
+                .equal(["B1:hello", "B2:world"])
+                .deep(checker)
+                .equal({
+                    fromA:["hello","world"],
+                    fromB:["hello", "world"]
+                });
             }
 
 
