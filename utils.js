@@ -306,7 +306,7 @@ define(function(require){
 
 	utils.getValuesQueryBySchemaPath = function (object, schemaPath, pathDelimiter)
 	{
-		//	 /properties/adresses/items
+		// /properties/adresses/items
 		//    /addresses/[]
 		
 		if(path[0] == "/" || path.substring(0,1) == "./")
@@ -1623,7 +1623,7 @@ define(function(require){
         var r = utils.extendsBackgrounds(toExtends);
         return deep.when(r)
             .done(recurse);
-    }
+    };
     /**
      * will perform the backgrounds application FIRSTLY and FULLY (full recursive) on current entries before appying extendsChild.
      *
@@ -1710,10 +1710,7 @@ define(function(require){
             return entry;
         }
         return entry;
-    }
-
-
-
+    };
 	return utils;
 };
 });
