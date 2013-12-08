@@ -11,6 +11,9 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
         title:"deep/units/context",
         stopOnError:false,
         setup:function(){},
+        clean:function(){
+            deep.context = {};
+        },
         tests : {
             setvar:function(){
                 deep.context = {};
