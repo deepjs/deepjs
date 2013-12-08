@@ -289,8 +289,10 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     }
                 } catch (e) {
                     var msg = "Internal chain error : rethrow ? " + self._rethrow;
-                    console.error(msg, e);
-                    deep.utils.dumpError(e);
+                    if(deep.debug)
+                        console.error(msg);
+                    if(deep.debug)
+                        deep.utils.dumpError(e);
                     if (self.rethrow)
                         throw e;
                     self._success = null;
