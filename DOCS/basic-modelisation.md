@@ -6,7 +6,7 @@ Think your objects as bidimensionnal layers that you could stack, where properti
 
 The way and the result of merge depends on collided object's nature and stack order.
 
-Think about photoshop transparent layers stack : pixels from different layers that share same coord are merged together in stack order, and the way that they are merged depend on their fusion mode. 
+Think about photoshop transparent layers stack : pixels from different layers that share same coord are merged together in stack order, and the way that they are merged depends on their fusion mode. 
 
 
 ```javascript
