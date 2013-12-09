@@ -2,7 +2,7 @@ Tutorials
 =====
 
 #### Modelisation and Queries
-deepjs provides tools to modelise and manipulate structures inheritances and compositions.
+deepjs provides tools to modelise and manipulate structures inheritance and compositions.
 For this, it mainly uses Aspects Composition (AOP) principles, and particular queries that allow to navigate-in and select objects structures. The combination of those two paradigme (AOP + queries) gives differents ways to nicely handle objects structures.
 * [basic-modelisation](./basic-modelisation.md)
 * [compositions](./compositions.md)
