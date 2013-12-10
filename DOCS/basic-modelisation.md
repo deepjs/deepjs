@@ -4,9 +4,9 @@
 deepjs define two fondamentals methods that deeply merge objects together : the 'up' and 'bottom' . 
 Think your objects as bidimensionnal layers that you could stack, where properties or functions that share same path (from layers root), as deep as they are, are merged together, in stack order.
 
-The way and the result of merge depends on collided object's nature and stac order.
+The way and the result of merge depends on collided object's nature and stack order.
 
-Think about photoshop transparent layers stack : pixels from different layers that share same coord are merged together in stack order, and the way that they are merged depend on their fusion mode. 
+Think about photoshop transparent layers stack : pixels from different layers that share same coord are merged together in stack order, and the way that they are merged depends on their fusion mode. 
 
 
 ```javascript
