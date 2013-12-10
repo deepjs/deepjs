@@ -286,12 +286,11 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }	
 define(["require"],
-function(require, utils, promise, Querier){
+function(require){
 
 	return function (deep) {
 
 	var utils = deep.utils;
-	var promise = deep;
 	var Querier = deep.Querier;
 
 	
@@ -324,7 +323,7 @@ function(require, utils, promise, Querier){
 		if(this.lexic.type.object.test.apply(this, [value]))
 			return 'object';
 		return null;
-	}
+	};
 
 
 
@@ -544,7 +543,6 @@ function(require, utils, promise, Querier){
 		this.errorsMap = {};
 		this.errors = [];
 		var othis = this;
-		var deferred = promise.Deferred();
 		this.options = options | {};
 		if(!this.options.basePath)
 			this.options.basePath = "";
@@ -556,10 +554,10 @@ function(require, utils, promise, Querier){
 			schema:schema,
 			value:null,
 			date:Date.now(),
-			valid:(othis.errors.length == 0)
-		}
+			valid:(othis.errors.length === 0)
+		};
 		return report;
-	}
+	};
 
 	Validator.prototype.validate = function validate(value, schema, options){
 		//console.log("validate ___________________")
@@ -608,7 +606,7 @@ function(require, utils, promise, Querier){
 		var parts = [];
 		var promises = [];
 		var schemaPaths = [];
-		var deferred = promise.Deferred();
+		var deferred = deep.Deferred();
 		var othis = this;
 		//console.log("Validator", "partialValidation : fieldsToCheck = " + fieldsToCheck);
 	
@@ -630,7 +628,8 @@ function(require, utils, promise, Querier){
 		})
 		
 	
-		promise.all(promises).then(function partialValidationDone(results){
+		deep.all(promises)
+		.then(function partialValidationDone(results){
 			var valid = true;
 			
 			results.forEach(function partialValidationDoneLoopResult(report){
@@ -648,8 +647,8 @@ function(require, utils, promise, Querier){
 			})
 			//console.log("validator", "________________ partialValidation : final errorsMap : "+JSON.stringify(errorsMap));
 			deferred.resolve({ schema:schema, value:object, errorsMap:othis.errorsMap, valid:valid,  date:Date.now(), partial:true })
-		})
-		return promise.promise(deferred);
+		});
+		return deferred.promise();
 	}
 
 	Validator.prototype.validateSchemaProperties = function validateSchemaProperties(value, schema, valuePath, schemaPath)
@@ -673,6 +672,7 @@ function(require, utils, promise, Querier){
 					if(typeof schema.pattern !== 'string' || !this.lexic.__defaultPattern[schema.pattern])
 						this.createError(this.lexic.__additionalErrors.unknownFormatType, schema.pattern, this.getType(schema.pattern), null, null, schemaPath, "pattern");
 				 	break;
+
 				default : 
 					validations.push(this.checkRef(schema[i], this.lexic[i].schema, schemaPath, i+".schema"));
 			}	
@@ -725,7 +725,6 @@ function(require, utils, promise, Querier){
 		else
 		for(var i = 0; i < types.length; ++i)
 		{
-
 			if(types[i] == "schema")
 			{
 				if(type != "object")
