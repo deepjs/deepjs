@@ -754,12 +754,13 @@ function(require){
 
 			schema.dependencies.forEach(function  (dep) {
 				var res = Querier.query(value, dep.query);
-				//console.log("test dependancy query: ", res, " - constraints : ", dep.constraints)
+				console.log("test dependancy query: ", res, " - constraints : ", dep.constraints)
 				if(res.length > 0)
 				{
 					dependenciesMatch = true;
 					var finSchema = deep.utils.up(schema, {});
 					deep.utils.up(dep.constraints, finSchema);
+					delete finSchema.dependencies;
 					var rep = othis.validateProperty(value, finSchema, valuePath, schemaPath);
 					///console.log("dependency validation ? ", rep.valid)
 					ok = ok && rep.valid;
