@@ -758,7 +758,9 @@ function(require){
 				if(res.length > 0)
 				{
 					dependenciesMatch = true;
-					var rep = othis.validateProperty(value, dep.constraints, valuePath, schemaPath);
+					var finSchema = deep.utils.up(schema, {});
+					deep.utils.up(dep.constraints, finSchema);
+					var rep = othis.validateProperty(value, finSchema, valuePath, schemaPath);
 					///console.log("dependency validation ? ", rep.valid)
 					ok = ok && rep.valid;
 				}
