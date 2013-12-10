@@ -84,7 +84,7 @@ define(["require","./deep"], function (require, deep) {
                         console.timeEnd(fn.key);
                     if(options.verbose !== false)
                         if(e)
-                            console.error("****** test failed ! ******* : ",fn.key, " error : ", e);
+                            console.error("****** test failed ! ******* : ",fn.key, " error : ", e, e.report);
                         else
                             console.log("\tok !");
                 });
@@ -108,14 +108,17 @@ define(["require","./deep"], function (require, deep) {
                     d.when(applyTest(functions.shift())).done(done).fail(fail);
                 return true;
             };
-            d.done(function(context)
-            {
-                self.context = context || {};
+            d.always(function(){
                 if(options.verbose !== false)
                 {
                     console.log("\tsetup done.");
                     console.time("unit");
                 }
+            })
+            .done(function(context)
+            {
+                self.context = context || {};
+                
                 this.when(applyTest(functions.shift()))
                 .done(done)
                 .fail(fail);
@@ -204,6 +207,7 @@ define(["require","./deep"], function (require, deep) {
             var results = [];
             var errors = [];
             var doTest = function(unit){
+                unit = new deep.Unit(unit);
                 if(options.verbose !== false)
                     console.log("\n\n\n*************** Executing unit : ", unit.title);
                 return deep.when(unit.run("*",options));
@@ -240,7 +244,13 @@ define(["require","./deep"], function (require, deep) {
                     console.log("*******************************************************************");
                     console.log("********** tests bunch arrived to end : final report : ************");
                     //console.log("\n",report,"\n");
-                    console.log("\n\tErrors: ", report.errors);
+                    console.log("\n\tErrors: ");
+                    report.errors.forEach(function (e) {
+                        console.log(e.unit+":"+e.test, e.error.toString());
+                        if(e.error && e.error.report)
+                            console.log("report : ", report.toString());
+
+                    });
                     console.log("\tNumber of units : ", report.numberOfUnits);
                     console.log("\tNumber of tests : ", report.numberOfTests);
                     console.log("\tsuccess : ", report.success,"/",report.numberOfTests);

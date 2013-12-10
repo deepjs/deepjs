@@ -15,7 +15,7 @@ define(function(require)
 		var res = "Error : "+this.status + " - " + this.message;
 		if(this.report)
 			if(this.report.toString)
-				this.report.toString();
+				res += this.report.toString();
 			else
 				res += " - report : "+JSON.stringify(this.report);
 		return res;

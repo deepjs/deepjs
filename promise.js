@@ -169,7 +169,7 @@ return function(deep)
          * @return {deep.Promise}
          */
         promise: function promiseDef() {
-            var prom = new deep.Promise();
+            var prom = new deep.Promise({ context:this._context});
             //console.log("deep2.Deffered.promise : ", prom, " r,r,c : ", this.rejected, this.resolved, this.canceled)
             if (this.resolved || this.rejected || this.canceled)
                 return prom._start(this._success, this._error);
@@ -180,7 +180,7 @@ return function(deep)
 
     deep.Promise = function deepPromiseConstructor(options) {
         options = options || {};
-        this._context = deep.context;
+        this._context = options.context || deep.context;
         this._queue = [];
         this.oldQueue = null;
         this._success = options._success || null;
@@ -556,5 +556,31 @@ return function(deep)
         }
     };
 
-}
+
+    deep.wrapNodeAsynch = function(parent, cmd, args)
+    {
+        var def = deep.Deferred();
+        //console.log("wrapNodeAsynch : ", typeof parent, cmd);
+        var callback = function(){
+            var argus = Array.prototype.slice.apply(arguments);
+            //console.log("wrapNode callBack direct response : ",argus);
+            var err = argus.shift();
+            if(err)
+                def.reject(err);
+            else
+                def.resolve(argus);
+        };
+        args.push(callback);
+        if(parent)
+        {
+            if(typeof cmd === 'string')
+                parent[cmd].apply(parent, args);
+            else
+                cmd.apply(parent, args);
+        }
+        else
+            cmd.apply({}, args);
+        return def.promise();
+    };
+};
 });

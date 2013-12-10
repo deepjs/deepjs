@@ -1019,6 +1019,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
             var self = this;
             args = args || [];
             var doRun = function(node){
+
+                //console.log("doRun : ", node)
                 if (!funcRef) {
                     if (typeof node.value != "function")
                         return;
@@ -1035,6 +1037,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                     return node;
             };
             var create = function (s, e) {
+                //console.log("deep.run : ", funcRef)
 
                 if(!self._queried)
                 {
@@ -1042,7 +1045,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                         return undefined;
                     return doRun(self._nodes[0]);
                 }
-                //console.log("deep.run : ", funcRef)
                 var alls = [];
                 self._nodes.forEach(function (node) {
                     alls.push(doRun(node));
@@ -1050,8 +1052,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
                 return deep.all(alls);
             };
             create._isDone_ = true;
-            addInChain.apply(this, [create]);
-            return this;
+            return addInChain.call(this, create);
         },
         /**
          * exec :  call 'func' with 'args' (the 'this' of the function isn't modified)

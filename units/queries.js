@@ -1017,7 +1017,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
       }
     }
   };
-  return new Unit(unit);
+  return unit;
 });
 
 
