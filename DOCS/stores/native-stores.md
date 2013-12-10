@@ -21,6 +21,18 @@ Docs on object-stores (deep.store.Object) will come quickly.
 
 ## Collection Store API
 
+* get
+* post
+* put
+* patch
+* del
+* query
+* range
+* rpc
+* bulk
+
+See also [privates](./constraints/privates.md), [readOnly](./constraints/readonly.md), [filters](./constraints/filters.md), [sanitize](./constraints/filters.md) and [ownership](./constraints/ownership.md) constraints from schema.
+
 ### Simple usage
 
 ```javascript
@@ -32,7 +44,8 @@ deep.store.Collection.create("myprotocole");  // native collection-memory-store
 deep.store("myprotocole")
 .post( { title:"hello" } )
 .post( { title:"deepjs" } )
-.post( { title:"tools" } );
+.post( { title:"tools" } )
+.log();
 
 //...
 

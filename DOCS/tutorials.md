@@ -12,6 +12,10 @@ For this, it mainly uses Aspects Composition (AOP) principles, and particular qu
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
 * [Object Capabilities Manager](./ocm.md)
+** [Additive vs restrictive](./ocm/ocm-synthesis.md)
+** [Delegation](./ocm/ocm-delegate.md)
+** [Server usages](./ocm/ocm-server.md)
+** [Browser usages](./ocm/ocm-browser.md)
 
 #### Asynch, Promises and Chains
 deepjs uses promises at all level. It provides its own implementation of promises and deferreds that gives smart chained asynch management (natural chain branching, context management, log facilities, ...). As additionnal asynch sugar : it natively offers another particular chain (that inherit from promise's one) to manipulate objects, runtime and other asynch stuffs. 
@@ -27,13 +31,11 @@ As deepjs want to be, by others, an asynch-chain-factory : other useful chains a
 #### Protocoles and Stores
 deepjs provides an absolute homogeneous persistent store API and provides, through its chain, a simple and convinient way to handle store's transactions sequences.
 
-Additionaly, deep's chain manage OCM for you.
-
 * [native protocoles](./stores/native-protocoles.md)
-* [native stores](./stores/native-stores.md)
-* [list of externals modules](./modules.md)
+* [native collection store](./stores/native-stores.md)
+* [ocm, stores and chains](./stores/store-chain.md)
 * [custom protocoles](./stores/custom-protocoles.md)
-* [custom stores](./stores/custom-stores.md)
+* [list of externals modules](./modules.md)
 
 #### JSON Schema usage
 deepjs comes natively with json-schema support and gives tools to handle it.
@@ -41,6 +43,16 @@ deepjs comes natively with json-schema support and gives tools to handle it.
 * [validations](./json-schemas/validations.md)
 * [relations management](./json-schemas/relations.md)
 * [custom schema properties](./json-schemas/custom-schema.md)
+
+#### Owner, privates, filters and readOnly
+Stores could protect ressources through schema custom entries.
+For this, deepjs stores provides mecanism to dynamicaly check readOnly constraint, hide privates proprties or limit access to ressource owner.
+
+* [privates](./constraints/privates.md)
+* [readOnly](./constraints/readonly.md)
+* [ownership](./constraints/ownership.md)
+* [filters](./constraints/filters.md)
+* [sanitize](./constraints/sanitize.md)
 
 #### Tests Units
 deepjs comes with it's own simple asynch unit testcaser. It uses deepjs native chain tools as 'equal', 'validate', 'assert' to test itself. More work need to be done to articulate it more nicely with other tests frameworks. 
