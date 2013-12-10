@@ -28,14 +28,19 @@ As deepjs want to be, by others, an asynch-chain-factory : other useful chains a
 * [promises subtilities](./asynch/promises-subtilities.md)
 * [asynchrone context management](./asynch/asynch-context-management.md)
 
-#### Protocoles and Stores
+#### Protocols
+Protocols provide nice namespaces to store and use datas fetcher and manager
+* [native protocoles](./stores/native-protocoles.md)
+* [custom protocoles](./stores/custom-protocoles.md)
+
+#### Stores
 deepjs provides an absolute homogeneous persistent store API and provides, through its chain, a simple and convinient way to handle store's transactions sequences.
 
-* [native protocoles](./stores/native-protocoles.md)
+The aim is to manage dynamic datas, through JSON/REST API, in exactly the same way, browser or server side. 
+
 * [native collection store](./stores/native-stores.md)
 * [ocm, stores and chains](./stores/store-chain.md)
-* [custom protocoles](./stores/custom-protocoles.md)
-* [list of externals modules](./modules.md)
+* [list of implemented stores](./modules.md)
 
 #### JSON Schema usage
 deepjs comes natively with json-schema support and gives tools to handle it.
