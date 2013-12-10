@@ -12,10 +12,10 @@ For this, it mainly uses Aspects Composition (AOP) principles, and particular qu
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
 * [Object Capabilities Manager](./ocm.md)
-** [Additive vs restrictive](./ocm/ocm-synthesis.md)
-** [Delegation](./ocm/ocm-delegate.md)
-** [Server usages](./ocm/ocm-server.md)
-** [Browser usages](./ocm/ocm-browser.md)
+	* [Additive vs restrictive](./ocm/ocm-synthesis.md)
+	* [Delegation](./ocm/ocm-delegate.md)
+	* [Server usages](./ocm/ocm-server.md)
+	* [Browser usages](./ocm/ocm-browser.md)
 
 #### Asynch, Promises and Chains
 deepjs uses promises at all level. It provides its own implementation of promises and deferreds that gives smart chained asynch management (natural chain branching, context management, log facilities, ...). As additionnal asynch sugar : it natively offers another particular chain (that inherit from promise's one) to manipulate objects, runtime and other asynch stuffs. 
