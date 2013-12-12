@@ -1,6 +1,6 @@
 {
   "name"          : "deepjs",
-  "version"       : "0.9.10",
+  "version"       : "0.9.11",
   "author"        : "Gilles Coomans <gilles.coomans@gmail.com>",
   "description"   : "Powerful atomic tools for managing objects, functions and promises",
   "homepage"      : "http://www.deepjs.org",
