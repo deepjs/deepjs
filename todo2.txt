@@ -1,0 +1,18 @@
+todo : 
+
+
+when flatten : flatten ocm
+
+
+refactor protocols naming
+
+check homogeneity for _deep_flag_ familly
+
+
+deep.store.Restrictions
+
+one protocl space for different kinds of object
+
+
+
+add roles in in autobahn.context.middleware

@@ -19,18 +19,18 @@ return function(deep){
         deep.extensions = [];
     
         /**
-	 * start chain setted with a certain store
-	 * @example
-	 *
-	 * deep.store("json").get("/campaign/").log();
+     * start chain setted with a certain store
+     * @example
+     *
+     * deep.store("json").get("/campaign/").log();
 
-	 *  ...
-	 *  deep.store("campaign").get("?").log()
-	 *
-	 *
-	 * @class deep.store
+     *  ...
+     *  deep.store("campaign").get("?").log()
+     *
+     *
+     * @class deep.store
      * @constructor
-	 */
+     */
     
         deep.store = function (name) {
             //console.log("deep.store(name) : ",name)
@@ -65,11 +65,20 @@ return function(deep){
             }
         };
       
-        deep.Store.forbidden = function(any, options)
-        {
-            return deep.when(deep.errors.Forbidden());
+        deep.Store.forbidden = function(message){
+            return function(any, options)
+            {
+                return deep.when(deep.errors.Forbidden(message));
+            };
         };
 
+        deep.store.Restrictions = function()
+        {
+            var restrictions = {};
+            for(var i in arguments)
+                restrictions[arguments[i]] = deep.Store.forbidden();
+            return restrictions;
+        };
         //______________________________________________________________________ CHAIN DECORATION
         deep.Chain.addHandle("store", function (name) {
             var self = this;
@@ -127,6 +136,7 @@ return function(deep){
                             return deep.errors.Store("provided store doesn't have GET. aborting GET !");
                         if(id[0] == "*")
                             id = id.substring(1);
+                        //console.log("deep-stores : chain.get : store : ", store);
                         return deep.when(store.get(id, options))
                         .done(function (success) {
                             //console.log("success store get : ", success)
