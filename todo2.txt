@@ -1,0 +1,31 @@
+todo : 
+
+
+manage OCM flatten in html and statics routes
+
+
+when flatten object : flatten sub ocm
+
+deep.store.AllowOnly("get","range")
+
+what to do with route params in stores
+
+add roles in in autobahn.context.middleware
+
+
+
+Chain.on("event", callBack) that wrap holded one
+deep.Emitter that conserve context ?
+
+
+refactor protocols naming
+
+check homogeneity for _deep_flag_ familly
+
+one protocol space for different kinds of object (e.g. socket)
+
+
+
+put protocols set in deep.context : ocmise present protocols = mode parano : not possible to change modes by after
+
+

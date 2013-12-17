@@ -529,26 +529,30 @@ return function(deep)
          */
         modes : function(arg, arg2)
         {
-            // console.log("chain.mode : ", arguments, deep.context);
             var self = this;
+            //console.log("chain.mode : ", arg, arg2, deep.context.modes);
+
             if(typeof arg === 'string')
             {
                 var obj = {};
                 obj[arg] = arg2;
                 arg = obj;
             }
+            //console.log("chain.mode obj: ", arg);
+            
             var func = function(s,e)
             {
                 if(!self._contextCopied)
                     deep.context = self._context = deep.utils.simpleCopy(self._context);
                 self._contextCopied = true;
 
-                for(var i in deep.context.modes)
-                    if(!arg[i] && deep.context.modes.hasOwnProperty(i))
-                        arg[i] = deep.context.modes[i];
-                deep.context.modes = arg;
+                for(var i in self._context.modes)
+                    if(!arg[i] && self._context.modes.hasOwnProperty(i))
+                        arg[i] = self._context.modes[i];
+                self._context.modes = arg;
+                //console.log("deep.context.mode setted : ",self._context.modes);
+                deep.context = self._context;
                 return s;
-                // console.log("deep.context.mode setted : ",deep.context.mode);  
             };
             func._isDone_ = true;
             deep.chain.addInChain.apply(self,[func]);

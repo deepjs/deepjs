@@ -197,8 +197,8 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
     deep.globalHaders = {};
 
     // deep mode management
-    deep.modes = function(obj){
-        return deep({}).modes(obj);
+    deep.modes = function(arg, arg2){
+        return deep({}).modes(arg, arg2);
     };
 
     deep.setModes = function(arg, arg2){
@@ -213,7 +213,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         for(var i in deep.context.modes)
             if(!arg[i] && deep.context.modes.hasOwnProperty(i))
                 arg[i] = deep.context.modes[i];
-            deep.context.modes = arg;
+        deep.context.modes = arg;
     };
 
     deep.destructiveLoad = false;

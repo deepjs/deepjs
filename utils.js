@@ -1704,9 +1704,11 @@ define(function(require){
                     return entry;
                 });
             //console.log("final backgrounds stack : ", r);
+            var temp = {};
             r.forEach(function (s) {
-                utils.bottom(s, entry.value);
+                utils.up(s, temp);
             });
+            utils.bottom(temp, entry.value);
             return entry;
         }
         return entry;
