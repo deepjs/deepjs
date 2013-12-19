@@ -1,9 +1,17 @@
-## Promised and Chained asynch management
-
 [Back to tutorials](../tutorials.md)
+
+## Asynch management
+
+deep(js) uses and abuses of chained, promised based writing.
+It helps you to manage your own asynch functions call sequences.
+
+The idea is simple : you use, select and/or run your own objects/functions through deep's chain handlers that manage asynch for you.
 
 
 ```javascript
+
+// our basical object/API
+
 var farmManager = {
 	animals : [
 		{id: "chicken", weight :0, age:0, eat : "grain"},
@@ -54,6 +62,10 @@ deep(farmManager)
 .run("doCycle")
 .done(function(s){
     console.log(" 3 cycles finished : ",s);
-});
+})
+.fail(function(error){
+	console.error("cycles failed : ",e);
+})
+
 ```
 
