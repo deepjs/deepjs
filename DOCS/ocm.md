@@ -2,13 +2,50 @@
 
 # OCM made simple.
 
+By example, just imagine that you want an object with methods that do something different depending on app current user role(s) (server side or browser side). You want those method to keep same signature, but you want to use them transparently under different roles.
+
+e.g. You want to have a myObject.hello() method that behave differently if you're logged in or not. Let say that it return "hello. please login." if your not logged in, and "hello John" if your logged as John.
+
+You could do something like this : 
+
+```javascript
+
+var myObject = {
+	currentUser:null,
+	hello:function(arg){
+		if(this.currentUser)
+			return "hello "+this.currentUser.name;
+		return "hello. please login."
+	},
+	login : function(login){
+		currentUser = { name:login };
+	},
+	logout:function(){
+		currentUser = null;
+	}
+}
+
+```
+
+Sure...
+
+But what so if you want to do more fine grained logic and don't know yet all application roles? 
+Each time you will have a new 'role', or a role refactoring, you will need to change the dispatching logic.
+
+What if you want to make it more general and not depending on current's app roles naming or conventions?
+What if you want to do code that could be reused easily in other cases, with other logic....
+
+Here comes OCM.
+
 Keep in mind that OCM, here (in deepjs), means Object Capabilities Manager.
 
 That's it. It's just a manager of object (OO meaning) capabilities.
 
-When you have designed your object through it's manager, you obtain an Object Capabilities Model (just a set of object identities associated to particular modes).
+Its aim is to provide facilities to manage objects capabilities depending on certain flags. Lets call those flags 'modes'.
 
-Then, you have the possibility, always through its manager, to get an object having different capabilities, depending on environnement state.
+When you design your object through such manager, this manager holds the different models of your object, associated to their own mode(s).So a manager is just a set of object identities associated to particular modes.
+
+Through this manager, you ask for an object having different capabilities, depending on environnement state.
 
 Keep also in mind that OCM is not exclusively related to security considerations.
 You could easily manage, by example, GUI related object behaviours depending on production or developpement flags, or on current user roles, or any environnement flags of your choice.
@@ -29,25 +66,18 @@ var myManager = deep.ocm({
 		description:"mode 3 description"
 	}
 });
-myManager.flatten(); // seek and apply backgrounds
 
-console.log("mode1 : ", myManager("mode1"));
-console.log("mode2 : ", myManager("mode2"));
-console.log("mode3 : ", myManager("mode3"));
+myManager.flatten(); // seek after and apply backgrounds
 
-// or set its current mode and use it without knowing which mode is setted
+console.log("mode1 : ", myManager("mode1"));			// output : mode1 : Object { test=1}
+console.log("mode2 : ", myManager("mode2"));			// output : mode2 : Object { test=2, title="hello world"}
+console.log("mode3 : ", myManager("mode3"));			// mode3 : Object { test=2, title="hello world", description="mode 3 description"}
+
+// or set its current(s) mode(s) directly in it and use it further without knowing which mode is setted
 
 myManager.mode("mode2");
 ...
-console.log("current object : ", myManager());
-```
-output : 
-
-```
-mode1 : Object { test=1}
-mode2 : Object { test=2, title="hello world"}
-mode3 : Object { test=2, title="hello world", description="mode 3 description"}
-current object : Object { test=2, title="hello world"}
+console.log("current object : ", myManager());		// output : current object : Object { test=2, title="hello world"}
 
 ```
 
@@ -228,19 +258,113 @@ deep("myprotoc::my_id").log(); //=> "mode1 result for id : my_id"
 
 ## Shared objects
 
+First, you need to know that each result obtained from an OCM (when you ask it in certain mode(s)) is totaly independant at run time from others OCM results. They are different objects that don't know each others.
+
+Sometimes, you will want to share objects between OCM instances produced in different modes (pay attention of nodejs clustering if you do so).
+
+All you need to get that, something shared between OCM instances, is to set a flag _deep_shared_ in it. That's all.
+Or you could use `deep.Shared( yourValue )` that do it for you (i.e. it return yourValue decorated with `_deep_shared_:true`).
+
+
+```javascript
+
+var obj = deep.ocm({
+	mode1:{
+		test:function(){
+			console.log("this.shared : ", this.myShared);
+		},
+		myShared:deep.Shared([1,2,3])
+	},
+	mode2:{
+		backgrounds:["this::../mode1"],
+		myShared:[4,5]
+	}
+});
+
+obj.flatten();
+
+obj("mode1").test();				// [1, 2, 3, 4, 5]
+obj("mode1").myShared.push(6,7);
+obj("mode2").test();				// [1, 2, 3, 4, 5, 6, 7]
+
+```
 
 ## Backgrounds classes instances and constructor/init considerations
 
-example with deep.store.Collection
+example with deep.store.Collection.
 
-### Init after modes 'compilation'
+
+## Classes composition with OCM
+
+You could use OCM prototype/constructor to define classes compositions.
+
+For that you use deep.compose.ClassFactory(arg, ...) that take mix of functions, objects, and OCM (so the same thing than deep.compose.Classes(...) + OCM) and return a factory. This factory produce Classes depending en currents or provided (ocm) modes.
+
+example :
+
+```javascript
+
+var proto = deep.ocm({
+	mode1:{
+		//...
+	},
+	mode2:{
+		//...
+	}
+})
+
+var constructor = deep.ocm({
+	mode1:function(){ /*....*/},
+	mode2:function(){ /*....*/}
+})
+
+
+var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
+...
+proto.mode("mode2");			// or set it through groups.
+constructor.mode("mode1");			// or set it through groups.
+...
+var MyClass = MyClassFactory();			// produce MyClass with current modes
+var instance = new MyClass(); 			// MyClass has constructor.mode1 and proto.mode2
+
+```
+
+example 2 :
+
+
+```javascript
+
+var proto = deep.ocm({
+	mode1:{
+		//...
+	},
+	mode2:{
+		//...
+	}
+}, { group:"example"})
+
+var constructor = deep.ocm({
+	mode1:function(){ /*....*/ },
+	mode2:function(){ /*....*/ }
+}, { group:"example"})
+
+var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
+
+...
+
+/* you could provide modes map (see above) to factory (that will be merge (deep up) with currents ones (if any)) 
+and used before using OCM. Rmq : it uses a local deep.context, so it's safe to use any mode here without changing current context.*/
+
+var MyClass = new MyClassFactory({ example:"mode1" })(); // MyClass has constructor.mode1 and proto.mode1
+
+...
+
+```
+
+## Security considerations : context, protocols and parano.
 
 ## when to use OCM
 
-## example for a store (browser or server side)
+### example for a store (browser or server side)
 
-## example in GUI
-
-## Additive vs. Restrictive modelisation
-
-## Security considerations
+### example in GUI
