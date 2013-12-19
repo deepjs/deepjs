@@ -407,6 +407,22 @@ define(function(require, exports, module){
 	 * @return {[type]}
 	 */
 	var compose = {
+		ClassFactory:function(){
+			var args = arguments;
+			var Constructor = function (mds){
+				var mds = deep.context.modes;
+				if(modes)
+					deep.utils.up(modes, mds);
+				
+				return deep
+				.modes(mds)
+				.done(function(){
+					return deep.compose.Classes.apply(deep.compose, args);
+				})
+				.done();
+			};
+			return Constructor;
+		},
 		Classes:function(){
 			var args = arguments;
 			function Constructor(){
@@ -426,12 +442,14 @@ define(function(require, exports, module){
 			for(var i = 0; i < args.length; ++i)
 			{
 				var cl = args[i];
+				if(cl._deep_ocm_)
+					args[i] = cl = cl();
 				if(typeof cl === 'function')
 				{
 					if(cl.prototype)
 						prototype = deep.utils.up(cl.prototype, prototype);
 				}
-				else 
+				else
 					prototype = deep.utils.up(cl, prototype);
 			}	
 			Constructor.prototype = prototype;
