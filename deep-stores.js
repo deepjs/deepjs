@@ -79,6 +79,22 @@ return function(deep){
                 restrictions[arguments[i]] = deep.Store.forbidden();
             return restrictions;
         };
+        deep.store.AllowOnly = function()
+        {
+            var restrictions = {
+                get:deep.Store.forbidden(),
+                range:deep.Store.forbidden(),
+                post:deep.Store.forbidden(),
+                put:deep.Store.forbidden(),
+                patch:deep.Store.forbidden(),
+                del:deep.Store.forbidden(),
+                rpc:deep.Store.forbidden(),
+                bulk:deep.Store.forbidden()
+            };
+            for(var i in arguments)
+                delete restrictions[arguments[i]];
+            return restrictions;
+        };
         //______________________________________________________________________ CHAIN DECORATION
         deep.Chain.addHandle("store", function (name) {
             var self = this;
