@@ -313,7 +313,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .rpc("testrpco", [1456, "world"], "u2")
                 .fail(function(error){
-                     if(error.status == 405)    // not found
+                     if(error.status == 405)    // MethodNotAllowed
                         return "lolipop";
                 })
                 .equal("lolipop");
