@@ -7,6 +7,18 @@ if (typeof define !== 'function') {
 }
 
 define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./deep-compose", "./deep-collider", "./deep-errors", "./deep-stores", "./deep-ocm", "./stores/collection-store", "./stores/object-store", "./deep-protocol", "./deep-sheet", "./promise"], function (require) {
+    
+    var oldDeep = false;
+    if(typeof deep !== 'undefined')
+    {
+        oldDeep = true;
+        console.log("***********************************************************************************");
+        console.warn("You trying to load deepjs modules two times (maybe from two different node_modules)");
+        console.warn("Will use previous loaded deep instance.");
+        console.log("***********************************************************************************");
+        return deep;
+    }
+
     deep = function deepStart(obj, schema, options) {
         //console.log("start chain : ", obj)
         //if(obj && obj._deep_chain_ && obj.oldQueue)
@@ -66,6 +78,9 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         }
         return h;
     };
+
+
+
     var errors = require("./deep-errors")(deep);
 
     /**
