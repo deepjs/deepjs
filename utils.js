@@ -583,7 +583,6 @@ define(function(require){
 					return tmp.additionalProperties;
 		}
 
-
 		var finalSchema = {};
 		if(res.length > 1)
 			res.forEach(function(e){
@@ -616,7 +615,8 @@ define(function(require){
 		//console.log("array fusion  :", arr1, arr2);
 
 		if(arr1 && arr1.length > 0)
-			arr = arr.concat(arr1);
+			//arr = arr.concat(arr1);
+			arr = arr1;
 		arr.forEach(function(a){
 			var val = null;
 			if(mergeOn)
@@ -671,8 +671,8 @@ define(function(require){
 	var up = function up(src, target, schema, parent, key)
 	{
         //console.log("up : ", src, target, parent, key)
-		// if(src && src._deep_shared_)
-        //   console.log("_____________ GOT SHARED");
+		//if(src && src._deep_shared_)
+          // console.log("_____________ UP GOT SHARED");
 		if( typeof src === 'undefined' )
 			return target;
 		if(src === null)
@@ -762,6 +762,7 @@ define(function(require){
 				parent[key] = target;
 			return target;
 		}
+
 		if(srcType !== targetType)
 		{
 			target = utils.copy(src);
@@ -776,6 +777,7 @@ define(function(require){
 				result = utils.deepArrayFusion(target, src, schema);
 				if(parent && key)
 					parent[key] = result;
+				//console.log("up array givs :  ", result)
 				return result;
 			case 'object' :
 
@@ -829,9 +831,9 @@ define(function(require){
 
 	var bottom = function bottom(src, target, schema, parent, key)
 	{
-		//console.log("utils.bottom : objects ", src.init?true:null, target)
-        // if(src && src._deep_shared_)
-          //   console.log("got botom shared");
+		//if(src && src._deep_shared_)
+          // console.log("_____________ BOTTOM GOT SHARED");
+		//console.log("utils.bottom : objects ", src, target)
 		if(src === null || typeof src === "undefined")
 			return target;
 		if(target === null)
@@ -871,6 +873,16 @@ define(function(require){
 			if(parent && key)
 				parent[key] = target;
 			return target;
+		}
+
+		if(src._deep_shared_)
+		{
+			//console.log("deep.bottom : shared on target : ", src, target)
+			src = utils.up(target, src);
+			if(parent)
+				parent[key] = src;
+			//console.log("src shared : from bttom : res : ", src);
+			return src;
 		}
 		//console.log("utils.bottom : objects not nulls.")
 		var result= null;
@@ -947,6 +959,7 @@ define(function(require){
 					//console.log("bomttom object : from src : do : ",i);
 					if(src[i] !== null)
 					{
+						//console.log("bomttom object : from src :  : ",src[i], src[i]._deep_shared_);
 						var sch = {};
 						if(schema)
 							sch = retrieveFullSchemaByPath(schema, i);
