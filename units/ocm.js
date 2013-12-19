@@ -106,6 +106,29 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 					return deep.context.modes;
 				})
 				.equal({ group1:"mode1" });
+			},
+			shared:function(){
+				var obj = deep.ocm({
+					mode1:{
+						myShared:deep.Shared([1,2,3]),
+						myShared2:deep.Shared({ a:1 })
+					},
+					mode2:{
+						backgrounds:["this::../mode1"],
+						myShared:[4,5],
+						myShared2:{ b:2 }
+					}
+				});
+
+				return obj.flatten().done(function(obj){
+					obj("mode1").myShared.push(6);
+					obj("mode1").myShared2.c = 3;;
+					return [obj("mode1"), obj("mode2")];
+				})
+				.equal([
+					{ myShared:[1,2,3,4,5,6], myShared2:{ a:1, _deep_shared_:true, b:2,  c:3}},
+					{ myShared:[1,2,3,4,5,6], myShared2:{ a:1,  _deep_shared_:true, b:2, c:3}}
+				]);
 			}
         }
     };
