@@ -520,7 +520,6 @@ return function(deep)
             deep.utils.addInChain.apply(this, [func]);
             return self;
         },
-
         /**
          * set current context modes. See OCM docs and Asynch context management.
          * @param  {String|Object} arg  if it's an object : will use it as a map. If it's a string : use it as key (need second arguments)
@@ -539,19 +538,15 @@ return function(deep)
                 arg = obj;
             }
             //console.log("chain.mode obj: ", arg);
-            
             var func = function(s,e)
             {
                 if(!self._contextCopied)
                     deep.context = self._context = deep.utils.simpleCopy(self._context);
                 self._contextCopied = true;
-
-                for(var i in self._context.modes)
-                    if(!arg[i] && self._context.modes.hasOwnProperty(i))
-                        arg[i] = self._context.modes[i];
-                self._context.modes = arg;
+                self._context.modes = deep.utils.simpleCopy(self._context.modes) || {};
+                for(var i in arg)
+                    self._context.modes[i] = arg[i];
                 //console.log("deep.context.mode setted : ",self._context.modes);
-                deep.context = self._context;
                 return s;
             };
             func._isDone_ = true;
