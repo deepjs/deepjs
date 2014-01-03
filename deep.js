@@ -89,14 +89,21 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      * @property compose
      * @type {Object}
      */
-    deep.compose = require("./deep-compose")(deep);
+    require("./deep-compose")(deep);
     /**
      * final namespace for deepjs/deep-collider
      * @static
      * @property collider
      * @type {Object}
      */
-    deep.collider = require("./deep-collider")(deep);
+    require("./deep-collider")(deep);
+        /**
+     * final namespace for deepjs/utils
+     * @static
+     * @property utils
+     * @type {Object}
+     */
+    var utils = deep.utils = require("./utils")(deep);
     /**
      * rethrow any throw during chain execution.
      * @property rethrow
@@ -105,13 +112,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      */
     deep.rethrow = false;
     deep.metaSchema = {};
-    /**
-     * final namespace for deepjs/utils
-     * @static
-     * @property utils
-     * @type {Object}
-     */
-    var utils = deep.utils = require("./utils")(deep);
+
     /**
      * perform a (synched) deep-rql filter on array
      * @example
@@ -210,26 +211,6 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
      * @property globals
      */
     deep.globalHaders = {};
-
-    // deep mode management
-    deep.modes = function(arg, arg2){
-        return deep({}).modes(arg, arg2);
-    };
-
-    deep.setModes = function(arg, arg2){
-        // console.log("generalMode : ", arguments)
-        if(typeof arg === 'string')
-        {
-            var obj = {};
-            obj[arg] = arg2;
-            arg = obj;
-        }
-        deep.context = deep.utils.simpleCopy(deep.context);
-        for(var i in deep.context.modes)
-            if(!arg[i] && deep.context.modes.hasOwnProperty(i))
-                arg[i] = deep.context.modes[i];
-        deep.context.modes = arg;
-    };
 
     deep.destructiveLoad = false;
 
@@ -2497,6 +2478,7 @@ define(["require", "./utils", "./deep-rql", "./deep-schema", "./deep-query", "./
         "js::deepjs/units/collisions",
         "js::deepjs/units/colliders",
         "js::deepjs/units/compositions",
+       // "js::deepjs/units/compose2",
         "js::deepjs/units/flatten",
         "js::deepjs/units/promises",
         "js::deepjs/units/chain",
