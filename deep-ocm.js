@@ -11,6 +11,49 @@ define(["require"], function (require){
 
 	return function(deep)
 	{
+        var genModes = {};
+
+        deep.paranos = function(full)
+        {
+            if(full)
+                delete deep.context.protocoles;
+            if(deep.context.protocoles)
+            {
+                deep.context.protocoles = deep.utils.simpleCopy(deep.context.protocoles);
+                for(var i in deep.context.protocoles)
+                    if(deep.context.protocoles[i]._deep_ocm_)
+                       deep.context.protocoles[i] = deep.context.protocoles[i]();
+            }
+//            delete deep.context.generalModes;
+            delete deep.context.modes;
+        };
+
+        deep.context = deep.context || {};
+        deep.generalModes = function(arg){
+            if(arguments.length === 0)
+                return genModes;
+            if(typeof arg === 'string')
+            {
+                var obj = {};
+                obj[arg] = arg2;
+                arg = obj;
+            }
+            for(var i in arg)
+                genModes[i] = arg[i];
+        };
+
+        // deep mode management
+        deep.modes = function(arg, arg2){
+            return deep({}).modes(arg, arg2);
+        };
+
+        deep.setModes = function(arg, arg2){
+            // console.log("generalMode : ", arguments)
+            //if(!deep.context.generalModes)
+             //   throw deep.errors.OCM("no general modes in context. your in a parano session. aborting.");
+            return deep.generalModes(arg, arg2);
+        };
+
     /**
          * OCM for the mass !!
          * return an Object Capabilities Manager
@@ -82,7 +125,7 @@ define(["require"], function (require){
                 deep.protocoles[options.protocol] = m;
             }
             m._deep_ocm_ = true;
-            m._deep_upper_ = true;
+            m._deep_merger_ = true;
             m.multiMode = function(yes){
                 params.multiMode = yes;
             };
