@@ -177,7 +177,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 };
                 deep.utils.up(b,a);
                 return deep.when(a.test())
-                .equal(["hello parallele", "hello test"]);
+                .equal(["hello test", "hello parallele"]);
             },
             delayed_parallele:function(){
                 var a = {
@@ -192,7 +192,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
                 };
                 deep.utils.up(b,a);
                 return deep.when(a.test())
-                .equal(["hello parallele", "hello test"]);
+                .equal(["hello test", "hello parallele"]);
             },
             before_alone:function(){
                 var a = {
