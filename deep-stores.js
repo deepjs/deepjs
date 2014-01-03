@@ -375,11 +375,10 @@ return function(deep){
 
         deep.store.ObjectSheet = {
             "dq.up::./[post,put,patch]":deep.compose.after(function(result){
-                //console.log("private check : ", this.schema, result);
+                //console.log("private check : ", this, result);
                 if(!this.schema)
                     return result;
                 var res = deep.utils.remove(result, ".//!?_schema.private=true", this.schema);
-                //console.log("res : ", res);
                 return result;
             }),
             "dq.up::./get":deep.compose.around(function(old){
@@ -477,7 +476,7 @@ return function(deep){
                         data = this.get(id, opt);
                     return data;
                 },
-                patch:function (content, opt) {
+                /*patch:function (content, opt) {
                     //console.log("ObjectSheet patch : ", content, opt);
                     opt = opt || {};
                     var self = this;
@@ -511,7 +510,7 @@ return function(deep){
                     .fail(function(error){
                         return deep.when(error);
                     });
-                },
+                },*/
                 rpc:function(method, args, id, options)
                 {
                     var self = this;
