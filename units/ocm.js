@@ -99,7 +99,7 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
 					.done(function(success){
 						return deep.context.modes;
 					})
-					.equal({ group2:"mode2", group1:"mode1" });
+					.equal({ group1:"mode1", group2:"mode2" });
 				})
 				.delay(5)
 				.done(function(success){
