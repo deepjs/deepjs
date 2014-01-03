@@ -176,12 +176,12 @@ define(function(require){
 	 * @param  {Object|Primitive} obj
 	 * @return {Object|Primitive} the copied value/object/array
 	 */
-	utils.copy = function copy(obj)
+	utils.copy = function copy(obj, noClone)
 	{
         if(!obj)
             return obj;
 		var res = null;
-		if(typeof obj.clone === 'function')
+		if(!noClone && typeof obj.clone === 'function')
 			return obj.clone();
 		if(obj.forEach)
 		{
@@ -221,9 +221,9 @@ define(function(require){
 		}
 		else if(typeof obj === 'function')
 		{
-			if(obj.decorator instanceof compose.Decorator)
+			/*if(obj.decorator instanceof compose.Decorator)
 				res = compose.cloneStart(obj);
-			else
+			else*/
 				res = obj; //utils.cloneFunction(obj);
 		}
 		else
@@ -631,7 +631,6 @@ define(function(require){
 				val = String(a);
 			map[val] = {ref:a, index:count++};
 		});
-		//console.log("array fusion map :", map);
 		arr2.forEach(function(a){
 			var val = null;
 			if(mergeOn)
@@ -651,12 +650,8 @@ define(function(require){
 			else
 				arr[map[val].index] = utils.up(a, map[val].ref, itemsSchema);
 		});
-		//console.log("array fusion  :", arr);
-
 		return arr;
 	};
-
-
 
 
 	/**
@@ -668,349 +663,170 @@ define(function(require){
 	 * @param  {[type]} key     [description]
 	 * @return {[type]}         [description]
 	 */
-	var up = function up(src, target, schema, parent, key)
+	utils.up = function up2(src, target, parent, key)
 	{
-        //console.log("up : ", src, target, parent, key)
-		//if(src && src._deep_shared_)
-          // console.log("_____________ UP GOT SHARED");
 		if( typeof src === 'undefined' )
 			return target;
 		if(src === null)
 		{
-			if(parent && key)
+			if(parent)
 				parent[key] = null;
 			return null;
-		}
-		if(target && target._deep_upper_)
-		{
-			target.up(src);
-			return target;
-		}
-		if(src && src._deep_upper_)
-		{
-			src = src.clone();
-			src.bottom(target);
-			if(parent)
-				parent[key] = src;
-			return src;
-		}
-		// console.log("deepUp : objects not nulls.")
-		var result = null;
-		var srcType = utils.getJSPrimitiveType(src);
-		var targetType = utils.getJSPrimitiveType(target);
-		//console.log("deepUp : objects types : ", srcType, targetType);
-		if (srcType === 'function')
-		{
-			if (targetType === 'function')
-			{
-				if(src.decorator && src.decorator instanceof compose.Decorator)
-				{
-					if(src.decorator.condition && typeof src.decorator.condition === 'function' && !src.decorator.condition())
-						return target;
-					//console.log("deepUp: src is decorator : ",src)
-					result = compose.up(target, src);
-				}
-				else if(src._deep_collider)
-				{
-					//console.log("deepUp: src is collider : ",src)
-					if(target._deep_collider)
-						result = collider.wrap(src,target);
-					else
-						result = src(target, parent, key);
-				}
-				else
-				{
-					//console.log("deepUp: src is simple function : ",src)
-					result = src;
-				}
-			}
-			else
-			{
-				if(src.decorator && src.decorator instanceof compose.Decorator)
-				{
-					if(typeof target === 'undefined')
-					{
-						if(src.decorator.ifExists)
-						{
-							return target;
-						}
-						else{
-							//src.decorator.createIfNecessary = true;
-							result = src;
-						}
-					}
-					else
-						throw new Error("deep.compose need to be applied on function ! ");
-				}
-				else if(src._deep_collider)
-					result = src(target, parent, key);
-				else
-					result = src;
-			}
-		}
-		if(result)
-		{
-			//console.log("deepUp : objects functions collison gives : ", result);
-			if(parent && key)
-				parent[key] = result;
-			return result;
 		}
 		if(typeof target === 'undefined' || target === null)
 		{
 			target = utils.copy(src);
-			if(parent && key)
+			if(parent)
 				parent[key] = target;
 			return target;
 		}
-
+		if(target && target._deep_merger_)
+		{
+			target.up(src);
+			return target;
+		}
+		if(src._deep_merger_)
+		{
+			src = src.clone().bottom(target);
+			if(parent)
+				parent[key] = src;
+			return src;
+		}
+		var srcType = utils.getJSPrimitiveType(src);
+		var targetType = utils.getJSPrimitiveType(target);
 		if(srcType !== targetType)
 		{
 			target = utils.copy(src);
-			if(parent && key)
+			if(parent)
 				parent[key] = target;
 			return target;
 		}
 		switch(srcType)
 		{
 			case 'array' :
-				//console.log("array fusion up rsult : ", target, src)
-				result = utils.deepArrayFusion(target, src, schema);
-				if(parent && key)
+				result = utils.deepArrayFusion(target, src);
+				if(parent)
 					parent[key] = result;
-				//console.log("up array givs :  ", result)
 				return result;
 			case 'object' :
-
 				if(src instanceof RegExp)
 				{
-					if(parent && key)
+					if(parent)
 						parent[key] = src;
 					return src;
 				}
 				if(src instanceof Date)
 				{
 					target = new Date(src.valueOf());
-					if(parent && key)
+					if(parent)
 						parent[key] = target;
 					return target;
 				}
-
 				for(var i in src)
 				{
-					//if(i == "_deep_entry")
-					//	continue;
-
 					if(src[i] === null)
 					{
-
 						target[i] = null;
 						continue;
 					}
-
 					if(src[i] && src[i]._deep_colliderRemove)
 					{
 						delete target[i];
 						continue;
 					}
-
-					var sch = {};
-					if(schema)
-						sch = retrieveFullSchemaByPath(schema, i);
 					if(typeof src[i] === 'object' || typeof src[i] === 'function')
-						target[i] = utils.up(src[i], target[i], sch, target, i);
+						target[i] = utils.up(src[i], target[i], target, i);
 					else
 						target[i] = src[i];
 				}
 				return target;
 			default :
-				if(parent && key)
+				if(parent)
 					parent[key] = src;
 				return src;
 		}
 	};
 
-	var bottom = function bottom(src, target, schema, parent, key)
-	{
-		//if(src && src._deep_shared_)
-          // console.log("_____________ BOTTOM GOT SHARED");
-		//console.log("utils.bottom : objects ", src, target)
+utils.bottom = function bottom2(src, target, parent, key)
+{
 		if(src === null || typeof src === "undefined")
 			return target;
 		if(target === null)
 			return target;
-		var srcType = utils.getJSPrimitiveType(src);
 		if(typeof target === 'undefined')
 		{
-
-           //	console.log("bottom : target undefined : copy src : ",src)
-            if(srcType !== 'function')
-            {
-				target = utils.copy(src);
-				if(parent && key)
-					parent[key] = target;
-				return target;
-			}
+			target = utils.copy(src);
+			if(parent && key)
+				parent[key] = target;
+			return target;
 		}
-		if(target._deep_upper_ && target.bottom)
+		if(target._deep_merger_)
 		{
-			//console.log("bottom on _deep_upper_");
 			target.bottom(src);
 			return target;
 		}
-		if(src && src._deep_upper_)
+		if(src._deep_merger_)
 		{
-			//console.log("bottom on _deep_upper_");
 			src = src.clone();
 			src.up(target);
 			if(parent)
 				parent[key] = src;
 			return src;
 		}
-		if(srcType === 'function' && typeof target === 'undefined')
-		{
-			//console.log("function as asource and target undefined")
-			target = src;
-			if(parent && key)
-				parent[key] = target;
-			return target;
-		}
 
 		if(src._deep_shared_)
 		{
-			//console.log("deep.bottom : shared on target : ", src, target)
 			src = utils.up(target, src);
 			if(parent)
 				parent[key] = src;
-			//console.log("src shared : from bttom : res : ", src);
 			return src;
 		}
-		//console.log("utils.bottom : objects not nulls.")
-		var result= null;
+		var srcType = utils.getJSPrimitiveType(src);
 		var targetType = utils.getJSPrimitiveType(target);
-		// console.log("utils.bottom : objects types : ", srcType, targetType);
-		if ( targetType === 'function')
-		{
-			if ( srcType === 'function')
-			{
-				if(target.decorator && target.decorator instanceof compose.Decorator)
-				{
-					// console.log("utils.bottom: target is decorator : ",target)
-					result = compose.bottom(src, target);
-
-				}
-
-				else if(target._deep_collider)
-				{
-					//console.log("utils.bottom: src is collider : ",src)
-					if(src._deep_collider)
-						result = collider.wrap(target, src);
-					else
-						result = target(src, parent, key);
-				}
-				else
-				{
-					//console.log("utils.bottom: src is simple function : ",src)
-					result = target;
-				}
-			}
-			else
-			{
-				if(target.decorator && target.decorator instanceof compose.Decorator)
-					throw new Error("deep.compose need to be applied on function ! ");
-				if(target._deep_collider)
-					result = target(src, parent, key);
-				else
-					result = target;
-			}
-		}
-		if(result)
-		{
-			// console.log("deep.bottom : objects functions collison gives : ", result);
-			if(parent && key)
-				parent[key] = result;
-			return result;
-		}
 		if(srcType !== targetType)
-		{
 			return target;
-		}
 		switch(srcType)
 		{
 			case 'array' :
-				result = utils.deepArrayFusion(src, target, schema, true);
+				result = utils.deepArrayFusion(src, target, null, true);
 				if(parent && key)
 					parent[key] = result;
-				//console.log("array fusion bottom rsult : ", result, parent, key)
 				return result;
 			case 'object' :
-				//console.log("deep.bottom : apply objects together : src : ", src, " - on : ", target)
-                /*if(src && src._deep_shared_)
-                {
-                    if(parent && key)
-						parent[key] = src;
 
-                }*/
-			
 				for(var i in src)
-				{
-					//console.log("bomttom object : from src try : : ",i);
-					//if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
-					//	continue;
-					//console.log("bomttom object : from src : do : ",i);
 					if(src[i] !== null)
 					{
-						//console.log("bomttom object : from src :  : ",src[i], src[i]._deep_shared_);
-						var sch = {};
-						if(schema)
-							sch = retrieveFullSchemaByPath(schema, i);
 						if(typeof target[i] === 'undefined')
 							target[i] = utils.copy(src[i]);
 						else if(typeof src[i] === 'object' || typeof src[i] === 'function')
-							target[i] = utils.bottom(src[i], target[i], sch, target, i);
+							target[i] = utils.bottom(src[i], target[i], target, i);
 					}
-				}
-				//console.log("bottom will copy : ", target, " - src : ", src);
 				var copied = utils.simpleCopy(target);
-				//console.log("bottom have copied : ", copied);
 				var i = null;
 				for(i in target)
-				{
-					//if(!target.hasOwnProperty(i) && typeof target[i] !== 'function')
-					//	continue;
 					delete target[i];
-				}
-
 				for(i in src)
 				{
-					//if(!src.hasOwnProperty(i) && typeof src[i] !== 'function')
-					//	continue;
 					target[i] = copied[i];
 					delete copied[i];
 				}
-
 				for(i in copied)
-				{
-					//if(!copied.hasOwnProperty(i) && typeof copied[i] !== 'function')
-					//	continue;
 					target[i] = copied[i];
-				}
-				//console.log("bottom result : ", target);
 				return target;
 			default :
 				return target;
 		}
 	};
 
+
 	var deepCopy = utils.deepCopy = function deepCopy(source, target, overwrite, schema, parent, key)
 	{
 		overwrite = (overwrite !== null && overwrite !== undefined)?overwrite:true;
-	//	console.log("deep-copy : ",source, " in ", target, " - ow : ", overwrite, " - parent ", parent, " - key : ", key)
 		if(overwrite)
 			return utils.up(source, target, schema, parent, key);
 		return utils.bottom(source, target, schema, parent, key);
 	};
-	utils.up = up;
-	utils.bottom = bottom;
 
 	//___________________________________________ RANGE RELATED
 
@@ -1259,7 +1075,7 @@ define(function(require){
 
 			if(!destructive)
 			{
-				treatment = deep.utils.copy(treatments[i]);
+				treatment = utils.copy(treatments[i]);
 				//treatment.source = treatments[i];
 			}
 			else
@@ -1647,15 +1463,15 @@ define(function(require){
      * @param  {DeepEntry} entry from where seeking after backgrounds properties
      * @return {deep.Promise} a promise
      */
-    utils.extendsBackgrounds = function(entry) {
-        //console.log("extends backgrounds of : ", entry, " - root ?  : ", entry.root)
+    utils.extendsBackgrounds = function(entry)
+    {
         if (!entry._isDQ_NODE_)
             entry = deep.Querier.createRootNode(entry, {});
         var self = this;
         var value = entry.value;
-        if (value.backgrounds) {
+        if (value.backgrounds)
+        {
             var getBackgrounds = function (backgrounds) {
-                //console.log("try retrieve backgrounds : ", backgrounds);
                 var all = [];
                 var needLoad = false;
                 backgrounds.forEach(function (b) {
@@ -1663,13 +1479,11 @@ define(function(require){
                         var rget = deep.get(b, {
                             entry: entry
                         });
-                        //console.log("background : "+b+" : get result : ",rget._success);
                         all.push(rget);
                         needLoad = true;
                     } else
                         all.push(b);
                 });
-
                 function extendedsLoaded(extendeds) {
                     var stack = [];
                     var needRecursion = false;
@@ -1690,38 +1504,31 @@ define(function(require){
                             }
                             finalStack.push(s);
                         });
-						//console.log("will have getted backgrounds : ", finalStack);
                         return finalStack;
                     });
                 }
                 if (!needLoad)
                     return extendedsLoaded(all);
-                //console.log("will retrieve backgrounds : ", all);
                 return deep.all(all)
                     .done(extendedsLoaded);
             };
             var backgrounds = value.backgrounds;
             delete value.backgrounds;
             var r = getBackgrounds(backgrounds);
+
             if (r && r.then)
                 return deep.when(r)
-                    .done(function extendedsLoaded(extendeds) {
-                    var temp = {};
-                    //console.log("final backgrounds stack : ", extendeds, " on : ",entry.value);
-                    //extendeds.reverse();
-                    extendeds.forEach(function (s) {
-                        utils.up(s, temp);
-                    });
-                    utils.bottom(temp, entry.value);
+                .done(function extendedsLoaded(extendeds) {
+                    var len = extendeds.length-1;
+                    for(;len>=0;len--)
+                        utils.bottom(extendeds[len], entry.value);
 					delete entry.value.backgrounds;
                     return entry;
                 });
-            //console.log("final backgrounds stack : ", r);
-            var temp = {};
-            r.forEach(function (s) {
-                utils.up(s, temp);
-            });
-            utils.bottom(temp, entry.value);
+            var len = r.length-1;
+            for(;len>=0;len--)
+                utils.bottom(r[len], entry.value);
+			delete entry.value.backgrounds;
             return entry;
         }
         return entry;
