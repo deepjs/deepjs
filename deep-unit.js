@@ -182,6 +182,7 @@ define(["require","./deep"], function (require, deep) {
             console.log("\n*******************************************************************");
             console.log("*************************** Units Bunch ****************************");
         //}
+        units = units || deep.coreUnits;
         var alls = [];
         if(!units.forEach)
             units = [units];
