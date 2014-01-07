@@ -2,7 +2,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
+define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
     
     //_______________________________________________________________ GENERIC STORE TEST CASES
 
@@ -49,8 +49,8 @@ define(["require","../deep", "../deep-unit"], function (require, deep, Unit) {
             deep.store.Collection.create("user", [{ id:"e1", title:"user title" }], schema );
         },
         clean:function(){
-            delete deep.protocoles.plant;
-            delete deep.protocoles.user;
+            delete deep.protocols.plant;
+            delete deep.protocols.user;
         },
         stopOnError:false,
         tests : {

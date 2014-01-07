@@ -5,7 +5,7 @@
 ```javascript
 
 	// run all deep cores tests
-	require("deep/deep-unit").run(deep.coreUnits);
+	require("deep/unit").run(deep.coreUnits);
 
 ```
 
@@ -13,7 +13,7 @@
 
 ```javascript
 
-	deep("js::deep/deep-unit")
+	deep("js::deep/unit")
 	.done(function(){
 		// run all deep cores tests
 		deep.Unit.run(deep.coreUnits);
