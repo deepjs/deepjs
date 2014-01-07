@@ -178,3 +178,27 @@ var obj = new MyClass(1, 33);
 console.log("obj : ", obj);
 
 ```
+
+## Custom Compositions
+
+examples
+```javascript
+deep.Composer.add("myAround", "around", function(onlyTag, normalize){
+	return function(old){
+		return function(){ 
+			return myWrapper(old.apply(this, arguments), onlyTag, normalize) 
+		};
+	};
+});
+deep.Composer.add("sanitize", "before", function(onlyTag, normalize){
+	return function(){
+		var toSanitize = arguments[0];
+		arguments[0] = sanitize(toSanitize, onlyTag, normalize);
+		return Array.prototype.slice.apply(arguments); // to Array
+	};
+});
+
+var a = {
+	test:deep.compose.myAround(true, false).sanitize(true, false)
+}
+```
