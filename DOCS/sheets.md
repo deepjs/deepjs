@@ -34,7 +34,7 @@ var obj = {
     }
 };
 
-deep.utils.sheet(sheet, obj)
+deep.sheet(sheet, obj)
 .done(function(success){
      console.log("result : ", JSON.stringify(success));
 })

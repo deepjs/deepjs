@@ -1,4 +1,4 @@
-# Native protocoles
+# Native protocols
 
 [Back to tutorials](../tutorials.md)
 
@@ -7,19 +7,19 @@ Protocoles and stores are related but are not the same thing.
 Stores are, basicaly, objects collections manager which provides standard HTTP/Restful API to do their jobs.
 
 Protocoles are just a way to indicate, in ressources references, how and from where retrieve related ressources.
-So protocoles are just sugar to tell which ressources provider to use to get specific ressource(s).
+So protocols are just sugar to tell which ressources provider to use to get specific ressource(s).
 
-Stores and [simples functions](./custom-protocoles.md) could be such providers.
-
-
-For a list of deepjs related stores and protocoles extension, see [modules](../modules.md)
+Stores and [simples functions](./custom-protocols.md) could be such providers.
 
 
-## core protocoles 
+For a list of deepjs related stores and protocols extension, see [modules](../modules.md)
+
+
+## core protocols 
 
 ### js::
 
-simple protocole that use requirejs (browser side) and nodejs require (of course server side) to load ASYNCHRONOUSLY javascript ressources (AMD module).
+simple protocol that use requirejs (browser side) and nodejs require (of course server side) to load ASYNCHRONOUSLY javascript ressources (AMD module).
 It use natively the requirejs/require cache system.
 
 ```javascript
@@ -130,10 +130,10 @@ var obj = {
     }
 };
 
-deep.utils.sheet(sheet, obj).log();
+deep.sheet(sheet, obj).log();
 
 ```
 
-For more details on native sheet's protocole, see [sheets](../sheets.md)
+For more details on native sheet's protocol, see [sheets](../sheets.md)
 
 

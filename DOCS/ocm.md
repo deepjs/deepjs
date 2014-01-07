@@ -193,7 +193,7 @@ console.log("deep.context.modes : ", deep.context.modes); // => {}
 
 ```
 
-## Associate OCM with deep-protocol
+## Associate OCM with protocol
 
 Depending on what you want to obtain through protocol...
 
@@ -227,7 +227,7 @@ deep("myprotoc::/title").log(); //=> "hello mode1"
 ### OCM store
 
 To define a store with a particular behaviour for particular mode(s) (e.g. current user role(s)),
-you could define the OCM manager directky with a protocol. (or associate the manager to its protocole later with deep.protocole(name, obj))
+you could define the OCM manager directky with a protocol. (or associate the manager to its protocol later with deep.protocol(name, obj))
 
 ```javascript
 

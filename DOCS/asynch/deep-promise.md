@@ -189,7 +189,7 @@ deep.utils.iterate([
 ### wired asynch functions
 
 ```javascript 
-deep.utils.wired([
+deep.wired([
 	function(arg){
 	    return deep.when("arg was : "+arg).delay(5);
 	},

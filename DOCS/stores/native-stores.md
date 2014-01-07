@@ -37,11 +37,11 @@ See also [privates](./constraints/privates.md), [readOnly](./constraints/readonl
 
 ```javascript
 
-deep.store.Collection.create("myprotocole");  // native collection-memory-store
+deep.store.Collection.create("myprotocol");  // native collection-memory-store
 
 //...
 
-deep.store("myprotocole")
+deep.store("myprotocol")
 .post( { title:"hello" } )
 .post( { title:"deepjs" } )
 .post( { title:"tools" } )
@@ -49,9 +49,9 @@ deep.store("myprotocole")
 
 //...
 
-deep("myprotocole::?title=deepjs")
+deep("myprotocol::?title=deepjs")
 .each(function(element){
-	console.log("element from 'myprotocole' : ", element);
+	console.log("element from 'myprotocol' : ", element);
 })
 .fail(function(e){
 	console.log("something were wrong : ", e.toString() );
@@ -71,9 +71,9 @@ var schema = {
 	additionalProperties:false
 }
 
-deep.store.Collection.create("myprotocole", [], schema);
+deep.store.Collection.create("myprotocol", [], schema);
 
-deep.store("myprotocole")
+deep.store("myprotocol")
 .post( { title:"hello", other:1 } )
 .done(function(success){
 	console.log("you should never se this, because schema isn't matched.")
@@ -90,11 +90,11 @@ deep.store("myprotocole")
 
 ```javascript
 
-deep.store.Collection.create("myprotocole", [{ id:"e1", title:"hello", other:true }]);
+deep.store.Collection.create("myprotocol", [{ id:"e1", title:"hello", other:true }]);
 
 //...
 
-deep.store("myprotocole")
+deep.store("myprotocol")
 .patch( { title:"deepjs" }, { id:"e1"} )
 .log() // ==> { id:"e1", title:"deepjs", other:true }
 .put( { id:"e1", title:"deepjs" } )
@@ -108,7 +108,7 @@ deep.store("myprotocole")
 
 ```javascript
 
-deep.store.Collection.create("myprotocole", [{ id:"e1", title:"hello" }], null, {
+deep.store.Collection.create("myprotocol", [{ id:"e1", title:"hello" }], null, {
 	methods:{
 		myProcedure:function(handler, arg1, arg2)
 		{
@@ -125,7 +125,7 @@ deep.store.Collection.create("myprotocole", [{ id:"e1", title:"hello" }], null, 
 
 //...
 
-deep.store("myprotocole")
+deep.store("myprotocol")
 .rpc("myProcedure", [ true, 123 ], "e1")
 .log("rpc result : ")
 .log() // ==> "yeah"
@@ -139,11 +139,11 @@ deep.store("myprotocole")
 
 ```javascript
 
-deep.store.Collection.create("myprotocole", [{ id:"e1", title:"hello" }, { id:"e2", title:"world" }]);
+deep.store.Collection.create("myprotocol", [{ id:"e1", title:"hello" }, { id:"e2", title:"world" }]);
 
 //...
 
-deep.store("myprotocole")
+deep.store("myprotocol")
 .bulk([
   {to:"e1", method:"put", body:{title:"updated 2"}, id: 1},
   {to:"e2", method:"put", body:{title:"updated 3"}, id: 2}
@@ -163,7 +163,7 @@ output
 
 ```javascript
 
-deep.store.Collection.create("myprotocole", [
+deep.store.Collection.create("myprotocol", [
 	{ id:"e1", title:"hello" }, 
 	{ id:"e2", title:"deepjs" }, 
 	{ id:"e3", title:"restful" },
@@ -172,7 +172,7 @@ deep.store.Collection.create("myprotocole", [
 
 //...
 
-deep.store("myprotocole")
+deep.store("myprotocol")
 .range(1,2)
 .logValues() 	// => two nodes : { id:"e2", title:"deepjs" } and { id:"e3", title:"restful" }
 .log(); 		

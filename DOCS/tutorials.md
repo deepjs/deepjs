@@ -30,8 +30,8 @@ As deepjs want to be, by others, an asynch-chain-factory : other useful chains a
 
 #### Protocols
 Protocols provide nice namespaces to store and use datas fetcher and manager
-* [native protocoles](./stores/native-protocoles.md)
-* [custom protocoles](./stores/custom-protocoles.md)
+* [native protocols](./stores/native-protocols.md)
+* [custom protocols](./stores/custom-protocols.md)
 
 #### Stores
 deepjs provides an absolute homogeneous persistent store API and provides, through its chain, a simple and convinient way to handle store's transactions sequences.

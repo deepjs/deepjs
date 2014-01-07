@@ -3,7 +3,7 @@ Modules
 
 [Back to tutorials](./tutorials.md)
 
-## Stores and protocoles
+## Stores and protocols
 
 * [deep-node-fs](https://github.com/deepjs/deep-node-fs)
 * [deep-mongo](https://github.com/deepjs/deep-mongo)

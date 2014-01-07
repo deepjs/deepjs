@@ -1,6 +1,6 @@
-# Custom protocoles
+# Custom protocols
 
 [Back to tutorials](../tutorials.md)
 
-A custom protocole could be linked to a simple function or a store.
+A custom protocol could be linked to a simple function or a store.
 

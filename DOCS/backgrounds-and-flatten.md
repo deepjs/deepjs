@@ -63,7 +63,7 @@ deep(obj2)
 
 ```
 
-Remarque : Any protocole that provide js objects should work. (as json:: if you load a related store - see [protocoles](./stores/native-protocoles-and-stores.md))
+Remarque : Any protocol that provide js objects should work. (as json:: if you load a related store - see [protocols](./stores/native-protocols-and-stores.md))
 
 
 ## Internal inheritance example
