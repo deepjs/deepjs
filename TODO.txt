@@ -1,26 +1,55 @@
+## Questions
+- what to do with complex route params in restful ?
 
-____________________________________________
+- how manage chain's identities.
+specialy with stores vs values : query, range, stores particular API
+
+- flatten an sheets : 
+	- backgrounds and sheets
+	- foregrounds ?					NO NEVER
+
+## Todo
+- Events and context
+	- Chain.on("event", callBack) that wrap holded one
+	- deep.Emitter that conserve context ?
+
+- use protocols space for different kinds of object (not only stores - e.g. socket)
+==> use default handler in protocols : e.g. for stores : it's 'get'
+==> in ocm : it could be in constructor options
+==> need _deep_protocol_ object
+
+- Stores constraints
+	- ownership : variabilise userID
+	- add 'filters' in stores dynamic schema interpretation
+
+- protocols and context
+put protocols set in deep.context : ocmise present protocols = parano mode : consequence :  no possibility to change modes by after
+('after' from context point of view)
+
+==> when context is (simple)copied : we could contextualise protocols : for that we need to (simple)copy also protocols :
+ allow to have local (contextualised) protocols space. Imply that late definition of protocols will only be local. 
+
+==> maybe something like : 
+
+deep.contextualize("protocols", deepCopy:Bool, parano:Bool) : will copy protocols (simple or deep) and apply OCM parano
+
+deep.context()
+
+deep.removeFromContext()
+
+- use ocm as prototypes in classe construction :  			OK
 
 
-CORE :
-
-Philid : 
-
-	add "direct" flag in store options that return direct repsonse from store in place of a deep chain
-	==> refactor stores to permit that
-____________________________________________________________________________________________________
 
 
-deep.stores : test all
+deep.stores : 
 	add jsonp capabilities (jsonp::...)
 
-	readOnly, serveSchema, manage privates + sanitisation as Option (need sanitizer lib)
+	serveSchema
 
-	rpc, bulk for local stores
 
-	cookies
+	deep-cookies
 
-	add metas informations in nodes
 
 	SYNCHED store
 		save locally bunch of object : synch it with remote sto
@@ -32,6 +61,45 @@ deep-routes
 
 
 data binders : 
-	work on EditableHtml with schema
 
 	modularise binders
+
+
+
+## Beautify
+
+- refactor protocols naming									OK
+- check homogeneity for _deep_flag_ family					OK
+
+
+## DOCS
+
+_deep_query_node_
+
+
+## TODO for 1.0.0
+
+clean
+- Clean BaseChain/Chain construction						OK
+- no more requirejs pattern
+
+DO
+- finalise stores constraints (variabilise userID + filters)
+- Emitter and Context
+
+Write
+- More test cases
+- More Docs
+
+## ROAD MAP for further version (higher than 1.0.0)
+
+1.1.0 - Finalise Chain Identities Management
+1.2.0 - Finalise context and parano modes
+1.3.0 - Optimise DeepQuerier and RQL
+1.4.0 - Externalise Schema Validation + Error Translation Management
+
+
+## ROAD MAP for other deepjs related libs.
+
+- deep-http-client : node + jquery
+
