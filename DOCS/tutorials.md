@@ -51,7 +51,7 @@ deepjs, as smart as you are. ;)
 
 #### Modelisation and Queries
 deepjs provides tools to modelise and manipulate structures inheritance and compositions.
-For this, it mainly uses Aspects Composition (AOP) principles, and particular queries/selector that allow to navigate-in and select objects structures. The combination of those two paradigms (AOP + queries) gives differents ways to nicely handle objects modelisation and/or run-time.
+For this, it mainly uses Aspects Composition (AOP) principles, and particular queries/selector that allow to navigate-in and select particular objects structures. The combination of those two paradigms (AOP + queries) gives differents ways to nicely handle objects modelisation and/or run-time.
 * [basic-modelisation](./basic-modelisation.md)
 * [compositions](./compositions.md)
 * [colliders](./colliders.md)
@@ -59,6 +59,8 @@ For this, it mainly uses Aspects Composition (AOP) principles, and particular qu
 * [deep-rql](./deep-rql.md)
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
+
+OCM are a little bit forward than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
 * [Object Capabilities Manager](./ocm.md)
 	* [Additive vs restrictive](./ocm/ocm-synthesis.md)
 	* [Delegation](./ocm/ocm-delegate.md)
@@ -82,9 +84,9 @@ Protocols provide nice namespaces to store and use datas fetcher and manager
 * [custom protocols](./stores/custom-protocols.md)
 
 #### Stores
-deepjs provides an absolute homogeneous persistent store API and provides, through its chain, a simple and convinient way to handle store's transactions sequences.
+deepjs provides an absolute homogeneous persistent store API and provides, through its store chain, a simple and convinient way to handle store's transactions sequences. 
 
-The aim is to manage dynamic datas, through JSON/REST API, in exactly the same way, browser or server side. 
+The aim is to CRUD datas, through JSON/REST API, in exactly the same way browser or server side. 
 
 * [native collection store](./stores/native-stores.md)
 * [ocm, stores and chains](./stores/store-chain.md)
@@ -120,6 +122,7 @@ deepjs comes with it's own simple asynch unit testcaser. It uses deepjs native c
 #### Browser concreets
 * [browser simple](./nodejs/simple.md) 
 * [browser more complex](./nodejs/full.md)
+* [deep-data-bind](https://github.com/deepjs/deep-data-bind)
 
 #### Sandboxes
 * [deep-playground](https://github.com/deepjs/deep-playground)
