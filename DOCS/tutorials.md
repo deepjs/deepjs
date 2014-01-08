@@ -17,17 +17,17 @@ More precisly, deepjs scopes are (and are only) :
 
 * Asynchrone and Concurrent Run-Time Management.
 
-Heavily using Promise Pipelining pattern, related tools provide powerful ways to handle and reduce Asychroneous/Concurrent programmation complexity of YOUR app.
+	Heavily using Promise Pipelining pattern, related tools provide powerful ways to handle and reduce Asychroneous/Concurrent programmation complexity of YOUR app.
 
 * Absolute Homogeneous Ressources Management through HTTP/Restful/JSON-RPC/NoSQL/ASYNCH API.
 
-Related tools give simple, complete, homogeneous and powerful way to CRUD ressources (db, files, locals, etc.).
-Dramaticaly improve Ressources modelisation and reusability.
+	Related tools give simple, complete, homogeneous and powerful way to CRUD ressources (db, files, locals, etc.).
+	Dramaticaly improve Ressources modelisation and reusability.
 
 * Environnement Dependent Object Capabilities Management.
 
-Powerful and so simple way, based on all deepjs tools, to manage objects identities/capacities depending on context modes.
-Realy high benefit in application architecture, from security to run-time particularity.
+	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capacities depending on context modes.
+	Realy high benefit in application architecture, from security to run-time particularity.
 
 All those tools are (almost) totaly unobstrusive, and work alone or together with YOUR objects/functions/app. 
 
