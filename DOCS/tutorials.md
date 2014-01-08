@@ -29,7 +29,7 @@ More precisly, deepjs scopes are (and are only) :
 	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capacities depending on context modes.
 	Realy high benefit in application architecture, from security to run-time particularity.
 
-All those tools are (almost) totaly unobstrusive, and work alone or together with YOUR objects/functions/app. 
+All those tools are (almost) totaly unobstrusive, and work alone or together, along with YOUR objects/functions/app. 
 
 deepjs does not provide other things than helpers.
 
