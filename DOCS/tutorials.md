@@ -7,7 +7,7 @@ Alone, it does not provides anything but nice, fast and lightweight tools that a
 
 Above all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
 
-But deepjs (alone) will not, and will never, provide a full application out-of-the-box (for that, take a look to deepjs modules - or write your own ;).
+But deepjs (alone) will not, and will never, provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
 More precisly, deepjs scopes are (and are only) :
 
