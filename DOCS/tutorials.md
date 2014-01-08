@@ -9,22 +9,22 @@ Above all, it will help you in modelisation, architecture and concurrent run-tim
 
 But deepjs (alone) will not, and will never, provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
-More precisly, <u>deepjs scopes</u> are (and are only) :
+More precisly, <b>deepjs scopes</b> are (and are only) :
 
-* Layered and Query (or Selector) Based Programmation : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
+* <b>Layered and Query (or Selector) Based Programmation</b> : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
 	* dramaticaly reduce Classical OO Inheritance modelisation complexity.
 	* dramaticaly reduce coupling between objects.
 
-* Asynchrone and Concurrent Run-Time Management.
+* <b>Asynchrone and Concurrent Run-Time Management</b>.
 
 	Heavily using Promise Pipelining pattern, related tools provide powerful ways to handle and reduce Asychroneous/Concurrent programmation complexity of YOUR app.
 
-* Absolute Homogeneous Ressources Management through HTTP/Restful/JSON-RPC/NoSQL/ASYNCH API.
+* <b>Absolute Homogeneous Ressources Management</b> through HTTP/Restful/JSON-RPC/NoSQL/ASYNCH API.
 
 	Related tools give simple, complete, homogeneous and powerful way to CRUD ressources (db, files, locals, etc.).
 	Dramaticaly improve Ressources modelisation and reusability.
 
-* Environnement Dependent Object Capabilities Model (or Management).
+* <b>Environnement Dependent Object Capabilities Model</b> (or Management).
 
 	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capabilities depending on context modes.
 	Realy high benefit in application architecture, from security to run-time particularity.
