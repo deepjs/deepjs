@@ -33,7 +33,7 @@ All those tools are (almost) totaly unobstrusive, and work alone or together, al
 
 deepjs does not provide other things than helpers.
 
-So, deepjs, with all its subtilities, mainly targets real programmers/architect, that want to mastering any aspects of code, and to do taylor-made, complex, asynchroneous and highly maintenable web applications.
+So, <b>deepjs</b>, with all its subtilities, mainly targets real programmers/architect, that want to mastering any aspects of code, and to do taylor-made, complex, asynchroneous and highly maintenable web applications.
 
 As all deepjs (core) tools could work together, and because deepjs is in many cases bootstrapped from itself, deepjs define a realy new and holistic approach that may ask you to understand deeply tools and consequences before to grasp the whole painting.
 
@@ -41,9 +41,9 @@ And as deepjs ties together a lot of quite new concepts and approaches, while yo
 
 But don't worry, you could start gently and use deepjs just in few places for begining, try each tools alone, find why and how things work in simple cases, before trying to understand how and why deepjs manage all this together.
 
-It was thought with ergonomy and simplicity in mind, and could be used in plenty cases, from simple one-shot to sofisticated holistic usage, without needing to put your actual framework to trash.
+It was thought with ergonomy and simplicity in mind, and <b>could be used in plenty cases</b>, from simple one-shot to sofisticated holistic usage, without needing to put your actual framework to trash.
 
-So, follow the white rabbit... and never, never, never forget to copy/paste/test tutorial examples in your preferred js console.
+So, follow the white rabbit... and never, never, <b>never forget to copy/paste/test</b> tutorial examples in your preferred js console.
 You'll see your code as never before.
 
 deepjs, as smart as you are. ;)
