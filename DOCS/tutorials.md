@@ -11,8 +11,7 @@ But deepjs (alone) will not, and will never, provides a full application out-of-
 
 More precisly, deepjs scopes are (and are only) :
 
-* Layered and Query (or Selector) Based Programmation
-Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to
+* Layered and Query (or Selector) Based Programmation : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
 	* dramaticaly reduce Classical OO Inheritance modelisation complexity.
 	* dramaticaly reduce coupling between objects.
 
