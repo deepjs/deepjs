@@ -1,7 +1,7 @@
 Tutorials
 =====
 
-deepjs provides a set of quite atomic (but linked) tools for better programming.
+<b>deepjs</b> provides a set of quite atomic (but linked) tools for better programming.
 
 Alone, it does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
 
@@ -9,7 +9,7 @@ Above all, it will help you in modelisation, architecture and concurrent run-tim
 
 But deepjs (alone) will not, and will never, provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
-More precisly, deepjs scopes are (and are only) :
+More precisly, <u>deepjs scopes</u> are (and are only) :
 
 * Layered and Query (or Selector) Based Programmation : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
 	* dramaticaly reduce Classical OO Inheritance modelisation complexity.
