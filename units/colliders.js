@@ -28,7 +28,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             replace2:function(){
                 var a = { b:[1,2,3] };
                 var c = {
-                    b:deep.colliders.replace([4,5])
+                    b:deep.collider.replace([4,5])
                 };
                 deep.utils.up(c,a);
                 return deep(a).equal({ b:[4,5] });
@@ -36,7 +36,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             "array.insertAt2":function(){
                 var a = { b:[1,2,3] };
                 var c = {
-                    b:deep.colliders["array.insertAt"]([4,5],2)
+                    b:deep.collider["array.insertAt"]([4,5],2)
                 };
                 deep.utils.up(c,a);
                 return deep(a).equal({ b:[1,2,4,5,3] });
