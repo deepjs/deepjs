@@ -41,7 +41,7 @@ And as deepjs ties together a lot of quite new concepts and approaches, while yo
 
 But don't worry, you could start gently and use deepjs just in few places for begining, try each tools alone, find why and how things work in simple cases, before trying to understand how and why deepjs manage all this together.
 
-It was thought with highly ergonomic and simplicity consideration in mind, and could be used in plenty cases, from simple one-shot to sofisticated holistic usage, without needing to put your actual framework to trash.
+It was thought with ergonomy and simplicity considerations in mind, and could be used in plenty cases, from simple one-shot to sofisticated holistic usage, without needing to put your actual framework to trash.
 
 So, follow the white rabbit... and never, never, never forget to copy/paste/test tutorial examples in your preferred js console.
 You'll see your code as never before.
