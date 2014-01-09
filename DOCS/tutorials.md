@@ -60,7 +60,7 @@ For this, it mainly uses Aspects Composition (AOP) principles, and particular qu
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
 
-OCM are a little bit further than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
+OCM is a little bit further than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
 * [Object Capabilities Manager](./ocm.md)
 	* [Additive vs restrictive](./ocm/ocm-synthesis.md)
 	* [Delegation](./ocm/ocm-delegate.md)
