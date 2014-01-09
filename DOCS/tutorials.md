@@ -5,7 +5,7 @@ Tutorials
 
 Alone, it does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
 
-Above all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
+Before all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
 
 But deepjs (alone) will not provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
