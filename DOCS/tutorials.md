@@ -9,7 +9,7 @@ Above all, it will help you in modelisation, architecture and concurrent run-tim
 
 But deepjs (alone) will not provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
-More precisly, <b>deepjs scopes</b> are (and are only) :
+More precisely, <b>deepjs scopes</b> are (and are only) :
 
 * <b>Layered and Query (or Selector) Based Programmation</b> : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
 	* dramaticaly reduce Classical OO Inheritance modelisation complexity.
