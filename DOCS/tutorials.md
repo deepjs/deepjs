@@ -7,7 +7,7 @@ Alone, it does not provides anything but nice, fast and lightweight tools that a
 
 Above all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
 
-But deepjs (alone) will not, and will never, provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
+But deepjs (alone) will not provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
 More precisly, <b>deepjs scopes</b> are (and are only) :
 
@@ -27,11 +27,11 @@ More precisly, <b>deepjs scopes</b> are (and are only) :
 * <b>Environnement Dependent Object Capabilities Model</b> (or Management).
 
 	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capabilities depending on context modes.
-	Realy high benefit in application architecture, from security to run-time particularity.
+	Realy high benefits in your application from architecture, from security to run-time particularity.
 
 All those tools are (almost) totaly unobstrusive, and work alone or together, along with YOUR objects/functions/app. 
 
-deepjs does not provide other things than helpers.
+deepjs just provides helpers.
 
 So, <b>deepjs</b>, with all its subtilities, mainly targets real programmers/architect, that want to mastering any aspects of code, and to do taylor-made, complex, asynchroneous and highly maintenable web applications.
 
