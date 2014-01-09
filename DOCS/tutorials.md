@@ -22,12 +22,12 @@ More precisely, <b>deepjs scopes</b> are :
 * <b>Absolute Homogeneous Ressources Management</b> through HTTP/Restful/JSON-RPC/NoSQL/ASYNCH API.
 
 	Related tools give simple, complete, homogeneous and powerful way to CRUD ressources (db, files, locals, etc.).
-	Dramaticaly improve Ressources modelisation and reusability.
+	Dramaticaly improve ressources modelisation and reusability.
 
 * <b>Environnement Dependent Object Capabilities Model</b> (or Management).
 
 	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capabilities depending on context modes.
-	Realy high benefits in your application from architecture, from security to run-time particularity.
+	Realy high benefits in your application from architecture, to security and run-time particularity.
 
 All those tools are (almost) totaly unobstrusive, and work alone or together, along with YOUR objects/functions/app. 
 
