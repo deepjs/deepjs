@@ -69,7 +69,7 @@ data binders :
 
 clean
 - Clean BaseChain/Chain construction						OK
-- no more requirejs pattern 								
+- no more requirejs pattern
 
 DO
 - hierarchy selection														OK
@@ -79,7 +79,7 @@ DO
 - manage path in flatten for _deep_flattener_								OK
 
 - test context and modes 																									
-- Emitter and Context ? 													
+- Emitter and Context ?																	
 
 Write
 - More test cases
