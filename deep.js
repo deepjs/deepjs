@@ -201,10 +201,10 @@ define([
      * @return {deep.validate.Report} the validation report
      */
     deep.partialValidation = deep.Validator.partialValidation;
+
     require("./lib/chain")(deep);
     require("./lib/flatten")(deep);
     require("./lib/protocol")(deep);
-
     require("./lib/sheet")(deep);
     require("./lib/ocm")(deep);
     require("./lib/stores")(deep);
@@ -230,7 +230,9 @@ define([
         "js::deepjs/units/context",
         "js::deepjs/units/ocm",
         "js::deepjs/units/sheets",
-        "js::deepjs/units/collections"
+        "js::deepjs/units/collections",
+        "js::deepjs/units/shared",
+        "js::deepjs/units/parcours"
     );
     //_________________________________________________________________________________
     return deep;
