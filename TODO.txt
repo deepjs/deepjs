@@ -47,24 +47,17 @@ deep.stores :
 
 	serveSchema
 
-
 	deep-cookies
-
-
+ 
 	SYNCHED store
 		save locally bunch of object : synch it with remote sto
-
-
 
 deep-routes
 	work on pattern : finalise it
 
 
 data binders : 
-
 	modularise binders
-
-
 
 ## Beautify
 
@@ -72,20 +65,21 @@ data binders :
 - check homogeneity for _deep_flag_ family					OK
 
 
-## DOCS
-
-_deep_query_node_
-
-
 ## TODO for 1.0.0
 
 clean
 - Clean BaseChain/Chain construction						OK
-- no more requirejs pattern
+- no more requirejs pattern 								
 
 DO
-- finalise stores constraints (variabilise userID + filters)
-- Emitter and Context
+- hierarchy selection														OK
+- SHared as _deep_compiler_ ?												OK
+- finalise stores constraints (variabilise userID + filters)				OK		
+- refactor _deep_ocm_ as _deep_flattener_ in flatten test function 			OK
+- manage path in flatten for _deep_flattener_								OK
+
+- test context and modes 																									
+- Emitter and Context ? 													
 
 Write
 - More test cases
@@ -93,8 +87,8 @@ Write
 
 ## ROAD MAP for further version (higher than 1.0.0)
 
-1.1.0 - Finalise Chain Identities Management
-1.2.0 - Finalise context and parano modes
+1.1.0 - Finalise context and parano modes
+1.2.0 - Finalise Chain Identities Management
 1.3.0 - Optimise DeepQuerier and RQL
 1.4.0 - Externalise Schema Validation + Error Translation Management
 
