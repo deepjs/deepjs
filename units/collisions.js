@@ -12,7 +12,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         stopOnError:false,
         setup:function(){},
         tests : {
-            "up":function(){
+            up:function(){
                 return deep({
                     steps:[
                     {
@@ -47,7 +47,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                  ]
                 });
             },
-            "bottom":function(){
+            bottom:function(){
                 return deep({
                     steps:[
                     {
@@ -82,6 +82,11 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                  ]
                 });
             },
+            bottom_array : function(){
+                return deep([1,2,3,{id:"e1", title:"hello" }])
+                .bottom([4,5,{id:"e1", title:"bottom title" }])
+                .equal([4,5,{id:"e1", title:"hello" },1,2,3]);
+            },
             bottom_deep_ocm_:function(){
               var autre = {
                   test:{
@@ -102,9 +107,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                       }
                   })
               };
-
               var tt = obj.test;
-
               return deep(obj)
               .flatten()
               .done(function(success){

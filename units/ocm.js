@@ -1,16 +1,15 @@
 if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
+	var define = require('amdefine')(module);
 }
 
 define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
-    
-    //_______________________________________________________________ GENERIC STORE TEST CASES
+	
+	//_______________________________________________________________ GENERIC STORE TEST CASES
 
 
-    var unit = {
-        title:"deep/units/ocm",
-        stopOnError:false,
-        tests : {
+	var unit = {
+		title:"deep/units/ocm",
+		tests : {
 			base:function(){
 				var myManager = deep.ocm({
 					mode1:{
@@ -33,8 +32,8 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 						{ test:2, title:"hello world", description:"mode 3 description"}
 					]
 				);
-           },
-           currentMode:function(){
+		   },
+		   currentMode:function(){
 				var myManager = deep.ocm({
 					mode1:{
 						title:"should not see this"
@@ -122,16 +121,29 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 				return obj.flatten().done(function(obj){
 					obj("mode1").myShared.push(6);
-					obj("mode1").myShared2.c = 3;;
+					obj("mode1").myShared2.c = 3;
 					return [obj("mode1"), obj("mode2")];
 				})
 				.equal([
 					{ myShared:[1,2,3,4,5,6], myShared2:{ a:1, _deep_shared_:true, b:2,  c:3}},
 					{ myShared:[1,2,3,4,5,6], myShared2:{ a:1,  _deep_shared_:true, b:2, c:3}}
 				]);
+			},
+			cross_inheritance:function(){
+				var a = {
+					b:deep.ocm({
+						backgrounds:["this::../brol"],
+						role:true
+					}),
+					brol:{
+						role2:false
+					}
+				};
+				deep.flatten(a);
+				return deep([a.b("role2"),a.b("role")]).equal([false,true]);
 			}
-        }
-    };
+		}
+	};
 
-    return unit;
+	return unit;
 });

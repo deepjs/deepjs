@@ -376,7 +376,6 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     { id:"u5", count:5 },
                     { id:"u6", count:6 }
                 ]);
-
                 return deep.store(store)
                 .range(2,4)
                 .done(function(range){
@@ -451,31 +450,30 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             },
             ownerPatchFail:function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
-                    ownerRestriction:true
+                    ownerRestriction:"userID"
                 });
                 return deep.store(store)
                 .patch({ id:"i1", label:"yesssss" })
                 .fail(function(e){
-                    if(e && e.status == 403)    // forbidden
+                    if(e && e.status == 403)    // forbidden because no session.
                         return "choxy";
                 })
                 .equal("choxy");
             },
             "ownerPatchOk":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
-                    ownerRestriction:true
+                    ownerRestriction:"userID"
                 });
                 deep.context.session = {
                     remoteUser:{ id:"u1" }
                 };
-
                 return deep.store(store)
                 .patch({ id:"i1", label:"yesssss" })
                 .equal({ id:"i1", label:"yesssss", userID:"u1"});
             },
             "ownerPutFail":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
-                    ownerRestriction:true
+                    ownerRestriction:"userID"
                 });
                 deep.context.session = {
                     remoteUser:{ id:"u2" }
@@ -483,14 +481,14 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .put({ id:"i1", label:"yesssss", userID:"u1" })
                 .fail(function(e){
-                    if(e && e.status == 403)    // forbidden
+                    if(e && e.status == 404)    // not found because restriciton
                         return "ploup";
                 })
                 .equal("ploup");
             },
             "ownerPutOk":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
-                    ownerRestriction:true
+                    ownerRestriction:"userID"
                 });
                 deep.context.session = {
                     remoteUser:{ id:"u1" }
@@ -501,7 +499,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             },
             "ownerDelFail":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
-                    ownerRestriction:true
+                    ownerRestriction:"userID"
                 });
                 deep.context.session = {
                     remoteUser:{ id:"u2" }
@@ -512,7 +510,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             },
             "ownerDelOk":function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
-                    ownerRestriction:true
+                    ownerRestriction:"userID"
                 });
                 deep.context.session = {
                     remoteUser:{ id:"u1" }
@@ -520,6 +518,35 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 return deep.store(store)
                 .del("i1")
                 .equal(true);
+            },
+            filterGet:function(){
+                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
+                    filter:"&status=published"
+                });
+                deep.context.session = {};
+                return deep.store(store)
+                .get("i1")
+                .fail(function(e){
+                    if(e && e.status == 404)
+                        return "yolli";
+                })
+                .equal('yolli');
+            },
+            filterQuery:function(){
+                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
+                    filter:"&status=published"
+                });
+                return deep.store(store)
+                .get("?id=i1")
+                .equal([]);
+            },
+            filterDel:function(){
+                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
+                    filter:"&status=published"
+                });
+                return deep.store(store)
+                .del("i1")
+                .equal(false);
             }
         }
     };
