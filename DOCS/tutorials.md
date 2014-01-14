@@ -5,11 +5,11 @@ Tutorials
 
 Alone, it does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
 
-Above all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
+Before all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
 
-But deepjs (alone) will not, and will never, provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
+But deepjs (alone) will not provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
 
-More precisly, <b>deepjs scopes</b> are (and are only) :
+More precisely, <b>deepjs scopes</b> are :
 
 * <b>Layered and Query (or Selector) Based Programmation</b> : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
 	* dramaticaly reduce Classical OO Inheritance modelisation complexity.
@@ -22,16 +22,16 @@ More precisly, <b>deepjs scopes</b> are (and are only) :
 * <b>Absolute Homogeneous Ressources Management</b> through HTTP/Restful/JSON-RPC/NoSQL/ASYNCH API.
 
 	Related tools give simple, complete, homogeneous and powerful way to CRUD ressources (db, files, locals, etc.).
-	Dramaticaly improve Ressources modelisation and reusability.
+	Dramaticaly improve ressources modelisation and reusability.
 
 * <b>Environnement Dependent Object Capabilities Model</b> (or Management).
 
 	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capabilities depending on context modes.
-	Realy high benefit in application architecture, from security to run-time particularity.
+	Realy high benefits in your application from architecture, to security and run-time particularity.
 
 All those tools are (almost) totaly unobstrusive, and work alone or together, along with YOUR objects/functions/app. 
 
-deepjs does not provide other things than helpers.
+deepjs just provides helpers.
 
 So, <b>deepjs</b>, with all its subtilities, mainly targets real programmers/architect, that want to mastering any aspects of code, and to do taylor-made, complex, asynchroneous and highly maintenable web applications.
 
@@ -60,7 +60,7 @@ For this, it mainly uses Aspects Composition (AOP) principles, and particular qu
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
 
-OCM are a little bit further than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
+OCM is a little bit further than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
 * [Object Capabilities Manager](./ocm.md)
 	* [Additive vs restrictive](./ocm/ocm-synthesis.md)
 	* [Delegation](./ocm/ocm-delegate.md)
