@@ -1,7 +1,7 @@
 Tutorials
 =====
 
-<b>deepjs</b> provides a set of quite atomic (but linked) tools for better programming.
+<b>deepjs</b> provides a set of quite atomic tools for better programming.
 
 Alone, it does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
 
