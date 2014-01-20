@@ -94,7 +94,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             putWithQuery:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
-                .put("gilles@gmail.com", { id:"u1", query:"/email"})
+                .put("gilles@gmail.com", { id:"u1/email"})
                 .equal({ id:"u1", email:"gilles@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
@@ -150,7 +150,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             patchWithQuery:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
-                .patch("gilles@gmail.com", { id:"u1", query:"/email"})
+                .patch("gilles@gmail.com", { id:"u1/email"})
                 .equal({ id:"u1", email:"gilles@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
