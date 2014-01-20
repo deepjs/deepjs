@@ -232,7 +232,8 @@ define([
         "js::deepjs/units/sheets",
         "js::deepjs/units/collections",
         "js::deepjs/units/shared",
-        "js::deepjs/units/parcours"
+        "js::deepjs/units/parcours",
+        "js::deepjs/units/deepload"
     );
     //_________________________________________________________________________________
     return deep;
