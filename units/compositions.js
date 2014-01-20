@@ -279,13 +279,13 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var a = {
                     test:function(arg1, arg2){
                         checker.fromA = [arg1, arg2];
-                        return ["A1:"+arg1, "A2:"+arg2];
+                        return deep.Arguments(["A1:"+arg1, "A2:"+arg2]);
                     }
                 };
                 var b = {
                     test:deep.compose.before(function(arg1, arg2){
                         checker.fromB = [arg1, arg2];
-                        return ["B1:"+arg1, "B2:"+arg2];
+                        return deep.Arguments(["B1:"+arg1, "B2:"+arg2]);
                     })
                 };
                 deep.utils.up(b,a);
@@ -302,13 +302,13 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var a = {
                     test:function(arg1, arg2){
                         checker.fromA = [arg1, arg2];
-                        return ["A1:"+arg1, "A2:"+arg2];
+                        return deep.Arguments(["A1:"+arg1, "A2:"+arg2]);
                     }
                 };
                 var b = {
                     test:deep.compose.after(function(arg1, arg2){
                         checker.fromB = [arg1, arg2];
-                        return ["B1:"+arg1, "B2:"+arg2];
+                        return deep.Arguments(["B1:"+arg1, "B2:"+arg2]);
                     })
                 };
                 deep.utils.up(b,a);
@@ -339,9 +339,31 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal(["B1:hello", "B2:world"])
                 .deep(checker)
                 .equal({
-                    fromA:["hello","world"],
+                    fromA:["hello", "world"],
                     fromB:["hello", "world"]
                 });
+            },
+            fineFail:function(){
+                var closure = {};
+                var test = function(a,b){
+                    return [a+2,b+3];
+                };
+                var test2 = deep.compose.after(function(a,b){
+                    return new Error("tralala");
+                })
+                .after(function(a,b){
+                    closure.shouldntSeeThis = true;
+                });
+
+                var test3 = deep.utils.up(test2, test);
+
+                try{
+                    test3(1,3);
+                }
+                catch(e){
+                    console.log("error cacthed : ", e);
+                }
+
             }
 
 
