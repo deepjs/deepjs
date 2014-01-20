@@ -1,63 +1,4 @@
-## Questions
-- what to do with complex route params in restful ?
 
-- how manage chain's identities.
-specialy with stores vs values : query, range, stores particular API
-
-- flatten an sheets : 
-	- backgrounds and sheets
-	- foregrounds ?					NO NEVER
-
-## Todo
-- Events and context
-	- Chain.on("event", callBack) that wrap holded one
-	- deep.Emitter that conserve context ?
-
-- use protocols space for different kinds of object (not only stores - e.g. socket)
-==> use default handler in protocols : e.g. for stores : it's 'get'
-==> in ocm : it could be in constructor options
-==> need _deep_protocol_ object
-
-- Stores constraints
-	- ownership : variabilise userID
-	- add 'filters' in stores dynamic schema interpretation
-
-- protocols and context
-put protocols set in deep.context : ocmise present protocols = parano mode : consequence :  no possibility to change modes by after
-('after' from context point of view)
-
-==> when context is (simple)copied : we could contextualise protocols : for that we need to (simple)copy also protocols :
- allow to have local (contextualised) protocols space. Imply that late definition of protocols will only be local. 
-
-==> maybe something like : 
-
-deep.contextualize("protocols", deepCopy:Bool, parano:Bool) : will copy protocols (simple or deep) and apply OCM parano
-
-deep.context()
-
-deep.removeFromContext()
-
-- use ocm as prototypes in classe construction :  			OK
-
-
-
-
-deep.stores : 
-	add jsonp capabilities (jsonp::...)
-
-	serveSchema
-
-	deep-cookies
- 
-	SYNCHED store
-		save locally bunch of object : synch it with remote sto
-
-deep-routes
-	work on pattern : finalise it
-
-
-data binders : 
-	modularise binders
 
 ## Beautify
 
@@ -77,9 +18,11 @@ DO
 - finalise stores constraints (variabilise userID + filters)				OK		
 - refactor _deep_ocm_ as _deep_flattener_ in flatten test function 			OK
 - manage path in flatten for _deep_flattener_								OK
+- store : serve schema														OK
+- store : put/patch manage query nicely										OK
+
 
 - test context and modes 																									
-- Emitter and Context ?																	
 
 Write
 - More test cases
@@ -87,13 +30,97 @@ Write
 
 ## ROAD MAP for further version (higher than 1.0.0)
 
-1.1.0 - Finalise context and parano modes
+1.1.0 - Finalise context and parano modes. maybe contextualised Emitter.
 1.2.0 - Finalise Chain Identities Management
-1.3.0 - Optimise DeepQuerier and RQL
-1.4.0 - Externalise Schema Validation + Error Translation Management
+1.3.0 - Optimise constraints and schema compilation. maybe externalise schema validation. manage error translation.
+1.4.0 - Optimise DeepQuerier and RQL
 
+
+More : 
+- closure-encapsulate all sensible store stuffs (real collection, schema, config)
+	- need : late instance prototype compilation with closure wrapper function for applied layers and sheets that use sensible stuffs.
+	- sensible stuffs should be categorized in : config (cache, uri, root folder, ...), schema, real collection (or driver stuffs)
+	- sensible stuff should be definitly wrapped and hidded in closure at init of store. so schema and config or other needed datas need to be displaced from instance to closure.
+
+
+- add options and head http action in store sheet.
+
+- deep.utils.set(entry, "/path/[a,b,c]", value);  deep(...).set(path, value); + sheet : "dq.set::./path/[a,b,c]":...
+
+- add flag in composition for managing error as callBack does, not as promise pipeline.
 
 ## ROAD MAP for other deepjs related libs.
 
-- deep-http-client : node + jquery
+- deep-http-client : node + jquery					OK (to be tested)
+	- add jsonp capabilities (jsonp::...)
 
+## Questions
+- what to do with complex route params in restful ?
+
+- how manage chain's identities.
+specialy with stores vs values : query, range, stores particular API
+
+- flatten and sheets : 
+	- backgrounds and sheets
+	- foregrounds ?					NO NEVER
+
+## Todo details
+- use ocm as prototypes in classe construction :  			OK (see deep.compose.ClassFactory)
+
+- Events and context
+	- Chain.on("event", callBack) that wrap holded one
+	- deep.Emitter that conserve context ?
+
+- use protocols space for different kinds of object (not only stores - e.g. socket)
+==> use default handler in protocols : e.g. for stores : it's 'get'
+==> in ocm : it could be in constructor options
+==> need _deep_protocol_ object
+
+- protocols and context
+put protocols set in deep.context : ocmise present protocols = parano mode : consequence :  no possibility to change modes by after
+('after' from context point of view)
+
+==> when context is (simple)copied : we could contextualise protocols : for that we need to (simple)copy also protocols :
+ allow to have local (contextualised) protocols space. Imply that late definition of protocols will only be local. 
+
+==> maybe something like : 
+
+deep.contextualize("protocols", deepCopy:Bool, parano:Bool) : will copy protocols (simple or deep) and apply OCM parano
+
+deep.context()
+
+deep.removeFromContext()
+
+
+
+## DOCS :
+
+
+1) deepjs context : Web 3.0 and Homogeneity
+Thanx to node, and big effort from js community, we have today plenty of great application stacks to develop, in pure js from end to end, a whole web app logic... What a marvelous step forward in web developement.
+Since, big efforts have been made to reduce inhomogeneity between browser and server side scripts and paradygms.
+Following that idea, and as a first target, deepjs wants to nullifying almost any differences between server and browser paradygms and logics.
+
+And as today, the architecture itself of web app are better controled, and use clasicaly Single-Page/Restful paradygm, deepjs wants to fits particulary well as a complete ThinServer/mVC/Asynch tools belt.
+
+
+2) deepjs scope 1 : welcome to 'space-time' programmation
+
+	-> Layered : toute valeur javascript peut etre vue comme une layer. ex : un objet, une array, une fonction, une string, etc...
+
+	-> Queries/Selector : puisque le but de deep est de faciliter la programmation spatio-temporelle : les queries/selection sont la pour diminuer le couplage entre les composants logiciels, et permettre de programmer 'à l'aveugle'
+
+	-> Time : Promised Base chains and compositions
+
+
+3)  deepjs scope 2 : Puisque tout ca ne fonctionne de manière utile qu'avec des ressources, viennent les autres outils du core : stores, protocol, schema
+
+4)  deepjs scope 3 : Et enfin : puisqu'il faut gérer des rôles : OCM powaaa.
+
+
+
+
+
+
+
+deepjs will show you other kinds of programmation, that use 'spatial' and 'time' consideration
