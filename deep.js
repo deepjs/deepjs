@@ -132,6 +132,8 @@ define([
      */
     deep.globalHaders = {};
 
+    deep.debug = true;
+
     deep.destructiveLoad = false;
 
     require("./lib/utils")(deep);
