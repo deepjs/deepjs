@@ -15,7 +15,7 @@ define([
     "./lib/compose",
     "./lib/collider",
     "./lib/errors",
-    "./lib/stores",
+    "./lib/stores/stores",
     "./lib/ocm",
     "./lib/stores/collection-store",
     "./lib/stores/object-store",
@@ -27,7 +27,8 @@ define([
     "./lib/selector",
     "./lib/treatment",
     //"./lib/unit",
-    "./lib/compiler"
+    "./lib/compiler",
+    "./lib/clients/client-store"
     ], function (require) {
     
     if(typeof deep !== 'undefined')
@@ -204,14 +205,18 @@ define([
      */
     deep.partialValidation = deep.Validator.partialValidation;
 
+
+    deep.ui = {};
+
     require("./lib/chain")(deep);
     require("./lib/flatten")(deep);
     require("./lib/protocol")(deep);
     require("./lib/sheet")(deep);
     require("./lib/ocm")(deep);
-    require("./lib/stores")(deep);
+    require("./lib/stores/stores")(deep);
     require("./lib/stores/collection-store")(deep);
     require("./lib/stores/object-store")(deep);
+    require("./lib/clients/client-store")(deep);
     //_________________________________________________________________________________
 
     deep.coreUnits = deep.coreUnits || [];
