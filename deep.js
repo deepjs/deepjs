@@ -28,6 +28,7 @@ define([
     "./lib/treatment",
     //"./lib/unit",
     "./lib/compiler",
+    "./lib/rql-ops",
     "./lib/clients/client-store"
     ], function (require) {
     
@@ -217,6 +218,7 @@ define([
     require("./lib/stores/collection-store")(deep);
     require("./lib/stores/object-store")(deep);
     require("./lib/clients/client-store")(deep);
+    require("./lib/rql-ops")(deep);
     //_________________________________________________________________________________
 
     deep.coreUnits = deep.coreUnits || [];
