@@ -9,7 +9,6 @@ if (typeof define !== 'function') {
 define([
     "require",
     "./lib/utils",
-    "./lib/rql",
     "./lib/schema",
     "./lib/query",
     "./lib/compose",
@@ -28,7 +27,7 @@ define([
     "./lib/treatment",
     //"./lib/unit",
     "./lib/compiler",
-    "./lib/rql-ops",
+    "./lib/rql",
     "./lib/clients/client-store"
     ], function (require) {
     
@@ -145,19 +144,7 @@ define([
     require("./lib/compose")(deep);
     require("./lib/collider")(deep);
 
-    /**
-     * perform a (synched) rql filter on array
-     * @example
-     *
-     *      deep.rql(["a","b","c"], "=a"); // return  ["a"]
-     *
-     * @static
-     * @method rql
-     * @param {Array} array  the array to filter
-     * @param {String} rqlFilter the rql filter to apply
-     * @return {Array} the result aray
-     */
-    deep.rql = require("./lib/rql")(deep.utils).query;
+
 
     /**
      * final namespace for deepjs/query
@@ -218,7 +205,7 @@ define([
     require("./lib/stores/collection-store")(deep);
     require("./lib/stores/object-store")(deep);
     require("./lib/clients/client-store")(deep);
-    require("./lib/rql-ops")(deep);
+    require("./lib/rql")(deep);
     //_________________________________________________________________________________
 
     deep.coreUnits = deep.coreUnits || [];

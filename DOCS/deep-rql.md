@@ -15,7 +15,7 @@ That's not intend to be used in ressource filtering (as RQL does), because the s
 see https://github.com/persvr/rql for base knowledge.
 
 deep addition : 
-_schema.type is generated at runtime, even if schema is given
+_type is generated at runtime, even if schema is given
 _schema[any property of the schema provided] could be used
 _parent[any parent property could be use]
 
