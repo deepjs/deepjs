@@ -38,7 +38,7 @@ on this : recursively take any property named bar and equal to 3
 
 
 
-/?foo=2&bar/(myArray.*)?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&_parent.taxerate=lt=0.12&_schema.type=string
+/?foo=2&bar/(myArray.*)?length=gt=10/[1:4:2,@.length-2]//(^p.*)g?=in=(hello,bye)&_parent.taxerate=lt=0.12&_type=string
 
 From root : Give me any property. 
 On this : give me those which have a property named foo and equal to 2 AND has a property named bar (different of undefined, null, false, or 0).
