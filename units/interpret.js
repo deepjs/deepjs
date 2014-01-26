@@ -27,9 +27,9 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal("mystring 12");
             },
             c:function(){
-                return deep("mystring { id | '0' } after")
+                return deep("mystring { id | 'hello world' } after")
                 .interpret({id:undefined})
-                .equal("mystring 0 after");
+                .equal("mystring hello world after");
             },
             d:function(){
                 return deep("mystring { id | '0' } after")
