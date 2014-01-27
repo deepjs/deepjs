@@ -40,6 +40,11 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 return deep("mystring { 'hello world' } after")
                 .interpret({id:12})
                 .equal("mystring hello world after");
+            },
+            addition:function(){
+                return deep("mystring { 'hello world : '+'interpreted' + id } after")
+                .interpret({id:12})
+                .equal("mystring hello world : interpreted12 after");
             }
         }
     };
