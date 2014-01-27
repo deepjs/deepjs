@@ -120,7 +120,79 @@ And as today, the architecture itself of web app are better controled, and use c
 
 
 
+deepjs DSLs : 
 
+	queries (stepper)
+	rql
+	selectors
+	protocols
+		sheets
+	interpret
 
+	route
 
-deepjs will show you other kinds of programmation, that use 'spatial' and 'time' consideration
+deepjs algorithms
+
+	up/bottom
+	
+	flatten
+
+	deepLoad
+
+	ocm compilation
+
+	setHierarchy
+
+	store constraints
+
+	fullSchemaByPath
+
+	mapper
+	doRoute
+
+deepjs patterns
+
+	layered
+	backgrounds
+	selectors
+
+	promise
+	chain
+
+	collider
+	compositions
+	sheets
+
+	store
+	range
+	relations
+	protocols
+	roles
+	ocm
+	context
+
+	view
+	
+	routes
+
+deepjs objects
+
+	_deep_query_node_
+	_deep_chain_
+	_deep_promise_
+	_deep_deferred_
+	_deep_composition_
+	_deep_flattener_
+	_deep_merger_
+	_deep_ocm_
+	_deep_collider_
+	_deep_sheet_
+	_deep_store_
+	_deep_shared_
+	_deep_range_
+
+	_deep_view_
+
+	_deep_mapper_
+	_deep_router_
+
