@@ -1,5 +1,4 @@
 
-
 ## Beautify
 
 - refactor protocols naming									OK
@@ -20,6 +19,9 @@ DO
 - manage path in flatten for _deep_flattener_								OK
 - store : serve schema														OK
 - store : put/patch manage query nicely										OK
+
+
+- client micro caching
 
 
 - test context and modes 																									
