@@ -82,11 +82,18 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 		    }
 	}
 
-
   var unit = {
     title:"deep/units/queries",
     stopOnError:false,
     tests:{
+      a:function(){
+        var r = deep.query({}, '/brol')
+        return deep(r).equal(undefined);
+      },
+      b:function(){
+        var r = deep.query({}, '/?brol')
+        return deep(r).equal([]);
+      },
       "/store/[]":function(){
           return deep(datas)
           .query("/store/[]")
