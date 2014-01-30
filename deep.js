@@ -42,49 +42,43 @@ define([
 
     deep = function deepStart(obj, schema, options) {
         //console.log("start chain : ", obj)
-        //if(obj && obj._deep_chain_ && obj.oldQueue)
-        //	return obj;
         var h = new deep.Chain(options);
         try {
             if (typeof obj === 'string')
                 obj = deep.get(obj);
             if (typeof schema === 'string')
                 schema = deep.get(schema);
-
-            var doStart = function doStartChain(obj, schema) {
-                //console.log("do start : ", obj)
+            var doStart = function doStartChain(obj, schema)
+            {
                 var r = obj;
                 if (obj && obj._deep_query_node_)
                 {
                     r = obj.value;
                     h._nodes = [obj];
                 }
-                else if (obj && obj._deep_store_)
+                else
+                    h._nodes = [deep.utils.createRootNode(obj, schema, options)];
+
+                if (obj && obj._deep_store_)
                 {
-                    h._nodes = [deep.utils.createRootNode({}, null, options)];
                     h.store(obj);
                     deep.Store.extendsChain(h);
                 }
-                else
-                    h._nodes = [deep.utils.createRootNode(obj, schema, options)];
+
                 h._root = h._nodes[0];
                 h._start(r, null);
             };
             var alls = null;
-            if (obj && (obj.then || obj.promise))
-                alls = [obj, schema];
-            if(alls){
-                //console.log("chain start with deferred or promise : ", obj)
-                deep.all(alls)
+            if ((obj && (obj.then || obj.promise)) || (schema && (schema.then || schema.promise)))
+                deep.all([obj, schema])
                 .done(function (res) {
-                    //console.log("deep start chain res  : ",res);
                     doStart(res[0], res[1]);
                 })
                 .fail(function (error) {
                     h._nodes = null;
                     h._start(null, error);
                 });
-            } else
+            else
                 doStart(obj, schema);
         } catch (error) {
             console.log("internal chain start error : ", error);
