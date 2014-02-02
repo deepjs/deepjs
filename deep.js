@@ -16,19 +16,20 @@ define([
     "./lib/errors",
     "./lib/stores/stores",
     "./lib/ocm",
-    "./lib/stores/collection-store",
-    "./lib/stores/object-store",
+    //"./lib/stores/collection-store",
+    //"./lib/stores/object-store",
     "./lib/protocol",
     "./lib/sheet",
     "./lib/promise",
     "./lib/chain",
     "./lib/flatten",
-    "./lib/selector",
-    "./lib/treatment",
+    //"./lib/selector",
+    //"./lib/treatment",
     //"./lib/unit",
     "./lib/compiler",
-    "./lib/rql",
-    "./lib/clients/client-store"
+    "./lib/emitter",
+    //"./lib/clients/client-store",
+    "./lib/rql"
     ], function (require) {
     
     if(typeof deep !== 'undefined')
@@ -189,6 +190,7 @@ define([
 
 
     deep.ui = {};
+    deep.client = {};
 
     require("./lib/chain")(deep);
     require("./lib/flatten")(deep);
@@ -196,10 +198,11 @@ define([
     require("./lib/sheet")(deep);
     require("./lib/ocm")(deep);
     require("./lib/stores/stores")(deep);
-    require("./lib/stores/collection-store")(deep);
-    require("./lib/stores/object-store")(deep);
-    require("./lib/clients/client-store")(deep);
+    //require("./lib/stores/collection-store")(deep);
+    //require("./lib/stores/object-store")(deep);
+    //require("./lib/clients/client-store")(deep);
     require("./lib/rql")(deep);
+    require("./lib/emitter")(deep);
     //_________________________________________________________________________________
 
     deep.coreUnits = deep.coreUnits || [];
