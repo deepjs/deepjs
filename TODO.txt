@@ -21,7 +21,8 @@ DO
 - store : put/patch manage query nicely										OK
 
 
-- client micro caching
+
+- client micro caching + cache prefix with roles OR clearCache when roles change
 
 
 - test context and modes 																									
