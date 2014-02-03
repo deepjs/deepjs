@@ -131,8 +131,8 @@ deepjs DSLs :
 	protocols
 		sheets
 	interpret
-
-	route
+	route-automate
+	route-navigation
 
 deepjs algorithms
 
