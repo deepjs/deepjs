@@ -68,13 +68,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 						title:"hello world"
 					}
 				});
-
 				myManager.group("myGroup");
-
-
-				deep.setModes({ "myGroup":["mode2", "mode1"]}); // set modes in current deep.context
-
-
 				return deep.modes({ "myGroup":"mode1" }) // start a chain with provided modes
 				.delay(5)
 				.done(function(success){
