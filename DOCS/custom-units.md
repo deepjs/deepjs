@@ -12,7 +12,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","deepjs/deep", "deep/deep-unit"], function (require, deep, Unit) {
+define(["require","deepjs/deep", "deep/lib/unit"], function (require, deep, Unit) {
     
     var unit = {
         title:"Unit title",

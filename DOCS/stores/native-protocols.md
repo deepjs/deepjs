@@ -24,7 +24,7 @@ It use natively the requirejs/require cache system.
 
 ```javascript
 
-deep("js::deep/deep-unit").done(function(Unit){
+deep("js::deep/lib/unit").done(function(Unit){
 	Unit.run(deep.coreUnits);
 })
 .fail(function(e){

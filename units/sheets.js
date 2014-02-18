@@ -12,7 +12,6 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         stopOnError:false,
         setup:function(){},
         tests : {
-         
 			base:function(){
 				var sheet = {
 					"dq.up::./!":{
