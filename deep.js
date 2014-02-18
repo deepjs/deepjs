@@ -9,7 +9,6 @@ if (typeof define !== 'function') {
 define([
     "require",
     "./lib/utils",
-    "./lib/schema",
     "./lib/query",
     "./lib/compose",
     "./lib/collider",
@@ -29,7 +28,8 @@ define([
     "./lib/compiler",
     "./lib/emitter",
     //"./lib/clients/client-store",
-    "./lib/rql"
+    "./lib/rql",
+    //"./lib/schema"
     ], function (require) {
     
     if(typeof deep !== 'undefined')
@@ -162,32 +162,6 @@ define([
      */
     deep.query = Querier.query;
 
-    /**
-     * the deep schema validator
-     * @static
-     * @property Validator
-     */
-    deep.Validator = require("./lib/schema")(deep);
-    /**
-     * perform a schema validation
-     * @static
-     * @method validate
-     * @param object the object to validate
-     * @param schema the schema
-     * @return {deep.validate.Report} the validation report
-     */
-    deep.validate = deep.Validator.validate;
-    /**
-     * perform a schema partial validation (only on certain field)
-     * @static
-     * @method partialValidation
-     * @param object the object to validate
-     * @param fields the array of properties paths to validate
-     * @param schema the schema
-     * @return {deep.validate.Report} the validation report
-     */
-    deep.partialValidation = deep.Validator.partialValidation;
-
 
     deep.ui = {};
     deep.client = {};
@@ -223,7 +197,6 @@ define([
         "js::deepjs/units/context",
         "js::deepjs/units/ocm",
         "js::deepjs/units/sheets",
-        "js::deepjs/units/collections",
         "js::deepjs/units/shared",
         "js::deepjs/units/parcours",
         "js::deepjs/units/deepload"
