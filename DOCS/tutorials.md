@@ -71,11 +71,6 @@ deepjs comes with it's own simple asynch unit testcaser. It uses deepjs native c
 * [nodejs more complex](./nodejs/full.md)
 * [autobahn : deepjs restful server framework](https://github.com/deepjs/autobahn)
 
-#### Browser concreets
-* [browser simple](./nodejs/simple.md) 
-* [browser more complex](./nodejs/full.md)
-* [deep-data-bind](https://github.com/deepjs/deep-data-bind)
-
 #### Sandboxes
 * [deep-playground](https://github.com/deepjs/deep-playground)
 * [deepjs.org](https://github.com/deepjs/deepjs.org)
