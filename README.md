@@ -6,12 +6,12 @@ Based on Layered and Chained Programmation approach, it provides, uses and mixes
 
 * Layered Aspect Oriented Programmation
 * Query Based Programmation including Code Sheet
-* Object Capabilities Management (or Model)
+* Object Capability Model (or Management)
 * Full promised and chained asynch management
 * Homogeneous HTTP/Rest ressources management
-* Modularisation by Protocol approach
+* Modularisation by Protocol approach (Same idea than Dependance Injection of angular)
 
-It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous between server and browser sides.
+It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous (isomorphic) between server and browser sides.
 
 As jquery (that is highly unobstrusive and ergonomic) works on standard DOM objects, deepjs works on standard js objects and functions structures.
 
