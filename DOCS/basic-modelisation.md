@@ -55,16 +55,38 @@ Think about photoshop transparent layers stack : pixels from different layers th
 
 
 	console.log("myOwnLand is : ", myOwnLand);
-	//output in the console :
-	//myOwnLand is : Object { location="Sao Francisco do Guaporé", plants=	[Object { uri="grass", growSpeed=2, size=2, more...}, Object { uri="appletree", growSpeed=10, size=8, more...}, Object { uri="carrots", growSpeed=6, size=4, more...}], watering=TheCompoStart()}
-	
+	// will output :
+	// myOwnLand is :
+	// {
+	// 	"location": "Sao Francisco do Guaporé",
+	// 	"plants": [{
+	// 		"uri": "grass",
+	// 		"growSpeed": 2,
+	// 		"size": 0,
+	//		grow:func(),
+	//		prune:func()
+	// 	}, {
+	// 		"uri": "appletree",
+	// 		"growSpeed": 10,
+	// 		"size": 0
+	//		grow:func(),
+	//		prune:func()
+	// 	}, {
+	// 		"uri": "carrots",
+	// 		"growSpeed": 6,
+	// 		"size": 0
+	//		grow:func(),
+	//		prune:func()
+	// 	}],
+	//	watering:func()
+	// }
 	
 	
 	myOwnLand.watering();
-	//output in the console : 
-	//We protect seedlings before watering
-	//Water is applied on all the land
-	//We put some mulch after watering
+	// Will output :
+	// We protect seedlings before watering
+	// Water is applied on all the land
+	// We put some mulch after watering
 	
 
 	//Query based object manipulation
@@ -76,7 +98,30 @@ Think about photoshop transparent layers stack : pixels from different layers th
 
 	console.log("myOwnLand is : ", myOwnLand);
 	//output in the console : 
-	//myOwnLand is : Object { location="Sao Francisco do Guaporé", plants=[Object { uri="grass", growSpeed=2, size=2, more...}, Object { uri="appletree", growSpeed=10, size=8, more...}, Object { uri="carrots", growSpeed=6, size=4, more...}], watering=TheCompoStart()}
+	//myOwnLand is :
+	// {
+	// 	location: "Sao Francisco do Guaporé",
+	// 	plants: [{
+	// 		uri: "grass",
+	// 		growSpeed: 2,
+	// 		size: <b>2</b>,
+	// 		grow:func(),
+	// 		prune:func()
+	// 	}, {
+	// 		uri: "appletree",
+	// 		growSpeed: 10,
+	// 		size: <b>8</b>,
+	// 		grow:func(),
+	// 		prune:func()
+	// 	}, {
+	// 		uri: "carrots",
+	// 		growSpeed: 6,
+	// 		size: <b>4</b>,
+	// 		grow:func(),
+	// 		prune:func()
+	// 	}],
+ 	// 	watering:func()
+ 	// }
 	
 
 ```
