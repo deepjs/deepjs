@@ -1,54 +1,6 @@
 Tutorials
 =====
 
-<b>deepjs</b> provides a set of quite atomic tools for better programming.
-
-Alone, it does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
-
-Before all, it will help you in modelisation, architecture and concurrent run-time management of your OWN app. 
-
-But deepjs (alone) will not provide a full application out-of-the-box (for that, take a look to [deepjs modules](https://github.com/deepjs) - or write your own ;).
-
-More precisely, <b>deepjs scopes</b> are :
-
-* <b>Layered and Query (or Selector) Based Programmation</b> : Inspired from CSS, jQuery and Aspect Oriented Programmation (AOP), the aim of related tools is to :
-	* dramaticaly reduce Classical OO Inheritance modelisation complexity.
-	* dramaticaly reduce coupling between objects.
-
-* <b>Asynchrone and Concurrent Run-Time Management</b>.
-
-	Heavily using Promise Pipelining pattern, related tools provide powerful ways to handle and reduce Asychroneous/Concurrent programmation complexity of YOUR app.
-
-* <b>Absolute Homogeneous Ressources Management</b> through HTTP/Restful/JSON-RPC/NoSQL/ASYNCH API.
-
-	Related tools give simple, complete, homogeneous and powerful way to CRUD ressources (db, files, locals, etc.).
-	Dramaticaly improve ressources modelisation and reusability.
-
-* <b>Environnement Dependent Object Capabilities Model</b> (or Management).
-
-	Powerful and so simple way, based on all deepjs tools, to manage objects identities/capabilities depending on context modes.
-	Realy high benefits in your application from architecture, to security and run-time particularity.
-
-All those tools are (almost) totaly unobstrusive, and work alone or together, along with YOUR objects/functions/app. 
-
-deepjs just provides helpers.
-
-So, <b>deepjs</b>, with all its subtilities, mainly targets real programmers/architect, that want to mastering any aspects of code, and to do taylor-made, complex, asynchroneous and highly maintenable web applications.
-
-As all deepjs (core) tools could work together, and because deepjs is in many cases bootstrapped from itself, deepjs define a realy new and holistic approach that may ask you to understand deeply tools and consequences before to grasp the whole painting.
-
-And as deepjs ties together a lot of quite new concepts and approaches, while you'll learn all those tools and [how to work with them](./tutorials.md), you may reconsider a lot of established and well known approach that was yours before...
-
-But don't worry, you could start gently and use deepjs just in few places for begining, try each tools alone, find why and how things work in simple cases, before trying to understand how and why deepjs manage all this together.
-
-It was thought with ergonomy and simplicity in mind, and <b>could be used in plenty cases</b>, from simple one-shot to sofisticated holistic usage, without needing to put your actual framework to trash.
-
-So, follow the white rabbit... and never, never, <b>never forget to copy/paste/test</b> tutorial examples in your preferred js console.
-You'll see your code as never before.
-
-deepjs, as smart as you are. ;)
-
-
 #### Modelisation and Queries
 deepjs provides tools to modelise and manipulate structures inheritance and compositions.
 For this, it mainly uses Aspects Composition (AOP) principles, and particular queries/selector that allow to navigate-in and select particular objects structures. The combination of those two paradigms (AOP + queries) gives differents ways to nicely handle objects modelisation and/or run-time.
