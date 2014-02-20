@@ -104,24 +104,22 @@ Think about photoshop transparent layers stack : pixels from different layers th
 	// 	plants: [{
 	// 		uri: "grass",
 	// 		growSpeed: 2,
-	// 		size: <b>2</b>,
+	// 		size: 2,
 	// 		grow:func(),
 	// 		prune:func()
 	// 	}, {
 	// 		uri: "appletree",
 	// 		growSpeed: 10,
-	// 		size: <b>8</b>,
+	// 		size: 8,
 	// 		grow:func(),
 	// 		prune:func()
 	// 	}, {
 	// 		uri: "carrots",
 	// 		growSpeed: 6,
-	// 		size: <b>4</b>,
+	// 		size: 4,
 	// 		grow:func(),
 	// 		prune:func()
 	// 	}],
  	// 	watering:func()
  	// }
-	
-
 ```
