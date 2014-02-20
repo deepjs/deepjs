@@ -1,14 +1,33 @@
 [Back to tutorials](./tutorials.md)
 ## Layered Aspect Oriented and Query Based programmation
 
-deepjs define two fondamentals methods that deeply merge objects together : the 'up' and 'bottom' . 
-Think your objects as bidimensionnal layers that you could stack, where properties or functions that share same path (from layers root), as deep as they are, are merged together, in stack order.
+deepjs define two fondamentals methods that deeply merge objects together : the 'up' and 'bottom' methods. 
+Think your objects as (almost) bidimensionnal layers that you could stack, where properties (datas or functions) that share same path (from layers root - as deep as they are), are merged together, in stack order.
+The way the merge is done, and so the result obtained, depends of collided properties nature (i.e. functions, arrays, objects, primitives, etc).
 
-The way and the result of merge depends on collided object's nature and stack order.
+To make a parallele : Think about photoshop transparent layers stack : pixels from different layers that share same coord are merged together in stack order... 
 
-Think about photoshop transparent layers stack : pixels from different layers that share same coord are merged together in stack order, and the way that they are merged depends on their fusion mode. 
+## Examples
+
+### Simple
+```javascript
+var a = { ok:true, title:"hello" };
+var b = { title:"deepjs", label:"world" };
+deep.utils.up(b,a);
+console.log(a);	// => a is modified : { ok:true, title:"deepjs", label:"world"}
+console.log(b);	// => b still the same : { title:"deepjs", label:"world"}
+```
+
+```javascript
+var a = { ok:true, title:"hello" };
+var b = { title:"deepjs", label:"world" };
+deep.utils.bottom(b,a);
+console.log(a);	// => a is modified : { ok:true, title:"hello", label:"world"}
+console.log(b);	// => b still the same : { title:"deepjs", label:"world"}
+```
 
 
+### All together
 ```javascript
 
 	//-----------------Models
