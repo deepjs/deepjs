@@ -47,7 +47,11 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                  ]
                 });
             },
-            bottom:function(){
+            bottom_object:function(){
+              var r = deep.utils.bottom({"a":{"second":true}},{"a":{"hello":"world"}});
+              return deep(r.a).equal({ second:true, hello:"world" });
+            },
+            bottom_array:function(){
                 return deep({
                     steps:[
                     {
@@ -82,42 +86,29 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                  ]
                 });
             },
-            bottom_array : function(){
+            bottom_array2 : function(){
                 return deep([1,2,3,{id:"e1", title:"hello" }])
                 .bottom([4,5,{id:"e1", title:"bottom title" }])
                 .equal([4,5,{id:"e1", title:"hello" },1,2,3]);
             },
-            bottom_deep_ocm_:function(){
-              var autre = {
-                  test:{
-                      b:{
-                          yee:true
-                      }
-                  }
-              };
-              var obj = {
-                  backgrounds:[autre],
-                  test:deep.ocm({
-                      a:{
-                          title:"hello a"
-                      },
-                      b:{
-                          backgrounds:["this::../a"],
-                          titleb:"bye"
-                      }
-                  })
-              };
-              var tt = obj.test;
-              return deep(obj)
-              .flatten()
-              .done(function(success){
-                  return tt("b");
-              })
-              .equal( { title:"hello a", yee:true, titleb:"bye"} );
+            bottom_ocm:function(){
+              var ocm = deep.ocm({
+                a:{
+                  hello:"world"
+                }
+              });
+              deep.utils.bottom({a:{ second:true }}, ocm);
+              return deep(ocm("a")).equal({second:true, hello:"world"});
             }
         }
     };
 
     return unit;
 });
+
+
+
+
+
+
 
