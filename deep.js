@@ -42,7 +42,6 @@ define([
     }
 
     deep = function deepStart(obj, schema, options) {
-        //console.log("start chain : ", obj)
         var h = new deep.Chain(options);
         try {
             if (typeof obj === 'string')
@@ -71,7 +70,7 @@ define([
             };
             var alls = null;
             if ((obj && (obj.then || obj.promise)) || (schema && (schema.then || schema.promise)))
-                deep.all([obj, schema])
+                deep.all(obj, schema)
                 .done(function (res) {
                     doStart(res[0], res[1]);
                 })
