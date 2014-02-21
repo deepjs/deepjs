@@ -17,7 +17,18 @@ if (!('bind' in Function.prototype)) {
         }
     };
 }
-
+Date.now = Date.now || function() { return +new Date; };
+if (!Object.keys) {
+  Object.keys = function(obj) {
+    var keys = [];
+    for (var i in obj) {
+      if (obj.hasOwnProperty(i)) {
+        keys.push(i);
+      }
+    }
+    return keys;
+  };
+}
 // Add ECMA262-5 string trim if not supported natively
 //
 if (!('trim' in String.prototype)) {
@@ -34,7 +45,7 @@ if (!('indexOf' in Array.prototype)) {
         if (i<0) i+= this.length;
         if (i<0) i= 0;
         for (var n= this.length; i<n; i++)
-            if (i in this && this[i]===find)
+            if (this[i]===find)
                 return i;
         return -1;
     };
@@ -45,7 +56,7 @@ if (!('lastIndexOf' in Array.prototype)) {
         if (i<0) i+= this.length;
         if (i>this.length-1) i= this.length-1;
         for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
-            if (i in this && this[i]===find)
+            if (this[i]===find)
                 return i;
         return -1;
     };
@@ -53,7 +64,7 @@ if (!('lastIndexOf' in Array.prototype)) {
 if (!('forEach' in Array.prototype)) {
     Array.prototype.forEach= function(action, that /*opt*/) {
         for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
+            //if (i in this)
                 action.call(that, this[i], i, this);
     };
 }
@@ -61,7 +72,7 @@ if (!('map' in Array.prototype)) {
     Array.prototype.map= function(mapper, that /*opt*/) {
         var other= new Array(this.length);
         for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
+            //if (i in this)
                 other[i]= mapper.call(that, this[i], i, this);
         return other;
     };
@@ -70,7 +81,7 @@ if (!('filter' in Array.prototype)) {
     Array.prototype.filter= function(filter, that /*opt*/) {
         var other= [], v;
         for (var i=0, n= this.length; i<n; i++)
-            if (i in this && filter.call(that, v= this[i], i, this))
+            if (filter.call(that, v= this[i], i, this))
                 other.push(v);
         return other;
     };
@@ -78,7 +89,7 @@ if (!('filter' in Array.prototype)) {
 if (!('every' in Array.prototype)) {
     Array.prototype.every= function(tester, that /*opt*/) {
         for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && !tester.call(that, this[i], i, this))
+            if (!tester.call(that, this[i], i, this))
                 return false;
         return true;
     };
@@ -86,7 +97,7 @@ if (!('every' in Array.prototype)) {
 if (!('some' in Array.prototype)) {
     Array.prototype.some= function(tester, that /*opt*/) {
         for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && tester.call(that, this[i], i, this))
+            if (tester.call(that, this[i], i, this))
                 return true;
         return false;
     };
@@ -112,11 +123,11 @@ if (!Array.prototype.reduce)
     {
       do
       {
-        if (i in this)
-        {
+        //if (i in this)
+        //{
           rv = this[i++];
           break;
-        }
+        //}
 
         // if array contains no values, no initial value to return
         if (++i >= len)
@@ -127,7 +138,7 @@ if (!Array.prototype.reduce)
 
     for (; i < len; i++)
     {
-      if (i in this)
+      //if (i in this)
         rv = fun.call(null, rv, this[i], i, this);
     }
 
