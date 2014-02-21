@@ -35,9 +35,28 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             };
         },
         tests : {
+
             a:function(){
-                return deep({})
-                .bottom(this.b)
+                var a = {
+                    obj:{
+                        first:true
+                    },
+                    myFunc:function(){
+                        //console.log("base myFunc");
+                        this.obj.a = true;
+                    }
+                };
+                return deep({
+                    backgrounds:[a],
+                    obj:{
+                        second:true
+                    },
+                    myFunc:deep.compose.after(function()
+                    {
+                        //console.log("myFunc of b : ", this);
+                        this.obj.b = true;
+                    })
+                })
                 .flatten()
                 .run("myFunc")
                 .query("./obj")
@@ -101,6 +120,48 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     .deep(s.d.prop).equal(2)
                     .deep(s.e.prop).equal(2);
                 });
+            },
+            d:function(){
+                var a = { test:true };
+                var b = { backgrounds:[a] };
+                return deep.flatten(b).equal({ test:true });
+            },
+            flatten_ocm:function(){
+                var autre = {
+                  test:{
+                      b:{
+                          yee:true
+                      }
+                  }
+                };
+                var obj = {
+                  backgrounds:[autre],
+                  test:deep.ocm({
+                      a:{
+                          title:"hello a"
+                      },
+                      b:{
+                          backgrounds:["this::../a"],
+                          titleb:"bye"
+                      }
+                  })
+                };
+
+                /**
+                * IE8 : result  {
+                "titleb": "bye",
+                "yee": true,
+                "title": "hello a"
+                },
+                * @type {[type]}
+                */
+                var tt = obj.test;
+                return deep(obj)
+                .flatten()
+                .done(function(success){
+                  return tt("b");
+                })
+                .equal( { title:"hello a", yee:true, titleb:"bye"} );
             }
         }
     };
