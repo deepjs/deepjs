@@ -465,7 +465,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection-store", ".
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
-                    remoteUser:{ id:"u1" }
+                    user:{ id:"u1" }
                 };
                 return deep.store(store)
                 .patch({ id:"i1", label:"yesssss" })
@@ -476,7 +476,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection-store", ".
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
-                    remoteUser:{ id:"u2" }
+                    user:{ id:"u2" }
                 };
                 return deep.store(store)
                 .put({ id:"i1", label:"yesssss", userID:"u1" })
@@ -491,7 +491,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection-store", ".
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
-                    remoteUser:{ id:"u1" }
+                    user:{ id:"u1" }
                 };
                 return deep.store(store)
                 .put({ id:"i1", label:"yesssss", userID:"u1" })
@@ -502,7 +502,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection-store", ".
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
-                    remoteUser:{ id:"u2" }
+                    user:{ id:"u2" }
                 };
                 return deep.store(store)
                 .del("i1")
@@ -513,7 +513,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection-store", ".
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
-                    remoteUser:{ id:"u1" }
+                    user:{ id:"u1" }
                 };
                 return deep.store(store)
                 .del("i1")
