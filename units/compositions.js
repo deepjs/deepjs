@@ -413,6 +413,17 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return a();
                 })
                 .equal("after:hello");
+            },
+            func_up_compo:function(){
+                var compo = deep.compose.after(function(){
+                    return "lolipopi";
+                });
+                var func = function(){
+                    return "hello";
+                };
+                var r = deep.utils.up(func, compo);
+                return deep(r())
+                .equal("hello");
             }
         }
     };
