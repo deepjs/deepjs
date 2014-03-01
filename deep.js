@@ -199,7 +199,8 @@ define([
         "js::deepjs/units/shared",
         "js::deepjs/units/parcours",
         "js::deepjs/units/deepload",
-        "js::deepjs/units/utils"
+        "js::deepjs/units/utils",
+        "js::deepjs/units/restrictions"
     );
     //_________________________________________________________________________________
     return deep;
