@@ -364,9 +364,56 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     console.log("error cacthed : ", e);
                 }
 
+            },
+            branches:function(){
+                var a = function(){
+                    return "hello";
+                };
+                a = deep.utils.up(deep.compose.branches(function(){
+                    this.after(function(s){
+                        return s+":after";
+                    });
+                }),a);
+                return deep(a()).equal("hello:after");
+            },
+            branches2:function(){
+                var a = deep.compose.before(function(){
+                    return "hello";
+                })
+                .branches(function(){
+                    this.around(function(old){
+                        return function(){
+                            return "before:"+old.apply(this)+":after";
+                        };
+                    });
+                });
+                return deep(a()).equal("before:hello:after");
+            },
+            dynamicBranches:function(){
+                var closure = { test:true };
+                var a = deep.compose.before(function(){
+                    return "hello";
+                })
+                .branches(function(){
+                    if(closure.test)
+                        this.around(function(old){
+                            return function(){
+                                return "around:"+old.apply(this)+":around";
+                            };
+                        });
+                    else
+                        this.after(function(s){
+                            return "after:"+s;
+                        });
+                });
+                return deep(a())
+                .equal("around:hello:around")
+                .done(function(s){
+                    closure.test = false;
+                    return a();
+                })
+                .equal("after:hello");
             }
-
-
         }
     };
 
