@@ -2,10 +2,9 @@ if (typeof define !== 'function') {
 	var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
+define(["require","../deep"], function (require, deep, Unit) {
 	
 	//_______________________________________________________________ GENERIC STORE TEST CASES
-
 
 	var unit = {
 		title:"deep/units/ocm",
@@ -135,6 +134,100 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				};
 				deep.flatten(a);
 				return deep([a.b("role2"),a.b("role")]).equal([false,true]);
+			},
+			multiGroup:function(){
+				var o = deep.ocm({
+					dev:{
+						get:function(arg){
+							return "dev:"+arg;
+						}
+					},
+					prod:{
+						get:function(arg){
+							return "prod:"+arg;
+						}
+					},
+					"public":{
+						get:deep.compose.after(function(s){
+							return s+":public";
+						})
+					},
+					admin:{
+						get:deep.compose.after(function(s){
+							return s+":admin";
+						})
+					}
+				}, { group:["env", "roles"]});
+
+				return deep.modes({
+					env:"dev",
+					roles:"public"
+				})
+				.done(function(){
+					return o().get("hello");
+				})
+				.equal("dev:hello:public");
+			},
+			multiGroup2:function(){
+				var o = deep.ocm({
+					dev:{
+						get:function(arg){
+							return "dev:"+arg;
+						}
+					},
+					prod:{
+						get:function(arg){
+							return "prod:"+arg;
+						}
+					},
+					"public":{
+						get:deep.compose.after(function(s){
+							return s+":public";
+						})
+					},
+					admin:{
+						get:deep.compose.after(function(s){
+							return s+":admin";
+						})
+					}
+				}, { group:["env", "roles"]});
+
+				return deep.modes({
+					env:"prod"
+				})
+				.done(function(){
+					return o().get("hello");
+				})
+				.equal("prod:hello");
+			},
+			ocm_sheets:function(){
+				var o = deep.ocm({
+					"public":{
+						get:function(s){
+							return "public:"+s;
+						}
+					},
+					prod:deep.Sheet({
+						"dq.up::./get":deep.compose.after(function(s){
+							return s+":prod";
+						})
+					}),
+					dev:deep.Sheet({
+						"dq.up::./get":deep.compose.before(function(s){
+							return "dev:"+s;
+						})
+					})
+				}, { group:["roles","env"], applySheets:true });
+				return deep.modes({ env:"dev", roles:"public" })
+				.done(function(){
+					return o().get("hello");
+				})
+				.equal("public:dev:hello")
+				.modes({ env:"prod", roles:"public" })
+				.done(function(){
+					return o().get("hello");
+				})
+				.equal("public:hello:prod");
 			}
 		}
 	};
