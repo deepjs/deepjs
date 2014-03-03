@@ -136,6 +136,56 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				.sheet(sheet)
 				.equal( {"dq.sheeter::./a/b":["e : hello world"]} )
 				.valuesEqual( {"a":{"b":"e : hello world"}} );
+			},
+			backgrounds:function(){
+				var sheet = {
+					"dq.backgrounds::/!":{ hello:"world" }
+				};
+
+				var obj = {
+					a:true
+				};
+
+				deep.sheet(sheet, obj);
+				return deep(obj).equal({ hello:"world", a:true });
+			},
+			backgrounds2:function(){
+				var sheet = {
+					"dq.backgrounds::/!":[{ hello:"world" }]
+				};
+
+				var obj = {
+					a:true
+				};
+
+				deep.sheet(sheet, obj);
+				return deep(obj).equal({ hello:"world", a:true });
+			},
+			backgrounds3:function(){
+				var sheet = {
+					"dq.backgrounds::/!":[{ hello:"world" }]
+				};
+
+				var obj = {
+					backgrounds:[{ lolipop:true }],
+					a:true
+				};
+
+				deep.sheet(sheet, obj);
+				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
+			},
+			"sheeter.backgrounds":function(){
+				var sheet = {
+					"dq.sheeter::/!":deep.sheeter.backgrounds({ hello:"world" })
+				};
+
+				var obj = {
+					backgrounds:[{ lolipop:true }],
+					a:true
+				};
+
+				deep.sheet(sheet, obj);
+				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
 			}
         }
     };
