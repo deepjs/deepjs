@@ -37,7 +37,7 @@ DO
 
 - introduce '' in deep.queries
 - refactor swig + files accessors (json) for contextualised root (maybe multiple roots)
-- add options and head http action in store sheet.
+- add options and head http action in restful middleware.
 - client micro caching + cache prefix with roles OR clearCache when roles change
 ==> work globally on cache : deep.mediacache should manage FileWatch
 
