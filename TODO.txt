@@ -21,22 +21,39 @@ DO
 - store : put/patch manage query nicely										OK
 
 
+- reqrite RQL 																OK
 
+
+- contextualise protocols 													OK
+- OCM for what/how/where/done/fail 											OK
+- OCM for inner store's methods												OK
+
+- test context and modes 					OK		
+
+- homogeneise second arguments (add third) for stores post/put/patch/del : 
+	==> .post(obj, path, ?options) || .post(obj, ?options) 
+- homogenise .createDefault of stores
+
+
+- introduce '' in deep.queries
+- refactor swig + files accessors (json) for contextualised root (maybe multiple roots)
+- add options and head http action in store sheet.
 - client micro caching + cache prefix with roles OR clearCache when roles change
 
 
-- test context and modes 																									
+- create first widgets
+- add more dp-* 
+- schema to form
+- protocol to CMS 
 
-Write
-- More test cases
-- More Docs
+- add sanitize in autobahn
 
 ## ROAD MAP for further version (higher than 1.0.0)
 
 1.1.0 - Finalise context and parano modes. maybe contextualised Emitter.
 1.2.0 - Finalise Chain Identities Management
 1.3.0 - Optimise constraints and schema compilation. maybe externalise schema validation. manage error translation.
-1.4.0 - Optimise DeepQuerier and RQL
+1.4.0 - Optimise DeepQuerier
 
 
 More : 
@@ -46,19 +63,30 @@ More :
 	- sensible stuff should be definitly wrapped and hidded in closure at init of store. so schema and config or other needed datas need to be displaced from instance to closure.
 
 
-- add options and head http action in store sheet.
 
 - deep.utils.set(entry, "/path/[a,b,c]", value);  deep(...).set(path, value); + sheet : "dq.set::./path/[a,b,c]":...
 
 - add flag in composition for managing error as callBack does, not as promise pipeline.
 
+- manage publish/subscription between stores and/or objects (server side or browser side)
+
+
 ## ROAD MAP for other deepjs related libs.
 
 - deep-http-client : node + jquery					OK (to be tested)
 	- add jsonp capabilities (jsonp::...)
+	- add EJSON 
+
+- deep-routes
+	- add staters
+
+- deep-data-bind
+	- add reactive code linked to views (or not)
+
+
 
 ## Questions
-- what to do with complex route params in restful ?
+- what to do with complex route params in restful ?   				OK
 
 - how manage chain's identities.
 specialy with stores vs values : query, range, stores particular API
