@@ -2,7 +2,7 @@ if (typeof define !== 'function') {
 	var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../lib/stores/collection-store"], function (require, deep) {
+define(["require","../deep", "../lib/stores/collection"], function (require, deep) {
 	
 	//_______________________________________________________________ GENERIC STORE TEST CASES
 

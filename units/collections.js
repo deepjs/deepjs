@@ -2,7 +2,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../lib/unit", "../lib/stores/collection-store", "../lib/schema"], function (require, deep, Unit) {
+define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/schema"], function (require, deep, Unit) {
 
     var unit = {
         title:"deepjs/units/collections",

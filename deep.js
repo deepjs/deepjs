@@ -13,10 +13,10 @@ define([
     "./lib/compose",
     "./lib/collider",
     "./lib/errors",
-    "./lib/stores/stores",
+    "./lib/stores/store",
     "./lib/ocm",
-    //"./lib/stores/collection-store",
-    //"./lib/stores/object-store",
+    //"./lib/stores/collection",
+    //"./lib/stores/object",
     "./lib/protocol",
     "./lib/sheet",
     "./lib/promise",
@@ -29,6 +29,7 @@ define([
     "./lib/emitter",
     //"./lib/clients/client-store",
     "./lib/rql",
+    "./lib/stores/chain",
     //"./lib/schema"
     ], function (require) {
     
@@ -170,9 +171,10 @@ define([
     require("./lib/protocol")(deep);
     require("./lib/sheet")(deep);
     require("./lib/ocm")(deep);
-    require("./lib/stores/stores")(deep);
-    //require("./lib/stores/collection-store")(deep);
-    //require("./lib/stores/object-store")(deep);
+    require("./lib/stores/store")(deep);
+    require("./lib/stores/chain")(deep);
+    //require("./lib/stores/collection")(deep);
+    //require("./lib/stores/object")(deep);
     //require("./lib/clients/client-store")(deep);
     require("./lib/rql")(deep);
     require("./lib/emitter")(deep);
