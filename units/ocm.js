@@ -69,13 +69,13 @@ define(["require","../deep"], function (require, deep, Unit) {
 				});
 				myManager.group("myGroup");
 				return deep.modes({ "myGroup":"mode1" }) // start a chain with provided modes
-				.delay(5)
+				.delay(1)
 				.done(function(success){
 					return myManager();
 				})
 				.equal({test:1})
 				.modes({ "myGroup":"mode2"} )
-				.delay(5)
+				.delay(1)
 				.done(function(success){
 					return myManager();
 				})
@@ -87,13 +87,13 @@ define(["require","../deep"], function (require, deep, Unit) {
 				})
 				.done(function(success){
 					return deep.modes({ group2:"mode2" })
-					.delay(5)
+					.delay(1)
 					.done(function(success){
 						return deep.context.modes;
 					})
 					.equal({ group1:"mode1", group2:"mode2" });
 				})
-				.delay(5)
+				.delay(1)
 				.done(function(success){
 					return deep.context.modes;
 				})

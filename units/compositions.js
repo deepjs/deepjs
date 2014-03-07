@@ -182,12 +182,12 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             delayed_parallele:function(){
                 var a = {
                     test:function(){
-                        return deep.when("hello test").delay(2);
+                        return deep.when("hello test").delay(1);
                     }
                 };
                 var b = {
                     test:deep.compose.parallele(function(){
-                        return deep.when("hello parallele").delay(3);
+                        return deep.when("hello parallele").delay(2);
                     })
                 };
                 deep.utils.up(b,a);

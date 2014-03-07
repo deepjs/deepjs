@@ -53,7 +53,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 deep.context = {};
                 var p1 = deep(9999)
                 .context("test",1)
-                .delay(3)
+                .delay(1)
                 .done(function(){
                     return deep.context;
                 })
@@ -61,7 +61,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
                 var p2 = deep(9999)
                 .context("test",2)
-                .delay(9)
+                .delay(3)
                 .done(function(){
                     return deep.context;
                 })
@@ -69,7 +69,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
                 var p3 = deep(9999)
                 .context("test",3)
-                .delay(6)
+                .delay(2)
                 .done(function(){
                     return deep.context;
                 })

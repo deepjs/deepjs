@@ -12,7 +12,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         stopOnError:false,
         tests : {
             promise_on_chain:function(){
-                return deep.when(deep("hello").delay(5))
+                return deep.when(deep("hello").delay(1))
                 .equal("hello");
             },
             delayed_run_return:function(){
@@ -21,7 +21,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .run(function(){
                     this.b = true;
-                    return deep(this).delay(5);
+                    return deep(this).delay(1);
                 })
                 .equal({ a:true, b:true });
             },
@@ -39,15 +39,15 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     test:1
                 })
                 .branches(function(b){
-                    b.branch().equal({test:1}).delay(10).when("branch 1");
-                    b.branch().equal({test:1}).delay(5).when("branch 2");
+                    b.branch().equal({test:1}).delay(2).when("branch 1");
+                    b.branch().equal({test:1}).delay(1).when("branch 2");
                     return b;
                 })
                 .equal(["branch 1","branch 2"]);
             },
             listened_chain:function(){
                 var d = deep(1)
-                .delay(5)
+                .delay(1)
                 .done(function(s){
                     return "delayed";
                 });
@@ -60,7 +60,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     if(e.status === 1001)
                         return true;
                 });
-                var d3 = deep({}).delay(5);
+                var d3 = deep({}).delay(2);
                 try{
                     d.log(); // error : chain is listened
                 }
