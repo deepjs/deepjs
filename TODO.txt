@@ -28,7 +28,7 @@ DO
 - OCM for what/how/where/done/fail 											OK
 - OCM for inner store's methods												OK
 
-- test context and modes 					OK		
+- test context and modes 													OK		
 
 - homogeneise second arguments (add third) for stores post/put/patch/del : 
 	==> .post(obj, path, ?options) || .post(obj, ?options) 
