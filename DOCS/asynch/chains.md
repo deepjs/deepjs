@@ -368,7 +368,7 @@ deep.utils.setValueByPath(object, path, value, pathDelimitter)
 
 deep.utils.deletePropertyByPath(object, path, pathDelimitter)
 
-deep.utils.retrieveValueByPath(object, path, pathDelimitter)
+deep.utils.fromPath(object, path, pathDelimitter)
 
 deep.utils.retrieveFullSchemaByPath(schema, path, pathDelimitter)
 

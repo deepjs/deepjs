@@ -15,23 +15,18 @@ define([
     "./lib/errors",
     "./lib/stores/store",
     "./lib/ocm",
-    //"./lib/stores/collection",
-    //"./lib/stores/object",
     "./lib/protocol",
     "./lib/sheet",
     "./lib/promise",
     "./lib/chain",
     "./lib/flatten",
     //"./lib/selector",
-    //"./lib/treatment",
-    //"./lib/unit",
     "./lib/compiler",
     "./lib/emitter",
-    //"./lib/clients/client-store",
     "./lib/rql",
     "./lib/stores/chain",
     //"./lib/schema"
-    ], function (require) {
+    ], function (require, utils) {
     
     if(typeof deep !== 'undefined')
     {
@@ -88,6 +83,7 @@ define([
         }
         return h;
     };
+    deep.utils = require("./lib/utils");
 
     /**
      * rethrow any throw during chain execution.
@@ -97,8 +93,6 @@ define([
      */
     deep.rethrow = false;
     
-    deep.metaSchema = {};
-
     /**
      * are you on nodejs or not
      * @static
@@ -132,13 +126,10 @@ define([
 
     deep.destructiveLoad = false;
 
-    require("./lib/utils")(deep);
-    require("./lib/errors")(deep);
-    require("./lib/promise")(deep);
-    require("./lib/compiler")(deep);
-    require("./lib/compose")(deep);
-    require("./lib/collider")(deep);
-
+    //require("./lib/utils")(deep);
+    deep.errors = require("./lib/errors");
+    deep.rql = require("./lib/rql");
+    deep.collider = require("./lib/collider");
 
 
     /**
@@ -147,7 +138,7 @@ define([
      * @property Querier
      * @type {DeepQuery}
      */
-    var Querier = deep.Querier = require("./lib/query")(deep);
+    var Querier = deep.Querier = require("./lib/query");
     /**
      * perform a (synched) query query
      * @example
@@ -162,22 +153,53 @@ define([
      */
     deep.query = Querier.query;
 
-
     deep.ui = {};
     deep.client = {};
 
+    var compiler = require("./lib/compiler");
+    deep.Shared = compiler.Shared;
+    deep.compile = compiler.compile;
+    deep.up = compiler.up;
+    deep.bottom = compiler.bottom;
+
+    deep.compose = require("./lib/compose");
+    deep.Arguments = deep.compose.Arguments;
+
+    var flat = require("./lib/flatten");
+    deep.extendsChilds = flat.extendsChilds;
+    deep.extendsBackgrounds = flat.extendsBackgrounds;
+    utils.flatten = deep.flatten = flat.flatten;
+
+    var proto = require("./lib/protocol");
+    deep.protocol = proto.protocol;
+    deep.protocols = proto.protocols;
+    deep.get = proto.get;
+    deep.getAll = proto.getAll;
+
+    var ocm = require("./lib/ocm");
+    deep.ocm = ocm;
+    deep.Modes = ocm.Modes;
+    deep.Roles = ocm.Roles;
+    deep.modes = ocm.modes;
+    deep.roles = ocm.roles;
+
+    var event = require("./lib/emitter");
+    deep.Event = event.Event;
+    deep.Emitter = event.Emitter;
+
+    var sheets = require("./lib/sheet");
+    for(var i in sheets)
+        deep[i] = sheets[i];
+
+    var promise = require("./lib/promise");
+    for(var i in promise)
+        deep[i] = promise[i];
+
     require("./lib/chain")(deep);
-    require("./lib/flatten")(deep);
-    require("./lib/protocol")(deep);
-    require("./lib/sheet")(deep);
-    require("./lib/ocm")(deep);
+
     require("./lib/stores/store")(deep);
     require("./lib/stores/chain")(deep);
-    //require("./lib/stores/collection")(deep);
-    //require("./lib/stores/object")(deep);
-    //require("./lib/clients/client-store")(deep);
-    require("./lib/rql")(deep);
-    require("./lib/emitter")(deep);
+
     //_________________________________________________________________________________
 
     deep.coreUnits = deep.coreUnits || [];
