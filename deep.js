@@ -195,9 +195,17 @@ define([
     for(var i in promise)
         deep[i] = promise[i];
 
-    require("./lib/chain")(deep);
+    var chains = require("./lib/chain");
+    deep.BaseChain = chains.BaseChain;
+    deep.Chain = chains.Chain;
+    deep.chain = chains.chain;
 
-    require("./lib/stores/store")(deep);
+    var stores = require("./lib/stores/store");
+    deep.Store = stores.Store;
+    deep.store = stores.store;
+    deep.client = {};
+
+
     require("./lib/stores/chain")(deep);
 
     //_________________________________________________________________________________
