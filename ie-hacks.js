@@ -17,18 +17,19 @@ if (!('bind' in Function.prototype)) {
         }
     };
 }
-Date.now = Date.now || function() { return +new Date; };
-if (!Object.keys) {
-  Object.keys = function(obj) {
-    var keys = [];
-    for (var i in obj) {
-      if (obj.hasOwnProperty(i)) {
-        keys.push(i);
-      }
+if(!Date.now)
+    Date.now = Date.now || function() { return +new Date; };
+    if (!Object.keys) {
+      Object.keys = function(obj) {
+        var keys = [];
+        for (var i in obj) {
+          if (obj.hasOwnProperty(i)) {
+            keys.push(i);
+          }
+        }
+        return keys;
+      };
     }
-    return keys;
-  };
-}
 // Add ECMA262-5 string trim if not supported natively
 //
 if (!('trim' in String.prototype)) {
@@ -107,33 +108,33 @@ if (!Array.prototype.reduce)
   Array.prototype.reduce = function(fun /*, initial*/)
   {
     var len = this.length;
-    if (typeof fun != "function")
+    if (typeof fun !== 'function')
       throw new TypeError();
 
     // no value to return if no initial value and an empty array
-    if (len == 0 && arguments.length == 1)
+    if (len === 0 && arguments.length == 1)
       throw new TypeError();
 
-    var i = 0;
+    var i = 0, rv;
     if (arguments.length >= 2)
     {
-      var rv = arguments[1];
+        rv = arguments[1];
     }
     else
     {
-      do
-      {
+      //do
+      //{
         //if (i in this)
         //{
-          rv = this[i++];
-          break;
+          rv = this[i];
+         // break;
         //}
 
         // if array contains no values, no initial value to return
-        if (++i >= len)
-          throw new TypeError();
-      }
-      while (true);
+        //if (++i >= len)
+          //throw new TypeError();
+      //}
+      //while (true);
     }
 
     for (; i < len; i++)
