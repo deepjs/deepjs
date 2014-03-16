@@ -12,14 +12,6 @@ For this, it mainly uses Aspects Composition (AOP) principles, and particular qu
 * [backgrounds and flatten](./backgrounds-and-flatten.md)
 * [code sheets](./sheets.md)
 
-OCM is a little bit further than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
-* [Object Capabilities Manager](./ocm.md)
-	* [basis](./ocm.md)
-	* [Additive vs restrictive](./ocm/ocm-synthesis.md)
-	* [ocm and protocols](./ocm/ocm-protocols.md)
-	* [ocm and stores](./ocm/ocm-stores.md)
-	* [Delegation](./ocm/ocm-delegate.md)
-
 #### Asynch, Promises and Chains
 deepjs uses Promises at all level. It provides its own implementation of promises and deferreds that gives smart chained asynch management (natural chain branching, context management, log facilities, ...). As additionnal asynch sugar : it natively offers another particular chain (that inherit from promise's one) to manipulate objects, runtime and other asynch stuffs. 
 
@@ -44,6 +36,15 @@ The aim is to CRUD datas, through JSON/REST API, in exactly the same way browser
 * [native collection store](./stores/native-stores.md)
 * [ocm, stores and chains](./stores/store-chain.md)
 * [list of implemented stores](./modules.md)
+
+#### OCM
+OCM is a little bit further than AOP/Queries and as it could mix all deepjs tools, to use the full potential of OCM, it should be learned when you're feeling confortable with other tools.
+* [Object Capabilities Manager](./ocm.md)
+	* [bases](./ocm.md)
+	* [Additive vs restrictive](./ocm/ocm-synthesis.md)
+	* [ocm and protocols](./ocm/ocm-protocols.md)
+	* [ocm and stores](./ocm/ocm-stores.md)
+	* [Delegation](./ocm/ocm-delegate.md)
 
 #### JSON Schema usage
 deepjs comes natively with json-schema support and gives tools to handle it.
