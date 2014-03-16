@@ -217,7 +217,7 @@ define(["require","../deep"], function (require, deep, Unit) {
 							return "dev:"+s;
 						})
 					})
-				}, { group:["roles","env"], applySheets:true });
+				}, { groups:["roles","env"], applySheets:true });
 				return deep.modes({ env:"dev", roles:"public" })
 				.done(function(){
 					return o().get("hello");
