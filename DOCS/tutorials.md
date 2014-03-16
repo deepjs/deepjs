@@ -68,6 +68,11 @@ deepjs comes with it's own simple asynch unit testcaser. It uses deepjs native c
 * [perform deep-core tests](../units/README.md)
 * [write your own](./custom-units.md)
 
+#### Other modules
+* [modules](./modules.md)
+
+
+
 #### Nodejs concreets
 * [nodejs simple](./nodejs/simple.md) 
 * [nodejs more complex](./nodejs/full.md)
