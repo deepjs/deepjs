@@ -1,22 +1,18 @@
 ## manage soustractive modelisation
 
-the idea is to have a stack that goes from less to more restrictive API
+the idea is to have a stack that goes from less to more restrictive API.
+We remove capabilities.
 
 ```javascript
-var manager = deep.ocm({
+var myStore = deep.ocm({
 	full:{
-		config:{
-			owner:false
-		},
-
 		post:function(object){
-
 			return "full access to : "+JSON.stringify(object); // deep.store("something").mode("full").post(object);
 		}
 	},
 	middle:{
-		config:{
-			owner:true
+		schema:{
+			ownerRestriction:"userID"
 		},
 		backgrounds:["../full"],
 		post:deep.compose.before(function(object){
@@ -28,7 +24,7 @@ var manager = deep.ocm({
 	less:{
 		backgrounds:["../middle"],
 		post:deep.compose.before(function(object){
-			if(object.userId !== "e12") // deep.context.session.user.id)
+			if(object.userID !== "e12")
 				return deep.errors.Owner();
 		})
 	},
@@ -37,14 +33,15 @@ var manager = deep.ocm({
 	}
 });
 
-
-manager.flatten()
+myStore.flatten()
 .modes({roles:"full"})
-.done(function(s){
-	manager().post({ title:"hello", userId:12 })
+.done(function(myStore){
+	return myStore.post({ title:"hello", userID:12 });
 })
-.fail(function(e){
-	console.log("error when flatten : ",e);
-})
+.logError();
 ```
 
+
+## manage additive modelisation
+
+... todo

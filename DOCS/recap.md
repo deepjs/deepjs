@@ -1,19 +1,19 @@
 ## Collisions / Composition
-Compose complicated objects from others
+Compose complex objects from others
 - up(obj1, obj2, ...)
 - bottom(obj1, obj2, ...)
-- compose.before(function(your, args){})
-- compose.after(function(your, args){})
-- compose.around(function(your, args){})
+- compose.before(function(arg1, ...){})
+- compose.after(function(arg1, ...){})
+- compose.around(function(arg1, ...){})
 
 ## Chain
 
-Keep chaining calls with an expressive syntax (à la jQuery) + handle async timing
+A Handle that mix and use all deepjs tools and provides sugared API for all tools.
+It allows chaining calls with an expressive syntax (à la jQuery) + handle async timing
 
-### Object Composition / Manipulation
-- .up(objects)
-- .bottom(objects)
--
+### Object Composition
+- .up(object, ...)
+- .bottom(object, ...)
 
 ### Object navigation/read/loop
 - .query( deepQuery )
@@ -32,8 +32,13 @@ Keep chaining calls with an expressive syntax (à la jQuery) + handle async timi
 - .fail( function(error){} )
 - .always( function(success, error){} )
 - .then( function(success){}, function(error){} )
+- .branches(function(brancher){ })
 
-## Loging
+### Loading ressource
+- .load
+- .deepLoad
+
+### Loging
 - .log(msgs | empty)		if empty : log current chain state (i.e. current success or error)
 - .logError()				only log error if any
 - .logValues()				log chain holdedvalues
