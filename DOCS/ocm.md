@@ -271,12 +271,14 @@ manager.groups("roles");
 ```
 
 Then, when you'll ask to your manager to return something, deep OCM will look in 3 namespaces after related 'group(s)' modes.
-Lets explain the hierarchy between those namespaces.
+Lets explain the hierarchy between those namespaces:
 
 deep.Modes(mode1, mode2, ...)  			: The more general but less hierarchicaly high : it holds global modes accessible from anywhere. 
------------------------------
+
+
 deep.modes(mode1, mode2, ...)			: it start a chain that holds provided modes in its current deep.context  (see [docs on deep.context](./asynch/asynch-context-management.md) and chains)
------------------------------
+
+
 myOCManager.modes(mode1, mode2, ...)	: The less general but more hierarchicaly high: it holds provided modes in the local ocm closure.
 
 
