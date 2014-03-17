@@ -365,7 +365,7 @@ console.log(deep.Modes()); // => { roles:["public"], env:"dev" }
 
 ```
 
-Resumed : when modes map are merged with namespace (deep.Modes or deep.context.modes (through deep.modes)), it does :
+Resumed : when modes map are merged with a namespace (either deep.Modes or deep.context.modes (through deep.modes)), it does :
 ```javascript
 for(var i in modesMap)
 	namespace[i] = modesMap[i];
@@ -398,7 +398,8 @@ manager()...; // will compile local memory collection (dev entry) with 'user' re
 
 First, you need to know that each result obtained from an OCM (when you ask it in certain mode(s)) is totaly independant at run time from others OCM results. They are different objects that don't know each others.
 
-Sometimes, you really want to share objects between OCM instances produced in different modes (pay attention : you could get here a true multithreaded process with shared memory pattern (as deepjs could do concurrent asynch stuffs). But there is no mecanism to lock shared memory while using it. So no possible deadlock... but weird behaviours if you miss something).
+Sometimes, you really want to share objects between OCM instances produced in different modes. 
+Pay attention : you could get here a true multithreaded process with shared memory pattern (as deepjs could do concurrent asynch stuffs). But there is no mecanism to lock shared memory while using it. So no possible deadlock... but weird behaviours if you miss something).
 
 All you need to obtain that, something shared between OCM instances, is to set a flag _deep_shared_ in it. That's all.
 Or you could use `deep.Shared( yourValue )` that do it for you (i.e. it just return yourValue decorated with `_deep_shared_:true`).
@@ -428,9 +429,8 @@ obj("mode2").test();				// [1, 2, 3, 4, 5, 6, 7]
 ```
 ## OCM deeply in layers.
 
-You could place OCM objects at any level of your objects and use deepjs tools on it without woring.
+You could place OCM objects at any level of your objects and use deepjs tools on it without worring.
 ```javascript
-
 var a = {
 	myProperty:{
 		myValue:deep.ocm({ "public":"hello.", "user":"hello John." })
@@ -443,13 +443,18 @@ var a = {
 	}
 };
 
-deep.flatten(a);
+deep(a)
+.up({
+	myProperty:{
+		user:"Hello Johny."
+	}
+})
+.flatten();
 
-a.myProperty.myValue("user") // => will return "hello john."
+a.myProperty.myValue("user") // => will return "Hello Johny."
 a.myOtherProperty.myValue("user") // => will return "Hello John Doe."
-
 ```
-If you place 'backgrounds' in OCM, they will also be flattened transparently.
+If you place 'backgrounds' in OCM (at any depth in objects), they will also be flattened transparently.
 
 ## Sheets in OCM
 
@@ -479,7 +484,8 @@ mySheet("user");
 	}
 */
 ```
-But you could also use them at compilation time (apply sheets while your ocmanager compiles)
+But you could also use them at compilation time (apply sheets while your ocmanager compiles).
+For this : simply add an applySheets:true in ocm options
 
 ```javascript
 var myObject = deep.ocm({
@@ -533,8 +539,8 @@ var proto = deep.ocm({
 });
 
 var constructor = deep.ocm({
-	mode1:function(){ /*....*/},
-	mode2:function(){ /*....*/}
+	mode1:function(){ /*....*/ },
+	mode2:function(){ /*....*/ }
 });
 
 var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
@@ -564,22 +570,76 @@ var constructor = deep.ocm({
 	mode2:function(){ /*....*/ }
 }, { group:"example"});
 
-var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
-
+var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);s
 ...
-
-/* you could provide modes map (see above) to factory (that will be merge (deep up) with currents ones (from the 3 namespaces - if any)) 
-and used before using OCM. Rmq : it uses a local deep.context, so it's safe to use any mode here without changing current context.*/
-
 var MyClass = new MyClassFactory({ example:"mode1" })(); // MyClass has constructor.mode1 and proto.mode1
-
 ...
 ```
+you could provide 'modes map' (see above) to factory (that will be merge (deep up) with currents ones (from the 3 namespaces - if any)) 
+and used before using OCM. Rmq : it uses a local deep.context, so it's safe to use any mode here without changing current context.
 
-## Backgrounds classes instances and constructor/init considerations
+## Initialisation afterCompilation
 
-example with deep.store.Collection.
+You could provide a function that will be used just after a mode(s) combination is compiled through an ocmanager.
+As compilation is done only once by mode's combination, the provided function will only be called once by mode(s) combination.
+It means : 
+```javascript
+var manager = deep.ocm({
+	mode1:{
+		name:"John",
+		familly:"Doe"
+	},
+	mode2:{
+		name:"Herbert",
+		familly:"Laevus"
+	}
+}, {
+	afterCompilation:function(result){
+		console.log("compiled : ", result.name, result.familly);
+	}
+});
 
+manager("mode1"); // will log "compiled : John Doe"
+manager("mode1"); // any later call will log nothing
+manager("mode1"); // any later call will log nothing
+
+manager("mode1", "mode2"); // will log "compiled : Herbert Laevus"
+manager("mode1", "mode2"); // any later call will log nothing
+manager("mode1", "mode2"); // any later call will log nothing
+
+manager("mode2", "mode1"); // will log "compiled : John Doe"
+manager("mode1", "mode2"); // any later call will log nothing
+manager("mode1", "mode2"); // any later call will log nothing
+
+manager("mode1"); // always no log
+...
+``` 
+
+If 'afterCompilation' return a promise or anything else it will be the result returned by the ocm call :
+```javascript
+var manager = deep.ocm({
+	mode1:{
+		name:"John",
+		familly:"Doe"
+	},
+	mode2:{
+		name:"Herbert",
+		familly:"Laevus"
+	}
+}, {
+	afterCompilation:function(result){
+		console.log("compiled : ", result.name, result.familly);
+		return deep.when(result)
+		.done(function(res){
+			return "hello";
+		});
+	}
+});
+
+var promise = manager("mode1");
+promise.log(); // will log : 'hello'
+
+``` 
 
 [Back to tutorials](./tutorials.md)
 
