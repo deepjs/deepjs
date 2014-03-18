@@ -456,7 +456,7 @@ a.myOtherProperty.myValue("user") // => will return "Hello John Doe."
 ```
 If you place 'backgrounds' in OCM (at any depth in objects), they will also be flattened transparently.
 
-## Sheets in OCM
+## Sheets and OCM
 
 You could, by default, obviously define a deep.sheet through OCM.
 
