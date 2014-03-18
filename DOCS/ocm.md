@@ -485,7 +485,7 @@ mySheet("user");
 */
 ```
 But you could also use them at compilation time (apply sheets while your ocmanager compiles).
-For this : simply add an applySheets:true in ocm options
+For this : simply add an applySheets:true in ocm options.
 
 ```javascript
 var myObject = deep.ocm({
@@ -517,7 +517,8 @@ myObject("user", "mySheet"); 	// be careful to the order : the sheet is applyied
 	}
 */
 ```
-
+Remarque : 
+If you have real asynch call in your sheets that you want to be applyied at compilation, be careful : Read below (OCM and Asynch)
 
 ## Classes composition with OCM
 
@@ -618,17 +619,12 @@ manager("mode1"); // always no log
 If 'afterCompilation' return a promise or anything else it will be the result returned by the ocm call :
 ```javascript
 var manager = deep.ocm({
-	mode1:{
-		name:"John",
-		familly:"Doe"
-	},
-	mode2:{
-		name:"Herbert",
-		familly:"Laevus"
-	}
+	mode1:{ ...	},
+	mode2:{ ... },
+	...
 }, {
 	afterCompilation:function(result){
-		console.log("compiled : ", result.name, result.familly);
+		...
 		return deep.when(result)
 		.done(function(res){
 			return "hello";
@@ -641,12 +637,42 @@ promise.log(); // will log : 'hello'
 
 ``` 
 
+Remarque : read below
+
+## OCM and Asynch modelisation
+
+So... Be aware that, if you want to use OCM transparently in actual deepjs tools and modules, all call on a ocmanager (i.e. myManager("myMode")) should always return the compilation result directly, and should not return any promise.
+The reason of that is mainly for the simplicity of the ocm pattern injection  : 
+
+```javascript
+...
+var myObj = myObject;
+if(myObj && myObj._deep_ocm_)
+	myObj = myObj();
+
+myObj...; // myObj is now the ocm result and should be the final object (i.e. not a promise)
+...
+```
+This pattern is heavily used at many places in deepjs tools and modules, and could be added anywhere in your own modules.
+For the moment, deepjs tools and modules do not manage promises from OCM calls automagically.
+
+Maybe in the future... ;)
+
+Meanwhile, be careful to provide non-asynch sheets or 'afterCompilation' callback, and to flatten you ocm (or the layer where it sits) BEFORE calling related ocmanager.
+
+And everyting will be ok... ;)
+
+Sub-remarque :
+do not be confused with an OCM store and its init sequence. Each store is lazzily initialised on first (own) API call (store.get, .post, .put, ...) and so you don't need to manage store initialisation before OCM call...  
+
+
+
 [Back to tutorials](./tutorials.md)
 
 or you could read further on OCM :
 
-* [Additive vs restrictive](./ocm/ocm-synthesis.md)
 * [ocm and protocols](./ocm/ocm-protocols.md)
 * [ocm and stores](./ocm/ocm-stores.md)
+* [Additive vs restrictive](./ocm/ocm-synthesis.md)
 * [Delegation](./ocm/ocm-delegate.md)
 
