@@ -55,11 +55,11 @@ define([
                 else
                     h._nodes = [deep.utils.createRootNode(obj, schema, options)];
 
-                if (obj && obj._deep_store_)
-                {
-                    h.store(obj);
-                    deep.Store.extendsChain(h);
-                }
+                if (r && r._deep_store_)
+                    h.store(r)
+                    .done(function(s){
+                        this._nodes = [deep.utils.createRootNode(s)];
+                    });
 
                 h._root = h._nodes[0];
                 h._start(r, null);
