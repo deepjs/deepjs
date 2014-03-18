@@ -20,12 +20,10 @@ define([
     "./lib/promise",
     "./lib/chain",
     "./lib/flatten",
-    //"./lib/selector",
     "./lib/compiler",
     "./lib/emitter",
     "./lib/rql",
-    "./lib/stores/chain",
-    //"./lib/schema"
+    "./lib/stores/chain"
     ], function (require, utils) {
     
     if(typeof deep !== 'undefined')
@@ -205,8 +203,7 @@ define([
     deep.store = stores.store;
     deep.client = {};
 
-
-    require("./lib/stores/chain")(deep);
+    require("./lib/stores/chain");
 
     //_________________________________________________________________________________
 
