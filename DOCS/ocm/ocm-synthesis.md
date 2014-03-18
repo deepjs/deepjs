@@ -1,7 +1,10 @@
-## manage soustractive modelisation
+When you want to modelise, by example, a store with different 'roles' (could be any other 'flag'), that have different restrictions between roles, you have two ways to achieve this. 
 
-the idea is to have a stack that goes from less to more restrictive API.
-We remove capabilities.
+## Soustractive modelisation
+
+
+The idea, often more suited and practical, is to have a stack that goes from less to more restrictive API.
+So we define the less restrictive, and we remove capabilities depending on roles.
 
 ```javascript
 var myStore = deep.ocm({
@@ -11,15 +14,11 @@ var myStore = deep.ocm({
 		}
 	},
 	middle:{
-		schema:{
-			ownerRestriction:"userID"
-		},
 		backgrounds:["../full"],
 		post:deep.compose.before(function(object){
 			if(object.title != "hello")
 				return deep.errors.PreconditionFailed();
-		}),
-		del:deep.Store.forbidden()
+		})
 	},
 	less:{
 		backgrounds:["../middle"],
@@ -29,15 +28,17 @@ var myStore = deep.ocm({
 		})
 	},
 	none:{
-		post:deep.Store.forbidden
 	}
 });
 
-myStore.flatten()
-.modes({roles:"full"})
+deep(myStore)
+.flatten()
+.roles("full")
 .done(function(myStore){
-	return myStore.post({ title:"hello", userID:12 });
+	return myStore().post({ title:"hello", userID:12 });
 })
+.log()
+.roles("middle")
 .logError();
 ```
 
