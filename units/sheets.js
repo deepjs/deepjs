@@ -178,12 +178,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				var sheet = {
 					"dq.sheeter::/!":deep.sheeter.backgrounds({ hello:"world" })
 				};
-
 				var obj = {
 					backgrounds:[{ lolipop:true }],
 					a:true
 				};
-
 				deep.sheet(sheet, obj);
 				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
 			},
@@ -255,7 +253,28 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 					hello:"world",
 					fromUp:true
 				});
-			}
+			},
+			sheets_as_backgrounds_twice:function(){
+				return deep({
+					test:false,
+					backgrounds:[{ 
+						base:"yes" 
+					}, {
+						_deep_sheet_:true,
+						"dq.bottom::./!":{
+							backgrounds:[{ doubleBack:true }],
+							hello:"world"
+						}
+					}]
+				})
+				.flatten()
+				.equal({
+					doubleBack:true,
+					hello:"world",
+					base:"yes",
+					test:false
+				});
+			},
         }
     };
 
