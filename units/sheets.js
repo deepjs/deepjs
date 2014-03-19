@@ -186,6 +186,75 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 				deep.sheet(sheet, obj);
 				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
+			},
+			sheets_as_backgrounds:function(){
+				return deep({
+					test:false,
+					backgrounds:[{
+						_deep_sheet_:true,
+						"dq.bottom::./!":{
+							hello:"world"
+						}
+					}]
+				})
+				.flatten()
+				.equal({
+					test:false
+				});
+			},
+			sheets_as_backgrounds2:function(){
+				return deep({
+					_deep_sheet_:true,
+					"dq.up::./!":"testez",
+					"dq.bottom::./!":{ test:true },
+					backgrounds:[{
+						_deep_sheet_:true,
+						"dq.bottom::./!":{
+							hello:"world"
+						}
+					}]
+				})
+				.flatten()
+				.equal({
+					_deep_sheet_:true,
+					"dq.bottom::./!":{ hello:"world" , test:true },
+					"dq.up::./!":"testez",
+				});
+			},
+			sheets_as_backgrounds3:function(){
+				return deep({
+					test:false,
+					backgrounds:[{ 
+						base:"yes" 
+					}, {
+						_deep_sheet_:true,
+						"dq.bottom::./!":{
+							hello:"world"
+						}
+					}]
+				})
+				.flatten()
+				.equal({
+					hello:"world",
+					base:"yes",
+					test:false
+				});
+			},
+			sheets_as_backgrounds4:function(){
+				return deep({
+					_deep_sheet_:true,
+					"dq.up::./!":{ fromUp:true },
+					"dq.bottom::./!":{ fromBottom:true },
+					backgrounds:[{
+						hello:"world"
+					}]
+				})
+				.flatten()
+				.equal({
+					fromBottom:true,
+					hello:"world",
+					fromUp:true
+				});
 			}
         }
     };
