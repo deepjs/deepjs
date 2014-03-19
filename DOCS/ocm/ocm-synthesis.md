@@ -4,7 +4,7 @@ When you want to modelise, by example, a store with different 'roles' (could be 
 
 
 The idea, often more suited and practical, is to have a stack that goes from less to more restrictive API.
-So we define the less restrictive, and we remove capabilities depending on roles.
+So we define the less restrictive API (here 'full'), and we remove capabilities depending on roles.
 
 ```javascript
 var myStore = deep.ocm({
@@ -31,18 +31,24 @@ var myStore = deep.ocm({
 	}
 });
 
-deep(myStore)
-.flatten()
+
+deep
 .roles("full")
-.done(function(myStore){
-	return myStore().post({ title:"hello", userID:12 });
-})
-.log()
+.store(myStore)
+.post({ title:"hello", userID:"e12" })
+.log()	// log success
 .roles("middle")
-.logError();
+.post({ title:"world", userID:"e12" })
+.log()	// log error 412 (precondition)
+.roles("less")
+.post({ title:"hello", userID:"e13" })
+.log()	// log error 403 (Owner)
+.roles("none")
+.post({ title:"hello", userID:12 })
+.log()	// error 405	(Method not allowed)
 ```
 
 
-## manage additive modelisation
+## Additive modelisation
 
 ... todo
