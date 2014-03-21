@@ -242,12 +242,13 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				});
 
 				return deep.modes({
-					env: "prod"
+					env: "prod",
+					roles:"admin"
 				})
-					.done(function() {
-						return o().get("hello");
-					})
-					.equal("prod:hello");
+				.done(function() {
+					return o().get("hello");
+				})
+				.equal("prod:hello:admin");
 			},
 			ocm_sheets: function() {
 				var o = deep.ocm({
