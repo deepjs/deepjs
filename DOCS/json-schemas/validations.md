@@ -4,7 +4,7 @@
 
 We could use json-schema to validate objects trough deep API.
 
-deep-schema.js is json-schema v4 compliant.
+deepjs/lib/schema.js is json-schema v4 compliant.
 
 ## Direct API
 
