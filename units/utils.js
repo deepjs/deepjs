@@ -31,6 +31,96 @@ define(["require","../deep"], function (require, deep) {
                     }
                 }))
                 .equal("jos&jos=2&a.bloup=3");
+            },
+            removeInside_obj_keys:function(){
+                var r = deep.utils.removeInside({
+                    a:true,
+                    b:24,
+                    c:"hello"
+                }, ["a", "c"])
+                return deep(r)
+                .equal({ b:24 });
+            },
+            removeInside_obj_obj:function(){
+                var r = deep.utils.removeInside({
+                    a:{
+                        id:"anything"
+                    },
+                    b:{
+                        id:"anything2"
+                    },
+                    c:"hello"
+                }, { id:"anything" })
+                return deep(r)
+                .equal({ 
+                    b:{
+                        id:"anything2"
+                    },
+                    c:"hello"
+                });
+            },
+            removeInside_obj_obj_key:function(){
+                var r = deep.utils.removeInside({
+                    a:{
+                        id:"anything"
+                    },
+                    b:{
+                        id:"anything2"
+                    },
+                    c:"hello"
+                }, [{ id:"anything"}, "c"])
+                return deep(r)
+                .equal({ 
+                    b:{
+                        id:"anything2"
+                    }
+                });
+            },
+            removeInside_arr_key:function(){
+                var r = deep.utils.removeInside([
+                    "thus",
+                    "bloup",
+                    "hello"
+                ], ["thus", "hello"])
+                return deep(r)
+                .equal([ 
+                    "bloup"
+                ]);
+            },
+            removeInside_arr_obj:function(){
+                var r = deep.utils.removeInside([
+                    {
+                        id:"anything"
+                    },
+                    {
+                        id:"anything2"
+                    },
+                    "hello"
+                ], { id:"anything"})
+                return deep(r)
+                .equal([ 
+                    {
+                        id:"anything2"
+                    },
+                    "hello"
+                ]);
+            },
+            removeInside_arr_obj_key:function(){
+                var r = deep.utils.removeInside([
+                    {
+                        id:"anything"
+                    },
+                    {
+                        id:"anything2"
+                    },
+                    "hello"
+                ], [{ id:"anything"}, "hello"])
+                return deep(r)
+                .equal([ 
+                    {
+                        id:"anything2"
+                    }
+                ]);
             }
         }
     };

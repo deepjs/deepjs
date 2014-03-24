@@ -1,4 +1,4 @@
-if (typeof define !== 'function') {
+    if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
@@ -28,8 +28,9 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             deeploadObjectNonDestructive:function(){
 				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
-				deep(a)
+				return deep(a)
 				.deepLoad(null, false)
+                .log()
 				.done(function(r){
 					return [r,a];
 				})
@@ -38,8 +39,9 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             deeploadObjectDestructive:function(){
 				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
-				deep(a)
+				return deep(a)
 				.deepLoad(null, true)
+                .log()
 				.done(function(r){
 					return [r,a];
 				})

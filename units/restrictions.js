@@ -82,6 +82,80 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 						return "lolipop";
 				})
 				.equal("lolipop");
+			},
+			allow_only_up:function(){
+				var obj = {
+					a:true,
+					b:"hello",
+					c:function(){
+						return "hello";
+					}
+				}
+				obj = deep.utils.up(deep.store.AllowOnly("b"), obj);
+				var a,b,c;
+				try{
+					a = obj.a().status;
+					b = obj.b;
+					c = obj.c().status;
+				}
+				catch(e)
+				{
+
+				}
+				var r = [a, b, c];
+				return deep(r)
+				.equal([403, "hello", 403])
+			},
+			allow_only_backgrounds:function(){
+				var obj = {
+					a:true,
+					b:"hello",
+					c:function(){
+						return "hello";
+					}
+				}
+				var obj2 = {
+					backgrounds:[obj, deep.store.AllowOnly("b")]
+				}
+				deep.flatten(obj2);
+				var a,b,c;
+				try{
+					a = obj2.a().status;
+					b = obj2.b;
+					c = obj2.c().status;
+				}
+				catch(e)
+				{
+
+				}
+				var r = [a, b, c];
+				return deep(r)
+				.equal([403, "hello", 403])
+			},
+			allow_only_backgrounds2:function(){
+				var obj = {
+					backgrounds:[deep.store.AllowOnly("b")],
+					a:true,
+					b:"hello",
+					c:function(){
+						return "world";
+					}
+				}
+		
+				deep.flatten(obj);
+				var a,b,c, d;
+				try{
+					a = obj.a;
+					b = obj.b;
+					c = obj.c();
+				}
+				catch(e)
+				{
+
+				}
+				var r = [a, b, c];
+				return deep(r)
+				.equal([true, "hello", "world"])
 			}
 		}
 	};
