@@ -11,7 +11,6 @@ The idea is simple : you use, select and/or run your own objects/functions throu
 ```javascript
 
 // our basical object/API
-
 var farmManager = {
 	animals : [
 		{id: "chicken", weight :0, age:0, eat : "grain"},
@@ -32,36 +31,34 @@ var farmManager = {
 	}
 };
 
-// now we add an aspect on water() that will
-// clean the place before watering the animals (asynchronous)
+// Add aspects
 deep.utils.up({
-    water : deep.compose.before(function(){
-        var def = deep.Deferred();
-        setTimeout(function(){
-            console.log("cleaning before watering");
-            def.resolve("cleaning done");
-        },1500*Math.random());
-        return def.promise();
-    })
+	// now we add an aspect on water() that will
+	// clean the place before watering the animals (asynchronous)
+	water : deep.compose.before(function(){
+		return deep(1).delay(1500*Math.random())
+		.done(function(){
+		    console.log("cleaning before watering");
+		    //...
+		    return "cleaning done";
+		});
+	}),
+	// this function added to our farmManager will run 3 cycles of
+	// watering and feeding the animals.
+	// All the asynchronous is managed by the deep chain
+	cycle : function(){
+	    var d = deep(farmManager);
+	    for(var i = 0;i<3;i++)
+	       d.run("water").run("feed",["flour"]).delay(200);
+	    return d;
+	}
 },farmManager);
-
-// this function added to our farmManager will run 3 cycles of
-// watering and feeding the animals.
-// All the asynchronous is managed by the deep chain
-farmManager.doCycle = function(){
-    var d = deep(farmManager);
-    for(var i = 0;i<3;i++)
-    {
-       d.run("water").run("feed",["flour"]).delay(200);
-    }
-    return d;
-};
 
 // run the example
 deep(farmManager)
-.run("doCycle")
+.run("cycle")
 .done(function(s){
-    console.log(" 3 cycles finished : ",s);
+	console.log(" 3 cycles finished : ",s);
 })
 .fail(function(error){
 	console.error("cycles failed : ",e);
