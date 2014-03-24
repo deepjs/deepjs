@@ -9,6 +9,7 @@ if (typeof define !== 'function') {
 define([
     "require",
     "./lib/utils",
+    "./lib/nodes",
     "./lib/query",
     "./lib/compose",
     "./lib/collider",
@@ -51,12 +52,12 @@ define([
                     h._nodes = [obj];
                 }
                 else
-                    h._nodes = [deep.utils.createRootNode(obj, schema, options)];
+                    h._nodes = [deep.nodes.root(obj, schema, options)];
 
                 if (r && r._deep_store_)
                     h.store(r)
                     .done(function(s){
-                        this._nodes = [deep.utils.createRootNode(s)];
+                        this._nodes = [deep.nodes.root(s)];
                     });
 
                 h._root = h._nodes[0];
@@ -76,7 +77,7 @@ define([
                 doStart(obj, schema);
         } catch (error) {
             console.log("internal chain start error : ", error);
-            h._nodes = [deep.utils.createRootNode({}, schema, options)];
+            h._nodes = [deep.nodes.root({}, schema, options)];
             h._start(null, error);
         }
         return h;
@@ -129,7 +130,12 @@ define([
     deep.rql = require("./lib/rql");
     deep.collider = require("./lib/collider");
 
-
+    deep.nodes = require("./lib/nodes");
+    deep.deepLoad = function(entry, context, destructive, excludeFunctions){
+        if(!entry._deep_query_node_)
+            entry = deep.nodes.root(entry);
+        return deep.nodes.deepLoad([entry])
+    };
     /**
      * final namespace for deepjs/query
      * @static
