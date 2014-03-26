@@ -275,6 +275,76 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 					test:false
 				});
 			},
+			sheet_up_object:function(){
+				var a = deep.utils.up({
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"world" }
+				}, { bloup:true });
+				return deep(a).equal({
+					hello:"world",
+					bloup:true
+				});
+			},
+			sheet_bottom_object:function(){
+				var a = deep.utils.bottom({
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"world" }
+				}, { bloup:true });
+				return deep(a).equal({
+					bloup:true
+				});
+			},
+			object_bottom_sheet:function(){
+				var a = deep.utils.bottom({ bloup:true }, {
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"world" }
+				});
+				return deep(a).equal({
+					hello:"world",
+					bloup:true
+				});
+			},
+			object_up_sheet:function(){
+				var a = deep.utils.up({ bloup:true }, {
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"world" }
+				});
+				return deep(a).equal({
+					bloup:true
+				});
+			},
+			sheet_up_sheet:function(){
+				var a = deep.utils.up({
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ bloup:true }
+				},{
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"world" }
+				});
+				return deep(a).equal({
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{
+						hello:"world",
+						bloup:true
+					}
+				});
+			},
+			sheet_bottom_sheet:function(){
+				var a = deep.utils.bottom({
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ bloup:true }
+				},{
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"world" }
+				});
+				return deep(a).equal({
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{
+						bloup:true,
+						hello:"world"
+					}
+				});
+			}
         }
     };
 
