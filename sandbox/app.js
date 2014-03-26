@@ -11,6 +11,7 @@ define(["require", "deepjs/deep", "deepjs/lib/unit", "deepjs/lib/view"], functio
 			deep.Unit.run(null, {verbose:false})
 			.done(function(report){
 				console.log("report : ", report);
+				report.reports = null;
 				$("#reports-container").html("<pre>"+JSON.stringify(report,null, ' ')+'</pre>');
 			});
 		});
