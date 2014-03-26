@@ -424,6 +424,27 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var r = deep.utils.up(func, compo);
                 return deep(r())
                 .equal("hello");
+            },
+            classes_defaulproto:function(){
+                var Mc = deep.compose.Classes(function(schema){
+                    if(schema && this.schema)
+                        deep.utils.up(schema, this.schema);
+                }, {
+                    schema:{
+                        bloup:true
+                    }
+                });
+
+                var a = new Mc({
+                    fromA:true
+                });
+
+                var b = new Mc({
+                    fromB:true
+                });
+
+                return deep(a.schema)
+                .equal({ bloup:true, fromA:true });
             }
         }
     };
