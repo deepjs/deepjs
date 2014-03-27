@@ -85,18 +85,20 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     b:{ backgrounds:["this::../a"] }
                 });
                 deep.Roles("a");
-                deep.flatten(ocm)
-                .delay(10)
+                deep.flatten(ocm);
 
-                deep.roles("b")
+                return deep.roles("b")
                 .done(function(success){
-                    return ocm.flatten().done(function(){
-                        console.log("Roles : ", deep.getModes())
+                    return ocm.flatten()
+                    .done(function(){
+                        return deep.getModes("roles");
                     })
+                    .equal(["b"])
                 })
                 .done(function(){
-                    console.log("Roles : ", deep.getModes())
+                    return deep.getModes("roles");
                 })
+                .equal(["b"]);
             }
         }
     };
