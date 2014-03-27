@@ -508,7 +508,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .del("i1")
                 .equal(false);
             },
-            "ownerDelOk":function(){
+            ownerDelOk:function(){
                 var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
@@ -547,6 +547,25 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 return deep.store(store)
                 .del("i1")
                 .equal(false);
+            },
+            transformers:function(){
+                var store = deep.store.Collection.create(null, [], {
+                    properties:{
+                        label:{ 
+                            type:"string",
+                            transformers:[
+                            function(node){
+                                return node.value+":hello"
+                            }]
+                        }
+                    }
+                });
+                return deep.store(store)
+                .post({ id:"i1", label:"weee", status:"draft", userID:"u1" })
+                .done(function(success){
+                     return success.label;
+                })
+                .equal("weee:hello");
             }
         }
     };
