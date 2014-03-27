@@ -344,6 +344,39 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 						hello:"world"
 					}
 				});
+			},
+			sheets_in_classes:function(){
+
+				var C = deep.compose.Classes(function(){
+
+				}, {
+					test:false
+				},
+				{
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"tulip" }
+				});
+				return deep(new C())
+				.equal({
+					hello:"tulip",
+					test:false
+				});
+			},
+			sheets_in_compile:function(){
+
+				var c = deep.compile({
+					test:false
+				},
+				{
+					_deep_sheet_:true,
+					"dq.bottom::.//!":{ hello:"tulip" }
+				}, { yop:14 });
+				return deep(c)
+				.equal({
+					hello:"tulip",
+					test:false,
+					yop:14
+				});
 			}
         }
     };
