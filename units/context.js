@@ -77,6 +77,26 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
                 var p4 = deep(deep.context).equal({});
                 return deep.all(p1,p2,p3,p4);
+            },
+            delayed2:function(){
+                deep.context = {};
+                var ocm = deep.ocm({
+                    a:{ hello:"world" },
+                    b:{ backgrounds:["this::../a"] }
+                });
+                deep.Roles("a");
+                deep.flatten(ocm)
+                .delay(10)
+
+                deep.roles("b")
+                .done(function(success){
+                    return ocm.flatten().done(function(){
+                        console.log("Roles : ", deep.getModes())
+                    })
+                })
+                .done(function(){
+                    console.log("Roles : ", deep.getModes())
+                })
             }
         }
     };
