@@ -485,7 +485,6 @@ mySheet("user");
 */
 ```
 But you could also use them at compilation time (apply sheets while your ocmanager compiles).
-For this : simply add an applySheets:true in ocm options.
 
 ```javascript
 var myObject = deep.ocm({
@@ -503,7 +502,7 @@ var myObject = deep.ocm({
 		backgrounds:["this::../public"],
 		test:false
 	}
-},{ applySheets:true });
+});
 
 myObject.flatten();
 
