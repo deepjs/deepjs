@@ -2,7 +2,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
+define(["require","../deep"], function (require, deep) {
     
     //_______________________________________________________________ GENERIC STORE TEST CASES
 
@@ -376,6 +376,20 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 					hello:"tulip",
 					test:false,
 					yop:14
+				});
+			},
+			sheets_entry:function(){
+				var a = {
+					sheets:[{ 
+						_deep_sheet_:true,
+						"dq.bottom::.//!":{ hello:"tulip" }
+					}],
+					bloup:true
+				};
+				return deep(a).flatten()
+				.equal({
+					hello:"tulip",
+					bloup:true
 				});
 			}
         }
