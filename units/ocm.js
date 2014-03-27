@@ -268,8 +268,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						})
 					})
 				}, {
-					groups: ["roles", "env"],
-					applySheets: true
+					groups: ["roles", "env"]
 				});
 				return deep.modes({
 					env: "dev",
