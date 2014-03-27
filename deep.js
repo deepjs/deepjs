@@ -186,6 +186,7 @@ define([
     deep.Roles = ocm.Roles;
     deep.modes = ocm.modes;
     deep.roles = ocm.roles;
+    deep.getModes = ocm.getModes;
 
     var event = require("./lib/emitter");
     deep.Event = event.Event;
