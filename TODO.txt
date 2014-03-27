@@ -32,16 +32,18 @@ DO
 
 - homogeneise second arguments (add third) for stores post/put/patch/del : 
 	==> .post(obj, path, ?options) || .post(obj, ?options) 
-- homogenise .createDefault of stores
+- homogenise .createDefault of stores										OK
 
 
 - introduce '' in deep.queries
 - refactor swig + files accessors (json) for contextualised root (maybe multiple roots)				OK
-- add options and head http action in restful middleware.
-- client micro caching + cache prefix with roles OR clearCache when roles change
+- add options and head http action in restful middleware.											OK
+
+
+- client micro caching + cache prefix with roles OR clearCache when roles change					
 ==> work globally on cache : deep.mediacache should manage FileWatch
 
-- manage headers in autobahn : in config + middleware(s)
+- manage headers in autobahn : in config + middleware(s)											OK
 
 - ligth DDP for deep : 
 	: use local collection or object stores (as jstorage) that write/send datas : and invalidate if server do so.
@@ -129,8 +131,6 @@ deep.context()
 
 deep.removeFromContext()
 
-
-
 ## DOCS :
 
 
@@ -139,7 +139,7 @@ Thanx to node, and big effort from js community, we have today plenty of great a
 Since, big efforts have been made to reduce inhomogeneity between browser and server side scripts and paradygms.
 Following that idea, and as a first target, deepjs wants to nullifying almost any differences between server and browser paradygms and logics.
 
-And as today, the architecture itself of web app are better controled, and use clasicaly Single-Page/Restful paradygm, deepjs wants to fits particulary well as a complete ThinServer/mVC/Asynch tools belt.
+And as today, the architecture itself of web app are better controled, and use classical Single-Page/Restful paradygm, deepjs wants to fits particulary well as a complete ThinServer/mVC/Asynch tools belt.
 
 
 2) deepjs scope 1 : welcome to 'space-time' programmation
