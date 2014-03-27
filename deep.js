@@ -84,6 +84,8 @@ define([
     };
     deep.utils = require("./lib/utils");
 
+
+    deep.transformers = {};
     /**
      * rethrow any throw during chain execution.
      * @property rethrow
