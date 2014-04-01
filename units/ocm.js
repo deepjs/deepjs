@@ -1,3 +1,6 @@
+/**
+ * @author Gilles Coomans <gilles.coomans@gmail.com>
+ */
 if (typeof define !== 'function') {
 	var define = require('amdefine')(module);
 }
@@ -361,6 +364,16 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				return deep(myManager("public", "user"))
 				.equal({});
 			},
+			auto_flatten:function(){
+				var store = deep.ocm({
+				    "user":{
+				        test:true
+				    },
+				    "public":{backgrounds:["this::../user"]}
+				},{protocol:"test"});
+				store.modes("public")
+				return deep.when(deep.store.prepare(store)).equal({ test:true });
+			}
 		}
 	};
 
