@@ -23,6 +23,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 				deep.utils.up(deep.store.Restrictions('get'), a);
 				return deep(a.get())
 				.fail(function(e){
+					console.log("e")
 					if(e.status === 403)
 						return "lolipop";
 				})

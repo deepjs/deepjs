@@ -33,7 +33,6 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				var a = { how:"test::e1" };
 				return deep(a)
 				.deepLoad(null, false)
-                .log()
 				.done(function(r){
 					return [r,a];
 				})
@@ -44,7 +43,6 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				var a = { how:"test::e1" };
 				return deep(a)
 				.deepLoad(null, true)
-                .log()
 				.done(function(r){
 					return [r,a];
 				})

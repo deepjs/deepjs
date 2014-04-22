@@ -364,7 +364,7 @@ deep.utils.deepArrayFusion2(first, second, schema)
 
 deep.utils.arrayUnique(arr, uniqueOn)
 
-deep.utils.setValueByPath(object, path, value, pathDelimitter)
+deep.utils.toPath(object, path, value, pathDelimitter)
 
 deep.utils.deletePropertyByPath(object, path, pathDelimitter)
 

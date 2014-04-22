@@ -24,6 +24,13 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u1", email:"gilles.coomans@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles.coomans@gmail.com" });
             },
+            getWithPath:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                return deep.store(store)
+                .get("u1/email")
+                .equal("gilles.coomans@gmail.com")
+                .valuesEqual("gilles.coomans@gmail.com");
+            },
             query:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.store(store)
@@ -97,7 +104,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             putWithQuery:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
-                .put("gilles@gmail.com", { id:"u1/email"})
+                .put("gilles@gmail.com", "u1/email")
                 .equal({ id:"u1", email:"gilles@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
@@ -144,7 +151,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             patch:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
-                .patch({ email:"gilles@gmail.com" }, { id:"u1"})
+                .patch({ email:"gilles@gmail.com" }, "u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
@@ -153,7 +160,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             patchWithQuery:function(){
                 var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.store(store)
-                .patch("gilles@gmail.com", { id:"u1/email"})
+                .patch("gilles@gmail.com", "u1/email")
                 .equal({ id:"u1", email:"gilles@gmail.com" })
                 .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
@@ -162,7 +169,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             patchErrorIfNotExists:function(){
                 var store = deep.store.Collection.create(null, []);
                 return deep.store(store)
-                .patch({ email:"gilles@gmail.com" }, { id:"u1"})
+                .patch({ email:"gilles@gmail.com" }, "u1")
                 .fail(function(error){
                     if(error.status == 404) // not found
                         return "lolipop";
@@ -181,6 +188,15 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                         return "lolipop";
                 })
                 .equal("lolipop");
+            },
+            delWithQuery:function(){
+                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com", test:true }]);
+                return deep.store(store)
+                .del('u1/test')
+                .equal(true)
+                .valuesEqual(true)
+                .get("u1")
+                .equal({ id:"u1", email:"gilles@gmail.com" });
             },
             delFalseIfNotExists:function(){
                 var store = deep.store.Collection.create(null, []);
