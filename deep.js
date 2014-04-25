@@ -61,7 +61,7 @@ define([
                     });
 
                 h._root = h._nodes[0];
-                h._start({_success:r, _error:null});
+                h._start({success:r, error:null});
             };
             var alls = null;
             if ((obj && (obj.then || obj.promise)) || (schema && (schema.then || schema.promise)))
@@ -71,14 +71,14 @@ define([
                 })
                 .fail(function (error) {
                     h._nodes = null;
-                    h._start({_success:null, _error:error});
+                    h._start({success:null, error:error});
                 });
             else
                 doStart(obj, schema);
         } catch (error) {
             console.log("internal chain start error : ", error);
             h._nodes = [deep.nodes.root({}, schema, options)];
-            h._start({ _success:null, _error:error });
+            h._start({ success:null, error:error });
         }
         return h;
     };
