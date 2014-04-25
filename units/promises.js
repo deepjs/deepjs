@@ -73,7 +73,24 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return "should not see this";
                 })
                 .equal("passed through");
-            }
+            }/*,  //________________________________________________ STILL FAILING !!! 
+            oldqueue:function(){
+                return deep.when("start")
+                  .done(function(s){
+                      var self = this;
+                      return deep("recurse")
+                      .delay(100)
+                      .done(function(){
+                          self.done(function(s){
+                              return s+"hello";
+                          });
+                      })
+                  })
+                  .done(function(s){
+                      return s+"bye";
+                  })
+                  .equal("recursehellobye");
+            }*/
         }
     };
 
