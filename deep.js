@@ -212,6 +212,9 @@ define([
     deep.client = {};
 
     require("./lib/stores/chain");
+    deep.delay = function(ms){
+        return deep({}).delay(ms);
+    }
 
     //_________________________________________________________________________________
 
