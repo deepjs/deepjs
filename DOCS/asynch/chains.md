@@ -190,14 +190,14 @@ Run rules :
 ```javascript
 if(typeof fn === 'function')
 	// if 'fn' is function : call it with each node's value as "this"
-	return fn.apply(this._nodes[i].value, args);
+	return fn.apply(this._state.nodes[i].value, args);
 
-else if(typeof fn === 'string' && typeof this._nodes[i].value[fn] === 'function')
+else if(typeof fn === 'string' && typeof this._state.nodes[i].value[fn] === 'function')
 	// if 'fn' is string : fire the corresponding method on any entry (if any)
-	return this._nodes[i].value[fn].apply(this._nodes[i].value, args);
+	return this._state.nodes[i].value[fn].apply(this._state.nodes[i].value, args);
 
-else if(!fn && typeof this._nodes[i].value === 'function')
-	return this._nodes[i].value.apply(this._nodes[i].ancestor.value, args);
+else if(!fn && typeof this._state.nodes[i].value === 'function')
+	return this._state.nodes[i].value.apply(this._state.nodes[i].ancestor.value, args);
 	
 ```
 

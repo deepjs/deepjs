@@ -49,18 +49,18 @@ define([
                 if (obj && obj._deep_query_node_)
                 {
                     r = obj.value;
-                    h._nodes = [obj];
+                    h._state.nodes = [obj];
                 }
                 else
-                    h._nodes = [deep.nodes.root(obj, schema, options)];
+                    h._state.nodes = [deep.nodes.root(obj, schema, options)];
 
                 if (r && r._deep_store_)
                     h.store(r)
                     .done(function(s){
-                        this._nodes = [deep.nodes.root(s)];
+                        this._state.nodes = [deep.nodes.root(s)];
                     });
 
-                h._root = h._nodes[0];
+                h._state.root = h._state.nodes[0];
                 h._start({success:r, error:null});
             };
             var alls = null;
@@ -70,14 +70,14 @@ define([
                     doStart(res[0], res[1]);
                 })
                 .fail(function (error) {
-                    h._nodes = null;
+                    h._state.nodes = null;
                     h._start({success:null, error:error});
                 });
             else
                 doStart(obj, schema);
         } catch (error) {
             console.log("internal chain start error : ", error);
-            h._nodes = [deep.nodes.root({}, schema, options)];
+            h._state.nodes = [deep.nodes.root({}, schema, options)];
             h._start({ success:null, error:error });
         }
         return h;
