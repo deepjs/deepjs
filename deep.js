@@ -240,7 +240,8 @@ define([
         "js::deepjs/units/parcours",
         "js::deepjs/units/deepload",
         "js::deepjs/units/utils",
-        "js::deepjs/units/restrictions"
+        "js::deepjs/units/restrictions",
+        "js::deepjs/units/custom-chain"
     );
     //_________________________________________________________________________________
     return deep;
