@@ -49,7 +49,7 @@ define(["require","../deep"], function (require, deep, Unit) {
     };
 
     var unit = {
-        title:"deep/units/parcours",
+        title:"deepjs/units/parcours",
         tests : {
             preorder:function(){
                 var r = deep.utils.preorder(example);

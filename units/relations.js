@@ -46,7 +46,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 
     var unit = {
-        title:"deep/units/relations",
+        title:"deepjs/units/relations",
         setup:function(){
             deep.store.Collection.create("plant", [{ id:"e1", title:"plant title" }], schema );
             deep.store.Collection.create("user", [{ id:"e1", title:"user title" }], schema );

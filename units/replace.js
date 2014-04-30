@@ -11,7 +11,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 
     var unit = {
-        title:"deep/units/replace",
+        title:"deepjs/units/replace",
         stopOnError:false,
         setup:function(){
 			return {

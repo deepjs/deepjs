@@ -11,7 +11,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 
     var unit = {
-        title:"deep/units/chain",
+        title:"deepjs/units/chains/values",
         stopOnError:false,
         tests : {
             promise_on_chain:function(){

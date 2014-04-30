@@ -11,8 +11,11 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 
     var unit = {
-        title:"deep/units/deepload",
+        title:"deepjs/units/deepload",
         stopOnError:false,
+        clean:function(){
+            delete deep.protocols.test;
+        },
         tests : {
             /*replace:function(){
                 return deep({ b:[1,2,3] })

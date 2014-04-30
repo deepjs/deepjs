@@ -20,7 +20,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 						return "hello";
 					}
 				};
-				deep.utils.up(deep.store.Restrictions('get'), a);
+				deep.utils.up(deep.Restrictions('get'), a);
 				return deep(a.get())
 				.fail(function(e){
 					console.log("e")
@@ -30,7 +30,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 				.equal("lolipop");
 			},
 			restriction_up_collection:function(){
-				var a = deep.utils.up(deep.store.Restrictions('get'), deep.store.Collection.create());
+				var a = deep.utils.up(deep.Restrictions('get'), deep.store.Collection.create());
 				return deep(a.get())
 				.fail(function(e){
 					if(e.status === 403)
@@ -44,7 +44,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 						get:function(){
 							return "hello";
 						}
-					}, deep.store.Restrictions('get')]
+					}, deep.Restrictions('get')]
 				};
 				return deep.flatten(a)
 				.done(function(a){
@@ -58,7 +58,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 			},
 			restriction_backgrounds_collections:function(){
 				var a = {
-					backgrounds:[deep.store.Collection.create(), deep.store.Restrictions('get')]
+					backgrounds:[deep.store.Collection.create(), deep.Restrictions('get')]
 				};
 				return deep.flatten(a)
 				.done(function(a){
@@ -74,7 +74,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 				var a = deep.ocm({
 					role1:deep.store.Collection.create(),
 					role2:{
-						backgrounds:["this::../role1", deep.store.Restrictions('get')]
+						backgrounds:["this::../role1", deep.Restrictions('get')]
 					}
 				});
 				return deep.flatten(a)
@@ -95,7 +95,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 						return "hello";
 					}
 				}
-				obj = deep.utils.up(deep.store.AllowOnly("b"), obj);
+				obj = deep.utils.up(deep.AllowOnly("b"), obj);
 				var a,b,c;
 				try{
 					a = obj.a;
@@ -119,7 +119,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 					}
 				}
 				var obj2 = {
-					backgrounds:[obj, deep.store.AllowOnly("b")]
+					backgrounds:[obj, deep.AllowOnly("b")]
 				}
 				deep.flatten(obj2);
 				var a,b,c;
@@ -138,7 +138,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 			},
 			allow_only_backgrounds2:function(){
 				var obj = {
-					backgrounds:[deep.store.AllowOnly("b")],
+					backgrounds:[deep.AllowOnly("b")],
 					a:true,
 					b:"hello",
 					c:function(){

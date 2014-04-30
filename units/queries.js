@@ -86,7 +86,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 	}
 
   var unit = {
-    title:"deep/units/queries",
+    title:"deepjs/units/queries",
     stopOnError:false,
     tests:{
       a:function(){

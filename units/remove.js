@@ -8,7 +8,7 @@ if (typeof define !== 'function') {
 define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
     
     var unit = {
-        title:"deep/units/remove",
+        title:"deepjs/units/remove",
         stopOnError:false,
         tests : {
 			a:function(){

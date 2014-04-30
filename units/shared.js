@@ -10,7 +10,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 	//_______________________________________________________________ GENERIC STORE TEST CASES
 
 	var unit = {
-		title:"deep/units/shared",
+		title:"deepjs/units/shared",
 		stopOnError:false,
 		tests : {
 			bottom_on_shared:function(){

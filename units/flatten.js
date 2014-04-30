@@ -11,7 +11,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 
     var unit = {
-        title:"deep/units/flatten",
+        title:"deepjs/units/flatten",
         stopOnError:false,
         setup:function(){
             var a = {

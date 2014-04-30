@@ -10,7 +10,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 	//_______________________________________________________________ GENERIC STORE TEST CASES
 
 	var unit = {
-		title: "deep/units/ocm",
+		title: "deepjs/units/ocm",
 		tests: {
 			base: function() {
 				var myManager = deep.ocm({
@@ -372,7 +372,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				    "public":{backgrounds:["this::../user"]}
 				},{protocol:"test"});
 				store.modes("public")
-				return deep.when(deep.store.prepare(store)).equal({ test:true });
+				return deep.when(deep.Store.prepare(store)).equal({ test:true });
 			}
 		}
 	};

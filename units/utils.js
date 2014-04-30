@@ -11,7 +11,7 @@ define(["require","../deep"], function (require, deep) {
 
 
     var unit = {
-        title:"deep/units/utils",
+        title:"deepjs/units/utils",
         stopOnError:false,
         tests : {
             parseQueryString:function(){

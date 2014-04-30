@@ -11,7 +11,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 
 
     var unit = {
-        title:"deep/units/context",
+        title:"deepjs/units/context",
         stopOnError:false,
         setup:function(){},
         clean:function(){
@@ -21,13 +21,13 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             setvar:function(){
                 deep.context = {};
                 var p1 = deep(9999)
-                .context("test",1)
+                .toContext("test",1)
                 .done(function(){
                     return deep.context.test;
                 })
                 .equal(1)
                 .done(function(){
-                    return this.context().test;
+                    return this.context('test');
                 })
                 .equal(1);
                 var p2 = deep(deep.context).equal({});
@@ -36,10 +36,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             setvar2:function(){
                 deep.context = {};
                 var p1 = deep(9999)
-                .context("test",1)
+                .toContext("test",1)
                 .done(function(){
                     return deep(true)
-                    .context("hello","world")
+                    .toContext("hello","world")
                     .done(function(){
                         return deep.context;
                     })
@@ -55,7 +55,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             delayed:function(){
                 deep.context = {};
                 var p1 = deep(9999)
-                .context("test",1)
+                .toContext("test",1)
                 .delay(1)
                 .done(function(){
                     return deep.context;
@@ -63,7 +63,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal({test:1});
 
                 var p2 = deep(9999)
-                .context("test",2)
+                .toContext("test",2)
                 .delay(3)
                 .done(function(){
                     return deep.context;
@@ -71,7 +71,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal({test:2});
 
                 var p3 = deep(9999)
-                .context("test",3)
+                .toContext("test",3)
                 .delay(2)
                 .done(function(){
                     return deep.context;
