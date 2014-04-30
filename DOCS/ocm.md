@@ -162,7 +162,7 @@ The mode collection is really useful to do something like this :   (see deep.sto
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	"public":deep.store.Restrictions("del","post"),
+	"public":deep.Restrictions("del","post"),
 	admin:{}
 });
 
@@ -202,7 +202,7 @@ To disallow this behaviour, simply provide an options object to OCM constructor 
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	"public":deep.store.Restrictions("del","post"),
+	"public":deep.Restrictions("del","post"),
 	admin:{}
 }, { strict:true });
 
@@ -381,8 +381,8 @@ You could also use a groups collection in your manager.
 var manager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	'public':deep.store.AllowOnly("get", "range"),
-	user:deep.store.Restrictions("del")
+	'public':deep.AllowOnly("get", "range"),
+	user:deep.Restrictions("del")
 }, { groups:["env", "roles"] });
 
 deep.Modes({

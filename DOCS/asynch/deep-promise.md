@@ -118,7 +118,7 @@ executed only in success state.
 Add an artifical delay in chain execution. useful for test and debug.
 
 
-### .context(key, value)
+### .toContext(key, value)
 
 For painless asynchrone context management. (thanx [Kris](https://github.com/kriszyp) ! ;)
 Set in local deep.context the provided value under 'key'.

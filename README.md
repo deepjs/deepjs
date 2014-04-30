@@ -42,7 +42,7 @@ var count = 0;
 
 http.createServer(function (req, response) {
 	deep
-	.store("myobjects")
+	.rest("myobjects")
 	.post({ title:titles[++count%3], count:count })
 	.get(String(req.url).substring(1))
 	.done(function(res){

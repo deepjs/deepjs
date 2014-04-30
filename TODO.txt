@@ -127,7 +127,7 @@ put protocols set in deep.context : ocmise present protocols = parano mode : con
 
 deep.contextualize("protocols", deepCopy:Bool, parano:Bool) : will copy protocols (simple or deep) and apply OCM parano
 
-deep.context()
+deep.toContext()
 
 deep.removeFromContext()
 

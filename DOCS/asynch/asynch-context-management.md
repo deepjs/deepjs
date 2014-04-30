@@ -8,11 +8,11 @@
 deep.context = {};			// let's call it 'A'
 
 deep.when("anything")
-.context("test",1) // (B) set 'test' var in local deep.context (that is a copy of previous local one. (i.e. 'A'))
+.toContext("test",1) // (B) set 'test' var in local deep.context (that is a copy of previous local one. (i.e. 'A'))
 .delay(10)
 .done(function(){
     return deep.when(true)
-    .context("hello","world") // (C) set 'hello' var in local deep.context (that is a copy of previous local one (i.e. 'B').)
+    .toContext("hello","world") // (C) set 'hello' var in local deep.context (that is a copy of previous local one (i.e. 'B').)
     .delay(5)
     .done(function(){
         return deep.context;
