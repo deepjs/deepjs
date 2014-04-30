@@ -19,12 +19,15 @@ define([
     "./lib/protocol",
     "./lib/sheet",
     "./lib/promise",
-    "./lib/chain",
     "./lib/flatten",
     "./lib/compiler",
     "./lib/emitter",
     "./lib/rql",
-    "./lib/stores/chain"
+    "./lib/restrictions",
+    "./lib/chains/deep",
+    "./lib/chains/restful",
+    //"./lib/stores/chain",
+    "./lib/chains/deep2"
     ], function (require, utils) {
     
     if(typeof deep !== 'undefined')
@@ -37,53 +40,51 @@ define([
     }
 
     deep = function deepStart(obj, schema, options) {
-        var h = new deep.Chain(options);
+        // console.log("CHAIN START : context : ", deep.context)
+        options = options || {};
+        var h = new deep.Chain(options._state || null, options), d;
         try {
             if (typeof obj === 'string')
-                obj = deep.get(obj);
+                obj = deep.get(obj, options);
+ 
             if (typeof schema === 'string')
-                schema = deep.get(schema);
-            var doStart = function doStartChain(obj, schema)
-            {
-                var r = obj;
-                if (obj && obj._deep_query_node_)
-                {
-                    r = obj.value;
-                    h._state.nodes = [obj];
-                }
-                else
-                    h._state.nodes = [deep.nodes.root(obj, schema, options)];
+                schema = deep.get(schema, options);
 
-                if (r && r._deep_store_)
-                    h.store(r)
-                    .done(function(s){
-                        this._state.nodes = [deep.nodes.root(s)];
-                    });
-
-                h._state.root = h._state.nodes[0];
-                h._start({success:r, error:null});
-            };
-            var alls = null;
-            if ((obj && (obj.then || obj.promise)) || (schema && (schema.then || schema.promise)))
-                deep.all(obj, schema)
+            if(!schema && obj && (obj.then || obj.promise))
+                d = deep.when(obj)
                 .done(function (res) {
-                    doStart(res[0], res[1]);
-                })
-                .fail(function (error) {
-                    h._state.nodes = null;
+                    h._init(res);
+                    h._start();
+                });
+            if(schema  && (schema.then || schema.promise))
+                if(obj && (obj.then || obj.promise))
+                    d = deep.all(obj, schema)
+                    .done(function (res) {
+                        h._init(res[0], res[1]);
+                        h._start();
+                    });
+                else
+                    d = deep.when(schema)
+                    .done(function (res) {
+                        h._init(null, res);
+                        h._start();
+                    });
+            if(d)
+                d.fail(function (error) {
                     h._start({success:null, error:error});
                 });
             else
-                doStart(obj, schema);
+            {
+                h._init(obj, schema);
+                h._start();
+            }
         } catch (error) {
-            console.log("internal chain start error : ", error);
-            h._state.nodes = [deep.nodes.root({}, schema, options)];
+            //console.log("internal chain start error : ", error);
             h._start({ success:null, error:error });
         }
         return h;
     };
     deep.utils = require("./lib/utils");
-
 
     deep.transformers = {};
     /**
