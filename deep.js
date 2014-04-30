@@ -203,20 +203,48 @@ define([
     for(var i in promise)
         deep[i] = promise[i];
 
-    var chains = require("./lib/chain");
+    var chains = require("./lib/chains/deep");
+    var chains2 = require("./lib/chains/deep2");
     deep.Chain = chains.Chain;
+    deep.Chain2 = chains2.Chain2;
     deep.chain = chains.chain;
 
-    var stores = require("./lib/stores/store");
-    deep.Store = stores.Store;
-    deep.store = stores.store;
+    var Store = require("./lib/stores/store");
+    deep.Store = Store;
     deep.client = {};
+    deep.store = {};
+   // deep.store = Store.start;
+    deep.rest = require("./lib/chains/restful").start;
 
-    require("./lib/stores/chain");
     deep.delay = function(ms){
         return deep({}).delay(ms);
     }
 
+    var restrictions = require("./lib/restrictions");
+    for(var i in restrictions)
+        deep[i] = restrictions[i];
+
+    deep.store.Restrictions = deep.Restrictions;
+    deep.store.AllowOnly = deep.AllowOnly;
+
+    deep.Promise.API.deep = function(val, schema, options) {
+        options = options || {};
+        var h = new deep.Chain(this._state, options);
+        var self = this;
+        var func = function(s,e){
+            //console.log("$$$$$$$$$$ chain.deep : ", self._context, deep.context);
+            return deep(val || s, schema, options)
+            .done(function(s){
+                h._state.nodes = this._state.nodes;
+                h._state.queried = this._state.queried;
+                h._state.root = this._state.root;
+            });
+        };
+        func._isDone_ = true;
+        this._enqueue(h);
+        h._enqueue(func);
+        return h;
+    };
     //_________________________________________________________________________________
 
     deep.coreUnits = deep.coreUnits || [];
@@ -242,7 +270,8 @@ define([
         "js::deepjs/units/deepload",
         "js::deepjs/units/utils",
         "js::deepjs/units/restrictions",
-        "js::deepjs/units/custom-chain"
+        "js::deepjs/units/custom-chain",
+        "js::deepjs/units/views"
     );
     //_________________________________________________________________________________
     return deep;
