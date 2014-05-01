@@ -13,21 +13,25 @@ define([
     "./lib/query",
     "./lib/compose",
     "./lib/collider",
-    "./lib/errors",
-    "./lib/stores/store",
-    "./lib/ocm",
-    "./lib/protocol",
-    "./lib/sheet",
-    "./lib/promise",
-    "./lib/flatten",
     "./lib/compiler",
     "./lib/emitter",
+    "./lib/errors",
     "./lib/rql",
-    "./lib/restrictions",
+    "./lib/promise",
+    "./lib/ocm",
+    
+    "./lib/sheet",
+    "./lib/flatten",
+
+    "./lib/protocol",
+    "./lib/stores/store",
     "./lib/chains/deep",
     "./lib/chains/restful",
-    //"./lib/stores/chain",
-    "./lib/chains/deep2"
+    "./lib/restrictions"
+    /*"./lib/view",
+    "./lib/schema",
+    "./lib/stores/collection",
+    "./lib/stores/object"*/
     ], function (require, utils) {
     
     if(typeof deep !== 'undefined')
@@ -203,11 +207,7 @@ define([
     for(var i in promise)
         deep[i] = promise[i];
 
-    var chains = require("./lib/chains/deep");
-    var chains2 = require("./lib/chains/deep2");
-    deep.Chain = chains.Chain;
-    deep.Chain2 = chains2.Chain2;
-    deep.chain = chains.chain;
+    deep.Chain = require("./lib/chains/deep");
 
     var Store = require("./lib/stores/store");
     deep.Store = Store;
@@ -233,12 +233,7 @@ define([
         var self = this;
         var func = function(s,e){
             //console.log("$$$$$$$$$$ chain.deep : ", self._context, deep.context);
-            return deep(val || s, schema, options)
-            .done(function(s){
-                h._state.nodes = this._state.nodes;
-                h._state.queried = this._state.queried;
-                h._state.root = this._state.root;
-            });
+            return deep(val || s, schema, options);
         };
         func._isDone_ = true;
         this._enqueue(h);
@@ -260,7 +255,6 @@ define([
         "js::deepjs/units/replace",
         "js::deepjs/units/remove",
         "js::deepjs/units/interpret",
-        "js::deepjs/units/range",
         "js::deepjs/units/relations",
         "js::deepjs/units/context",
         "js::deepjs/units/ocm",

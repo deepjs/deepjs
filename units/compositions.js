@@ -67,16 +67,15 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .bottom(this.a)
                 .query("/(func.*)")
                 .run()
-                .query("/res")
+                .deep(this.b.res)
                 .equal(["func1","func1_1", "func2","func2_2","func3","func3_3"]);
-
             },
             b:function(){
                 return deep(this.c)
                 .bottom(this.a)
                 .query("./(func.*)")
                 .run()
-                .query("/res")
+                .deep(this.c.res)
                 .equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"]);
             },
             after:function(){

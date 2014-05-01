@@ -17,6 +17,7 @@ define(["require","../deep"], function (require, deep) {
         tests : {
 			base:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.up::./!":{
 						hello:"world",
 						array:["from up"]
@@ -37,48 +38,34 @@ define(["require","../deep"], function (require, deep) {
 					}
 				};
 
-				deep.sheet(sheet, obj);
+				deep.utils.up(sheet, obj);
 				return deep(obj).equal({"array":["from bottom","base entry","from up"],"a":{"test":123,"other":true},"hello":"world"});
 			},
 			transform:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.transform::./*":function(input){
 						return "e"+input;
 					}
 				};
 				return deep([1,2,3,4,5])
-				.sheet(sheet)
-				.equal({
-					"dq.transform::./*": [
-						"e1",
-						"e2",
-						"e3",
-						"e4",
-						"e5"
-					]
-				})
-				.valuesEqual(["e1", "e2", "e3", "e4", "e5"]);
+				.up(sheet)
+				.equal(["e1", "e2", "e3", "e4", "e5"]);
 			},
 			through:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.through::./*":function(input){
 						return "e"+input;
 					}
 				};
-				return deep([1,2,3,4,5]).sheet(sheet)
-				.equal({
-					"dq.through::./*": [
-						"e1",
-						"e2",
-						"e3",
-						"e4",
-						"e5"
-					]
-				})
-				.valuesEqual([1,2,3,4,5]);
-			},
+				return deep([1,2,3,4,5])
+				.up(sheet)
+				.equal([1,2,3,4,5]);
+			}/*,
 			sheeter1:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.sheeter::./*":  deep.sheeter
 										.up({ fromUp:"tools" })
 										.bottom({ fromBottom:"hello" })
@@ -88,17 +75,8 @@ define(["require","../deep"], function (require, deep) {
 						base:"deepjs"
 					}
 				})
-				.sheet(sheet)
-				.equal({
-					"dq.sheeter::./*": [
-						{
-						"fromBottom": "hello",
-						"base": "deepjs",
-						"fromUp": "tools"
-						}
-					]
-				})
-				.valuesEqual( {
+				.up(sheet)
+				.equal( {
 					"a": {
 						"fromBottom": "hello",
 						"base": "deepjs",
@@ -108,6 +86,7 @@ define(["require","../deep"], function (require, deep) {
 			},
 			"sheeter.flatten":function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.sheeter::./a/b":deep.sheeter.flatten()
 				};
 				return deep({
@@ -121,12 +100,12 @@ define(["require","../deep"], function (require, deep) {
 						}
 					}
 				})
-				.sheet(sheet)
-				.equal({"dq.sheeter::./a/b":[{"test":"inherited","hello":"world"}]})
-				.valuesEqual({"a":{"b":{"test":"inherited","hello":"world"},"c":{"test":"inherited"}}});
+				.up(sheet)
+				.equal({"a":{"b":{"test":"inherited","hello":"world"},"c":{"test":"inherited"}}});
 			},
 			"sheeter.transform":function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.sheeter::./a/b":deep.sheeter.transform(function(input){
 						return "e : " + input;
 					})
@@ -136,12 +115,12 @@ define(["require","../deep"], function (require, deep) {
 						b:"hello world"
 					}
 				})
-				.sheet(sheet)
-				.equal( {"dq.sheeter::./a/b":["e : hello world"]} )
-				.valuesEqual( {"a":{"b":"e : hello world"}} );
+				.up(sheet)
+				.equal( {"a":{"b":"e : hello world"}} );
 			},
 			backgrounds:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.backgrounds::/!":{ hello:"world" }
 				};
 
@@ -149,11 +128,12 @@ define(["require","../deep"], function (require, deep) {
 					a:true
 				};
 
-				deep.sheet(sheet, obj);
+				deep.up(sheet, obj);
 				return deep(obj).equal({ hello:"world", a:true });
 			},
 			backgrounds2:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.backgrounds::/!":[{ hello:"world" }]
 				};
 
@@ -161,11 +141,12 @@ define(["require","../deep"], function (require, deep) {
 					a:true
 				};
 
-				deep.sheet(sheet, obj);
+				deep.up(sheet, obj);
 				return deep(obj).equal({ hello:"world", a:true });
 			},
 			backgrounds3:function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.backgrounds::/!":[{ hello:"world" }]
 				};
 
@@ -174,20 +155,21 @@ define(["require","../deep"], function (require, deep) {
 					a:true
 				};
 
-				deep.sheet(sheet, obj);
+				deep.up(sheet, obj);
 				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
 			},
 			"sheeter.backgrounds":function(){
 				var sheet = {
+					_deep_sheet_:true,
 					"dq.sheeter::/!":deep.sheeter.backgrounds({ hello:"world" })
 				};
 				var obj = {
 					backgrounds:[{ lolipop:true }],
 					a:true
 				};
-				deep.sheet(sheet, obj);
+				deep.up(sheet, obj);
 				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
-			},
+			}*/,
 			sheets_as_backgrounds:function(){
 				return deep({
 					test:false,

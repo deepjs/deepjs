@@ -18,7 +18,7 @@ define(["require","../deep"], function (require, deep) {
 		testez:function(res){
 			var self = this;
 			var func = function(s,e){
-				return deep.delay(5).done(function(){
+				return deep.delay(1).done(function(){
 					var val = 'seen:'+self._name;
 					res.push(val);
 					return val;
@@ -44,7 +44,7 @@ define(["require","../deep"], function (require, deep) {
 		testez:function(res){
 			var self = this;
 			var func = function(s,e){
-				return deep.delay(5).done(function(){
+				return deep.delay(1).done(function(){
 					var val = 'seen2:'+self._name;
 					res.push(val);
 					return val;

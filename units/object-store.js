@@ -241,11 +241,11 @@ define(["require","../deep", "../lib/stores/collection", "../lib/schema"], funct
                   hasPrevious: true,
                   query: '&limit(3,2)'
                 })
-                .valuesEqual([
+                /*.valuesEqual([
                     { count:3 },
                     { count:4 },
                     { count:5 }
-                ]);
+                ]);*/
             },
             rangeWithQuery:function(){
                 var store = deep.Object(null, {
@@ -272,10 +272,10 @@ define(["require","../deep", "../lib/stores/collection", "../lib/schema"], funct
                   hasPrevious: true,
                   query: "?count=ge=3&limit(2,2)"
                 })
-                .valuesEqual([
+                /*.valuesEqual([
                     { count:5 },
                     { count:6 }
-                ]);
+                ])*/;
             },
             rpc:function(){
                 var checker = {};
@@ -294,7 +294,6 @@ define(["require","../deep", "../lib/stores/collection", "../lib/schema"], funct
                 return deep.rest(store)
                 .rpc("testrpc", [1456, "world"], "key")
                 .equal({ title:"hello", base:"was there before", decorated:"hello rpc" })
-                .valuesEqual({ title:"hello", base:"was there before", decorated:"hello rpc" })
                 .get("key")
                 .equal({ title:"hello", base:"was there before", decorated:"hello rpc" })
                 .deep(checker)
@@ -365,7 +364,6 @@ define(["require","../deep", "../lib/stores/collection", "../lib/schema"], funct
                 return deep.rest(store)
                 .rpc("testrpc", [1456, "world"], "key")
                 .equal("lolipop")
-                .valuesEqual("lolipop")
                 .get("key")
                 .equal({ title:"hello", base:"was there before" })
                 .deep(checker)
@@ -436,7 +434,7 @@ define(["require","../deep", "../lib/stores/collection", "../lib/schema"], funct
                 return deep.rest(store)
                 .get("key")
                 .equal({ email:"gilles.coomans@gmail.com" })
-                .valuesEqual({ email:"gilles.coomans@gmail.com" });
+                //.valuesEqual({ email:"gilles.coomans@gmail.com" });
             },
             /*privateQuery:function(){
                 var store = deep.Object(null, { key:{ title:"hello", email:"ksss" } }, {
