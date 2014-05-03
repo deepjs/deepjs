@@ -5,10 +5,10 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/schema"], function (require, deep, Unit) {
+define(["require","../deep", "../lib/stores/collection", "../lib/schema"], function (require, deep) {
 
     var unit = {
-        title:"deepjs/units/collections",
+        title:"deepjs/units/collections2",
         stopOnError:false,
         setup:function(){
             delete deep.context.session;
@@ -18,37 +18,33 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
         },
         tests : {
             get:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.rest(store)
                 .get("u1")
-                .equal({ id:"u1", email:"gilles.coomans@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles.coomans@gmail.com" });
+                .equal({ id:"u1", email:"gilles.coomans@gmail.com" });
             },
             getWithPath:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.rest(store)
                 .get("u1/email")
-                .equal("gilles.coomans@gmail.com")
-                .valuesEqual("gilles.coomans@gmail.com");
+                .equal("gilles.coomans@gmail.com");
             },
             query:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.rest(store)
                 .get("?id=u1")
-                .equal([{ id:"u1", email:"gilles.coomans@gmail.com" }])
-                .valuesEqual([{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                .equal([{ id:"u1", email:"gilles.coomans@gmail.com" }]);
             },
             post:function(){
-                var store = deep.store.Collection.create(null, []);
+                var store = deep.Collection(null, []);
                 return deep.rest(store)
                 .post({ id:"u1", email:"gilles.coomans@gmail.com" })
                 .equal({ id:"u1", email:"gilles.coomans@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles.coomans@gmail.com" })
                 .get("u1")
                 .equal({ id:"u1", email:"gilles.coomans@gmail.com" });
             },
             postErrorIfExists:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.rest(store)
                 .post({ id:"u1", email:"gilles.coomans@gmail.com" })
                 .fail(function(error){
@@ -58,16 +54,16 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             postProducesId:function(){
-                var store = deep.store.Collection.create(null, []);
+                var store = deep.Collection(null, []);
                 return deep.rest(store)
                 .post({ id:"u1", email:"gilles.coomans@gmail.com" })
                 .done(function(s){
                     if(!s.id || typeof s.id !== "string")
-                        return deep.errors.Internal("no id produced by deep.store.Collection on post");
+                        return deep.errors.Internal("no id produced by deep.rest.Collection on post");
                 });
             },
             postValidationFailed:function(){
-                var store = deep.store.Collection.create(null, [], {
+                var store = deep.Collection(null, [], {
                     properties:{
                         id:{ type:"string", required:true },
                         title:{ type:"number", required:true }
@@ -82,7 +78,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             postValidationOk:function(){
-                var store = deep.store.Collection.create(null, [], {
+                var store = deep.Collection(null, [], {
                     properties:{
                         id:{ type:"string", required:true },
                         title:{ type:"string", required:true }
@@ -93,25 +89,23 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u1", title:"gilles.coomans@gmail.com" });
             },
             put:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.rest(store)
                 .put({ id:"u1", email:"gilles@gmail.com" })
                 .equal({ id:"u1", email:"gilles@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
             },
             putWithQuery:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.rest(store)
                 .put("gilles@gmail.com", "u1/email")
                 .equal({ id:"u1", email:"gilles@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
             },
             putErrorIfNotExists:function(){
-                var store = deep.store.Collection.create(null, []);
+                var store = deep.Collection(null, []);
                 return deep.rest(store)
                 .put({ id:"u1", email:"gilles@gmail.com" })
                 .fail(function(error){
@@ -121,7 +115,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             putValidationFailed:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", title:"testezzzzz" }], {
+                var store = deep.Collection(null, [{ id:"u1", title:"testezzzzz" }], {
                     properties:{
                         id:{ type:"string", required:true },
                         title:{ type:"string", required:true }
@@ -137,7 +131,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             putValidationOk:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", title:"testezzzzz" }], {
+                var store = deep.Collection(null, [{ id:"u1", title:"testezzzzz" }], {
                     properties:{
                         id:{ type:"string", required:true },
                         title:{ type:"string", required:true }
@@ -149,25 +143,23 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u1", title:"test" });
             },
             patch:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.rest(store)
                 .patch({ email:"gilles@gmail.com" }, "u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
             },
             patchWithQuery:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"toto@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"toto@gmail.com" }]);
                 return deep.rest(store)
                 .patch("gilles@gmail.com", "u1/email")
                 .equal({ id:"u1", email:"gilles@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles@gmail.com" })
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
             },
             patchErrorIfNotExists:function(){
-                var store = deep.store.Collection.create(null, []);
+                var store = deep.Collection(null, []);
                 return deep.rest(store)
                 .patch({ email:"gilles@gmail.com" }, "u1")
                 .fail(function(error){
@@ -177,11 +169,10 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             del:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles@gmail.com" }]);
                 return deep.rest(store)
                 .del('u1')
                 .equal(true)
-                .valuesEqual(true)
                 .get("u1")
                 .fail(function(error){
                      if(error && error.status == 404)
@@ -190,22 +181,21 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             delWithQuery:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles@gmail.com", test:true }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles@gmail.com", test:true }]);
                 return deep.rest(store)
                 .del('u1/test')
                 .equal(true)
-                .valuesEqual(true)
                 .get("u1")
                 .equal({ id:"u1", email:"gilles@gmail.com" });
             },
             delFalseIfNotExists:function(){
-                var store = deep.store.Collection.create(null, []);
+                var store = deep.Collection(null, []);
                 return deep.rest(store)
                 .del('u1')
                 .equal(false);
             },
             range:function(){
-                var store = deep.store.Collection.create(null, [
+                var store = deep.Collection(null, [
                     { id:"u1", count:1 },
                     { id:"u2", count:2 },
                     { id:"u3", count:3 },
@@ -229,15 +219,10 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                   hasNext: true,
                   hasPrevious: true,
                   query: '&limit(3,2)'
-                })
-                .valuesEqual([
-                    { id:"u3", count:3 },
-                    { id:"u4", count:4 },
-                    { id:"u5", count:5 }
-                ]);
+                });
             },
             rangeWithQuery:function(){
-                var store = deep.store.Collection.create(null, [
+                var store = deep.Collection(null, [
                     { id:"u1", count:1 },
                     { id:"u2", count:2 },
                     { id:"u3", count:3 },
@@ -260,15 +245,11 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                   hasNext: false,
                   hasPrevious: true,
                   query: "?count=ge=3&limit(2,2)"
-                })
-                .valuesEqual([
-                    { id:"u5", count:5 },
-                    { id:"u6", count:6 }
-                ]);
+                });
             },
             rpc:function(){
                 var checker = {};
-                var store = deep.store.Collection.create(null, [{ id:"u1", base:"was there before"}], null, {
+                var store = deep.Collection(null, [{ id:"u1", base:"was there before"}], null, {
                     methods:{
                         testrpc:function(handler, arg1, arg2)
                         {
@@ -283,7 +264,6 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 return deep.rest(store)
                 .rpc("testrpc", [1456, "world"], "u1")
                 .equal({ id:"u1", base:"was there before", decorated:"hello rpc" })
-                .valuesEqual({ id:"u1", base:"was there before", decorated:"hello rpc" })
                 .get("u1")
                 .equal({ id:"u1", base:"was there before", decorated:"hello rpc" })
                 .deep(checker)
@@ -295,7 +275,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             },
             rpcErrorIfNotExists:function(){
                 var checker = {};
-                var store = deep.store.Collection.create(null, [{ id:"u1", base:"was there before"}], null, {
+                var store = deep.Collection(null, [{ id:"u1", base:"was there before"}], null, {
                     methods:{
                         testrpc:function(handler, arg1, arg2)
                         {
@@ -317,7 +297,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             },
             rpcMethodNotAllowed:function(){
                 var checker = {};
-                var store = deep.store.Collection.create(null, [{ id:"u1", base:"was there before"}], null, {
+                var store = deep.Collection(null, [{ id:"u1", base:"was there before"}], null, {
                     methods:{
                         testrpc:function(handler, arg1, arg2)
                         {
@@ -339,7 +319,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
             },
             rpcCopy:function(){
                 var checker = {};
-                var store = deep.store.Collection.create(null, [{ id:"u1", base:"was there before"}], null, {
+                var store = deep.Collection(null, [{ id:"u1", base:"was there before"}], null, {
                     methods:{
                         testrpc:function(handler, arg1, arg2)
                         {
@@ -354,7 +334,6 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 return deep.rest(store)
                 .rpc("testrpc", [1456, "world"], "u1")
                 .equal("lolipop")
-                .valuesEqual("lolipop")
                 .get("u1")
                 .equal({ id:"u1", base:"was there before" })
                 .deep(checker)
@@ -365,7 +344,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 });
             },
             getCopy:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.rest(store)
                 .get("u1")
                 .done(function(s){
@@ -376,7 +355,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u1", email:"gilles.coomans@gmail.com"});
             },
             queryCopy:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com" }]);
                 return deep.rest(store)
                 .get("?id=u1")
                 .done(function(s){
@@ -387,7 +366,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal([{ id:"u1", email:"gilles.coomans@gmail.com"}]);
             },
             rangeCopy:function(){
-                var store = deep.store.Collection.create(null, [
+                var store = deep.Collection(null, [
                     { id:"u1", count:1 },
                     { id:"u2", count:2 },
                     { id:"u3", count:3 },
@@ -413,18 +392,17 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u3", count:3 });
             },
             privateGet:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
                     properties:{
                         password:{ type:"string", "private":true }
                     }
                 });
                 return deep.rest(store)
                 .get("u1")
-                .equal({ id:"u1", email:"gilles.coomans@gmail.com" })
-                .valuesEqual({ id:"u1", email:"gilles.coomans@gmail.com" });
+                .equal({ id:"u1", email:"gilles.coomans@gmail.com" });
             },
             privateQuery:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
                     properties:{
                         password:{ type:"string", "private":true }
                     }
@@ -434,7 +412,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal([{ id:"u1", email:"gilles.coomans@gmail.com" }]);
             },
             privatePost:function(){
-                var store = deep.store.Collection.create(null, [], {
+                var store = deep.Collection(null, [], {
                     properties:{
                         password:{ type:"string", "private":true }
                     }
@@ -444,7 +422,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u2", email:"john.doe@gmail.com" });
             },
             privatePatch:function(){
-                var store = deep.store.Collection.create(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
+                var store = deep.Collection(null, [{ id:"u1", email:"gilles.coomans@gmail.com", password:"test"}], {
                     properties:{
                         password:{ type:"string", "private":true }
                     }
@@ -454,7 +432,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"u1", email:"john.doe@gmail.com" });
             },
             readOnly:function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", title:"hello" }], {
+                var store = deep.Collection(null, [{ id:"i1", title:"hello" }], {
                     properties:{
                         title:{ readOnly:true, type:"string" }
                     }
@@ -468,7 +446,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("lolipop");
             },
             ownerPatchFail:function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
                 return deep.rest(store)
@@ -480,7 +458,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("choxy");
             },
             "ownerPatchOk":function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
@@ -491,7 +469,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"i1", label:"yesssss", userID:"u1"});
             },
             "ownerPutFail":function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
@@ -506,7 +484,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal("ploup");
             },
             "ownerPutOk":function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
@@ -517,7 +495,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal({ id:"i1", label:"yesssss", userID:"u1"});
             },
             "ownerDelFail":function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
@@ -528,7 +506,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal(false);
             },
             ownerDelOk:function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", userID:"u1" }], {
                     ownerRestriction:"userID"
                 });
                 deep.context.session = {
@@ -539,7 +517,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal(true);
             },
             filterGet:function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
                     filter:"&status=published"
                 });
                 deep.context.session = {};
@@ -552,7 +530,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal('yolli');
             },
             filterQuery:function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
                     filter:"&status=published"
                 });
                 return deep.rest(store)
@@ -560,7 +538,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal([]);
             },
             filterDel:function(){
-                var store = deep.store.Collection.create(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
+                var store = deep.Collection(null, [{ id:"i1", label:"weee", status:"draft", userID:"u1" }], {
                     filter:"&status=published"
                 });
                 return deep.rest(store)
@@ -568,7 +546,7 @@ define(["require","../deep", "../lib/unit", "../lib/stores/collection", "../lib/
                 .equal(false);
             },
             transformers:function(){
-                var store = deep.store.Collection.create(null, [], {
+                var store = deep.Collection(null, [], {
                     properties:{
                         label:{ 
                             type:"string",
