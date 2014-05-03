@@ -63,17 +63,29 @@ define(["require", "../deep"], function(require, deep) {
 					return output.rendered;
 				})
 				.equal("hello world");
-			}/*,
-			params: function() {
+			},
+			whatHideParams: function() {
 				var view = deep.View({
-					how:"hello { test }"
+					what:{ test:"from what" },
+					how:function(what){ return "hello "+what.test; }
 				})
 				return view.refresh({ test:"world" })
 				.done(function(output){
 					return output.rendered;
 				})
-				.equal("hello world");
-			}*/
+				.equal("hello from what");
+			},
+			whatLoaded: function() {
+				var view = deep.View({
+					what:"dummy::hello",
+					how:function(what){ return "hello "+what; }
+				})
+				return view.refresh({ test:"world" })
+				.done(function(output){
+					return output.rendered;
+				})
+				.equal("hello dummy:hello");
+			}
 		}
 	};
 	return unit;
