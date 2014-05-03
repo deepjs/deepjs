@@ -48,7 +48,6 @@ DO
 - ligth DDP for deep : 
 	: use local collection or object stores (as jstorage) that write/send datas : and invalidate if server do so.
 
-
 - create first widgets
 - add more dp-* 
 - schema to form
@@ -60,10 +59,12 @@ DO
 
 Workers : 
 
-1.1.0 - Finalise context and parano modes. maybe contextualised Emitter.
-1.2.0 - Finalise Chain Identities Management
+1.2.0 - Finalise Chain Identities Management										OK
 1.3.0 - Optimise constraints and schema compilation. maybe externalise schema validation. manage error translation.
 1.4.0 - Optimise DeepQuerier
+
+1.1.0 - Finalise context and parano modes. maybe contextualised Emitter.
+
 
 
 More : 
