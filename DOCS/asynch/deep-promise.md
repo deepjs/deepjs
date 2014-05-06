@@ -125,7 +125,7 @@ Set in local deep.context the provided value under 'key'.
 See [asynch-context-management](./asynch-context-management.md) for more details.
 
 
-### .logContext()
+### .clog()
 
 same thing as .log() above.
 But log current context in place of promise state.

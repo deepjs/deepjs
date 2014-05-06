@@ -305,8 +305,7 @@ define([
         "js::deepjs/units/deepload",
         "js::deepjs/units/utils",
         "js::deepjs/units/restrictions",
-        "js::deepjs/units/custom-chain",
-        "js::deepjs/units/views"
+        "js::deepjs/units/custom-chain"
     );
     //_________________________________________________________________________________
     return deep;

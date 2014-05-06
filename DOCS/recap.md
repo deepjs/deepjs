@@ -40,9 +40,9 @@ It allows chaining calls with an expressive syntax (à la jQuery) + handle async
 
 ### Loging
 - .log(msgs | empty)		if empty : log current chain state (i.e. current success or error)
-- .logError()				only log error if any
-- .logValues()				log chain holdedvalues
-- .logContext()				log current context
+- .elog()				only log error if any
+- .slog()				log chain success value
+- .clog()				log current context
 
 ### Breaking the chain / Returning result
 - .val();
