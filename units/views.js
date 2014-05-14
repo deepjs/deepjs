@@ -67,7 +67,7 @@ define(["require", "../deep"], function(require, deep) {
 			whatHideParams: function() {
 				var view = deep.View({
 					what:{ test:"from what" },
-					how:function(what){ return "hello "+what.test; }
+					how:function(node){ return "hello "+node.what.test; }
 				})
 				return view.refresh({ test:"world" })
 				.done(function(output){
@@ -78,7 +78,7 @@ define(["require", "../deep"], function(require, deep) {
 			whatLoaded: function() {
 				var view = deep.View({
 					what:"dummy::hello",
-					how:function(what){ return "hello "+what; }
+					how:function(node){ return "hello "+node.	what; }
 				})
 				return view.refresh({ test:"world" })
 				.done(function(output){
