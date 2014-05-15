@@ -283,6 +283,28 @@ define([
     };
     //_________________________________________________________________________________
 
+    deep.loop = function(cb, ms, count){
+        var context = deep.context, doCount = false;
+        if(count)
+            doCount = true;
+        var interval = setInterval(function(){
+            deep.context = context;
+            deep(cb).run();
+            if(doCount)
+            {
+                count--;
+                if(count === 0)
+                    clearInterval(interval);
+            }
+        }, ms);
+        return {
+            stop:function(){
+                clearInterval(interval);
+            }
+        };
+    };
+
+
     deep.coreUnits = deep.coreUnits || [];
     deep.coreUnits.push(
         "js::deepjs/units/equals",
