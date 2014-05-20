@@ -45,7 +45,7 @@ define(["require","../deep"], function (require, deep) {
 				var sheet = {
 					_deep_sheet_:true,
 					"dq.transform::./*":function(input){
-						return "e"+input;
+						return "e"+input.value;
 					}
 				};
 				return deep([1,2,3,4,5])
