@@ -67,6 +67,12 @@ Workers :
 
 
 
+TODO : flag enhance:true|false in views
+Add all dp-* as deep_controlled (or _enhanced_) in controller
+
+use class for selection for dp-*
+
+
 More : 
 - closure-encapsulate all sensible store stuffs (real collection, schema, config)
 	- need : late instance prototype compilation with closure wrapper function for applied layers and sheets that use sensible stuffs.
