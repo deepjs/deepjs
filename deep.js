@@ -19,10 +19,8 @@ define([
     "./lib/rql",
     "./lib/promise",
     "./lib/ocm",
-    
     "./lib/sheet",
     "./lib/flatten",
-
     "./lib/protocol",
     "./lib/stores/store",
     "./lib/chains/deep",
@@ -37,8 +35,8 @@ define([
     if(typeof deep !== 'undefined')
     {
         console.log("***********************************************************************************");
-        console.warn("You trying to load deepjs modules two times (maybe from two different node_modules)");
-        console.warn("Will use previous loaded deep instance.");
+        console.warn("You trying to load deepjs modules two times (maybe from two differents node_modules module)");
+        console.warn("Will use previously loaded deep instance.");
         console.log("***********************************************************************************");
         return deep;
     }
@@ -209,10 +207,8 @@ define([
     deep.client = {};
 
     var compiler = require("./lib/compiler");
-    deep.Shared = compiler.Shared;
-    deep.compile = compiler.compile;
-    deep.up = compiler.up;
-    deep.bottom = compiler.bottom;
+    for(var i in compiler)
+        deep[i] = compiler[i];
 
     deep.compose = require("./lib/compose");
     deep.Arguments = deep.compose.Arguments;
