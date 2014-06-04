@@ -31,25 +31,37 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal({ b:[1,2,4,5,3] });
             },*/
-            deeploadObjectNonDestructive:function(){
-				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
-				var a = { how:"test::e1" };
-				return deep(a)
-				.deepLoad(null, false)
-				.done(function(r){
-					return [r,a];
-				})
-				.equal([{ how:{id:"e1", title:"hello"} },{ how:"test::e1" }]);
+            deeploadObject_NonDestructive:function(){
+                var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
+                var a = { how:"test::e1" };
+                return deep(a)
+                .deepLoad(null, false)
+                .done(function(r){
+                    return [r,a];
+                })
+                .equal([{ how:{id:"e1", title:"hello"} },{ how:"test::e1" }]);
             },
-            deeploadObjectDestructive:function(){
-				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
-				var a = { how:"test::e1" };
-				return deep(a)
-				.deepLoad(null, true)
-				.done(function(r){
-					return [r,a];
-				})
-				.equal([{ how:{id:"e1", title:"hello"} },{ how:{id:"e1", title:"hello"} }]);
+            deeploadObject_Destructive:function(){
+                var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
+                var a = { how:"test::e1" };
+                return deep(a)
+                .deepLoad(null, true)
+                .done(function(r){
+                    return [r,a];
+                })
+                .equal([{ how:{id:"e1", title:"hello"} },{ how:{id:"e1", title:"hello"} }]);
+            },
+            deepLoadWithQuery_NonDestructive:function(){
+                var obj = {
+                    how:'dummy::bloup'
+                };
+                return deep(obj)
+                .query("./how")
+                .deepLoad(null, false)
+                .done(function(){
+                    return obj.how;
+                })
+                .equal("dummy::bloup");
             }
         }
     };

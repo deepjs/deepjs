@@ -78,13 +78,23 @@ define(["require", "../deep"], function(require, deep) {
 			whatLoaded: function() {
 				var view = deep.View({
 					what:"dummy::hello",
-					how:function(node){ return "hello "+node.	what; }
+					how:function(node){ return "hello "+node.what; }
 				})
 				return view.refresh({ test:"world" })
 				.done(function(output){
 					return output.rendered;
 				})
 				.equal("hello dummy:hello");
+			},
+			howNonDestructive:function(){
+				var view = deep.View({
+				    how:"dummy::hello"
+				});
+				return view.refresh({})
+				.done(function(s){
+				    return view.how;
+				})
+				.equal("dummy::hello");
 			}
 		}
 	};
