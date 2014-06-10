@@ -47,36 +47,6 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return b;
                 })
                 .equal(["branch 1","branch 2"]);
-            },
-            listened_chain:function(){
-                var d = deep(1)
-                .delay(1)
-                .done(function(s){
-                    return "delayed";
-                });
-                var d2 = deep.when(d)
-                .done(function(){
-                    d.log(); // error : chain was ended
-                })
-                .fail(function(e){
-                    //console.log("ended chain error : ", e.status);
-                    if(e.status === 1001)
-                        return true;
-                });
-                var d3 = deep({}).delay(2);
-                try{
-                    d.log(); // error : chain is listened
-                }
-                catch(e)
-                {
-                    //console.log("catched errorr : ",e)
-                    if(e.status === 1001)
-                        d3.when(true);
-                    else
-                        d3.when(e);
-                    //console.log("normal error : chain is listened ! : ", e)
-                }
-                return deep.all(d2, d3);
             }
         }
     };
