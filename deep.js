@@ -308,6 +308,7 @@ define([
         "js::deepjs/units/collisions",
         "js::deepjs/units/colliders",
         "js::deepjs/units/compositions",
+        "js::deepjs/units/protocols",
         "js::deepjs/units/flatten",
         "js::deepjs/units/promises",
         "js::deepjs/units/chain",
