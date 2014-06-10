@@ -78,13 +78,13 @@ define(["require", "../deep"], function(require, deep) {
 			whatLoaded: function() {
 				var view = deep.View({
 					what:"dummy::hello",
-					how:function(node){ return "hello "+node.what; }
+					how:function(node){ return "from how : "+node.what; }
 				})
 				return view.refresh({ test:"world" })
 				.done(function(output){
 					return output.rendered;
 				})
-				.equal("hello dummy:hello");
+				.equal("from how : You say 'hello' through dummy protocols");
 			},
 			howNonDestructive:function(){
 				var view = deep.View({
