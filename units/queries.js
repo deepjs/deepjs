@@ -7,9 +7,6 @@ if (typeof define !== 'function') {
 
 define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 
-
-
-
 	var datas = {
 		"store": {
 			"book": [{
@@ -380,15 +377,12 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 			},
 			"//[@.length-1]": function() {
 				return deep(datas).query("//[@.length-1]").equal([{
-					"category": "reference",
-					"author": "Nigel Rees",
-					"isbn": "0-553-21311-3",
-					"title": "Sayings of the Century",
-					"price": 8.95,
-					"warehouse": {
-						"stock": 12
-					}
-				}, {
+				"category": "fiction",
+				"author": "J. R. R. Tolkien",
+				"title": "The Lord of the Rings",
+				"isbn": "0-395-19395-8",
+				"price": 22.99
+			}, {
 					"isbn": "0-395-19395-8",
 					"quantity": 12
 				}]);
