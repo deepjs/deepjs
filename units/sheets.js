@@ -365,7 +365,7 @@ define(["require","../deep"], function (require, deep) {
 			},
 			sheets_entry:function(){
 				var a = {
-					sheets:[{ 
+					_sheets:[{ 
 						_deep_sheet_:true,
 						"dq.bottom::.//!":{ hello:"tulip" }
 					}],
