@@ -63,6 +63,22 @@ define(["require","../deep"], function (require, deep) {
 				});
 				return deep.getAll(["myProtoc::hello", "myProtoc2::world"])
 				.equal(["myprotoc received : hello", "myprotoc2 (contextualised) received : world"]);
+			},
+			parseRequest:function(){
+				var parsed = deep.utils.parseRequest("dummy::hello");
+				return deep(parsed)
+				.equal({
+				 "_deep_request_": true,
+				 "request": "dummy::hello",
+				 "handler": {
+				  "_deep_protocol_handler_": true,
+				  "method": "get",
+				  "provider": deep.protocols.dummy,
+				  "protocol": "dummy"
+				 },
+				 "protocol": "dummy",
+				 "uri": "hello"
+				});
 			}
         }
     };
