@@ -2,71 +2,81 @@
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
+	var define = require('amdefine')(module);
 }
 
-define(["require","../deep"], function (require, deep, Unit) {
-    
-    //_______________________________________________________________ GENERIC STORE TEST CASES
+define(["require", "../deep"], function(require, deep, Unit) {
 
-    var getPaths = function(res){
-        var paths = [];
-        function printNode(n){
-            paths.push(n.path);
-            if(n.childs)
-                n.childs.forEach(function(e){
-                    printNode(e);
-                });
-        }
-        if(res)
-            res.forEach(function(n){
-                printNode(n);
-            });
-        return paths;
-    };
+	//_______________________________________________________________ GENERIC STORE TEST CASES
 
-    var example = {
-        view:true,
-        b:{
-           
-            c:{
-                view:  true
-            },
-            d:{
-                e:{
-                    view:true
+	var example = {
+		view: true,
+		b: {
+
+			c: {
+				view: true
+			},
+			d: {
+				e: {
+					view: true
+				}
+			}
+		},
+		f: {
+			view: true,
+			g: {
+				h: {
+					view: true
+				}
+			}
+		}
+	};
+
+	var unit = {
+		title: "deepjs/units/parcours",
+		tests: {
+			depthFirst: function() {
+				var r = deep.depthFirst(example, null, {
+					excludeLeafs: true
+				});
+				return deep(deep.nodes.paths(r)).equal(["/", "/b", "/b/c", "/b/d", "/b/d/e", "/f", "/f/g", "/f/g/h"]);
+			},
+			breadthFirst: function() {
+				var r = deep.breadthFirst(example, null, {
+					excludeLeafs: true
+				});
+				return deep(deep.nodes.paths(r)).equal([
+					"/",
+					"/b",
+					"/f",
+					"/b/c",
+					"/b/d",
+					"/f/g",
+					"/b/d/e",
+					"/f/g/h"
+				]);
+			},
+			hierarchy: function() {
+				var test = function(v) {
+					return v.view;
+				};
+                var result = [];
+                var getPaths = function(childs){
+                    childs.forEach(function(c){
+                        result.push(c.path);
+                        if(c.childs)
+                            getPaths(c.childs);
+                    });
                 }
-            }
-        },
-        f:{
-            view:true,
-            g:{
-                h:{
-                    view:true
-                }
-            }
-        }
-    };
+				var r = deep.depthFirst(example, test, {
+					hierarchy: true,
+					excludeLeafs: true
+				});
+                getPaths(r);
+				return deep(result).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
+			}
+		}
+	};
 
-    var unit = {
-        title:"deepjs/units/parcours",
-        tests : {
-            preorder:function(){
-                var r = deep.utils.preorder(example);
-                return deep(getPaths(r)).equal(["/", "/b", "/b/c", "/b/d", "/b/d/e", "/f", "/f/g", "/f/g/h"]);
-            },
-            inorder:function(){
-                var r = deep.utils.inorder(example);
-                return deep(getPaths(r)).equal(["/", "/f", "/f/g", "/f/g/h", "/b", "/b/d", "/b/d/e", "/b/c"]);
-            },
-            hierarchy:function(){
-                var test = function(){ return this.view; };
-                var r = deep.utils.hierarchy(example, test);
-                return deep(getPaths(r)).equal(["/","/b/c","/b/d/e","/f","/f/g/h"]);
-            }
-        }
-    };
-
-    return unit;
+	return unit;
 });
-

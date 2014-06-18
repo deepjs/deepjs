@@ -84,7 +84,7 @@ define(["require", "../deep"], function(require, deep) {
 				.done(function(output){
 					return output.rendered;
 				})
-				.equal("from how : You say 'hello' through dummy protocols");
+				.equal("from how : You say 'hello' through dummy protocol");
 			},
 			howNonDestructive:function(){
 				var view = deep.View({

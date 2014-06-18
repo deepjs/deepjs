@@ -69,11 +69,11 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 	var unit = {
 		title: "deepjs/units/relations",
 		setup: function() {
-			deep.store.Collection.create("plant", [{
+			deep.Collection("plant", [{
 				id: "e1",
 				title: "plant title"
 			}], schema);
-			deep.store.Collection.create("user", [{
+			deep.Collection("user", [{
 				id: "e1",
 				title: "user title"
 			}], schema);
@@ -91,15 +91,17 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
                     label:"hello"
                 }, schema3)
                 .getRelations("plant", "user")
+                .done(function(res){
+                	delete res[0].href;
+                	delete res[1].href;
+                })
                 .equal([
                 {
                     "rel":{"href":"plant::{ plantId }","rel":"plant"},
-                    href:deep.utils.parseRequest("plant::e1"),
                     "result":{"id":"e1","title":"plant title"}
                 },
                 {
                     "rel":{"href":"user::{ userId }","rel":"user"},
-                    href:deep.utils.parseRequest("user::e1"),
                     "result":{"id":"e1","title":"user title"}
                 }
                 ]);
