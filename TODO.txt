@@ -67,10 +67,58 @@ Workers :
 
 
 
-TODO : flag enhance:true|false in views
+TODO : flag enhance:true|false in views										OK
 Add all dp-* as deep_controlled (or _enhanced_) in controller
 
 use class for selection for dp-*
+
+
+
+rename resultType -> fullOutput												ok
+
+
+rename deep.utils.preorder/inorder : depthFirst/breadthFirst				OK
+add excludeLeafs in traversal												OK
+
+
+
+
+
+
+
+
+rename dummy protocol to test protocol
+
+
+in restful : explain how create dummy store.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 More : 
@@ -137,107 +185,3 @@ deep.contextualize("protocols", deepCopy:Bool, parano:Bool) : will copy protocol
 deep.toContext()
 
 deep.removeFromContext()
-
-## DOCS :
-
-
-1) deepjs context : Web 3.0 and Homogeneity
-Thanx to node, and big effort from js community, we have today plenty of great application stacks to develop, in pure js from end to end, a whole web app logic... What a marvelous step forward in web developement.
-Since, big efforts have been made to reduce inhomogeneity between browser and server side scripts and paradygms.
-Following that idea, and as a first target, deepjs wants to nullifying almost any differences between server and browser paradygms and logics.
-
-And as today, the architecture itself of web app are better controled, and use classical Single-Page/Restful paradygm, deepjs wants to fits particulary well as a complete ThinServer/mVC/Asynch tools belt.
-
-
-2) deepjs scope 1 : welcome to 'space-time' programmation
-
-	-> Layered : toute valeur javascript peut etre vue comme une layer. ex : un objet, une array, une fonction, une string, etc...
-
-	-> Queries/Selector : puisque le but de deep est de faciliter la programmation spatio-temporelle : les queries/selection sont la pour diminuer le couplage entre les composants logiciels, et permettre de programmer 'à l'aveugle'
-
-	-> Time : Promised Base chains and compositions
-
-
-3)  deepjs scope 2 : Puisque tout ca ne fonctionne de manière utile qu'avec des ressources, viennent les autres outils du core : stores, protocol, schema
-
-4)  deepjs scope 3 : Et enfin : puisqu'il faut gérer des rôles : OCM powaaa.
-
-
-
-
-deepjs DSLs : 
-
-	queries (stepper)
-	rql
-	selectors
-	protocols
-		sheets
-	interpret
-	route-automate
-	route-navigation
-
-deepjs algorithms
-
-	up/bottom
-	
-	flatten
-
-	deepLoad
-
-	ocm compilation
-
-	setHierarchy
-
-	store constraints
-
-	fullSchemaByPath
-
-	mapper
-	doRoute
-
-deepjs patterns
-
-	layered
-	backgrounds
-	selectors
-
-	promise
-	chain
-
-	collider
-	compositions
-	sheets
-
-	store
-	range
-	relations
-	protocols
-	roles
-	ocm
-	context
-
-	view
-	
-	routes
-
-deepjs objects
-
-	_deep_query_node_
-	_deep_chain_
-	_deep_promise_
-	_deep_deferred_
-	_deep_composition_
-	_deep_flattener_
-	_deep_merger_
-	_deep_ocm_
-	_deep_collider_
-	_deep_sheet_
-	_deep_store_
-	_deep_shared_
-	_deep_range_
-
-	_deep_view_
-
-	_deep_mapper_
-	_deep_router_
-
