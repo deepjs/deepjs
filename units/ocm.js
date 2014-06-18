@@ -372,7 +372,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				    "public":{backgrounds:["this::../user"]}
 				},{protocol:"test"});
 				store.modes("public")
-				return deep.when(deep.protocol.prepare(store)).equal({ test:true });
+				return deep.when(deep.protocol(store)).equal({ test:true });
 			}
 		}
 	};

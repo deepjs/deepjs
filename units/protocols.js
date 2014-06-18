@@ -67,16 +67,15 @@ define(["require","../deep"], function (require, deep) {
 			parseRequest:function(){
 				var parsed = deep.utils.parseRequest("dummy::hello");
 				return deep(parsed)
+				.done(function(s){
+					delete s.execute;
+				})
 				.equal({
 				 "_deep_request_": true,
 				 "request": "dummy::hello",
-				 "handler": {
-				  "_deep_protocol_handler_": true,
-				  "method": "get",
-				  "provider": deep.protocols.dummy,
-				  "protocol": "dummy"
-				 },
 				 "protocol": "dummy",
+				  "provider": deep.protocols.dummy,
+				  "method": "get",
 				 "uri": "hello"
 				});
 			}
