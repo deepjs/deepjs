@@ -25,7 +25,8 @@ define([
     "./lib/stores/store",
     "./lib/chains/deep",
     "./lib/chains/restful",
-    "./lib/restrictions"
+    "./lib/restrictions",
+    "./lib/traversal"
     /*"./lib/view",
     "./lib/schema",
     "./lib/stores/collection",
@@ -175,6 +176,10 @@ define([
     deep.errors = require("./lib/errors");
     deep.rql = require("./lib/rql");
     deep.collider = require("./lib/collider");
+    var traversal = require("./lib/traversal");
+    for(var i in traversal)
+        deep[i] = traversal[i];
+
 
     deep.nodes = require("./lib/nodes");
     deep.deepLoad = function(entry, context, destructive, excludeFunctions){
