@@ -305,6 +305,12 @@ define([
         };
     };
 
+    deep.contextualise = function(){
+        return new Promise().contextualise()._start();
+    }
+    deep.fromContext = function(key){
+        return new Promise()._start({ success:deep.context[key] });
+    }
 
     deep.coreUnits = deep.coreUnits || [];
     deep.coreUnits.push(
