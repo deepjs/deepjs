@@ -27,7 +27,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal(1)
                 .done(function(){
-                    return this.context('test');
+                    return this.fromContext('test');
                 })
                 .equal(1);
                 var p2 = deep(deep.context).equal({});
