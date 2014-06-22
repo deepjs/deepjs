@@ -81,6 +81,7 @@ rename deep.utils.preorder/inorder : depthFirst/breadthFirst				OK
 add excludeLeafs in traversal												OK
 
 
+add transform while traversal
 
 
 
@@ -95,6 +96,27 @@ in restful : explain how create dummy store.
 
 
 
+sheet : sequential by default
+
+var domSheet = {
+	_deep_sheet_:true,
+	"dom.transform::#selector":function(node){
+		
+	}
+}
+
+
+
+view enhance : 
+
+	==> apply own sheets !!! what, how, where, SHEETS, done, fail
+
+
+	==> seek class dp-enhance
+
+
+		==> read "sheets" attribut
+		==> apply dom sheets
 
 
 
@@ -102,13 +124,12 @@ in restful : explain how create dummy store.
 
 
 
+FOREGROUNDS : try to implement it
 
 
 
 
-
-
-
+refactor load sequence in view : one object wired
 
 
 
