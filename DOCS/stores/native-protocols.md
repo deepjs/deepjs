@@ -69,7 +69,7 @@ var obj2 = {
 		test:12
 	},
 	c:{
-		backgrounds:["this::../a", "this::/b"]
+		_backgrounds:["this::../a", "this::/b"]
 	}
 	//...
 }
@@ -94,7 +94,7 @@ var obj2 = {
 		test:12
 	},
 	c:{
-		backgrounds:["dq::../a", "dq::/b"]
+		_backgrounds:["dq::../a", "dq::/b"]
 	}
 	//...
 }

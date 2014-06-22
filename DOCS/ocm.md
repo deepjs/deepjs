@@ -115,11 +115,11 @@ var myManager = deep.ocm({
 		test:1
 	},
 	mode2:{
-		backgrounds:["this::../mode1"],
+		_backgrounds:["this::../mode1"],
 		title:"hello world"
 	},
 	mode3:{
-		backgrounds:["this::../mode2"],
+		_backgrounds:["this::../mode2"],
 		description:"mode 3 description"
 	}
 });
@@ -415,7 +415,7 @@ var obj = deep.ocm({
 		myShared:deep.Shared([1,2,3])
 	},
 	mode2:{
-		backgrounds:["this::../mode1"],
+		_backgrounds:["this::../mode1"],
 		myShared:[4,5]
 	}
 });
@@ -436,7 +436,7 @@ var a = {
 		myValue:deep.ocm({ "public":"hello.", "user":"hello John." })
 	},
 	myOtherProperty:{
-		backgrounds:["this::../myProperty"],
+		_backgrounds:["this::../myProperty"],
 		myValue:{
 			"user":"Hello John Doe."
 		}
@@ -466,7 +466,7 @@ var mySheet = deep.ocm({
 		"dq.bottom::./!":{ hello:"world" }
 	},
 	"user":{
-		backgrounds:["this::../public"],
+		_backgrounds:["this::../public"],
 		"dq.bottom::./!":{ isUser:true }
 	}
 });
@@ -499,7 +499,7 @@ var myObject = deep.ocm({
 		test:true
 	},
 	"user":{
-		backgrounds:["this::../public"],
+		_backgrounds:["this::../public"],
 		test:false
 	}
 });

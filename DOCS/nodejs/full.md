@@ -24,7 +24,7 @@ node more complex example
 
 	deep.ocm("myobjects", {
 		prod:{
-			backgrounds:["instance::autobahn/stores/mongodb"],
+			_backgrounds:["instance::autobahn/stores/mongodb"],
 			dbURL:"mongodb://127.0.0.1:27017/test",
 			collectionName:"items",
 			schema:schema

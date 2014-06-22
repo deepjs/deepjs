@@ -25,7 +25,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             };
             return {
                 b : {
-                    backgrounds:[a],
+                    _backgrounds:[a],
                     obj:{
                         second:true
                     },
@@ -50,7 +50,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     }
                 };
                 return deep({
-                    backgrounds:[a],
+                    _backgrounds:[a],
                     obj:{
                         second:true
                     },
@@ -73,7 +73,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             b:function(){
                 return deep({
                     sub:{
-                        backgrounds:[this.b],
+                        _backgrounds:[this.b],
                         obj:{
                             third:true
                         }
@@ -101,20 +101,20 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 };
 
                 var b = {
-                    backgrounds:[bc]
+                    _backgrounds:[bc]
                 };
 
                 return deep({
-                    backgrounds:[bc2, b],
+                    _backgrounds:[bc2, b],
                     c:{
-                        backgrounds:[b],
+                        _backgrounds:[b],
                         prop:2
                     },
                     d:{
-                        backgrounds:["this::../c"],
+                        _backgrounds:["this::../c"],
                     },
                     e:{
-                        backgrounds:["this::/c"],
+                        _backgrounds:["this::/c"],
                     }
                 })
                 .flatten()
@@ -126,7 +126,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             },
             d:function(){
                 var a = { test:true };
-                var b = { backgrounds:[a] };
+                var b = { _backgrounds:[a] };
                 return deep.flatten(b).equal({ test:true });
             },
             flatten_ocm:function(){
@@ -138,13 +138,13 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                   }
                 };
                 var obj = {
-                  backgrounds:[autre],
+                  _backgrounds:[autre],
                   test:deep.ocm({
                       a:{
                           title:"hello a"
                       },
                       b:{
-                          backgrounds:["this::../a"],
+                          _backgrounds:["this::../a"],
                           titleb:"bye"
                       }
                   })

@@ -22,7 +22,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						title: "hello world"
 					},
 					mode3: {
-						backgrounds: ["this::../mode2"],
+						_backgrounds: ["this::../mode2"],
 						description: "mode 3 description"
 					}
 				});
@@ -138,7 +138,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						})
 					},
 					mode2: {
-						backgrounds: ["this::../mode1"],
+						_backgrounds: ["this::../mode1"],
 						myShared: [4, 5],
 						myShared2: {
 							b: 2
@@ -172,7 +172,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 			cross_inheritance: function() {
 				var a = {
 					b: deep.ocm({
-						backgrounds: ["this::../brol"],
+						_backgrounds: ["this::../brol"],
 						role: true
 					}),
 					brol: {
@@ -369,7 +369,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				    "user":{
 				        test:true
 				    },
-				    "public":{backgrounds:["this::../user"]}
+				    "public":{_backgrounds:["this::../user"]}
 				},{protocol:"test"});
 				store.modes("public")
 				return deep.when(deep.protocol(store)).equal({ test:true });

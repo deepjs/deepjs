@@ -27,12 +27,12 @@ var obj = {
 		return "yes";
 	},
 	otherVar:{
-		backgrounds:[a]
+		_backgrounds:[a]
 	}
 }
 
 var obj2 = {
-	backgrounds:[obj],
+	_backgrounds:[obj],
 	test:deep.compose.after(function(arg){
 		console.log("arg after : ",arg);
 	})
@@ -53,7 +53,7 @@ deep(obj2)
 ```javascript
 
 var obj2 = {
-	backgrounds:["js::path/to/my/object/to/inherit", "instance::path/to/class/to/instanciate/then/apply"],
+	_backgrounds:["js::path/to/my/object/to/inherit", "instance::path/to/class/to/instanciate/then/apply"],
 	//...
 }
 
@@ -75,7 +75,7 @@ var obj2 = {
 		hello:"world"
 	},
 	b:{
-		backgrounds:["this::../a"]
+		_backgrounds:["this::../a"]
 	}
 	//...
 }

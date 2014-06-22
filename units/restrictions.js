@@ -37,9 +37,9 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 				})
 				.equal("lolipop");
 			},
-			restriction_backgrounds:function(){
+			restriction__backgrounds:function(){
 				var a = {
-					backgrounds:[{
+					_backgrounds:[{
 						get:function(){
 							return "hello";
 						}
@@ -57,7 +57,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 			},
 			restriction_backgrounds_collections:function(){
 				var a = {
-					backgrounds:[deep.store.Collection.create(), deep.Restrictions('get')]
+					_backgrounds:[deep.store.Collection.create(), deep.Restrictions('get')]
 				};
 				return deep.flatten(a)
 				.done(function(a){
@@ -73,7 +73,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 				var a = deep.ocm({
 					role1:deep.store.Collection.create(),
 					role2:{
-						backgrounds:["this::../role1", deep.Restrictions('get')]
+						_backgrounds:["this::../role1", deep.Restrictions('get')]
 					}
 				});
 				return deep.flatten(a)
@@ -109,7 +109,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 				return deep(r)
 				.equal([true, "hello", 403])
 			},
-			allow_only_backgrounds:function(){
+			allow_only__backgrounds:function(){
 				var obj = {
 					a:true,
 					b:"hello",
@@ -118,7 +118,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 					}
 				}
 				var obj2 = {
-					backgrounds:[obj, deep.AllowOnly("b")]
+					_backgrounds:[obj, deep.AllowOnly("b")]
 				}
 				deep.flatten(obj2);
 				var a,b,c;
@@ -137,7 +137,7 @@ define(["require","../deep", "../lib/stores/collection"], function (require, dee
 			},
 			allow_only_backgrounds2:function(){
 				var obj = {
-					backgrounds:[deep.AllowOnly("b")],
+					_backgrounds:[deep.AllowOnly("b")],
 					a:true,
 					b:"hello",
 					c:function(){

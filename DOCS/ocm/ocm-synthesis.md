@@ -14,14 +14,14 @@ var myStore = deep.ocm({
 		}
 	},
 	middle:{
-		backgrounds:["../full"],
+		_backgrounds:["../full"],
 		post:deep.compose.before(function(object){
 			if(object.title != "hello")
 				return deep.errors.PreconditionFailed();
 		})
 	},
 	less:{
-		backgrounds:["../middle"],
+		_backgrounds:["../middle"],
 		post:deep.compose.before(function(object){
 			if(object.userID !== "e12")
 				return deep.errors.Owner();

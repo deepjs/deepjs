@@ -85,7 +85,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 deep.context = {};
                 var ocm = deep.ocm({
                     a:{ hello:"world" },
-                    b:{ backgrounds:["this::../a"] }
+                    b:{ _backgrounds:["this::../a"] }
                 });
                 deep.Roles("a");
                 deep.flatten(ocm);

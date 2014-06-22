@@ -92,7 +92,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					a:{
 						b:{
-							backgrounds:["this::../c"],
+							_backgrounds:["this::../c"],
 							hello:"world"
 						},
 						c:{
@@ -118,10 +118,10 @@ define(["require","../deep"], function (require, deep) {
 				.up(sheet)
 				.equal( {"a":{"b":"e : hello world"}} );
 			},
-			backgrounds:function(){
+			_backgrounds:function(){
 				var sheet = {
 					_deep_sheet_:true,
-					"dq.backgrounds::/!":{ hello:"world" }
+					"dq._backgrounds::/!":{ hello:"world" }
 				};
 
 				var obj = {
@@ -134,7 +134,7 @@ define(["require","../deep"], function (require, deep) {
 			backgrounds2:function(){
 				var sheet = {
 					_deep_sheet_:true,
-					"dq.backgrounds::/!":[{ hello:"world" }]
+					"dq._backgrounds::/!":[{ hello:"world" }]
 				};
 
 				var obj = {
@@ -147,11 +147,11 @@ define(["require","../deep"], function (require, deep) {
 			backgrounds3:function(){
 				var sheet = {
 					_deep_sheet_:true,
-					"dq.backgrounds::/!":[{ hello:"world" }]
+					"dq._backgrounds::/!":[{ hello:"world" }]
 				};
 
 				var obj = {
-					backgrounds:[{ lolipop:true }],
+					_backgrounds:[{ lolipop:true }],
 					a:true
 				};
 
@@ -164,16 +164,16 @@ define(["require","../deep"], function (require, deep) {
 					"dq.sheeter::/!":deep.sheeter.backgrounds({ hello:"world" })
 				};
 				var obj = {
-					backgrounds:[{ lolipop:true }],
+					_backgrounds:[{ lolipop:true }],
 					a:true
 				};
 				deep.up(sheet, obj);
 				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
 			}*/,
-			sheets_as_backgrounds:function(){
+			sheets_as__backgrounds:function(){
 				return deep({
 					test:false,
-					backgrounds:[{
+					_backgrounds:[{
 						_deep_sheet_:true,
 						"dq.bottom::./!":{
 							hello:"world"
@@ -190,7 +190,7 @@ define(["require","../deep"], function (require, deep) {
 					_deep_sheet_:true,
 					"dq.up::./!":"testez",
 					"dq.bottom::./!":{ test:true },
-					backgrounds:[{
+					_backgrounds:[{
 						_deep_sheet_:true,
 						"dq.bottom::./!":{
 							hello:"world"
@@ -207,7 +207,7 @@ define(["require","../deep"], function (require, deep) {
 			sheets_as_backgrounds3:function(){
 				return deep({
 					test:false,
-					backgrounds:[{ 
+					_backgrounds:[{ 
 						base:"yes" 
 					}, {
 						_deep_sheet_:true,
@@ -228,7 +228,7 @@ define(["require","../deep"], function (require, deep) {
 					_deep_sheet_:true,
 					"dq.up::./!":{ fromUp:true },
 					"dq.bottom::./!":{ fromBottom:true },
-					backgrounds:[{
+					_backgrounds:[{
 						hello:"world"
 					}]
 				})
@@ -242,12 +242,12 @@ define(["require","../deep"], function (require, deep) {
 			sheets_as_backgrounds_twice:function(){
 				return deep({
 					test:false,
-					backgrounds:[{ 
+					_backgrounds:[{ 
 						base:"yes" 
 					}, {
 						_deep_sheet_:true,
 						"dq.bottom::./!":{
-							backgrounds:[{ doubleBack:true }],
+							_backgrounds:[{ doubleBack:true }],
 							hello:"world"
 						}
 					}]
