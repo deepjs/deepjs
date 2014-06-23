@@ -84,7 +84,11 @@ add excludeLeafs in traversal												OK
 add transform while traversal
 
 
+check deep.log and error.
 
+
+
+deep.loop ==> should return a ChainLoop Object : 
 
 
 
@@ -94,6 +98,8 @@ rename dummy protocol to test protocol
 in restful : explain how create dummy store.
 
 
+
+extract deep-restful
 
 
 sheet : sequential by default
@@ -122,6 +128,8 @@ view enhance :
 
 
 
+
+rename _backgrounds : 			OK
 
 
 FOREGROUNDS : try to implement it
