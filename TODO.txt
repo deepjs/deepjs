@@ -88,11 +88,7 @@ check deep.log and error.
 
 
 
-deep.loop ==> should return a ChainLoop Object : 
-
-
-
-rename dummy protocol to test protocol
+deep.loop ==> should return a ChainLoop Object : keep chain, restart it. two modes : regular cycle, wait end of chain cycle
 
 
 in restful : explain how create dummy store.
