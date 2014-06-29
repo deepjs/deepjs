@@ -130,7 +130,7 @@ FOREGROUNDS : try to implement it
 
 
 
-refactor load sequence in view : one object wired arg-return
+refactor load sequence in view : one object wired arg-return	:					ok
 
 
 
