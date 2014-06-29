@@ -152,7 +152,9 @@ define([
      * @static
      * @property interpret
      */
-    deep.context = {};
+    deep.context = {
+        rethrow:false
+    };
 
     /**
      * where to place YOUR globals (deep does'nt have any globals)
