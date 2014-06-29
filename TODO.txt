@@ -122,9 +122,6 @@ view enhance :
 
 
 
-
-
-
 rename _backgrounds : 			OK
 
 
@@ -137,9 +134,59 @@ refactor load sequence in view : one object wired arg-return
 
 
 
+remove deep.debug log in chain catch
+
+__________________________________ STUDIES FROM BLUEBIRD
+
+Add "state" method : isPending, isRejected, isResolved
+
+
+Promise.longStackTraces();
+
+rename deep.promise.immediate(...) by
+deep.promise.resolve(...)
+
+
+run should be renamed : "call" and have arguments list management 
+
+bind / this : 
+
+shoud managed it this way : 
+
+.bind(obj)	// bind on object
+.bind()		// use success
+.bind(null)	// back to chain's bind
+
+
+.catch(error, cb)
+should be .fail(error, function(error){
+
+})
 
 
 
+maybe .join
+
+
+
+done(value)
+::> inject value, if it's a promise : forward state
+==> replace .when in chain
+
+CANCELLATION :  ?
+
+
+
+DONE as end checker : rethrow any error
+: could not be done in deep : because doesn't use fresh stack with process.tick or setTimeout
+==> should be studied
+____________________________________________________________
+
+
+WARNING : 
+
+
+check promise timeout
 
 
 
