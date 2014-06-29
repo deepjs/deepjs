@@ -131,13 +131,6 @@ define([
     deep.utils = require("./lib/utils");
 
     deep.transformers = {};
-    /**
-     * rethrow any throw during chain execution.
-     * @property rethrow
-     * @static
-     * @type {Boolean}
-     */
-    deep.rethrow = false;
     
     /**
      * are you on nodejs or not
@@ -153,7 +146,8 @@ define([
      * @property interpret
      */
     deep.context = {
-        rethrow:false
+        rethrow:false,
+        debug:true
     };
 
     /**
@@ -169,10 +163,6 @@ define([
      * @property globals
      */
     deep.globalHaders = {};
-
-    deep.debug = true;
-
-    deep.destructiveLoad = false;
 
     //require("./lib/utils")(deep);
     deep.errors = require("./lib/errors");
@@ -271,6 +261,15 @@ define([
     deep.store.Restrictions = deep.Restrictions;
     deep.store.AllowOnly = deep.AllowOnly;
 
+    /**
+     * deep chain identity method
+     * @param  {*} val     The value injected as success (optional). 
+     *                     Could be a protocoled ressource reference (e.g. json::myfile.json). 
+     *                     Will be load before injection.
+     * @param  {Object} schema  Optional : the json-schema associate
+     * @param  {Object} options Optional (internal use only for the moment)
+     * @return {deep.Chain}  a deep.Chain holding the success (or error if load fail).
+     */
     deep.Promise.API.deep = function(val, schema, options) {
         options = options || {};
         var h = new deep.Chain(this._state, options);
