@@ -8,7 +8,7 @@ if (typeof define !== 'function') {
 define(["require","../deep", "../lib/stores/collection", "../lib/schema"], function (require, deep) {
 
     var unit = {
-        title:"deepjs/units/collections2",
+        title:"deepjs/units/collections",
         stopOnError:false,
         setup:function(){
             delete deep.context.session;
