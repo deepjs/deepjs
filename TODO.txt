@@ -100,6 +100,17 @@ extract deep-restful
 
 sheet : sequential by default
 
+deep.sheet(sh1, sh2, target)   + in deep chain
+deep.up(src1, src2, target)
+deep.bottom(src1, src2, target)
+
+
+
+==> remove parent and key in up/bottom
+
+
+
+
 var domSheet = {
 	_deep_sheet_:true,
 	"dom.transform::#selector":function(node){
@@ -111,10 +122,10 @@ rethrow : add flag in context.
 
 view enhance : 
 
-	==> apply own sheets !!! what, how, where, SHEETS, done, fail
+	==> apply own sheets !!! what, how, where, SHEETS (not enhance), done, fail
 
 
-	==> seek class dp-enhance
+	==> seek class dp-enhance				OK
 
 
 		==> read "sheets" attribut
@@ -141,7 +152,6 @@ __________________________________ STUDIES FROM BLUEBIRD
 Add "state" method : isPending, isRejected, isResolved
 
 
-Promise.longStackTraces();
 
 rename deep.promise.immediate(...) by
 deep.promise.resolve(...)
@@ -180,6 +190,9 @@ CANCELLATION :  ?
 DONE as end checker : rethrow any error
 : could not be done in deep : because doesn't use fresh stack with process.tick or setTimeout
 ==> should be studied
+
+
+but we could use .done() (without CB) to tell that we want here have no error)
 ____________________________________________________________
 
 
