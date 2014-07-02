@@ -88,11 +88,6 @@ check deep.log and error.
 
 
 
-deep.loop ==> should return a ChainLoop Object : keep chain, restart it. two modes : regular cycle, wait end of chain cycle
-
-
-in restful : explain how create dummy store.
-
 
 
 extract deep-restful
@@ -101,21 +96,19 @@ extract deep-restful
 sheet : sequential by default
 
 deep.sheet(sh1, sh2, target)   + in deep chain
-deep.up(src1, src2, target)
-deep.bottom(src1, src2, target)
 
-
-
-==> remove parent and key in up/bottom
-
-
+deep.up(src1, src2, target)	 				 OK 		
+deep.bottom(src1, src2, target)				 OK 	
+==> remove parent and key in up/bottom			OK
 
 
 var domSheet = {
 	_deep_sheet_:true,
 	"dom.transform::#selector":function(node){
 		
-	}
+	},
+	"dom.control::#selector":[ctrl1, ctrl2, ...],
+	"dom.from::#selector":[ressource1, ressource2]
 }
 
 rethrow : add flag in context.
@@ -128,8 +121,8 @@ view enhance :
 	==> seek class dp-enhance				OK
 
 
-		==> read "sheets" attribut
-		==> apply dom sheets
+		==> read "sheets" attribut			OK : dp-sheets
+		==> apply dom sheets 				
 
 
 
@@ -167,17 +160,12 @@ shoud managed it this way :
 .bind()		// use success
 .bind(null)	// back to chain's bind
 
-
 .catch(error, cb)
 should be .fail(error, function(error){
 
 })
 
-
-
 maybe .join
-
-
 
 done(value)
 ::> inject value, if it's a promise : forward state
@@ -206,7 +194,11 @@ check promise timeout
 
 
 
-More : 
+More (for after ;)): 
+
+- deep.loop ==> should return a ChainLoop Object : keep chain, restart it. two modes : regular cycle, wait end of chain cycle
+
+
 - closure-encapsulate all sensible store stuffs (real collection, schema, config)
 	- need : late instance prototype compilation with closure wrapper function for applied layers and sheets that use sensible stuffs.
 	- sensible stuffs should be categorized in : config (cache, uri, root folder, ...), schema, real collection (or driver stuffs)
@@ -222,27 +214,22 @@ More :
 
 ## ROAD MAP for other deepjs related libs.
 
-- deep-http-client : node + jquery					OK (to be tested)
+- gather deep-http-client : node + jquery					OK (to be tested)
 	- add jsonp capabilities (jsonp::...)
 	- add EJSON
 
 - deep-routes
 	- add staters
 
-- deep-data-bind
-	- add reactive code linked to views (or not)
-
-- deep-node : rewrite fs/json*  post/put/patch : use JSONObjectSheet
+rename deep-node by deep-nodejs
+- deep-nodejs : rewrite fs/json*  post/put/patch : use JSONObjectSheet
 
 ## Questions
 - what to do with complex route params in restful ?   				OK
 
-- how manage chain's identities.
-specialy with stores vs values : query, range, stores particular API
+- how manage chain's identities.									OK
+specialy with stores vs values : query, range, stores particular API 	ok
 
-- flatten and sheets : 
-	- backgrounds and sheets
-	- foregrounds ?					NO NEVER
 
 ## Todo details
 - use ocm as prototypes in classe construction :  			OK (see deep.compose.ClassFactory)
