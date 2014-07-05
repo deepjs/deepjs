@@ -1,0 +1,99 @@
+<div>
+	<div id="submenu">
+		<h2>deep rql</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">Introduction</a></li>
+				<li><a href="#deep-rql">deep.rql()</a></li>
+				<li><a href="#type">_type</a></li>
+				<li><a href="#schema">_schema</a></li>
+				<li><a href="#depth">_depth</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content">
+			<h3 id="intro">Intro</h3>
+
+<p>A deep oriented implementation of RQL (Ressource Query Language) for JavaScript arrays based on rql/js-array from Kris Zyp (<a href="https://github.com/persvr/rql">https://github.com/persvr/rql</a>).</p>
+
+<p>Its primary aim is to gives filtering capabilities on deep-query results set.</p>
+
+<p>What's different from js-array ? It could handle json-schema properties, depth or type when filtering.</p>
+
+<p>See <a href="https://github.com/persvr/rql">https://github.com/persvr/rql</a> for base knowledge.</p>
+
+<div class="alert alert-info"><span class="label label-info">Info</span> It has been completly rewrited for the occasion. <p>It don't use anymore 'eval' or dynamic functions that are disallowed in specific environnements (Adobe Air by example). So it's a more robust and compliant version of rql js-array.</p></div>
+
+
+            <div class="section-separator-end"></div>
+
+
+			<h3 id="deep-rql">deep.rql(array, filter)</h3>
+			<p>Return the filtered array. Does not modify initial array.</p>
+
+			<p>- <strong>array</strong> : could be simple array of objects or primitives (number, string, etc) or an array of deep_query_nodes.</p>
+
+			<p>- <strong>filter</strong> : a filter as string. (e.g. 'myProp=gt=12')</p>
+<div class="dp-example">
+                 <pre class="dp-enhance dp-box code" dp-try>
+var r = deep.rql([{a:1},{a:3}], "a=3");
+deep.log(r); // -> [{a:3}]
+</pre>
+            </div>
+
+
+            <div class="section-separator-end"></div>
+
+
+			<h3 id="type">_type</h3>
+<p>_type is generated at runtime, even if schema is given</p>
+            <div class="dp-example">
+                 <pre class="dp-enhance dp-box code" dp-try>
+var r = deep.rql([{a:1}, 12, "hello"], "_type=number");
+deep.log(r); // -> [12]
+</pre>
+            </div>
+
+            <div class="section-separator-end"></div>
+
+
+			<h3 id="schema">_schema</h3>
+			<div class="alert alert-warning"><span class="label label-warning">Warning</span> Work only on <a href="/queries/descriptors">descriptors set</a>.</div >
+<p>_schema[any_property_of_provided_schema] could be used.</p>
+            <div class="dp-example">
+                 <pre class="dp-enhance dp-box code" dp-try>
+var res = deep.query({ a:true, b:12, c:"hello" }, "./*", { fullOutput:true, schema:{
+		properties:{
+			a:{ type:"bool" },
+			b:{ type:"number" },
+			c:{ type:"string", "private":true }
+		}
+	}
+});
+
+deep.rql(res, "_schema.private=ne=true").forEach(function(n){
+	deep.log("n : ", n.path, n.value, n.schema)
+})
+</pre>
+            </div>
+
+            <div class="section-separator-end"></div>
+
+
+            
+			<h3 id="depth">_depth</h3>
+			<div class="alert alert-warning"><span class="label label-warning">Warning</span> Work only on <a href="/queries/descriptors">descriptors set</a>.</div >
+            <div class="dp-example">
+                 <pre class="dp-enhance dp-box code" dp-try>
+var res = deep.query({ a:true, b:{ d:"world" }, c:"hello" }, "//", { fullOutput:true });
+
+deep.rql(res, "_depth=gt=1").forEach(function(n){
+	deep.log(n.path, " = ", n.value)
+})
+</pre>
+            </div>
+		</div>
+	</div>
+</div>
+

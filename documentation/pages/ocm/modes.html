@@ -1,0 +1,300 @@
+<div>
+	<div id="submenu">
+		<h2>ocm</h2>
+		<div class="submenu-block dp-enhance"  dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#modes-collection">modes collection</a></li>
+				<li><a href="#strict">strict compilation</a></li>
+				<li><a href="#multimodes">multi-modes</a></li>
+				<li><a href="#hierarchy">hierarchy</a>
+					<ul>
+						<li><a href="#direct-mode">direct modes</a></li>
+						<li><a href="#groups">Groups</a></li>
+						<li><a href="#Modes">Modes</a></li>
+						<li><a href="#hierarchy-resume">resumed</a></li>
+
+					</ul>
+				</li>
+				<li><a href="#modes-null">modes to null</a></li>
+				<li><a href="#map">modes map</a></li>
+				<li><a href="#multi-groups">multi-groups</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content">
+			<h3 id="modes-collection"> Modes collection</h3>
+
+<p>You could get multiple mode at once. It means that, in the order of provided modes, the different object identities are merged (deep up) and returned.</p>
+
+			<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var myManager = deep.ocm({
+	mode1:{
+		test:1
+	},
+	mode2:{
+		title:"hello world",
+		test:2
+	}
+});
+
+deep.log("mode1 + mode2 : ", myManager("mode1", "mode2")); 		// be careful to order
+// => mode1 + mode2 : Object { test=2, title="hello world"}
+
+deep.log("mode2 + mode1 : ", myManager("mode2", "mode1")); 		// be careful to order
+// => mode2 + mode1 : Object { title="hello world", test=1 }
+</pre>
+			</div>
+
+<p><span class="label label-info">Remarque</span> 'compilation' of resulted object is done only once and cached securely in manager's local closure.</p>
+
+<p>The mode collection is really useful to do something like this :   (see deep.store docs )</p>
+
+			<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var myManager = deep.ocm({
+	dev:deep.store.Collection.create(...),
+	prod:deep.store.Mongo.create(...),
+	"public":deep.Restrictions("del","post"),
+	admin:{}
+});
+// try to delete something in local developpement store (a memory collection here) as "public" => return error 405  
+myManager("dev","public").del("my_id");  
+
+// try to delete something in production store (a mongo here) as "admin" => do the 'del' and return no error
+myManager("prod","admin").del("my_id");  
+</pre>
+			</div>
+<h3 id="strict">Strict compilation</h3>
+
+<p>Here, if you have well understoud the previous trick, you could have seen that 'admin' entry isn't necessary :</p>
+
+<pre class="dp-box code">
+myManager("prod","admin").del("my_id"); 
+</pre>
+is equivalent to :
+<pre class="dp-box code">
+myManager("prod").del("my_id"); 
+</pre>
+You could even gives any unknown mode after 'prod' (or 'dev'), it will do the same :
+
+<pre class="dp-box code">
+myManager("prod","bloup").del("my_id"); 
+</pre>
+
+<p>It's because the manager isn't <b>'strict'</b>. It compiles what it could find... without warning if there is no associated entries for certain of provided modes (it warns only it finds nothing at all).</p> 
+
+<p>To disallow this behaviour, simply provide an options object to OCM constructor with `'strict':true` in it.</p>
+
+			<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var myManager = deep.ocm({
+	dev:deep.store.Collection.create(...),
+	prod:deep.store.Mongo.create(...),
+	"public":deep.Restrictions("del","post"),
+	admin:{}
+}, { strict:true });
+//...
+myManager("prod", "bloup").del("my_id");  // => will warn and return an empty object as there is no 'bloup' entry in ocm layer.
+</pre>
+			</div>
+<p><span class="label label-info">Remarque</span> Even if strict : </p>
+<pre class="dp-box code">
+myManager("prod","admin").del("my_id");
+</pre>
+ and 
+<pre class="dp-box code">
+myManager("prod").del("my_id");
+</pre>
+ <p>are equivalent in our case.</p>
+<p>(i.e. in the example : admin is just an empty oject that doesn't modify the compiled result)</p>
+
+<h3 id="multimodes">multiModes or not.</h3>
+
+<p>Sometimes, you want that OCM manage only single mode. (so you want to not allow to mix different modes together)</p>
+
+			<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+// you don't want to allow to mix 'public' and 'user' modes (there is no sens here to do so)
+var myManager = deep.ocm({
+	'public':deep.store.Collection.create(...),
+	'user':deep.store.Mongo.create(...)
+}, { multiModes:false });
+
+//...
+
+myManager("public","user").get(...); // => will warn and return an empty object
+</pre>
+			</div>
+
+
+<h3 id="hierarchy">Mode groups, context and hierarchy</h3>
+
+So... In deep.ocm, there is 4 ways to manage modes.
+
+<h4 id="direct-mode"> Through direct usage of your manager (the two first ways)</h4>
+
+First, the way that you've already seen here : just provides mode(s) as arguments when you ask OCM compilation.
+<pre class="dp-box code">
+var manager =  deep.ocm({ ... });
+//...
+var compiled = manager("mode1", "mode2");
+</pre>
+
+Secondly, you could set its current mode(s) in manager itself, and use them 'blindly' after.
+<pre class="dp-box code">
+var manager =  deep.ocm({ ... });
+manager.modes("mode1");			// manager will hold provided mode(s) in it's local closure
+//...
+var compiled = manager();		// it will use the internal mode previously defined (here : 'mode1').
+</pre>
+
+<h4 id="groups">Through groups, deep.Modes and deep.modes</h4>
+
+If you want to define once a mode somewhere that could be shared between different managers, 
+you need to set, in your managers, the name(s) of the variable(s) that contain(s) your current mode(s).
+You set it through 'groups' property or method : 
+<pre class="dp-box code">
+var manager = deep.ocm({ ... }, { groups:"roles" });
+</pre>
+or 
+<pre class="dp-box code">
+var manager = deep.ocm({ ... });
+manager.groups("roles");
+</pre>
+<p>
+
+<h4 id="Modes">Through groups, deep.Modes and deep.modes</h4>
+
+Then, when you'll ask to your manager to return something, deep OCM will look in 3 namespaces after related 'group(s)' modes.
+Lets explain the hierarchy between those namespaces:</p>
+<ul>
+<li><b>deep.Modes(mode1, mode2, ...)</b> : The more general but less hierarchicaly high : it holds global modes accessible from anywhere. </li>
+<li><b>deep.modes(mode1, mode2, ...)</b> : it start a chain that holds provided modes in its current deep.context  (see [docs on deep.context](./asynch/asynch-context-management.md) and chains)</li>
+<li><b>myOCManager.modes(mode1, mode2, ...)</b>	: The less general but more hierarchicaly high: it holds provided modes in the local ocm closure.</li>
+</ul>
+
+So, when you do 
+<pre class="dp-box code">
+var a = manager();
+</pre>
+deepjs will look first in manager itself after current modes.
+<p>If there is no current mode setted in manager, but there is a 'groups' property, deepjs will look in current deep.context.modes after the 'group(s)' modes, and apply it if any.</p>
+<p>Finally, if there is no deep.context.modes that could be find with 'group(s)', it will look in deep.Modes namespace after it, and apply it if any.</p>
+
+<p>If deepjs finds nothing : it will warn and return an empty object.</p>
+
+<p>For full informations on deep.context and how tu use it : see [docs](./asynch/asynch-context-management.md).</p>
+
+<h4 id="hierarchy-resume">Resumed</h4> 
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var manager = deep.ocm({ 'public':'hello public',  'user':'hello user' }, { groups:"roles" });
+//...
+deep.Modes("roles","public");
+//...
+deep.log(manager()); // will return 'hello public'  (it has found 'roles' in deep.Modes)
+//...
+deep.log(manager("user")); // will return : 'hello user' (it has used direct provided mode, that hides deep.Modes one)
+//...
+manager.modes("user");
+//...
+deep.log(manager()); // will return : 'hello user' (it has used manager local current mode(s), that hides deep.Modes one)
+//...
+deep.modes("roles", "user") // this start a chain with its own context containing modes:{ roles:'user' }
+.done(function(){	
+	deep.log(manager()); // will return : 'hello user' (it has used deep.context.modes.roles, that hides deep.Modes().roles);
+	//...
+	deep.log(manager("public")); // will return : 'hello public' (it has used direct provided mode, that hides deep.context.modes and deep.Modes)
+});
+//...
+manager(); // will return 'hello public'  (it has found 'roles' in deep.Modes - because deep.context.modes is empty : only the chain has modified it)
+</pre></div>
+
+<h3 id="modes-null">modes to null</h3>
+
+When you want to remove a modes in one of the 3 namespaces (manager.modes(), deep.modes(), deep.Modes()) : just set it to null.
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.Modes("roles", "public");
+
+var manager = deep.ocm(...);	// containing a 'user' and a 'public' entry
+
+manager.groups("roles");
+manager.modes("user");
+
+manager()...; // => return 'user' entry (it has use manager current mode(s))
+
+manager.modes(null);
+
+manager()...; // => return 'public' entry (it has use deep.Modes().roles)
+
+deep.Modes("roles", null);
+
+manager()...; // => warn and produce an empty object because no modes are set to use OCM.
+</pre></div>
+
+<h3 id="map">Modes map</h3>
+
+When you manipulate modes through deep.Modes or deep.modes, you could provide a modes map : 
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.Modes({
+	roles:["user", "otherRole"],
+	env:"dev"
+});
+</pre></div>
+
+If you do it twice, the namespace are merged at first level only.
+It means :
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.Modes({
+	roles:["user", "otherRole"],
+	env:"dev"
+});
+
+//...
+
+deep.Modes({
+	roles:["public"],
+});
+
+deep.log(deep.Modes()); // => { roles:["public"], env:"dev" }
+
+</pre></div>
+
+Resumed : when modes map are merged with a namespace (either deep.Modes or deep.context.modes (through deep.modes)), it does :
+<pre class="dp-box code">
+for(var i in modesMap)
+	namespace[i] = modesMap[i];
+</pre>
+So you conserve OTHER groups that those gives in modesMap.
+
+
+<h3 id="multi-groups">Multi groups</h3>
+
+You could also use a groups collection in your manager.
+
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var manager = deep.ocm({
+	dev:deep.store.Collection.create(...),
+	prod:deep.store.Mongo.create(...),
+	'public':deep.AllowOnly("get", "range"),
+	user:deep.Restrictions("del")
+}, { groups:["env", "roles"] });
+
+deep.Modes({
+	roles:"user",
+	env:"dev"
+});
+
+manager()...; // will compile local memory collection (dev entry) with 'user' restrictions 
+</pre></div>
+
+		</div>
+	</div>
+	<!-- <div style="height:400px;">&nbsp;</div> -->
+</div>

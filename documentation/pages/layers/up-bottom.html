@@ -1,0 +1,351 @@
+<div>
+	<div id="submenu">
+		<h2>up &amp; bottom</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">Introduction</a></li>
+				<li><a href="#up">up</a>
+					<ul>
+						<li><a href="#direct-up">deep.up(...)</a></li>
+						<li><a href="#chain-up">deep(...).up(...)</a></li>
+					</ul>
+				</li>
+				<li><a href="#bottom">bottom</a>
+					<ul>
+						<li><a href="#direct-bottom">deep.bottom(...)</a></li>
+						<li><a href="#chain-bottom">deep(...).bottom(...)</a></li>
+					</ul>
+				</li>
+				<li><a href="#collisions">collisions</a></li>
+				<li><a href="#primitives">primitives</a></li>
+				<li><a href="#array">array</a></li>
+				<li><a href="#function">function</a></li>
+				<li><a href="#compile">compile</a>
+					<ul>
+						<li><a href="#direct-compile">deep.utils.compile(...)</a></li>
+						<li><a href="#chain-compile">deep.compile(...)</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div id="content">
+			<div class="content" >
+				<h3 id="intro">Introduction</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>Now that you understood that the reason of why we call js objects "layers" is because we manipulate them as simple layers (even if they are complexe), let's have a look at the deepjs tools provided for those layers manipulations : </p>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="up">Up</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This is the main tool that let you apply a layer on top of another one.</p>
+					</div>
+				</div>
+			</div>
+			<div class="content">
+				<h4  id="direct-up">deep.up(src, target)</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This method apply the "src" layer by the up side on the "target" layer.</p>
+						<p>Only the targeted layer is modified. And is now reflecting the merge of the 2 layers :</p>
+						<p>- the b property was overwritten with the "src" layer value. It is because the "src" layer was applied by the up side and so have the priority in case of collisions.</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true,
+	c:{
+		d:"hello"
+	}
+};
+var obj2 = {
+	b:false
+}
+deep.up(obj2, obj1);
+
+deep.log(obj1);
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content">
+				<h4  id="chain-up">deep(obj).up(layer)</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This is the chained version of the up method.</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true,
+	c:{
+		d:"hello"
+	}
+};
+var obj2 = {
+	b:false
+}
+deep(obj1).up(obj2).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="bottom">Bottom</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This is the main tool that let you apply a layer by the bottom side on another one.</p>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h4 id="direct-bottom">deep.bottom(src, target)</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This method apply the "src" layer by the bottom side on the "target" layer.</p>
+						<p>Only the targeted layer is modified. And is now reflecting the merge of the 2 layers :</p>
+						<p>- the b property was not overwritten with the "src" layer value. It is because the "src" layer was applied by the bottom side (so like a background) and so the "target" layer has the priority in case of collisions.</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true,
+	c:{
+		d:"hello"
+	}
+};
+var obj2 = {
+	b:false,
+	d:"world"
+}
+deep.bottom(obj2, obj1);
+
+deep.log(obj1);
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h4 id="chain-bottom">deep(obj).bottom(layer)</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This is the chained version of the bottom method.</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true,
+	c:{
+		d:"hello"
+	}
+};
+var obj2 = {
+	b:false,
+	d:"world"
+}
+deep(obj1).bottom(obj2).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="collisions">Collisions</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>Without any collision in the name of properties/methods of the two layers, the up and bottom operations are nothing more than : adding the properties of one layer to another (note that the final order of arguments is different if it's a up or a bottom). But what about if there are collisions?</p>
+					</div>
+				</div>
+
+			</div>
+			<div class="content" >
+				<h3 id="primitives">primitives collisions</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>For primitives (integer, string, boolean) the default behaviour in case of collision is that the top layer overwrite the value with his own.</p>
+						<p>If you want a different behaviour than de default overwriting, you need to use a tool called a "collider". As it is a important part of the deepjs core, they have their own section : link to colliders</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true
+};
+var obj2 = {
+	a:"now a string",
+	b:false
+}
+deep(obj1).up(obj2).log();
+</pre>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="content" >
+				<h3 id="array">Array merging</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>The default behaviour in case of collisions is a little more complexe for arrays than primitives. They are not simply overwritten with the top layer values, they are merged.</p>
+						<p>If your arrays contains single values in it, it merge them. But it didn't duplicate "doublons"</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:[12,"blue"]
+};
+var obj2 = {
+	a:["green", "blue", false]
+}
+deep(obj1).up(obj2).log();
+</pre>
+						</div>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<p>But if your arrays contains objects, it looks for an "id" property so it can merge the data of each object present in the array.</p>
+						<p>You can see in the example that the "obj2" layer add a lastname to one of your array entry, and also add 2 single values in the array</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:[{id:"1", firstname:"John"},{id:"2", firstname:"Chris"}]
+};
+var obj2 = {
+	a:[{id:"1", lastname:"Doe"}, "blue", 15]
+}
+deep(obj1).up(obj2).log();
+</pre>
+						</div>
+					</div>
+					<div class="col-sm-12 col-md-12">
+					<p>If you want a different behaviour than de default array merging, you need to use a tool called a "collider". As it is a important part of the deepjs core, they have their own section : link to colliders</p>
+					</div>
+				</div>
+			</div>
+			<div class="content" >	
+				<h3 id="function">Functions compositions</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>the default behaviour in case of collision of two functions is that the top layer overwrite the function with his own.</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	myMethod : function(){
+		deep.log("Hello");
+	}
+}
+
+var obj2 = {
+	a:12,
+	myMethod : function(){
+		deep.log("Goodbye");
+	}
+}
+deep(obj1).up(obj2);
+obj1.myMethod();
+</pre>
+						</div>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<p>But of course you will want to compose and not overwrite some of your layers methods. There is a complete section dedicated to that : link to compostions</p>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="compile">Compile</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>Compile is a tool that let you compile a set of layers in one operation. It returns the compiled object (so the layers that are present in the set are not modified).</p>
+					</div>
+				</div>
+			</div>
+			<div class="content">
+				<h4  id="direct-compile">deep.utils.compile(obj1, obj2, obj3, ...)</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This method compiles the given layers in one layer.</p>
+						<p>The order of the arguments sets the priority in case of collisions.</p>
+						<p>It returns an object that is the result of the compiled layers</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true,
+	c:{
+		d:"hello"
+	}
+};
+var obj2 = {
+	b:false
+};
+var obj3 = {
+	e:function(){
+	    deep.log("Hello");
+	}
+};
+var compiled = deep.utils.compile(obj1, obj2, obj3);
+
+deep.log(compiled);
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content">
+				<h4  id="chain-compile">deep.compile(obj1, obj2, obj3, ....)</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-12">
+						<p>This is the chained version of the compile method.</p>
+					</div>
+					<div class="col-sm-12 col-md-12">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	a:12,
+	b:true,
+	c:{
+		d:"hello"
+	}
+};
+var obj2 = {
+	b:false
+};
+var obj3 = {
+	e:function(){
+	    deep.log("Hello");
+	}
+};
+
+deep.compile(obj1, obj2, obj3).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+</div>
+</div>
+

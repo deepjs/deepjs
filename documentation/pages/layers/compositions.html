@@ -1,0 +1,201 @@
+<div>
+	<div id="submenu" >
+		<h2>Compositions</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">Introduction</a></li>
+				<li><a href="#after">.after()</a></li>
+				<li><a href="#before">.before()</a></li>
+				<li><a href="#around">.around()</a></li>
+				<li><a href="#fail">.fail()</a></li>
+				<li><a href="#chainable">chainable</a></li>
+				<li><a href="#not-merged">not merged ?</a></li>
+				<li><a href="#deep-arguments">deep.Arguments</a></li>
+				<li><a href="#deep-undefined">deep.Undefined</a></li>
+				<li><a href="#parallele">.parallele()</a></li>
+				<li><a href="#branches">.branches()</a></li>
+				<li><a href="#log">.log()</a></li>
+				<li><a href="#custom">create yours</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content" >
+			<h3 id="intro">Intro</h3>
+			<div class="alert alert-warning"><span class="label label-warning">Warning</span> Please read and understand <a href="/layers/up-bottom">previous section (up and bottom)</a> before reading this. Compositions are applied through those two fundamentals methods.</div>
+			<p>You've seen before that when you collide (up) a simple function on something else, it's the function that's keeped as collision result : </p>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep({
+    myProp:true
+})
+.up({
+    myProp:function(){
+        return "hello world";
+    }
+})
+.log();
+</pre>
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var a = {
+    myProp:function(){
+        return "hello world";
+    }
+};
+deep.up({
+    myProp:function(){
+        return "hello overwrited world";
+    }
+}, a);
+deep.log(a.myProp());
+</pre>
+					</div>
+				</div>
+			</div>
+				<p>In other words, the function overwrite the property value. (always the same rules : what's coming from 'up' (what is above) is at higher priority - an what is under is at lower priority)</p>
+				</div>
+		<div class="content" >
+
+
+				<h5>Here comes AOP, compositions and promises.</h5>
+				<p>Now, you want to manage more finely the result of functions collision.</p>
+				<p>The idea is simple : when two functions are collided, you choose which one is executed first and how wired them together.</p>
+				<p>So when two functions collide together (up or bottom), we could use deep.compose to manage how those functions are merged and wired.</p>
+				<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep({
+    myFunc:function(arg)
+    {
+        return "[" + arg + "]";
+    }
+})
+.up({
+    myFunc:deep.compose.after(function(arg){
+        return "{" + arg + "}";
+    })
+})
+.run("myFunc", "hello")
+.log();
+</pre>
+				</div>
+			</div>
+			<div class="content">
+				<h3 id="after">.after()</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-6">
+						<p>If the previous returns something, it will be injected as argument(s) in 'func'.<br/>
+						If the previous return nothing, th original arguments are injected in 'func'.<br/>
+						If the previous returns a promise or a chain : it will wait until the resolution of the returned value before executing 'func'.<br/>
+						If the previous returned object isn't a promise, 'func' is executed immediately.</p>
+						<p>Same thing for returned object(s) from 'func' : it will be chained..</p>
+					</div>
+					<div class="col-sm-12 col-md-6">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var base = {
+    myFunc:function(arg)
+    {
+        return arg + " : myfunc base";
+    }
+};
+deep
+.up({
+    myFunc:deep.compose.after(function(arg){
+        return arg + " : myfunc from after";
+    })
+}, base);
+deep.log(base.myFunc("hello"));
+</pre>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="content" >
+				<h3 id="before">.before()</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-6">
+						<p> ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					</div>
+					<div class="col-sm-12 col-md-6">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep(1).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="around">.around()</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-6">
+						<p> ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					</div>
+					<div class="col-sm-12 col-md-6">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep(1).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="fail">.fail()</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-6">
+						<p> ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					</div>
+					<div class="col-sm-12 col-md-6">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep(1).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content" >
+				<h3 id="custom">Create yours</h3>
+				<div class="row">
+					<div class="col-sm-12 col-md-6">
+						<p> ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					</div>
+					<div class="col-sm-12 col-md-6">
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep(1).log();
+</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

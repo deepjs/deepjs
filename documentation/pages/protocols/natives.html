@@ -1,0 +1,90 @@
+<div>
+    <div id="submenu">
+        <h2>Natives</h2>
+        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+            <ul>
+                <li><a href="#intro">intro</a>
+                <li><a href="#js">js</a>
+                </li>
+                <li><a href="#instance">instance</a>
+                </li>
+                <li><a href="#this">this</a>
+                </li>
+                <li><a href="#dummy">dummy</a>
+                <li><a href="#eval">eval</a>
+                <li><a href="#dq">dq</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+        <div class="content">
+            <h3 id="intro">intro</h3>
+        	<p>deepjs comes with few natives protocols : </p>
+<!-- __________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+			<h3 id="js">js</h3>
+<p>Simple protocol that use requirejs (browser side) and nodejs require (of course server side) to load ASYNCHRONOUSLY javascript ressources (AMD module).</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep("js::deepjs/lib/unit")
+.log()
+</pre></div>
+<!-- __________________________________________________________________________________ -->
+<div class="section-separator-end"></div>
+			<h3 id="instance">instance</h3>
+<p>Same than js:: except that ressource need to be javascript Class (a function) that will be instanciate (with no arguments sent to constructor) before injection in promise.</p>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep("instance::/path/to/your/class.js")
+.log();
+</pre></div>
+<!-- __________________________________________________________________________________ -->
+<div class="section-separator-end"></div>
+			<h3 id="this">this</h3>
+<p>Inner inheritance. Used in backgrounds only. (see <a href="/layers/flatten">backgrounds and flatten</a>)</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep({
+	a:{
+		hello:"world"
+	},
+	b:{
+		test:12
+	},
+	c:{
+		_backgrounds:["this::../a", "this::/b"]
+	}
+	//...
+})
+.flatten()
+.query("./c")
+.log();  // will print : { hello:"world", test:12 }
+</pre></div>
+<!-- __________________________________________________________________________________ -->
+<div class="section-separator-end"></div>
+			<h3 id="dummy">dummy</h3>
+<p>Just there to make test or demo.</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep("dummy::hello").log();
+</pre></div>
+<!-- __________________________________________________________________________________ -->
+<div class="section-separator-end"></div>
+            <h3 id="eval">eval</h3>
+            <div class="alert alert-warning"><span class="label label-warning">Warning</span> Doesn't work in paranoiac environnements (as Adobe Air)</div>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep("eval::true").log();
+</pre></div>
+<!-- __________________________________________________________________________________ -->
+<div class="section-separator-end"></div>
+			<h3 id="dq">dq</h3>
+            <p>Native sheets protocol.</p>
+<p>For more details on sheets, see <a href="/sheets">sheets</a>.</p>
+        </div>
+    </div>
+</div>
+
+

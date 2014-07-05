@@ -1,0 +1,44 @@
+<div>
+	<div id="submenu">
+		<h2>Shared</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">Introduction</a>
+				</li>
+				<li><a href="#simple">simple</a>
+				</li>
+				<li><a href="#protocol">protocol usage</a>
+				</li>
+				<li><a href="#this">inner inheritance</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content">
+			<h3 id="intro">Intro</h3>
+
+					<div class="dp-example">
+                        <pre class="dp-enhance dp-box code" dp-try>
+var obj1 = {
+	test:function(){
+		deep.log("this.shared : ", this.myShared);
+	},
+	myShared:deep.Shared([1,2,3])
+};
+var obj2 = {
+	myShared:[4,5]
+};
+
+deep.up(obj1, obj2);
+obj1.test();				// [1, 2, 3, 4, 5]
+obj1.myShared.push(6,7);
+obj2.test();				// [1, 2, 3, 4, 5, 6, 7]
+</pre></div>
+
+		</div>
+
+		
+	</div>
+</div>
+

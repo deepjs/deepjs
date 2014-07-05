@@ -1,0 +1,111 @@
+<div>
+    <div id="submenu">
+        <h2>traversal</h2>
+        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+            <ul>
+                <li><a href="#intro">introduction</a></li>
+                <li><a href="#depthFirst">deep.depthFirst()</a></li>
+                <li><a href="#breadthFirst">deep.breadthFirst()</a></li>
+                <li><a href="#options">options</a>
+                    <ul>
+                        <li><a href="#options-first">first</a></li>
+                        <li><a href="#options-inArray">inArray</a></li>
+                        <li><a href="#options-hierarchy">hierarchy</a></li>
+                        <li><a href="#options-stack">stack</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+        <div class="content">
+            <h3 id="intro">Intro</h3>
+            <p>There is two functions to browse object/json structure orderedly : depthFirst and breadthFirst.</p>
+            <p>While browsing, it allow you to select properties that match through test function(s).</p>
+
+            <div class="section-separator-end"></div>
+            <h3 id="depthFirst">deep.depthFirst(obj, test, opt)</h3>
+
+            <p><span class="label label-info">Returns</span></p>
+            <ul>
+                <li>if(!options.first) : return an array of <a href="/queries/descriptors">nodes descriptors</a> (empty if no match).</li>
+                <li>if(options.first) : a single <a href="/queries/descriptors">node descriptor</a> or null if no match.</li>
+            </ul>
+            <p>(for full options descritions see <a href="#options">options</a>.)</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var a = {
+	b:{
+		c:{
+			d:true
+		}
+	},
+	e:"hello",
+	f:{
+		d:true
+	}
+};
+
+var r = deep.depthFirst(a, function(v){
+	return v.d === true;
+});
+
+deep.log(deep.nodes.paths(r));
+</pre>
+            </div>
+            <div class="section-separator-end"></div>
+            <h3 id="breadthFirst">deep.breadthFirst(root, testFunction, opt)</h3>
+            <p><span class="label label-info">Returns</span></p>
+            <ul>
+                <li>if(!options.first) : return an array of <a href="/queries/descriptors">nodes descriptors</a> (empty if no match).</li>
+                <li>if(options.first) : a single <a href="/queries/descriptors">node descriptor</a> or null if no match.</li>
+            </ul>
+            <p>(for full options descritions see <a href="#options">options</a>.)</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var a = {
+	b:{
+		c:{
+			d:true
+		}
+	},
+	e:"hello",
+	f:{
+		d:true
+	}
+};
+
+var r = deep.breadthFirst(a, function(v){
+	return v.d === true;
+});
+
+deep.log(deep.nodes.paths(r));
+</pre>
+            </div>
+
+            <div class="section-separator-end"></div>
+            <h3 id="options">options</h3>
+            <p>
+                <span class="label label-info">Remarque</span> Options are the same for both traversal methods.</p>
+            <h4 id="options-first">options.first</h4>
+            <p>Boolean, default false.</p>
+            <p>If true, stop traversal at first match, and return the matched node (null if no match).</p>
+            
+            <h4 id="options-inArray">options.inArray</h4>
+            <p>String, optional. The name of the array where do the check.</p>
+
+            <h4 id="options-hierarchy">options.hierarchy</h4>
+            <p>Boolean, default false.</p>
+            <p>If true, return the 'hierarchy' of matched node. Work only if options.first == false.</p>
+
+            <h4 id="options-stack">options.returnStack</h4>
+            <p>Boolean, default false.</p>
+            <p>Principally for deepjs internal use. The two traversal methods are non recusrive and could return the current stack that methods use to do the traversal.</p>
+            <p>The aim is to be able to restart traversal from the same place after stop.</p>
+            <p>If true, in place of _deep_query_node_(s), return the stack used by derecursified method.</p>
+
+            <p>Work only if options.first == true.</p>
+
+        </div>
+    </div>
+</div>

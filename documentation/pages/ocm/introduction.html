@@ -1,0 +1,180 @@
+<div>
+	<div id="submenu">
+		<h2>ocm</h2>
+		<div class="submenu-block dp-enhance"  dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">concept</a></li>
+				<li><a href="#sharing">sharing code</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<!-- 			<div class="content" >
+			<div class="page-header">
+				<h1>Example page header <small>Subtext for header</small></h1>
+			</div>
+		</div> -->
+		<div class="content" >
+		<!-- <p>pure factory pattern (cache:false) http://en.wikipedia.org/wiki/Factory_pattern + Semi Pool Pattern (http://en.wikipedia.org/wiki/Object_pool) (cache:true)</p> -->
+			<h3 id="intro">OCM made simple</h3>
+			<div class="alert alert-warning"><span class="label label-warning">Warning</span> OCM use and abuse of almost all other deepjs core tools. So OCM should only be studied when you're feeling confortable with them.</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<p>
+					OCM means Object Capability Model (or here Object Capability Manager).
+					</p><p>
+					To fully understand what is it : imagine that you want a method that do something different depending on certains variables.
+					</p><p>
+					Let's compare...
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+					<h5>Classical approach</h5>
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var user = null;
+var myFunc = function(){
+	if(user)
+		return "hello "+user.name;
+	return "hello. please login."
+}
+deep.log(myFunc()); // => output "hello. please login."
+user = { name:"John" };
+deep.log(myFunc()); // => output "hello John.": 
+</pre>
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<h5>OCM approach</h5>
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var user = null;
+var myFunc = deep.ocm({
+	"public":function(){
+		return "hello. please login.";
+	},
+	"user":function(){
+		return "hello "+user.name;
+	}
+});
+deep.log(myFunc("public")()); // => output "hello. please login."
+user = { name:"John" };
+deep.log(myFunc("user")()); // => output "hello John.": 
+</pre>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<p>Keep in mind that OCM, here (in deepjs), means <strong>Object Capabilities Manager</strong>.</p>
+					<p>Its aim is to provide facilities to manage objects capabilities depending on certain flags.</p>
+					<p>Lets call those flags 'modes'.</p>
+					<p>When you design your object through such manager, this manager holds the different models/aspects of your object, associated to their own mode(s).So a manager is just a set of object/method/identities/capacities/aspects associated to particular modes.</p>
+					<p>The place where manager keeps those models is called here 'inner layer'. (it's safely holded in local closure).</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<p>
+					Ok. Now, compared to first conditionnal example : you didn't gain to much and you need to manage a second variable (i.e. the 'mode').</p>
+					<p>We agree...</p>
+					<p>But imagine now that you need to add another mode, as 'admin'.</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+					With the conditionnal example : you will need to modifiy your code and do something like :
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var user = null;
+var myFunc = function(){
+	if(!user)
+		return "hello. please login.";
+	else if(user.admin)
+		return "hello admin";
+	else
+		return "hello " + user.name;
+}
+user = { name:"John", admin:true };
+//...
+deep.log(myFunc()); 		// => output "hello admin":
+</pre>
+					</div>
+					<p>(i.e. you need to dive into conditionnal branching design).</p>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					With OCM : you simply do this :
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var user = null;
+var myFunc = deep.ocm({
+	"public":function(){
+		return "hello. please login.";
+	},
+	"user":function(){
+		return "hello "+user.name;
+	},
+	"admin":function(){
+		return "hello admin";
+	}
+});
+user = { name:"John" };
+//...
+deep.log(myFunc('admin')()); // => output "hello admin"
+</pre>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<p>You could start to see which benefits OCM gives : code stills clear and separated, and you could easily add or modify mode(s).
+					Each time you need to refactor or add more capabilities/aspects, you never need to change all conditionnal checks in all related functions.</p>
+					<p>You only need to define particular mode(s).</p>
+					Now, you're asking you : Ok, it seems to be cool. but...
+					<ul>
+					<li>what if you have common code used by different modes?</li>
+					<li>it's not really modular, and could be error prone, if you need to always provides the modes to the manager</li>
+					<li>what if you want to use method or objects without needing to know if it's an OCManager or current modes?</li>
+					<li>How could you make the difference?</li>
+					<li>etc.</li>
+					</ul>
+					<p>Ok. Lots of questions...</p>
+					<p>So let's continue.</p>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<h3 id="sharing">Sharing code between modes</h3>
+<p>
+As you work with deepjs and aspects, you could obviously use internal inheritance and backgrounds/flatten
+to manage common behaviours (or datas) between ocm modes.</p>
+
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var myManager = deep.ocm({
+	mode1:{
+		test:1
+	},
+	mode2:{
+		_backgrounds:["this::../mode1"],
+		title:"hello world"
+	},
+	mode3:{
+		_backgrounds:["this::../mode2"],
+		description:"mode 3 description"
+	}
+});
+myManager.flatten(); // seek after and apply any backgrounds in inner layer (see deep.flatten docs)
+//...
+deep.log("mode1 : ", myManager("mode1"));	// output : mode1 : Object { test=1}
+deep.log("mode2 : ", myManager("mode2"));	// output : mode2 : Object { test=1, title="hello world"}
+deep.log("mode3 : ", myManager("mode3"));	// mode3 : Object { test=1, title="hello world", description="mode 3 description"}
+</pre>
+					</div>
+
+		</div>
+	</div>
+	<!-- <div style="height:400px;">&nbsp;</div> -->
+</div>

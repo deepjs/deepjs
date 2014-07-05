@@ -1,0 +1,54 @@
+<div>
+	<div id="content">
+		<div class="content">
+			<div class="row">
+				<div class="col-sm-12 col-md-4">
+		<div class="dpdocs-header">
+  <h2>Context &amp; concurrency</h2>
+  <div class="dpdocs-baseline">All together...</div>
+</div>
+				</div>
+				<div class="col-sm-12 col-md-8">
+				<br/>
+				<br/>
+		<p>Don't be fooled by the smallness of the navigation. This chapter is one of the most subtile and powerful and deserve big attention. It talks about <a href="http://en.wikipedia.org/wiki/Concurrent_computing">"concurrency programming"</a> and is primordial to safe, modular and lightweight concurrency design.</p>
+
+		<p>For this, deepjs provides a single tool, called <strong>deep.context</strong>, that acts as a contextualised "global" namespace (it looks like an oxymore ;)).</p>
+
+		<p>The pattern was taken from Kris Zyp promise implementation. Thx to him...;)</p>
+
+		<p>This namespace is closely linked to <a href="/chains/promise">promises</a>, and could be seen as <u>local promise's context</u>.</p>
+		<p>The magic is that you always access this local context <u>globally</u>... From anywhere, just read <strong>deep.context</strong> (its an object) : it's your <u>current local context</u>. </p>
+
+				</div>
+			</div>
+
+                <div class="section-separator-end"></div>
+<embed class="dp-enhance" dp-svg-trick src="/img/async-context.svg" type="image/svg+xml" width="700" height="462"/>
+ <!--  <img src="yourfallback.jpg" />
+</object> -->
+                <p>By example, if 3 asyncrhoneous requests, made by 3 different users, arrive in almost the same time on a nodejs server, you could safely store the current request (or current jquery reference that you use to build html reponses, etc.) into this namespace.</p>
+               <p>deepjs take care of swapping deep.context(s) at each promise callback start. So, if you need the nodejs-request-object or the current jquery references : you only need to access this namespace . No more arguments cascade or tricky global management. You have it when you need it...</p>
+                <div class="section-separator-end"></div>
+		<h3 id="typical">typical content</h3>
+		<p>In this namespace, you could store any kind of objects or functions that you would access from anywhere in yours promises callbacks.</p>
+		<p>By example, OCM use it to store contextualised modes, some protocols could be stored there to be only accessible to certain users, etc.</p>
+		<p>Here is a list of common objects founded in this context : </p>
+		<ul>
+<li>Contextualised <a href="/protocols">protocols</a></li>
+<li><a href="/ocm">OCM</a> modes</li>
+<li>Current Http Request (server side)</li>
+<li>Current Session (server side)</li>
+<li><a href="/context/logger">logger</a> : to have contexualised logging mecanism</li>
+<li><a href="/views/deep-jquery">jQuery reference</a> linked to current window</li>
+<li>"global" dom nodes used in htmls</li>
+<li>etc.</li>
+</ul>
+
+
+
+		</div>
+	</div>
+</div>
+
+

@@ -1,0 +1,59 @@
+<div>
+	<div id="content">
+		<div class="content">
+		<div class="dpdocs-header">
+  <h2>Chained time management</h2>
+  <div class="dpdocs-baseline">At the beginning was the Promise...</div>
+</div>
+
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+
+			<p><strong>deepjs</strong> uses and abuses of Chaining Pattern. Before all for time management, as all deepjs chained and asynchrone management is based on <a href="/chains/promise">Promises</a> : </p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.when("hello world")
+.done(function(success){ /*...*/ })
+.fail(function(error){ /*...*/ })
+.log();
+</pre>
+</div>
+
+				</div>
+				<div class="col-sm-12 col-md-6">
+<!-- <div class="dpdocs-header">
+  <div class="dpdocs-baseline">...and then Chains grew.</div>
+</div> -->
+<p>But deepjs uses chained syntax also for ergonomy and readability, and provides, by example, chained API for deepjs specific manipulation : </p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep({ a:"hello" })
+.up({ b:"world" })
+.bottom({ c:function(){ return this.a + " " + this.b; } })
+.run("c")
+.log();
+</pre>
+</div>
+				</div>
+
+			</div>
+
+                <div class="section-separator-small"></div>
+			<p>As deepjs API and scope is really large, and could be used to implement lot of things, we have split APIs in differents chains dedicated to specific tasks : </p>
+<dl class="dl-horizontal">
+  				<dt><a href="/chains/promise">promise chain</a> </dt><dd>Base API for all chains. Base of time management.</dd>
+              	<dt><a href="/chains/deep">deepjs chain</a></dt><dd>Collects all the deepjs specific API (up/bottom, queries, run, deepLoad,...).</dd>
+              	<dt><a href="/chains/restful">restful chain</a></dt><dd>Acts as mediator for restful stores.</dt>
+              	<dt><a href="/chains/others#fs">fs chain</a></dt><dd>Manages async file system calls (nodejs).</dt>
+              	<dt><a href="/chains/others#sh">shell chain</a></dt><dd>Manages shell sessions and async commands.</dt>
+              	<dt><a href="/chains/others#ssh">ssh chain</a></dt><dd>Manages SSH sessions and async commands.</dt>
+              	<dt><a href="/chains/others">...</a></dt><dd>...</dt>
+</dl>
+             <p>Each chain is based on <a href="/chains/promise">Promise</a> and so could be seen as a "super-promise" with an extended API.</p>
+		
+
+
+
+		</div>
+	</div>
+</div>

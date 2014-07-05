@@ -1,0 +1,92 @@
+             <div class="section-separator-small"></div>
+<h3 id="this-usage">"this" usage</h3>
+
+<h3 id="iterate">promises iterator</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep.iterate([
+	1,2,deep("delayed").delay(10), new Error("hhh"),4
+], 
+function(s){
+    return "e"+s;
+}, function(e){
+    return "error managed";  // try to coment or not this line 
+})
+.log(); // ==> ["e1", "e2", "edelayed", "error managed", "e4"]
+</pre></div>
+
+through chain :
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep([1,2,deep("delayed").delay(10), new Error("hhh"),4])
+.iterate(function(s){
+    return "e"+s;
+}, function(e){
+    return "error managed";
+})
+.log(); // ==> ["e1", "e2", "edelayed", "error managed", "e4"]
+</pre></div>
+
+Could be used to iterate through functions as :
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep.utils.iterate([
+	function(arg){ return deep("hello "+arg).delay(5); }, 
+	function(arg){ return deep(arg+" world").delay(8); }
+], function(s){
+    return s("deep");
+})
+.log(); // ==> ["hello deep", "deep world"]
+</pre></div>
+
+
+<h3 id="wired">wired asynch functions</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep.wired([
+	function(arg){
+	    return deep.when("arg was : "+arg).delay(5);
+	},
+	function(arg){
+	    return new Error("plaf : "+arg);
+	},
+	function(arg){
+	    return deep.when("arg 2 was : "+arg).delay(5);
+	}
+],
+"hello",
+{
+    test:1
+},
+function(s){
+    return "{" + s + "}";
+},
+function(e){
+    return "{error managed "+e.message+"}";
+})
+.log(); // => {arg 2 was : {error managed plaf : {arg was : hello}}}
+</pre></div> 
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep({
+    func1:function(arg1, arg2){
+        return ["arg11:"+arg1,"arg21:"+arg2];
+    },
+    func2:function(arg1, arg2){
+        return ["arg12:"+arg1,"arg22:"+arg2];
+    },
+    func3:function(arg1, arg2){
+        return ["arg13:"+arg1,"arg23:"+arg2];
+    }
+})
+.query("./(func.*)")
+.wired(["hello","world"])
+.log(); // => ["arg13:arg12:arg11:hello", "arg23:arg22:arg21:world"]
+</pre></div>
+
+</pre></div>

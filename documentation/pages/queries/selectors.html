@@ -1,0 +1,60 @@
+<div>
+	<div id="submenu">
+		<h2>deep selectors</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">Introduction</a></li>
+				<li><a href="#example">example</a></li>
+				<li><a href="#syntax">syntax</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+
+	<div class="content">
+			<h3 id="intro">Intro</h3>
+			<p><strong>deep-selectors</strong> provides a really simple DSL and its really fast parser that return an array of test functions for <a href="/queries/traversal">traversal methods</a>.</p>
+			<p>Both traversal methods accept as second argument a string selector. It will be parsed before use in traversal.</p>
+
+			<div class="alert alert-warning"><span class="label label-warning">Warning</span> For the moment it use dynamic function (aka new Function(...)) and so could not be runned under paranoiac environnements (as Adobe Air). More work will be done on it in a close future.</div>
+
+			<div class="section-separator-end"></div>
+			<h3 id="example">example</h3>
+			<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+var r = deep.depthFirst({
+	a:{
+		b:12
+	},
+	c:{
+		b:14
+	},
+	d:{
+		e:{
+			f:true,
+			g:"hello"
+		},
+		h:{
+			f:false,
+			g:"world"
+		}
+	}
+}, "b=12 | (f&amp;g)");
+deep.log(deep.nodes.paths(r));
+</pre>
+</div>
+			<div class="section-separator-end"></div>
+			<h3 id="syntax">syntax</h3>
+			<p>As simple as if you where typing it in JavaScript. But : </p>
+			<ul>
+				<li>Simple "=" for equality test.</li>
+				<li>Simple "&amp;" for conjonction.</li>
+				<li>Simple "|" for disjonction.</li>
+				<li>You could use any valid parenthesis block.</li>
+				<li>No &gt;, &gt;=, &lt;, &lt;= for the moment.</li>
+				<li>Use 'this' to test value itself e.g. "this=12".</li>
+			</ul>
+		</div>
+	</div>
+</div>
+

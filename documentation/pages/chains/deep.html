@@ -1,0 +1,345 @@
+<div>
+    <div id="submenu">
+        <h2>deep chain</h2>
+        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+            <ul>
+                <li><a href="#start">start</a>
+                	<ul>
+                		<li><a href="#schema">schema</a></li>
+                	</ul>
+                </li>
+<li><a href="#layers">layers</a>
+<ul>
+<li><a href="#up">up</a></li>
+<li><a href="#bottom">bottom</a></li>
+<li><a href="#flatten">flatten</a></li>
+<li><a href="#sheets">sheets</a></li>
+</ul>
+</li>
+<li><a href="#modify">modify</a>
+<ul>
+<li><a href="#set">set</a></li>
+<li><a href="#replace">replace</a></li>
+<li><a href="#remove">remove</a></li>
+<li><a href="#transform">transform</a></li>
+</ul>
+</li>
+<li><a href="#runs">runs</a>
+<ul>
+<li><a href="#run">run</a></li>
+<li><a href="#exec">exec</a></li>
+</ul>
+</li>
+<li><a href="#queries">queries</a>
+<ul>
+<li><a href="#query">query</a></li>
+<li><a href="#bread-first">breadthFirst</a></li>
+<li><a href="#depth-first">depthFirst</a></li>
+</ul>
+</li>
+<li><a href="#navigate">navigate</a>
+<ul>
+<li><a href="#each">each</a></li>
+<li><a href="#first">first</a></li>
+<li><a href="#last">last</a></li>
+<li><a href="#parent">parent</a></li>
+<li><a href="#val">val</a></li>
+</ul>
+</li>
+<li><a href="#tools">tools</a>
+<ul>
+<li><a href="#deep-load">deepLoad</a></li>
+<li><a href="#interpret">interpret</a></li>
+<li><a href="#reverse">reverse</a></li>
+<li><a href="#sort">sort</a></li>
+</ul>
+</li>
+<li><a href="#validation">validation</a>
+<ul><li><a href="#validate">validate</a></li></ul>
+</li>
+<li><a href="#relations">relations</a>
+<ul>
+<li><a href="#map-on">map-on</a></li>
+<li><a href="#get-relations">getRelations</a></li>
+<li><a href="#map-relations">mapRelations</a></li>
+</ul>
+</li>
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+        <div class="content">
+
+
+
+
+
+
+
+<h3 id="api">API</h3>
+
+ <h5><a href="#start">start</a></h5>
+
+<dl class="dl-horizontal">
+<dt><a href="#start-simple">deep(...)</a></dt><dd>simple chain.</dd>
+<dt><a href="#start-schema">deep(..., ...)</a></dt><dd>start with schema.</dd>
+</dl>
+
+ <h5><a href="#layers">layers</a></h5>
+<dl class="dl-horizontal">
+<dt><a href="#up">.up( ... )</a></dt><dd>apply something 'up' on success</dd>
+<dt><a href="#bottom">.bottom( ... )</a></dt><dd>apply something bottom on success</dd>
+<dt><a href="#flatten">.flatten()</a></dt><dd>flatten success</dd>
+<dt><a href="#sheets">.sheets( ... )</a></dt><dd>apply sheets on success</dd>
+</dl>
+
+
+ <h5><a href="#modify">modify</a></h5>
+
+<dl class="dl-horizontal">
+<dt><a href="#set">.set( ... )</a></dt><dd>set value by path in success</dd>
+<dt><a href="#replace">.replace( ... )</a></dt><dd>replace value(s) by query in success</dd>
+<dt><a href="#remove">.remove( ... )</a></dt><dd>remove values by query in success</dd>
+<dt><a href="#transform">.transform( ... )</a></dt><dd>transform success</dd>
+</dl>
+
+<h5><a href="#runs">runs</a></h5>
+<dl class="dl-horizontal">
+<dt><a href="#run">.run( ... )</a></dt><dd>run method or function from success</dd>
+<dt><a href="#exec">.exec( ... )</a></dt><dd>run function</dd>
+</dl>
+
+<h5><a href="#queries">queries</a></h5>
+<dl class="dl-horizontal">
+<dt><a href="#query">.query( q )</a></dt><dd>perfom a query on success</dd>
+<dt><a href="#bread-first">.breadthFirst( test )</a></dt><dd>perfom a breadth first traversal</dd>
+<dt><a href="#depth-first">.depthFirst( test )</a></dt><dd>perform a depth first traversal</dd>
+</dl>
+
+<h5><a href="#navigate">navigate</a></h5>
+<dl class="dl-horizontal">
+<dt><a href="#each">.each( cb )</a></dt><dd>loop through success</dd>
+<dt><a href="#first">.first()</a></dt><dd>keep first in success</dd>
+<dt><a href="#last">.last()</a></dt><dd>keep last in success</dd>
+<dt><a href="#parent">.parent()</a></dt><dd>take parent(s) in success</dd>
+<dt><a href="#val">.val()</a></dt><dd>inject deep.nodes.val(success)</dd>
+</dl>
+
+
+
+<h5><a href="#tools">tools</a></h5>
+
+<dl class="dl-horizontal">
+<dt><a href="#deep-load">.deepLoad()</a></dt><dd>perform a deepLoad on success</dd>
+<dt><a href="#interpret">.interpret()</a></dt><dd>perform an 'interpret' in success</dd>
+<dt><a href="#reverse">.reverse()</a></dt><dd>perform a reverse on success</dd>
+<dt><a href="#sort">.sort()</a></dt><dd>perform a sort on success</dd>
+</dl>
+
+
+<h5><a href="#validation">validation</a></h5>
+<dl class="dl-horizontal"><dt><a href="#validate">.validate(schema)</a></dt><dd>validate success against schema</dd></dl>
+
+
+<h5><a href="#relations">relations</h5>
+<dl class="dl-horizontal">
+<dt><a href="#map-on">map-on</a></dt><dd></dd>
+<dt><a href="#get-relations">getRelations</a></dt><dd></dd>
+<dt><a href="#map-relations">mapRelations</a></dt><dd></dd>
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        <div class="content">
+
+
+                <div class="section-separator-end"></div>
+<h3 id="start">Start chain.</h3>
+<h4 id="schema">deep chain and json-schema</h4>
+
+<p>You could associate a schema to object injected in a deep chain.</p>
+<p>Simply provide schema as second argument when starting such chain.</p>
+
+<div class="dp-example">
+    <pre class="dp-enhance dp-box code" dp-try>
+deep({
+	a:1,
+	b:true,
+	c:"hello",
+	d:{
+		e:"world"
+	}
+},
+{ 
+	properties:{
+		d:{
+			properties:{
+				e:{ type:"string", required:true }
+			}
+		}
+	}
+})
+.validate() // you'll see further what's going on here.
+.log();
+</pre>
+</div>
+
+
+
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="layers">Layers</h3>
+
+<h4 id="up">up</h4>
+                <div class="section-separator-small"></div>
+<h4 id="bottom">bottom</h4>
+                <div class="section-separator-small"></div>
+<h4 id="flatten">flatten</h4>
+                <div class="section-separator-small"></div>
+<h4 id="sheets">sheets</h4>
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="modify">Modify</h3>
+<h4 id="set">set</h4>
+                <div class="section-separator-small"></div>
+<h4 id="replace">replace</h4>
+                <div class="section-separator-small"></div>
+<h4 id="remove">remove</h4>
+                <div class="section-separator-small"></div>
+<h4 id="transform">transform</h4>
+
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="runs">Runs</h3>
+<h4 id="run">run</h4>
+                <div class="section-separator-small"></div>
+<h4 id="exec">exec</h4>
+
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="queries">Queries</h3>
+<h4 id="query">query</h4>
+                <div class="section-separator-small"></div>
+<h4 id="bread-first">breadthFirst</h4>
+                <div class="section-separator-small"></div>
+<h4 id="depth-first">depthFirst</h4>
+
+
+<!-- ______________________________________________________________________________________ -->
+
+                <div class="section-separator-end"></div>
+<h3 id="navigate">Navigate</h3>
+<h4 id="each">each</h4>
+                <div class="section-separator-small"></div>
+<h4 id="first">first</h4>
+                <div class="section-separator-small"></div>
+<h4 id="last">last</h4>
+                <div class="section-separator-small"></div>
+<h4 id="parent">parent</h4>
+                <div class="section-separator-small"></div>
+<h4 id="val">val</h4>
+
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="tools">Tools</h3>
+<h4 id="deep-load">deepLoad</h4>
+                <div class="section-separator-small"></div>
+<h4 id="interpret">interpret</h4>
+                <div class="section-separator-small"></div>
+<h4 id="reverse">reverse</h4>
+                <div class="section-separator-small"></div>
+<h4 id="sort">sort</h4>
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="validation">Validation</h3>
+<h4 id="validate">validate</h4>
+
+<!-- ______________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="relations">Relations</h3>
+<h4 id="map-on">mapOn</h4>
+                <div class="section-separator-small"></div>
+<h4 id="get-relations">getRelations</h4>
+                <div class="section-separator-small"></div>
+<h4 id="map-relations">mapRelations</h4>
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="chain-query">deep(obj).query(q)...</h3>
+<p>Chained query call through <a href="/chains/deep">deep chain</a>. <br/>(for full documentations on chained queries and result management, see <a href="/chains/deep">deep chain docs</a>)</p>
+<p>Perfom a query on current chain success and inject query result (<a href="/queries/descriptors">full descriptors</a> of selected properties) as chain success.</p>
+<p><span class="label label-info">Return</span> : a <a href="/chains/deep">deep chain</a>.</p>
+<div class="dp-example">
+    <pre class="dp-enhance dp-box code" dp-try>
+deep({
+	a:1,
+	b:true,
+	c:"hello",
+	d:{
+		e:"world"
+	}
+})
+// From root : Select the property 'd' then give me the property 'e' in it
+.query("/d/e")
+.log('"/d/e" :\n')		// 'world'
+
+// From root : give me all property wich is a string
+.query("//?_type=string")
+.log('\n"//?_type=string" :\n');	// ['hello', 'world']
+</pre>
+</div>
+<!-- _______________________________________________________________________ -->
+<h4 id="query-schema">query &amp; schema</h4>
+<p>deepjs will try to associate correct sub-schema to selected sub-properties (as it does with direct syntax).</p>
+
+<div class="dp-example">
+    <pre class="dp-enhance dp-box code" dp-try>
+deep({
+	a:1,
+	b:true,
+	c:"hello",
+	d:{
+		e:"world"
+	}
+},
+{ 
+	properties:{
+		d:{
+			properties:{
+				e:{ type:"string", required:true }
+			}
+		}
+	}
+})
+.query("/d/e")
+.done(function(node){
+	return node.schema;
+})
+.log();
+</pre>
+</div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,252 @@
+<div>
+	<div id="submenu">
+		<h2>Compilation</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#shared">shared</a></li>
+				<li><a href="#in-layer">in layer</a></li>
+				<li><a href="#cache">cache</a></li>
+				<li><a href="#sheets-ocm">sheets and ocm</a></li>
+				<li><a href="#init">init</a></li>
+				<li><a href="#async">async</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content">
+
+
+<h3 id="shared">Shared objects</h3>
+
+First, you need to know that each result obtained from an OCM (when you ask it in certain mode(s)) is totaly independant at run time from others OCM results. They are different objects that don't know each others.
+
+Sometimes, you really want to share objects between OCM instances produced in different modes. 
+Pay attention : you could get here a true multithreaded process with shared memory pattern (as deepjs could do concurrent asynch stuffs). But there is no mecanism to lock shared memory while using it. So no possible deadlock... but weird behaviours if you miss something).
+
+All you need to obtain that, something shared between OCM instances, is to set a flag _deep_shared_ in it. That's all.
+Or you could use `deep.Shared( yourValue )` that do it for you (i.e. it just return yourValue decorated with `_deep_shared_:true`).
+
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var obj = deep.ocm({
+	mode1:{
+		test:function(){
+			console.log("this.shared : ", this.myShared);
+		},
+		myShared:deep.Shared([1,2,3])
+	},
+	mode2:{
+		_backgrounds:["this::../mode1"],
+		myShared:[4,5]
+	}
+});
+
+obj.flatten();
+
+obj("mode1").test();				// [1, 2, 3, 4, 5]
+obj("mode1").myShared.push(6,7);
+obj("mode2").test();				// [1, 2, 3, 4, 5, 6, 7]
+</pre>
+            </div>
+		</div>
+		<div class="content">
+<h3 id="in-layer">OCM deeply in layers</h3>
+
+
+You could place OCM objects at any level of your objects and use deepjs tools on it without worring.
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var a = {
+	myProperty:{
+		myValue:deep.ocm({ "public":"hello.", "user":"hello John." })
+	},
+	myOtherProperty:{
+		_backgrounds:["this::../myProperty"],
+		myValue:{
+			"user":"Hello John Doe."
+		}
+	}
+};
+
+deep(a)
+.up({
+	myProperty:{
+		user:"Hello Johny."
+	}
+})
+.flatten();
+
+a.myProperty.myValue("user") // => will return "Hello Johny."
+a.myOtherProperty.myValue("user") // => will return "Hello John Doe."
+</pre>
+</div>
+If you place 'backgrounds' in OCM (at any depth in objects), they will also be flattened transparently.
+
+		</div>
+		<div class="content">
+<h3 id="cache">Cache</h3>
+				</div>
+		<div class="content">
+<h3 id="sheets-ocm">Sheets and OCM</h3>
+
+You could, by default, obviously define a deep.sheet through OCM.
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var mySheet = deep.ocm({
+	"public":{
+		"dq.bottom::./!":{ hello:"world" }
+	},
+	"user":{
+		_backgrounds:["this::../public"],
+		"dq.bottom::./!":{ isUser:true }
+	}
+});
+
+mySheet.flatten();
+
+mySheet("user"); 
+/* 
+	=> will return 
+	{
+		"dq.bottom::./!":{ 
+			hello:"world",
+			isUser:true
+		}
+	}
+*/
+</pre></div>
+But you could also use them at compilation time (apply sheets while your ocmanager compiles).
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var myObject = deep.ocm({
+	"mySheet":{
+		_deep_sheet_:true,
+		"dq.bottom::./!":{ 
+			hello:"world",
+			isUser:true
+		}
+	},
+	"public":{
+		test:true
+	},
+	"user":{
+		_backgrounds:["this::../public"],
+		test:false
+	}
+});
+
+myObject.flatten();
+
+myObject("user", "mySheet"); 	// be careful to the order : the sheet is applyied after 
+/* 
+	=> will return 
+	{
+		hello:"world",
+		isUser:true,
+		test:false
+	}
+*/
+</pre></div>
+Remarque : 
+If you have real asynch call in your sheets that you want to be applyied at compilation, be careful : Read below (OCM and Asynch)
+
+		</div>
+		<div class="content">
+
+<h3 id="init">Init after compilation</h3>
+
+You could provide a function that will be used just after a mode(s) combination is compiled through an ocmanager.
+As compilation is done only once by mode's combination, the provided function will only be called once by mode(s) combination.
+It means : 
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var manager = deep.ocm({
+	mode1:{
+		name:"John",
+		familly:"Doe"
+	},
+	mode2:{
+		name:"Herbert",
+		familly:"Laevus"
+	}
+}, {
+	afterCompilation:function(result){
+		console.log("compiled : ", result.name, result.familly);
+	}
+});
+
+manager("mode1"); // will log "compiled : John Doe"
+manager("mode1"); // any later call will log nothing
+manager("mode1"); // any later call will log nothing
+
+manager("mode1", "mode2"); // will log "compiled : Herbert Laevus"
+manager("mode1", "mode2"); // any later call will log nothing
+manager("mode1", "mode2"); // any later call will log nothing
+
+manager("mode2", "mode1"); // will log "compiled : John Doe"
+manager("mode1", "mode2"); // any later call will log nothing
+manager("mode1", "mode2"); // any later call will log nothing
+
+manager("mode1"); // always no log
+...
+</pre></div> 
+
+If 'afterCompilation' return a promise or anything else it will be the result returned by the ocm call :
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+var manager = deep.ocm({
+	mode1:{ ...	},
+	mode2:{ ... },
+	...
+}, {
+	afterCompilation:function(result){
+		...
+		return deep.when(result)
+		.done(function(res){
+			return "hello";
+		});
+	}
+});
+
+var promise = manager("mode1");
+promise.log(); // will log : 'hello'
+
+</pre></div>
+
+Remarque : read below
+
+		</div>
+		<div class="content">
+
+<h3 id="async">ocm and async</h3>
+
+So... Be aware that, if you want to use OCM transparently in actual deepjs tools and modules, all call on a ocmanager (i.e. myManager("myMode")) should always return the compilation result directly, and should not return any promise.
+The reason of that is mainly for the simplicity of the ocm pattern injection  : 
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+//...
+var myObj = myObject;
+if(myObj &amp;&amp; myObj._deep_ocm_)
+	myObj = myObj();
+
+myObj...; // myObj is now the ocm result and should be the final object (i.e. not a promise)
+//...
+</pre></div>
+This pattern is heavily used at many places in deepjs tools and modules, and could be added anywhere in your own modules.
+For the moment, deepjs tools and modules do not manage promises from OCM calls automagically.
+
+Maybe in the future... ;)
+
+Meanwhile, be careful to provide non-asynch sheets or 'afterCompilation' callback, and to flatten you ocm (or the layer where it sits) BEFORE calling related ocmanager.
+
+And everyting will be ok... ;)
+
+Sub-remarque :
+do not be confused with an OCM store and its init sequence. Each store is lazzily initialised on first (own) API call (store.get, .post, .put, ...) and so you don't need to manage store initialisation before OCM call...  
+
+	</div>
+</div>

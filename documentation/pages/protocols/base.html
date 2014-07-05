@@ -1,0 +1,261 @@
+<div>
+	<div id="submenu">
+		<h2>Protocols base</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#simple">simple</a></li>
+				<li><a href="#get">deep.get</a></li>
+				<li><a href="#getAll">deep.getAll</a></li>
+				<li><a href="#sub-protocol">sub-protocol</a></li>
+				<li><a href="#range">range</a></li>
+				<li><a href="#deep-protocol">deep.protocol</a>
+				<ul>
+					<li><a href="#ocm-protocols">ocm &amp; protocols</a></li>
+					<li><a href="#context-protocols">deep.context</a></li>
+					<li><a href="#preparation">preparation</a></li>
+					<li><a href="#resumed">resumed</a></li>
+				</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content">
+<!-- ______________________________________________________________________________________________ -->
+			<h3 id="simple">Simple example</h3>
+
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = { 
+	get:function(request, options){ 
+		return "deepjs, made with "+request; 
+	}
+};
+//...
+deep.get("myProtoc::love").log();
+</pre>
+						</div>
+						<p>As you could see, deep.protocols (formally a singleton registry) is the main namespace where you store your provider. You could use deep.get("myProviderName::my_request") to call it.</p>
+						<p>By default, all that your provider needs to implement is the "get" method (see below for other methods).</p>
+
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="get">deep.get(req, opt)</h3>
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.get("dummy::hello world").log();
+</pre>
+						</div>
+<p>(See <a href="/protocols/natives#intro">natives protocols</a> for information on 'dummy' provider.)</p>
+<p>This method simply parses the provided request, retrieves the provider gived by the protocol, prepares it if necessary, and use it to get request response.</p>
+<p>Returns a <a href="/chains/promise">Promise</a> that hold the loaded ressource. Or an error if something was wrong.</p>
+<p>If request isn't a String, or if request doesn't contain a protocol, it is injected without load (as this) in promise.</p>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+				<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.get({a:true}).log();
+</pre>
+						</div>
+				</div>
+				<div class="col-sm-12 col-md-6">
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.get("hello world").log();
+</pre>
+						</div>
+				</div>
+			</div>
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="getAll">deep.getAll([req1, req2, ...], opt)</h3>
+						<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep
+.getAll(["dummy::hello world", "eval::true", 12, { b:"hello" }])
+.log();
+</pre>
+						</div>
+<p>(See <a href="/protocols/natives#intro">natives protocols</a> for information on 'dummy' and 'eval' providers.)</p>
+<p>Same thing than before, this method simply parses provided requests, retrieves associated providers, prepares them if necessary, and use them to get requests responses.</p>
+<p>Returns a <a href="/chains/promise">Promise</a> that will return an array containing the loaded ressources. Or an error if something was wrong.</p>
+<p>If any request isn't a String, or if "string requests" don't contain a protocol, they are returned 'as this'.</p>
+<!-- ______________________________________________________________________________________________ -->
+
+                <div class="section-separator-end"></div>
+<h3 id="sub-protocol">sub-protocol</h3>
+<p>If your provider implements others methods than 'get' (and 'range' : see below), you could access them by using "sub-protocol" notation : e.g. "myProtoc.myMethod::my_request"</p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = {
+	//...
+	myMethod:function(request, options){
+		return "Response from myProtoc.myMethod : Hello "+request;
+	}
+}
+//...
+deep.get("myProtoc.myMethod::foo")
+.log();
+</pre>
+</div>
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-end"></div>
+<h3 id="range">range</h3>
+<p>If your provider implements a 'range' method (as below - and as <a href="/restful">restful stores</a> do by default), you could access it with this particular protocol notation : </p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = {
+	range:function(start, end, request, options){
+		// as 'range' method (from restful stores) normally returns a _deep_range_ object 
+		// that contains all informations on requested range : we mimic it here.
+		// (it contains normally more fields than here)
+		return { _deep_range_:true, start:start, end:end, query:request /*, ....*/ };
+	}
+}
+deep.get("myProtoc(0,23)::foo")
+.log();
+</pre>
+</div>
+<p>See range manipulation in <a href="/restful/collection#range">collection store for full infos.</a></p>
+<!-- ______________________________________________________________________________________________ -->
+
+                <div class="section-separator-end"></div>
+<h3 id="deep-protocol">deep.protocol(name)</h3>
+<p>Simple function that will retrieve protocol by name. It's this method that deepjs use to get a particular protocol when requests are parsed. So that's trully the service locator.</p>
+
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = {
+	get:function(request, options){
+		return "hello world : "+request;
+	}
+}
+var provider = deep.protocol("myProtoc");
+deep.log(provider);
+</pre>
+</div>
+
+<p>But it does more than just seeking in deep.protocols. It will manage protocols contextualization for you.</p>
+<p>What does it mean ? it means that <u>protocols implementation could be totally different depending on user roles, plateform, production flags, etc.</u></p>
+<p>And deep.protocol(name) will provide you the good one automagically. Firstly if providers are OCManager, and secondly through deep.context.protocols...</p>
+<p>It will prepare it for you (see <a href="#preparation">below</a>)</p>
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-small"></div>
+<h4 id="ocm-protocols">OCM and protocols</h4>
+
+<p>When you place an <a href="/ocm">OCManager</a> in protocols namespaces (deep.protocols or deep.context.protocols - see below), deep.protocol will return the response of the OCManager (depending on current modes - from deep.context or not) in place of the OCManager itself.</p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = deep.ocm({
+	mode1:{
+		get:function(request, options){
+			return "Response from mode1 : hello "+request;
+		}
+	},
+	mode2:{
+		get:function(request, options){
+			return "Response from mode2 : bye "+request;
+		}
+	}
+},  { groups:"modeGroup" });
+//...
+deep.Modes("modeGroup", "mode1");
+//...
+deep.get("myProtoc::John").log();
+//...
+deep.Modes("modeGroup", "mode2");
+//...
+deep.get("myProtoc::John").log();
+</pre>
+</div>
+
+
+
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-small"></div>
+<h4 id="context-protocols">deep.context and protocols</h4>
+<div class="alert alert-warning"><span class="label label-warning">Warning</span> You should read <a href="/context">context docs</a> before trying to understand this.</div>
+<p>We've said until here, that there is only one namespace where store providers. That's not totally true...</p>
+<p>When you wan't to have a provider <u>only accessible in a certain (deep.)context</u>, you could use the deep.context.protocols namespace to store it.</p>
+<p>deep.protocol('xxx') will check first if 'xxx' is present in deep.context.protocols, before checking in deep.protocols and preparing provider.</p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = {
+	get:function(req){
+		return "hello "+req+" from general protocols";
+	}
+};
+
+deep.get("myProtoc::john")
+.log()
+.contextualise()		// shallow copy current deep.context locally (see deep.context docs)
+.done(function(){
+	deep.context.protocols = deep.context.protocols || {};
+	deep.context.protocols.myProtoc = {
+		get:function(req){
+			return "hello "+req + " from contextualised protocols";
+		}
+	};
+})
+.delay(100)	// async simulation
+.done(function(){
+	return deep.get("myProtoc::john");
+})
+.log();
+
+deep.delay(50) // async simulation
+.done(function(){
+	return deep.get("myProtoc::john");
+})
+.log();
+</pre>
+</div>
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-small"></div>
+<h4 id="preparation">Protocol preparation</h4>
+<p>While deep.protocol(name) gets your provider, it flattens it (deep.flatten - if it's an ocm by example) and initialise it if needed (if you've provided an init method in your provider).</p>
+<p> <span class="label label-info">Remarque</span>  So deep.protocol(xxx) could return a <a href="/chains/promise">Promise</a> that you'll need to wait for if you use it directly. This promise will return prepared provider.</p>
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.protocols.myProtoc = deep.ocm({
+	mode1:{
+		myVar:"lolipop",
+		init:function(){
+			deep.log("myProtoc init");
+		},
+		get:function(req){
+			return "("+this.myVar+") and you say : "+req;
+		}
+	},
+	mode2:{
+		_backgrounds:["this::../mode1"],
+		myVar:"hollywood"
+	}
+}, { groups:"myGroup"});
+//...
+deep.Modes("myGroup", "mode2");
+//...
+deep.get("myProtoc::powaaaa").log();
+</pre>
+</div>
+
+<!-- ______________________________________________________________________________________________ -->
+                <div class="section-separator-small"></div>
+<h4 id="resumed">Resumed</h4>
+<h5 class="bloup">Ressource path format</h5>
+<p>If your provider implements a get method : you could use it through "myProvider::myRequest".</p>
+<p>If your provider implements a range method : you could use it through "myProvider(0,23)::myRequest".</p>
+<p>If your provider implements others method : you could use it through "myProvider.myMethod::myRequest".</p>
+<br/>
+<h5>Protocol retrieval</h5>
+<p>It will seek first in deep.context.protocols, then, if nothing was found there, it will look in deep.protocols.</p>
+<p>If something was found, before return, it will look if it's an OCManager. If so, it will get the result from OCManager with default modes.
+If there is an init method in the provider (after ocm check), it will fire it and wait initialisation end before returning prepared provider.</p>
+<!-- ______________________________________________________________________________________________ -->
+
+
+			
+		</div>
+	</div>
+</div>
+

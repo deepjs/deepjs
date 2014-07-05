@@ -1,0 +1,155 @@
+<div>
+	<div id="submenu">
+		<h2>Flatten</h2>
+		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">Introduction</a>
+				</li>
+				<li><a href="#simple">simple</a>
+				</li>
+				<li><a href="#protocol">protocol usage</a>
+				</li>
+				<li><a href="#this">inner inheritance</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content">
+			<h3 id="intro">Intro</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+					
+					<p>General method provided by deep to fetch and apply inheritance between objects.</p>
+					<p>Realy useful in many cases, and often so smart.</p>
+
+
+
+## Externals files example
+
+```javascript
+
+var obj2 = {
+	_backgrounds:["js::path/to/my/object/to/inherit", "instance::path/to/class/to/instanciate/then/apply"],
+	//...
+}
+
+deep(obj2)
+.flatten()
+//...
+
+```
+
+Remarque : Any protocol that provide js objects should work. (as json:: if you load a related store - see [protocols](./stores/native-protocols-and-stores.md))
+
+
+## Internal inheritance example
+
+```javascript
+
+var obj2 = {
+	a:{
+		hello:"world"
+	},
+	b:{
+		_backgrounds:["this::../a"]
+	}
+	//...
+}
+
+deep(obj2)
+.flatten()
+//...
+
+```
+
+You could obviously mix objects, externals and internals references.
+
+</p>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<div class="dp-example">
+                        <pre class="dp-enhance dp-box code" dp-try>
+deep(1).log();
+</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<h3 id="simple">Simple</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+					<p>ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<div class="dp-example">
+                        <pre class="dp-enhance dp-box code" dp-try>
+
+var obj = {
+	test:function(arg){
+		return arg+" - from obj";
+	}
+}
+
+var obj2 = {
+	_backgrounds:[obj],
+	test:deep.compose.after(function(arg){
+		return arg+" - from obj2";
+	})
+}
+
+deep(obj2)
+.flatten()
+.done(function(flattened){
+    return flattened.test("hello");
+})
+.log();
+
+</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<h3 id="protocol">Protocol usage</h3>
+			<div class="alert alert-info"><span class="label label-info">Info</span> <a href="/protocols">Protocols</a> are simple way to hide real ressources provider and to lazzily fetch it when needed. <a href="/protocols">More info</a>.</div>
+			<div class="row">
+				
+				<div class="col-sm-12 col-md-6">
+
+					<p></p>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<div class="dp-example">
+                        <pre class="dp-enhance dp-box code" dp-try>
+
+var obj1 = { a:12, b:true, c:{ d:"hello" } };
+var obj2 = { b:false }
+deep.utils.up(obj2, obj1);
+deep(obj1).log();
+</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<h3 id="this">Inner inheritance</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-6">
+					<p>ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<div class="dp-example">
+                        <pre class="dp-enhance dp-box code" dp-try>
+var obj1 = { a:12, b:true, c:{ d:"hello" } };
+var obj2 = { b:false }
+deep.utils.up(obj2, obj1);
+deep(obj1).log();
+</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

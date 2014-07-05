@@ -1,0 +1,68 @@
+<div>
+	<div id="submenu">
+		<h2>Overview</h2>
+		<div class="submenu-block dp-enhance"  dp-control="js::/js/sub-nav.js">
+			<ul>
+				<li><a href="#intro">jsobjects as layers</a></li>
+				<li><a href="#tools">manipulating layers</a></li>
+				<li><a href="#collisions">collision management</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
+		<div class="content" >
+			<h3 id="intro">Why do we talk about "layers" ?</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>What we call a layer is nothing more than a js object structure. We gave js object that name because deepjs let you manipulate them like simple layers. Think about a software like photoshop, and how they merge layers and you almost got the concept</p>
+					<p>To illustrate it imagine a "layer" representation of your object. Let's start with a real simple object that contain one property and one function :</p>
+					<p>------ schema  : un simple layer avec 2 trucs --------</p>
+					<p>Now you want to add something to your object the "layered" way. Lets see how it work :</p>
+					<p>------ schema  : un simple layer avec 2 trucs + un up d'un autre layer simple qui a 2 autres trucs --------</p>
+					<p>The result of the operation is that your first layer was merged with the second, and so your object is now a composition of the 2 layers. This is a really cool way to manipulate js objects !</p>
+					When you got that flat vision of your objects as layers, you could :
+					<p>
+  						<ul>
+  						<li>apply layers on any objects by the bottom (like a background) : use it for classic OOP (inheritance, composition).</li> 
+						<li>or you could apply layers by the up (like a foreground) : use it to add aspects on your objects to specialise, add capabilities, modify or whatever.</li>
+						</ul>
+					</p>
+					<p>------ schema  : 3 layers, celui du dessous = model, du milier = implement, du dessus = Aspect --------</p>
+				</div>
+			</div>
+			<h3 id="tools">Tools at your disposition for manipulating layers</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>Your layers will rarely be as simple as the latest example, but don't worry, deepjs got all the tools to manipulate them as simple layers even if they are big or complexe as you want. For example, you don't have to use special tools to manipulate a complexe object that contains a complexe structure of nested object. Deepjs do the job as deep as your structure is. So you can always keep that representation of your js object structures as layers.</p>
+					<p>To manipulate those layers like simple sheets of paper, you got 2 basic commands :</p>
+					<p>
+						<ul>
+	  						<li>up ?schema?</li> 
+							<li>bottom ?schema?</li>
+						</ul>
+					</p>
+				</div>
+			</div>
+			<h3 id="collisions">Everything is about collision management</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>When you will create landscapes with your layers, you will of course get collisions of some of your layers properties/methods. By default, it is overrided with the upper layer value/function (except for arrays).</p>
+					<p>------ schema  : collision de value de 2 layers + result --------</p>
+					<p>
+					 But that default behaviour is certainly not always what you want. So here again deepjs is providing all the necessary tools for managing collisions :</p>
+					<p>
+						<ul>
+	  						<li>Colliders : Tools that helps you to manage the behaviour of collisions</li> 
+							<li>Compositions : Tools to manage function collisions by composing them</li>
+						</ul>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>Now that you have the big picture of js objects seen as layers, jump to the next section to see it in action.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

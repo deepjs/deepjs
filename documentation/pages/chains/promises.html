@@ -1,0 +1,344 @@
+<div>
+    <div id="submenu">
+        <h2>Promises</h2>
+        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+            <ul>
+                <li><a href="#intro">intro</a></li>
+                <li><a href="#api">API list</a></li>
+                <li><a href="#base">base</a>
+                    <ul>
+                        <li><a href="#done">.done()</a></li>
+                        <li><a href="#fail">.fail()</a></li>
+                        <li><a href="#then">.then()</a></li>    
+                        <li><a href="#always">.always()</a></li>
+                    </ul>
+                </li>
+                <li><a href="#logs">logging</a>
+                    <ul> 
+                        <li><a href="#log">.log()</a></li>    
+                        <li><a href="#slog">.slog()</a></li>    
+                        <li><a href="#elog">.elog()</a></li>
+                        <li><a href="#clog">.clog()</a></li>
+                    </ul>
+                </li>
+                <li><a href="#states">mementos</a>
+                    <ul> 
+                        <li><a href="#to-state">.toState()</a></li>
+                        <li><a href="#from-state">.fromState()</a></li>
+                    </ul>
+                </li>
+                <li><a href="#context">context</a>
+                    <ul> 
+                        <li><a href="#contextualise">.contextualise()</a></li>
+                        <li><a href="#to-context">.toContext()</a></li>
+                        <li><a href="#from-context">.fromContext()</a></li>
+                    </ul>
+                </li>
+                <li><a href="#ocm">OCM</a>
+                    <ul> 
+                        <li><a href="#modes">.modes()</a></li>
+                        <li><a href="#roles">.roles()</a></li>
+                    </ul>
+                </li>
+                <li><a href="#identities">identities</a>
+                    <ul> 
+                        <li><a href="#deep">.deep()</a></li>
+                        <li><a href="#ohers">other chains</a></li>
+                        <li><a href="#close">.close()</a></li>
+                    </ul>
+                </li>
+                <li><a href="#misc">misc</a>
+                    <ul> 
+                        <li><a href="#equal">.equal()</a></li>
+                        <li><a href="#delay">.delay()</a></li>
+                        <li><a href="#chain-when">.when()</a></li>
+                        <li><a href="#branches">.branches()</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+        <div class="content">
+
+
+<h3 id="intro">intro</h3>
+<p>You'll fin here the Promise API. If you haven't done yet, you should read - at least in diagonal - the <a href="/chains/fundamentals">"fundamentals"</a> section.</p>
+<p>If you searching about <a href="/chains/fundamentals#deferred">Deferred</a>, or <a href="/chains/fundamentals#when">when( ... )</a> and <a href="/chains/fundamentals#all">all( ... )</a>, there they are.</p>
+
+                <div class="section-separator-end"></div>
+<h3 id="api">API</h3>
+
+        <h5>base</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#done">.done( callback )</a></dt><dd>inject success in callback.</dd>
+            <dt><a href="#fail">.fail( callback )</a></dt><dd>inject error in callback.</dd>
+            <dt><a href="#then">.then( doneCB, failCB )</a></dt><dd>if success : inject success in doneCB. else : inject error in failCB.</dd>
+            <dt><a href="#then">.always( callback )</a></dt><dd>inject success (if any) and error (if any) in callback.</dd>
+        </dl>
+        <h5>logging</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#log">.log()</a></dt><dd>log current success or error.</dd>
+            <dt><a href="#slog">.elog()</a></dt><dd>log success.</dd>
+            <dt><a href="#elog">.slog()</a></dt><dd>log error.</dd>
+            <dt><a href="#clog">.clog( key )</a></dt><dd>log context.</dd>
+        </dl>
+
+        <h5>memento</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#to-state">.toState(key, value)</a></dt><dd>store value or success in current chain's state.</dd>
+            <dt><a href="#from-state">.fromState(key)</a></dt><dd>read value in chain's state and inject it in chain.</dd>
+        </dl>
+
+
+        <h5>context</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#contextualise">.contextualise()</a></dt><dd>associate new context to current chain.</dd>
+            <dt><a href="#to-context">.toContext(key, value)</a></dt><dd>store value or success in chain's context.</dd>
+            <dt><a href="#from-context">.fromContext()</a></dt><dd>read value in chain's context, and inject it in chain.</dd>
+        </dl>
+
+
+        <h5>OCM</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#modes">.modes(key, value)</a></dt><dd>set (in chain's context) 'key' modes to value.</dd>
+            <dt><a href="#roles">.roles()</a></dt><dd>set (in chain's context) 'roles' modes to value.</dd>
+        </dl>
+
+
+        <h5>identities</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#log">.log()</a></dt><dd>log current success or error.</dd>
+            <dt><a href="#slog">.elog()</a></dt><dd>log success.</dd>
+            <dt><a href="#elog">.slog()</a></dt><dd>log error.</dd>
+            <dt><a href="#clog">.clog( key )</a></dt><dd>log context.</dd>
+        </dl>
+
+        <h5>misc</h5>
+        <dl class="dl-horizontal">
+            <dt><a href="#equal">.equal( arg )</a></dt><dd>test strict equality (deepEqual) between success and arg.</dd>
+            <dt><a href="#delay">.delay( ms )</a></dt><dd>delay the execution of the rest of the chain.</dd>
+            <dt><a href="#chain-when">.when(...)</a></dt><dd>...</dd>
+            <dt><a href="#branches">.branches( callback )</a></dt><dd>create brancher and inject it in callback.</dd>
+        </dl>
+
+
+
+
+		</div>
+        <div class="content">
+
+<!-- _____________________________________________________________________________________________________________BASE________ -->
+                <div class="section-separator-end"></div>
+<h3 id="base">Base</h3>
+<p>Fundamentals methods of Promises.</p>
+                <div class="section-separator-small"></div>
+<h4 id="done">.done( function callback(success){} )</h4>
+
+<div class="dp-enhance" dp-api-description >
+    <dl rel="args" class="dl-horizontal">
+        <dt>callback</dt><dd>The success handler.</dd>
+    </dl>
+    <div rel="returns">
+        the current chain handler. 
+    </div>
+</div>
+
+
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.when("hello").done(function (s){ deep.log(s); });
+</pre>
+</div>
+
+
+
+
+                <div class="section-separator-small"></div>
+<h4 id="fail">.fail( function callback(error){} )</h4>
+
+<div class="dp-enhance" dp-api-description >
+    <dl rel="args" class="dl-horizontal">
+        <dt>callback</dt><dd>The error handler.</dd>
+    </dl>
+    <div rel="returns">
+        the current chain handler. 
+    </div>
+</div>
+
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
+</pre>
+</div>
+
+
+
+
+
+
+                <div class="section-separator-small"></div>
+<h4 id="then">.then(function(error){})</h4>
+
+<div class="dp-enhance" dp-api-description >
+    <dl rel="args" class="dl-horizontal">
+        <dt>callback</dt><dd>The error handler.</dd>
+    </dl>
+    <div rel="returns">
+        the current chain handler. 
+    </div>
+</div>
+
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
+</pre>
+</div>
+
+
+
+
+                <div class="section-separator-small"></div>
+<h4 id="always">.always(function(success, error){})</h4>
+
+
+<div class="dp-enhance" dp-api-description >
+    <dl rel="args" class="dl-horizontal">
+        <dt>callback</dt><dd>The error handler.</dd>
+    </dl>
+    <div rel="returns">
+        the current chain handler. 
+    </div>
+</div>
+<p>will always be executed.</p>
+
+<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
+</pre>
+</div>
+
+
+
+
+
+                <div class="section-separator-end"></div>
+<!-- ____________________________________________________________________________________________________________LOG_________ -->
+<h3 id="logs">Logging familly.</h3>
+<h4 id="log">.log()</h4>
+
+<p>will always be executed.</p>
+
+if you provide no arguments :
+will log current state. (success or error)
+if you provide a list of arguments (i.e. .log(arg1, "hello", myObject, 12, ...)), it will print them as deep log would do.
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep.when(true)
+.log("hello", "john", ":");
+</pre></div>
+
+It does not modifiy promise state.
+<div class="section-separator-small"></div>
+<h4 id="slog">.slog( ... )</h4>
+
+same thing as .log() above.
+But log current context in place of promise state.
+it does not modifiy promise state.
+
+<div class="section-separator-small"></div>
+<h4 id="elog">.elog( ... )</h4>
+
+same thing as .log() above.
+But log current context in place of promise state.
+it does not modifiy promise state.
+
+<div class="section-separator-small"></div>
+<h4 id="clog">.clog( key )</h4>
+
+same thing as .log() above.
+But log current context in place of promise state.
+it does not modifiy promise state.
+
+
+<!-- ________________________________________________________________________________________________________MEMENTOS_____________ -->
+                <div class="section-separator-small"></div>
+<h3 id="states">Mementos</h3>
+<h4 id="to-state">.toState( key, value )</h4>
+                <div class="section-separator-small"></div>
+<h4 id="from-state">.fromState( key )</h4>
+
+<!-- ________________________________________________________________________________________________________CONTEXT_____________ -->
+                <div class="section-separator-small"></div>
+<h3 id="context">Context</h3>
+
+
+<h4 id="contextualise">.contextualise()</h4>
+
+
+                <div class="section-separator-small"></div>
+<h4 id="to-context">.toContext(key, value)</h4>
+
+                <div class="section-separator-small"></div>
+<h4 id="from-context">.fromContext(key)</h4>
+
+<!-- _______________________________________________________________________________________________________OCM______________ -->
+                <div class="section-separator-small"></div>
+<h3 id="ocm">OCM</h3>
+<h4 id="modes">.modes(...)</h4>
+
+                <div class="section-separator-small"></div>
+<h4 id="roles">.roles(key, value)</h4>
+
+<!-- ________________________________________________________________________________________________________IDENTITIES_____________ -->
+<h3 id="identities">Identities</h3>
+
+<!-- _________________________________________________________________________________________________________MISC____________ -->
+<h3 id="misc">Misc</h3>
+
+<h4 id="equal">.equal( obj )</h4>
+
+Executed only if promise is in success state.
+
+Test success struct equality to obj. Useful for testcasing.
+
+If not equal, it inject a PreconditionFailed error (status 412) in promise, with equality report.
+
+If equal : it does not modifiy promise state.
+
+
+                <div class="section-separator-small"></div>
+<h4 id="delay">.delay( ms )</h4>
+
+executed only in success state.
+Add an artifical delay in chain execution. useful for test and debug.
+
+
+
+                <div class="section-separator-small"></div>
+<h4 id="chain-when">.when( something )</h4>
+
+Not exactly the same thing as deep.when( something ) that return a promise that waiting 'something' (you start a promise as this),
+when you use it in an existant promise chain, it will wait 'something' and take it result as current state before continuing.
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-try>
+deep.when( something )
+.done(function( somethingResult ))
+.when( anotherthing )
+.done(function( anotherthingResult ){
+	...
+});
+</pre></div>
+
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+
+

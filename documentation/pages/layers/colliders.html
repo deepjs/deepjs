@@ -1,0 +1,105 @@
+<div>
+    <div id="submenu">
+        <h2>Colliders</h2>
+        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+            <ul>
+                <li><a href="#intro">deep.collider</a></li>
+                <li><a href="#replace">.replace()</a></li>
+                <li><a href="#array.insertAt">.array.insertAt()</a></li>
+                <li><a href="#custom">custom</a></li>
+				<li><a href="#chainable">chainable</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+    	<div class="content" >
+			<h3 id="intro">What's a deepjs collider?</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>You saw in the previous sections that when you manipulate layers with the up or bottom tool, you can have collisions. The default behaviour is that the top layer overwrite the value (except arrays that are merged).</p>
+					<p>A deepjs collider let you manage those collisions so you can have a different behaviour than the default one.</p>
+				</div>
+			</div>
+		</div>
+		<div class="content" >
+			<h3 id="replace">.replace(value)</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>This method set the collided property with the given value.</p>
+					<p>For example you want to override the default merging of colliding arrays by a replacement.</p>
+				</div>
+				<div class="col-sm-12 col-md-12">
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep({ b:[1,2,3] })
+.up({
+    b:deep.collider.replace([4,5])
+})
+.log()
+</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content" >
+			<h3 id="array.insertAt">.array.insertAt(value,position)</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>This method insert the "value" at the desired "position" in the array.</p>
+					<p></p>
+				</div>
+				<div class="col-sm-12 col-md-12">
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep({ b:[1,2,3] })
+.up({
+    b:deep.collider["array.insertAt"](["hello"],2)
+})
+.log()
+</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content" >
+			<h3 id="custom">Make your own collider</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>You can of course build your custom colliders. This is done with the deep.collider.Collider.add() function.</p>
+					<p>Let's learn this through a simple example :</p>
+					<p>You want to use a collider that sum the numbers that collides.</p>
+				</div>
+				<div class="col-sm-12 col-md-12">
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+deep.collider.Collider.add("sum", function(input, value){
+	return input + value;
+});
+var a = { balance:10 };
+var b = {
+    balance:deep.collider.sum(33)
+};
+
+deep(a).up(b).log();
+</pre>
+					</div>
+				</div>
+			</div>
+        </div>
+        <div class="content" >
+			<h3 id="chainable">Colliders are chainable</h3>
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<p>You can use more than one collider by simply adding them to the chain.</p>
+				</div>
+				<div class="col-sm-12 col-md-12">
+					<div class="dp-example">
+<pre class="dp-enhance dp-box code" dp-try>
+example of 2 or more chained colliders
+</pre>
+					</div>
+				</div>
+			</div>
+        </div>
+    </div>
+</div>

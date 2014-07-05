@@ -1,0 +1,58 @@
+## Classes composition with OCM
+
+You could use OCM prototype/constructor to define classes compositions.
+
+For that you use deep.compose.ClassFactory(arg, ...) that take mix of functions, objects, and OCM (so the same thing than deep.compose.Classes(...) + OCM) and return a factory. This factory produce Classes depending en currents or provided (ocm) modes.
+
+example :
+
+```javascript
+
+var proto = deep.ocm({
+	mode1:{
+		//...
+	},
+	mode2:{
+		//...
+	}
+});
+
+var constructor = deep.ocm({
+	mode1:function(){ /*....*/ },
+	mode2:function(){ /*....*/ }
+});
+
+var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
+...
+proto.mode("mode2");			// or set it through groups.
+constructor.mode("mode1");			// or set it through groups.
+...
+var MyClass = MyClassFactory();			// produce MyClass with current modes
+var instance = new MyClass(); 			// MyClass has constructor.mode1 and proto.mode2
+
+```
+example 2 :
+
+```javascript
+
+var proto = deep.ocm({
+	mode1:{
+		//...
+	},
+	mode2:{
+		//...
+	}
+}, { group:"example"});
+
+var constructor = deep.ocm({
+	mode1:function(){ /*....*/ },
+	mode2:function(){ /*....*/ }
+}, { group:"example"});
+
+var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);s
+...
+var MyClass = new MyClassFactory({ example:"mode1" })(); // MyClass has constructor.mode1 and proto.mode1
+...
+```
+you could provide 'modes map' (see above) to factory (that will be merge (deep up) with currents ones (from the 3 namespaces - if any)) 
+and used before using OCM. Rmq : it uses a local deep.context, so it's safe to use any mode here without changing current context.
