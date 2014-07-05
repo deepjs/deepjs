@@ -1,4 +1,4 @@
-var requirejs = require('requirejs');
+var requirejs = require('../requirejs/bin/r.js');
 var fs = require('fs');
 
 var config = {
