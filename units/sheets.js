@@ -37,8 +37,7 @@ define(["require","../deep"], function (require, deep) {
 						test:1
 					}
 				};
-
-				deep.utils.up(sheet, obj);
+				deep.up(sheet, obj);
 				return deep(obj).equal({"array":["from bottom","base entry","from up"],"a":{"test":123,"other":true},"hello":"world"});
 			},
 			transform:function(){
@@ -52,124 +51,6 @@ define(["require","../deep"], function (require, deep) {
 				.up(sheet)
 				.equal(["e1", "e2", "e3", "e4", "e5"]);
 			},
-			through:function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq.through::./*":function(input){
-						return "e"+input;
-					}
-				};
-				return deep([1,2,3,4,5])
-				.up(sheet)
-				.equal([1,2,3,4,5]);
-			}/*,
-			sheeter1:function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq.sheeter::./*":  deep.sheeter
-										.up({ fromUp:"tools" })
-										.bottom({ fromBottom:"hello" })
-				};
-				return deep({
-					a:{
-						base:"deepjs"
-					}
-				})
-				.up(sheet)
-				.equal( {
-					"a": {
-						"fromBottom": "hello",
-						"base": "deepjs",
-						"fromUp": "tools"
-					}
-				});
-			},
-			"sheeter.flatten":function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq.sheeter::./a/b":deep.sheeter.flatten()
-				};
-				return deep({
-					a:{
-						b:{
-							_backgrounds:["this::../c"],
-							hello:"world"
-						},
-						c:{
-							test:"inherited"
-						}
-					}
-				})
-				.up(sheet)
-				.equal({"a":{"b":{"test":"inherited","hello":"world"},"c":{"test":"inherited"}}});
-			},
-			"sheeter.transform":function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq.sheeter::./a/b":deep.sheeter.transform(function(input){
-						return "e : " + input;
-					})
-				};
-				return deep({
-					a:{
-						b:"hello world"
-					}
-				})
-				.up(sheet)
-				.equal( {"a":{"b":"e : hello world"}} );
-			},
-			_backgrounds:function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq._backgrounds::/!":{ hello:"world" }
-				};
-
-				var obj = {
-					a:true
-				};
-
-				deep.up(sheet, obj);
-				return deep(obj).equal({ hello:"world", a:true });
-			},
-			backgrounds2:function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq._backgrounds::/!":[{ hello:"world" }]
-				};
-
-				var obj = {
-					a:true
-				};
-
-				deep.up(sheet, obj);
-				return deep(obj).equal({ hello:"world", a:true });
-			},
-			backgrounds3:function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq._backgrounds::/!":[{ hello:"world" }]
-				};
-
-				var obj = {
-					_backgrounds:[{ lolipop:true }],
-					a:true
-				};
-
-				deep.up(sheet, obj);
-				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
-			},
-			"sheeter.backgrounds":function(){
-				var sheet = {
-					_deep_sheet_:true,
-					"dq.sheeter::/!":deep.sheeter.backgrounds({ hello:"world" })
-				};
-				var obj = {
-					_backgrounds:[{ lolipop:true }],
-					a:true
-				};
-				deep.up(sheet, obj);
-				return deep(obj).equal({ hello:"world", lolipop:true, a:true });
-			}*/,
 			sheets_as__backgrounds:function(){
 				return deep({
 					test:false,
@@ -261,7 +142,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			sheet_up_object:function(){
-				var a = deep.utils.up({
+				var a = deep.up({
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ hello:"world" }
 				}, { bloup:true });
@@ -271,7 +152,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			sheet_bottom_object:function(){
-				var a = deep.utils.bottom({
+				var a = deep.bottom({
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ hello:"world" }
 				}, { bloup:true });
@@ -280,7 +161,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			object_bottom_sheet:function(){
-				var a = deep.utils.bottom({ bloup:true }, {
+				var a = deep.bottom({ bloup:true }, {
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ hello:"world" }
 				});
@@ -290,7 +171,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			object_up_sheet:function(){
-				var a = deep.utils.up({ bloup:true }, {
+				var a = deep.up({ bloup:true }, {
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ hello:"world" }
 				});
@@ -299,7 +180,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			sheet_up_sheet:function(){
-				var a = deep.utils.up({
+				var a = deep.up({
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ bloup:true }
 				},{
@@ -315,7 +196,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			sheet_bottom_sheet:function(){
-				var a = deep.utils.bottom({
+				var a = deep.bottom({
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ bloup:true }
 				},{
@@ -348,8 +229,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			sheets_in_compile:function(){
-
-				var c = deep.compile({
+				var c = deep.bottom({
 					test:false
 				},
 				{
@@ -375,6 +255,189 @@ define(["require","../deep"], function (require, deep) {
 				.equal({
 					hello:"tulip",
 					bloup:true
+				});
+			},
+			sheeter_up:function(){
+				return deep({
+					test:{ hello:"world" }
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./test":deep.sheet.up({ hello:"deepjs" })
+				})
+				.equal({
+					test:{ hello:"deepjs" }
+				});
+			},
+			sheeter_bottom:function(){
+				return deep({
+					test:{ hello:"world" }
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./test":deep.sheet.bottom({ bloup:"deepjs" })
+				})
+				.equal({
+					test:{ bloup:"deepjs", hello:"world" }
+				});
+			},
+			sheeter_sheet:function(){
+				return deep({
+					test:{ hello:"world" }
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./test":deep.sheet.sheet({ "dq.up::./hello":"deepjs" })
+				})
+				.equal({
+					test:{ hello:"deepjs" }
+				});
+			},
+			sheeter_chain:function(){
+				return deep({
+					test:{ hello:"world" }
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./test":deep.sheet.bottom({ bloup:"deepjs" }).up({ lolipop:true })
+				})
+				.equal({
+					test:{ bloup:"deepjs", hello:"world", lolipop:true }
+				});
+			},
+			sheeter_transform:function(){
+				return deep({
+					test:{ hello:"world" }
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./test":deep.sheet.transform(function(node){
+						console.log("node : ", node)
+						node.value.bloup = true;
+						return node.value;
+					})
+				})
+				.equal({
+					test:{ hello:"world", bloup:true }
+				});
+			},
+			sheeter_flatten:function(){
+				return deep({
+					_backgrounds:[{ bloup:true }],
+					test:{ hello:"world" }
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.flatten()
+				})
+				.equal({
+					bloup:true,
+					test:{ hello:"world" }
+				});
+			},
+			sheeter_interpret:function(){
+				return deep({
+					test:"hello { name }"
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./test":deep.sheet.interpret({ name:"John" })
+				})
+				.equal({
+					test:"hello John"
+				});
+			},
+			sheeter_after:function(){
+				return deep({
+					test:"hello"
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.after(function(entry, options){
+						entry.value.bloup = true;
+					})
+				})
+				.equal({
+					test:"hello",
+					bloup:true
+				});
+			},
+			sheeter_after_before:function(){
+				return deep({
+					test:"hello"
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.after(function(entry, options){
+						entry.value.bloup = true;
+					}).before(function(entry, options){
+						entry.value.lolipop = true;
+					})
+				})
+				.equal({
+					test:"hello",
+					lolipop:true,
+					bloup:true
+				});
+			},
+			sheeter_after_before_around:function(){
+				return deep({
+					test:"hello"
+				})
+				.up({
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.after(function(entry, options){
+						entry.value.bloup = true;
+					}).before(function(entry, options){
+						entry.value.lolipop = true;
+					})
+					.around(function(old){
+						return function(entry, options){
+							entry.value.blap = true;
+							old.call(this, entry, options);
+							entry.value.ploutch = true;
+						}
+					})
+				})
+				.equal({
+					test:"hello",
+					blap:true,
+					lolipop:true,
+					bloup:true,
+					ploutch:true
+				});
+			},
+			sheeter_merge:function(){
+				var sheet = deep.bottom({
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.after(function(entry, options){
+						entry.value.bloup = true;
+					})
+				},{
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.before(function(entry, options){
+						entry.value.lolipop = true;
+					})
+				},{
+					_deep_sheet_:true,
+					"dq::./!":deep.sheet.around(function(old){
+						return function(entry, options){
+							entry.value.blap = true;
+							old.call(this, entry, options);
+							entry.value.ploutch = true;
+						}
+					})
+				});
+				return deep({
+					test:"hello"
+				})
+				.up(sheet)
+				.equal({
+					test:"hello",
+					blap:true,
+					lolipop:true,
+					bloup:true,
+					ploutch:true
 				});
 			}
         }

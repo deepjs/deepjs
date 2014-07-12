@@ -5,7 +5,9 @@ define(["require", "../deep"], function(require, deep) {
 	var unit = {
 		title: "deepjs/units/views",
 		stopOnError: false,
-		setup: function() {},
+		setup: function() {
+			console.log("______________________________________ $ : ", deep.context.$)
+		},
 		tests: {
 			how: function() {
 				return deep.View({

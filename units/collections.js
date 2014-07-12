@@ -5,7 +5,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","../deep", "../lib/stores/collection", "../lib/schema"], function (require, deep) {
+define(["require","../deep", "../lib/restful/collection", "../lib/schema"], function (require, deep) {
 
     var unit = {
         title:"deepjs/units/collections",

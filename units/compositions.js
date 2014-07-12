@@ -391,7 +391,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 });
                 return deep(a()).equal("before:hello:after");
             },
-            dynamicBranches:function(){
+            /*dynamicBranches:function(){
                 var closure = { test:true };
                 var a = deep.compose.before(function(){
                     return "hello";
@@ -415,7 +415,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return a();
                 })
                 .equal("after:hello");
-            },
+            },*/
             func_up_compo:function(){
                 var compo = deep.compose.after(function(){
                     return "lolipopi";

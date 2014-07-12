@@ -38,7 +38,7 @@ define(["require","../deep"], function (require, deep) {
 						return "myprotoc range : (start:"+start+",end:"+end+") : query:"+query; 
 					}
 				});
-				return deep.get("myProtoc(3,67)::hello")
+				return deep.get("myProtoc.range(3,67)::hello")
 				.equal("myprotoc range : (start:3,end:67) : query:hello");
 			},
 			contextualised:function(){
@@ -74,7 +74,7 @@ define(["require","../deep"], function (require, deep) {
 				 "_deep_request_": true,
 				 "request": "dummy::hello",
 				 "protocol": "dummy",
-				  "provider": deep.protocols.dummy,
+				  "provider": null,
 				  "method": "get",
 				 "uri": "hello"
 				});

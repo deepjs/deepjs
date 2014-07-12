@@ -17,20 +17,6 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             delete deep.protocols.test;
         },
         tests : {
-            /*replace:function(){
-                return deep({ b:[1,2,3] })
-                .up({
-                    b:deep.collider.replace([4,5])
-                })
-                .equal({ b:[4,5] });
-            },
-            "array.insertAt":function(){
-                return deep({ b:[1,2,3] })
-                .up({
-                    b:deep.collider.array.insertAt([4,5],2)
-                })
-                .equal({ b:[1,2,4,5,3] });
-            },*/
             deeploadObject_NonDestructive:function(){
 				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
