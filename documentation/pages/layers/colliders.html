@@ -4,6 +4,7 @@
         <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
             <ul>
                 <li><a href="#intro">deep.collider</a></li>
+                <li><a href="#api">API</a></li>
                 <li><a href="#replace">.replace()</a></li>
                 <li><a href="#array.insertAt">.array.insertAt()</a></li>
                 <li><a href="#custom">custom</a></li>
@@ -21,6 +22,21 @@
 				</div>
 			</div>
 		</div>
+		<!-- ________________________________________________________________________________________________________________________________ -->
+		<div class="content" >
+			<h3 id="api">API</h3>
+	        <dl class="dl-horizontal">
+	            <dt><a href="#replace">.replace( by, query )</a></dt><dd>inject success in callback.</dd>
+	            <dt><a href="#insertAt">.insertAt( value, index )</a></dt><dd>inject error in callback.</dd>
+	            <dt><a href="#remove">.remove( query )</a></dt><dd>if success : inject success in doneCB. else : inject error in failCB.</dd>
+	            <dt><a href="#removeAt">.removeAt( index, howMuch )</a></dt><dd>if success : inject success in doneCB. else : inject error in failCB.</dd>
+	            <dt><a href="#up">.up( ... )</a></dt><dd>inject success (if any) and error (if any) in callback.</dd>
+	            <dt><a href="#bottom">.bottom( ... )</a></dt><dd>inject success (if any) and error (if any) in callback.</dd>
+	            <dt><a href="#equal">.equal( needed )</a></dt><dd>inject success (if any) and error (if any) in callback.</dd>
+	            <dt><a href="#validate">.validate( schema )</a></dt><dd>inject success (if any) and error (if any) in callback.</dd>
+	        </dl>
+		</div>
+		<!-- ________________________________________________________________________________________________________________________________ -->
 		<div class="content" >
 			<h3 id="replace">.replace(value)</h3>
 			<div class="row">
@@ -42,7 +58,7 @@ deep({ b:[1,2,3] })
 			</div>
 		</div>
 		<div class="content" >
-			<h3 id="array.insertAt">.array.insertAt(value,position)</h3>
+			<h3 id="array.insertAt">.insertAt(value,position)</h3>
 			<div class="row">
 				<div class="col-sm-12 col-md-12">
 					<p>This method insert the "value" at the desired "position" in the array.</p>
@@ -53,7 +69,7 @@ deep({ b:[1,2,3] })
 <pre class="dp-enhance dp-box code" dp-try>
 deep({ b:[1,2,3] })
 .up({
-    b:deep.collider["array.insertAt"](["hello"],2)
+    b:deep.collider.insertAt(["hello"],2)
 })
 .log()
 </pre>

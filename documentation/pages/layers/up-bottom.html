@@ -31,16 +31,36 @@
 	</div>
 
 	<div id="content">
-			<div class="content" >
+			<div class="content">
+
 				<h3 id="intro">Introduction</h3>
 				<div class="row">
 					<div class="col-sm-12 col-md-12">
 						<p>Now that you understood that the reason of why we call js objects "layers" is because we manipulate them as simple layers (even if they are complexe), let's have a look at the deepjs tools provided for those layers manipulations : </p>
 					</div>
 				</div>
+				<embed class="dp-enhance" dp-svg-trick src="/img/schemas/collisions/up-no-collision.svg" type="image/svg+xml" width="449" height="135"/>
+
+				<!-- <img  src="./img/schemas/collisions/up-no-collision.png" class="img-responsive" alt="Responsive image"> -->
+				<div class="dp-example">
+<pre dp-try class="dp-box code dp-enhance">
+var src = { myVar:"hello" };
+var target = { myBool:true };
+deep.up(src, target);
+deep.log(target);
+</pre>
+</div>
 			</div>
 			<div class="content" >
-				<h3 id="up">Up</h3>
+				<h3 id="up">bottom with no collision</h3>
+				<embed class="dp-enhance" dp-svg-trick src="/img/schemas/collisions/bottom-no-collision.svg" type="image/svg+xml" width="449" height="135"/>
+
+				<h3 id="up">up with collision</h3>
+				<embed class="dp-enhance" dp-svg-trick src="/img/schemas/collisions/up-collision.svg" type="image/svg+xml" width="449" height="135"/>
+
+				<h3 id="up">bottom with collision</h3>
+				<embed class="dp-enhance" dp-svg-trick src="/img/schemas/collisions/bottom-collision.svg" type="image/svg+xml" width="449" height="135"/>
+
 				<div class="row">
 					<div class="col-sm-12 col-md-12">
 						<p>This is the main tool that let you apply a layer on top of another one.</p>
