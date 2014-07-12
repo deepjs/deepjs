@@ -90,7 +90,7 @@ check deep.log and error.
 
 
 
-extract deep-restful
+extract deep-restful						: done by half.
 
 
 sheet : sequential by default
