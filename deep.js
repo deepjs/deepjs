@@ -21,6 +21,7 @@ define([
 	"./lib/sheet",
 	"./lib/deep-sheeter",
 	"./lib/flatten",
+	// "./lib/flatten-stack",
 	"./lib/protocol",
 	"./lib/deep-chain",
 	"./lib/restrictions",
@@ -28,7 +29,7 @@ define([
 	//"./lib/schema"
 	//"./lib/view"
 	//"./lib/stores/collection"
-], function(require, utils, nodes, query, composer, collider, compiler, emitter, errors, rql, promise, ocm, sheets, Sheeter, flatten, protocol, deepChain, restrictions, traversal) {
+], function(require, utils, nodes, query, composer, collider, compiler, emitter, errors, rql, promise, ocm, sheets, Sheeter, flattener, protocol, deepChain, restrictions, traversal) {
 
 	if (typeof deep !== 'undefined') {
 		console.log("***********************************************************************************");
@@ -210,9 +211,9 @@ define([
 	deep.compose.ClassFactory = deep.ClassFactory;	// for backward compatibility
 	deep.Arguments = deep.compose.Arguments;
 
-	deep.extendsChilds = flatten.extendsChilds;
-	deep.extendsBackgrounds = flatten.extendsBackgrounds;
-	utils.flatten = deep.flatten = flatten.flatten;
+	//deep.extendsChilds = flatten.extendsChilds;
+	//deep.extendsBackgrounds = flatten.extendsBackgrounds;
+	//utils.flatten = deep.flatten = flatten.flatten;
 
 	deep.protocol = protocol.protocol;
 	deep.protocols = protocol.protocols;
@@ -278,6 +279,8 @@ define([
 			success: deep.context[key]
 		});
 	}
+
+	deep.flatten = flattener.flatten;
 
 	deep.coreUnits = deep.coreUnits || [];
 	deep.coreUnits.push(
