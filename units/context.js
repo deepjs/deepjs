@@ -31,7 +31,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal(1);
                 var p2 = deep(deep.context).equal({});
-                return deep.all(p1,p2);
+                return deep.all([p1,p2]);
             },
             setvar2:function(){
                 deep.context = {};
@@ -50,7 +50,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal({test:1});
                 var p2 = deep(deep.context).equal({});
-                return deep.all(p1,p2);
+                return deep.all([p1,p2]);
             },
             delayed:function(){
                 deep.context = {};
@@ -79,7 +79,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal({test:3});
 
                 var p4 = deep(deep.context).equal({});
-                return deep.all(p1,p2,p3,p4);
+                return deep.all([p1,p2,p3,p4]);
             },
             delayed2:function(){
                 deep.context = {};

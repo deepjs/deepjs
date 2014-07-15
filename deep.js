@@ -59,7 +59,7 @@ define([
 					});
 			if (schema && (schema.then || schema.promise))
 				if (obj && (obj.then || obj.promise))
-					d = deep.all(obj, schema)
+					d = deep.all([obj, schema])
 						.done(function(res) {
 							h._init(res[0], res[1]);
 							h._start();
