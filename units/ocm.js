@@ -362,7 +362,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 					"user":{ "user":true }
 				}, { multiModes:false });
 				return deep(myManager("public", "user"))
-				.equal({});
+				.equal(null);
 			},
 			auto_flatten:function(){
 				var store = deep.ocm({

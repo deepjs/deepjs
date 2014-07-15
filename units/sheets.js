@@ -37,7 +37,7 @@ define(["require","../deep"], function (require, deep) {
 						test:1
 					}
 				};
-				deep.up(sheet, obj);
+				deep.sheet(sheet, obj);
 				return deep(obj).equal({"array":["from bottom","base entry","from up"],"a":{"test":123,"other":true},"hello":"world"});
 			},
 			transform:function(){
@@ -48,7 +48,7 @@ define(["require","../deep"], function (require, deep) {
 					}
 				};
 				return deep([1,2,3,4,5])
-				.up(sheet)
+				.sheet(sheet)
 				.equal(["e1", "e2", "e3", "e4", "e5"]);
 			},
 			sheets_as__backgrounds:function(){
@@ -63,6 +63,7 @@ define(["require","../deep"], function (require, deep) {
 				})
 				.flatten()
 				.equal({
+					hello:"world",
 					test:false
 				});
 			},
@@ -110,14 +111,14 @@ define(["require","../deep"], function (require, deep) {
 					"dq.up::./!":{ fromUp:true },
 					"dq.bottom::./!":{ fromBottom:true },
 					_backgrounds:[{
-						hello:"world"
+						"dq.up::./!":{ fromUp2:true },
 					}]
 				})
 				.flatten()
 				.equal({
-					fromBottom:true,
-					hello:"world",
-					fromUp:true
+					"dq.up::./!":{ fromUp2:true , fromUp:true },
+					_deep_sheet_:true,
+					"dq.bottom::./!":{ fromBottom:true }
 				});
 			},
 			sheets_as_backgrounds_twice:function(){
@@ -141,44 +142,8 @@ define(["require","../deep"], function (require, deep) {
 					test:false
 				});
 			},
-			sheet_up_object:function(){
-				var a = deep.up({
-					_deep_sheet_:true,
-					"dq.bottom::.//!":{ hello:"world" }
-				}, { bloup:true });
-				return deep(a).equal({
-					hello:"world",
-					bloup:true
-				});
-			},
-			sheet_bottom_object:function(){
-				var a = deep.bottom({
-					_deep_sheet_:true,
-					"dq.bottom::.//!":{ hello:"world" }
-				}, { bloup:true });
-				return deep(a).equal({
-					bloup:true
-				});
-			},
-			object_bottom_sheet:function(){
-				var a = deep.bottom({ bloup:true }, {
-					_deep_sheet_:true,
-					"dq.bottom::.//!":{ hello:"world" }
-				});
-				return deep(a).equal({
-					hello:"world",
-					bloup:true
-				});
-			},
-			object_up_sheet:function(){
-				var a = deep.up({ bloup:true }, {
-					_deep_sheet_:true,
-					"dq.bottom::.//!":{ hello:"world" }
-				});
-				return deep(a).equal({
-					bloup:true
-				});
-			},
+
+			
 			sheet_up_sheet:function(){
 				var a = deep.up({
 					_deep_sheet_:true,
@@ -211,7 +176,7 @@ define(["require","../deep"], function (require, deep) {
 					}
 				});
 			},
-			sheets_in_classes:function(){
+			/*sheets_in_classes:function(){
 
 				var C = deep.compose.Classes(function(){
 
@@ -242,10 +207,10 @@ define(["require","../deep"], function (require, deep) {
 					test:false,
 					yop:14
 				});
-			},
-			sheets_entry:function(){
+			},*/
+			sheets_foregrounds:function(){
 				var a = {
-					_sheets:[{ 
+					_foregrounds:[{ 
 						_deep_sheet_:true,
 						"dq.bottom::.//!":{ hello:"tulip" }
 					}],
@@ -261,7 +226,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:{ hello:"world" }
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.up({ hello:"deepjs" })
 				})
@@ -273,7 +238,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:{ hello:"world" }
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.bottom({ bloup:"deepjs" })
 				})
@@ -285,7 +250,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:{ hello:"world" }
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.sheet({ "dq.up::./hello":"deepjs" })
 				})
@@ -297,7 +262,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:{ hello:"world" }
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.bottom({ bloup:"deepjs" }).up({ lolipop:true })
 				})
@@ -309,7 +274,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:{ hello:"world" }
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.transform(function(node){
 						console.log("node : ", node)
@@ -326,7 +291,7 @@ define(["require","../deep"], function (require, deep) {
 					_backgrounds:[{ bloup:true }],
 					test:{ hello:"world" }
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./!":deep.sheet.flatten()
 				})
@@ -339,7 +304,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:"hello { name }"
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.interpret({ name:"John" })
 				})
@@ -351,7 +316,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:"hello"
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./!":deep.sheet.after(function(entry, options){
 						entry.value.bloup = true;
@@ -366,7 +331,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:"hello"
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./!":deep.sheet.after(function(entry, options){
 						entry.value.bloup = true;
@@ -384,7 +349,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:"hello"
 				})
-				.up({
+				.sheet({
 					_deep_sheet_:true,
 					"dq::./!":deep.sheet.after(function(entry, options){
 						entry.value.bloup = true;
@@ -431,7 +396,7 @@ define(["require","../deep"], function (require, deep) {
 				return deep({
 					test:"hello"
 				})
-				.up(sheet)
+				.sheet(sheet)
 				.equal({
 					test:"hello",
 					blap:true,
