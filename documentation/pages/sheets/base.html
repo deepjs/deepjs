@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
-        <h2>sheets</h2>
-        <div class="submenu-block dp-enhance"  dp-control="js::/js/sub-nav.js">
+        <h2>sheets basics</h2>
+        <div class="submenu-block dp-enhance"  dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">Intro</a>
                 </li>
@@ -55,7 +55,7 @@
 
             <p>Simple example with up...</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:{ b:true } })
 .up({ 
 	_deep_sheet_:true,
@@ -68,7 +68,7 @@ deep({ a:{ b:true } })
             </div>
             Which is equivalent to :
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:{ b:true } })
 .query("/a")
 .up({
@@ -80,7 +80,7 @@ deep({ a:{ b:true } })
             </div>
             <p>Obviously, you could have severals entries in a sheet :</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var sheet = {
 	_deep_sheet_:true,
 	"dq.bottom::./!":{
@@ -103,7 +103,7 @@ deep({
             <div class="section-separator-end"></div>
             <h3 id="dq-transform">dq.transform</h3>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:true, b:12 })
 .up({
 	_deep_sheet_:true,
@@ -127,7 +127,7 @@ deep({ a:true, b:12 })
             <div class="section-separator-end"></div>
             <h3 id="sheets-backgrounds">sheets &amp; backgrounds</h3>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ 
 	a:true, 
 	_backgrounds:[
@@ -152,7 +152,7 @@ deep({
             <p>You could gives sheets list directly in your objects, at any levels (as backgrounds) that will be applied <u>after</u> backgrounds application. The difference from backgrounds application is that those sheets will be applied 'up'</p>
             <p>Sheets list could contains, direct sheets, or any string reference to ressource (with its protocol) e.g. "json::/my/sheet/path.json"</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ 
 	a:true, 
 	_sheets:[
@@ -176,7 +176,7 @@ deep({
             <p>Each selected value is passed as argument in provided function AND the return of this function replaces original value</p>
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var sheet = {
     "dq.transform::./*":function(node){
         return deep.delay(100)	// async simulation

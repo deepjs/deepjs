@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>ocm</h2>
-		<div class="submenu-block dp-enhance"  dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance"  dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#modes-collection">modes collection</a></li>
 				<li><a href="#strict">strict compilation</a></li>
@@ -28,7 +28,7 @@
 <p>You could get multiple mode at once. It means that, in the order of provided modes, the different object identities are merged (deep up) and returned.</p>
 
 			<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var myManager = deep.ocm({
 	mode1:{
 		test:1
@@ -52,7 +52,7 @@ deep.log("mode2 + mode1 : ", myManager("mode2", "mode1")); 		// be careful to or
 <p>The mode collection is really useful to do something like this :   (see deep.store docs )</p>
 
 			<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
@@ -88,7 +88,7 @@ myManager("prod","bloup").del("my_id");
 <p>To disallow this behaviour, simply provide an options object to OCM constructor with `'strict':true` in it.</p>
 
 			<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
@@ -115,7 +115,7 @@ myManager("prod").del("my_id");
 <p>Sometimes, you want that OCM manage only single mode. (so you want to not allow to mix different modes together)</p>
 
 			<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 // you don't want to allow to mix 'public' and 'user' modes (there is no sens here to do so)
 var myManager = deep.ocm({
 	'public':deep.store.Collection.create(...),
@@ -189,7 +189,7 @@ deepjs will look first in manager itself after current modes.
 
 <h4 id="hierarchy-resume">Resumed</h4> 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var manager = deep.ocm({ 'public':'hello public',  'user':'hello user' }, { groups:"roles" });
 //...
 deep.Modes("roles","public");
@@ -216,7 +216,7 @@ manager(); // will return 'hello public'  (it has found 'roles' in deep.Modes - 
 
 When you want to remove a modes in one of the 3 namespaces (manager.modes(), deep.modes(), deep.Modes()) : just set it to null.
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.Modes("roles", "public");
 
 var manager = deep.ocm(...);	// containing a 'user' and a 'public' entry
@@ -239,7 +239,7 @@ manager()...; // => warn and produce an empty object because no modes are set to
 
 When you manipulate modes through deep.Modes or deep.modes, you could provide a modes map : 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.Modes({
 	roles:["user", "otherRole"],
 	env:"dev"
@@ -249,7 +249,7 @@ deep.Modes({
 If you do it twice, the namespace are merged at first level only.
 It means :
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.Modes({
 	roles:["user", "otherRole"],
 	env:"dev"
@@ -278,7 +278,7 @@ So you conserve OTHER groups that those gives in modesMap.
 You could also use a groups collection in your manager.
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var manager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),

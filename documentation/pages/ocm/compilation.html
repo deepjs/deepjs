@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>Compilation</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#shared">shared</a></li>
 				<li><a href="#in-layer">in layer</a></li>
@@ -28,7 +28,7 @@ Or you could use `deep.Shared( yourValue )` that do it for you (i.e. it just ret
 
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var obj = deep.ocm({
 	mode1:{
 		test:function(){
@@ -56,7 +56,7 @@ obj("mode2").test();				// [1, 2, 3, 4, 5, 6, 7]
 
 You could place OCM objects at any level of your objects and use deepjs tools on it without worring.
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var a = {
 	myProperty:{
 		myValue:deep.ocm({ "public":"hello.", "user":"hello John." })
@@ -93,7 +93,7 @@ If you place 'backgrounds' in OCM (at any depth in objects), they will also be f
 You could, by default, obviously define a deep.sheet through OCM.
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var mySheet = deep.ocm({
 	"public":{
 		"dq.bottom::./!":{ hello:"world" }
@@ -120,7 +120,7 @@ mySheet("user");
 But you could also use them at compilation time (apply sheets while your ocmanager compiles).
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var myObject = deep.ocm({
 	"mySheet":{
 		_deep_sheet_:true,
@@ -162,7 +162,7 @@ You could provide a function that will be used just after a mode(s) combination 
 As compilation is done only once by mode's combination, the provided function will only be called once by mode(s) combination.
 It means : 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var manager = deep.ocm({
 	mode1:{
 		name:"John",
@@ -196,7 +196,7 @@ manager("mode1"); // always no log
 
 If 'afterCompilation' return a promise or anything else it will be the result returned by the ocm call :
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var manager = deep.ocm({
 	mode1:{ ...	},
 	mode2:{ ... },
@@ -227,7 +227,7 @@ So... Be aware that, if you want to use OCM transparently in actual deepjs tools
 The reason of that is mainly for the simplicity of the ocm pattern injection  : 
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 //...
 var myObj = myObject;
 if(myObj &amp;&amp; myObj._deep_ocm_)

@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu" >
 		<h2>Compositions</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#intro">Introduction</a></li>
 				<li><a href="#after">.after()</a></li>
@@ -27,7 +27,7 @@
 			<div class="row">
 				<div class="col-sm-12 col-md-6">
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
     myProp:true
 })
@@ -42,7 +42,7 @@ deep({
 				</div>
 				<div class="col-sm-12 col-md-6">
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var a = {
     myProp:function(){
         return "hello world";
@@ -68,7 +68,7 @@ deep.log(a.myProp());
 				<p>The idea is simple : when two functions are collided, you choose which one is executed first and how wired them together.</p>
 				<p>So when two functions collide together (up or bottom), we could use deep.compose to manage how those functions are merged and wired.</p>
 				<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
     myFunc:function(arg)
     {
@@ -97,7 +97,7 @@ deep({
 					</div>
 					<div class="col-sm-12 col-md-6">
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var base = {
     myFunc:function(arg)
     {
@@ -130,7 +130,7 @@ deep.log(base.myFunc("hello"));
 					</div>
 					<div class="col-sm-12 col-md-6">
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep(1).log();
 </pre>
 						</div>
@@ -150,7 +150,7 @@ deep(1).log();
 					</div>
 					<div class="col-sm-12 col-md-6">
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep(1).log();
 </pre>
 						</div>
@@ -170,7 +170,7 @@ deep(1).log();
 					</div>
 					<div class="col-sm-12 col-md-6">
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep(1).log();
 </pre>
 						</div>
@@ -190,7 +190,7 @@ deep(1).log();
 					</div>
 					<div class="col-sm-12 col-md-6">
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep(1).log();
 </pre>
 						</div>

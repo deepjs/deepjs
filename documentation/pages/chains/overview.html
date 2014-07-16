@@ -11,7 +11,7 @@
 
 			<p><strong>deepjs</strong> uses and abuses of Chaining Pattern. Before all for time management, as all deepjs chained and asynchrone management is based on <a href="/chains/promise">Promises</a> : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello world")
 .done(function(success){ /*...*/ })
 .fail(function(error){ /*...*/ })
@@ -26,7 +26,7 @@ deep.when("hello world")
 </div> -->
 <p>But deepjs uses chained syntax also for ergonomy and readability, and provides, by example, chained API for deepjs specific manipulation : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:"hello" })
 .up({ b:"world" })
 .bottom({ c:function(){ return this.a + " " + this.b; } })

@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>deep rql</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#intro">Introduction</a></li>
 				<li><a href="#deep-rql">deep.rql()</a></li>
@@ -36,7 +36,7 @@
 
 			<p>- <strong>filter</strong> : a filter as string. (e.g. 'myProp=gt=12')</p>
 <div class="dp-example">
-                 <pre class="dp-enhance dp-box code" dp-try>
+                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.rql([{a:1},{a:3}], "a=3");
 deep.log(r); // -> [{a:3}]
 </pre>
@@ -49,7 +49,7 @@ deep.log(r); // -> [{a:3}]
 			<h3 id="type">_type</h3>
 <p>_type is generated at runtime, even if schema is given</p>
             <div class="dp-example">
-                 <pre class="dp-enhance dp-box code" dp-try>
+                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.rql([{a:1}, 12, "hello"], "_type=number");
 deep.log(r); // -> [12]
 </pre>
@@ -62,7 +62,7 @@ deep.log(r); // -> [12]
 			<div class="alert alert-warning"><span class="label label-warning">Warning</span> Work only on <a href="/queries/descriptors">descriptors set</a>.</div >
 <p>_schema[any_property_of_provided_schema] could be used.</p>
             <div class="dp-example">
-                 <pre class="dp-enhance dp-box code" dp-try>
+                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var res = deep.query({ a:true, b:12, c:"hello" }, "./*", { fullOutput:true, schema:{
 		properties:{
 			a:{ type:"bool" },
@@ -85,7 +85,7 @@ deep.rql(res, "_schema.private=ne=true").forEach(function(n){
 			<h3 id="depth">_depth</h3>
 			<div class="alert alert-warning"><span class="label label-warning">Warning</span> Work only on <a href="/queries/descriptors">descriptors set</a>.</div >
             <div class="dp-example">
-                 <pre class="dp-enhance dp-box code" dp-try>
+                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var res = deep.query({ a:true, b:{ d:"world" }, c:"hello" }, "//", { fullOutput:true });
 
 deep.rql(res, "_depth=gt=1").forEach(function(n){

@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>Natives</h2>
-        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">intro</a>
                 <li><a href="#js">js</a>
@@ -26,7 +26,7 @@
 			<h3 id="js">js</h3>
 <p>Simple protocol that use requirejs (browser side) and nodejs require (of course server side) to load ASYNCHRONOUSLY javascript ressources (AMD module).</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep("js::deepjs/lib/unit")
 .log()
 </pre></div>
@@ -36,7 +36,7 @@ deep("js::deepjs/lib/unit")
 <p>Same than js:: except that ressource need to be javascript Class (a function) that will be instanciate (with no arguments sent to constructor) before injection in promise.</p>
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep("instance::/path/to/your/class.js")
 .log();
 </pre></div>
@@ -45,7 +45,7 @@ deep("instance::/path/to/your/class.js")
 			<h3 id="this">this</h3>
 <p>Inner inheritance. Used in backgrounds only. (see <a href="/layers/flatten">backgrounds and flatten</a>)</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
 	a:{
 		hello:"world"
@@ -67,7 +67,7 @@ deep({
 			<h3 id="dummy">dummy</h3>
 <p>Just there to make test or demo.</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep("dummy::hello").log();
 </pre></div>
 <!-- __________________________________________________________________________________ -->
@@ -75,7 +75,7 @@ deep("dummy::hello").log();
             <h3 id="eval">eval</h3>
             <div class="alert alert-warning"><span class="label label-warning">Warning</span> Doesn't work in paranoiac environnements (as Adobe Air)</div>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep("eval::true").log();
 </pre></div>
 <!-- __________________________________________________________________________________ -->

@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>deep chain</h2>
-        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#start">start</a>
                 	<ul>
@@ -173,7 +173,7 @@
 <p>Simply provide schema as second argument when starting such chain.</p>
 
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
 	a:1,
 	b:true,
@@ -291,7 +291,7 @@ deep({
 <p>Perfom a query on current chain success and inject query result (<a href="/queries/descriptors">full descriptors</a> of selected properties) as chain success.</p>
 <p><span class="label label-info">Return</span> : a <a href="/chains/deep">deep chain</a>.</p>
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
 	a:1,
 	b:true,
@@ -314,7 +314,7 @@ deep({
 <p>deepjs will try to associate correct sub-schema to selected sub-properties (as it does with direct syntax).</p>
 
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
 	a:1,
 	b:true,

@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>Fundamentals</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#intro">intro</a></li>
                 <li><a href="#explanation">Promise mecanism</a></li>
@@ -41,7 +41,7 @@
 	<div class="col-sm-12 col-md-6">
 <p>A promise is just a handler where you enqueue some functions that will be executed linearly (chained) : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 // normally : you never create a promise as this. 
 // Use Deferred or when(...) in place (see below).
 // It's just there to show you how it's managed
@@ -68,7 +68,7 @@ promise
 
 <p>So let's take exactly the same example and add just a sentence : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 // normally : you never create a promise as this.
 // Use Deferred or when(...) in place (see below).
 // It's just there to show you how it's managed 
@@ -106,7 +106,7 @@ promise._start({ success:"hello" });
 
 <p>Let's try this :</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var promise = new deep.Promise();
 
 promise
@@ -136,7 +136,7 @@ promise._start({ error:new Error("oups! error!") });
 			<div class="row">
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var def = deep.Deferred();
 setTimeout(function(){
 	def.resolve("hello from deferred");
@@ -155,7 +155,7 @@ def.promise()
 				</div>
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var def = deep.Deferred();
 setTimeout(function(){
 	def.reject(new Error("hello from deferred"));
@@ -184,7 +184,7 @@ def.promise()
 			<div class="row">
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(success){
 	deep.log("success : ", success);
@@ -194,7 +194,7 @@ deep.when("hello")
 				</div>
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("oups!"))
 .fail(function(error){
 	deep.log("error : ", error);
@@ -207,7 +207,7 @@ deep.when(new Error("oups!"))
 <p>The interesting point here is that you could give a promise as "when" argument. (let's introduce a new method ".delay( ms )"" which delays the execution of callbacks after it.)</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var promise = deep.when("hello delayed world").delay(500);	// async simulation
 
 deep.when(promise)
@@ -227,7 +227,7 @@ deep.when(promise)
 <p>How mentioning "deep.when( obj )" without mentioning its big brother : deep.all(obj1, obj2, ...).</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var prom1 = deep.when("first").delay(100);
 var prom2 = deep.when("second").delay(200);
 
@@ -252,7 +252,7 @@ deep.all(prom1, prom2, "third")
 			<div class="row">
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello promise")
 .always(function(s, e){
 	deep.log("always : s: ", s, " - e : ", e);
@@ -269,7 +269,7 @@ deep.when("hello promise")
 				</div>
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("bye bye!"))
 .always(function(s, e){
 	deep.log("always : s: ", s, " - e : ", e);
@@ -299,7 +299,7 @@ deep.when(new Error("bye bye!"))
 			<!-- <div class="row">
 				<div class="col-sm-12 col-md-6"> -->
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello promise").log("always : ").slog("done : ").elog("fail : ");
 </pre>
 </div>
@@ -307,7 +307,7 @@ deep.when("hello promise").log("always : ").slog("done : ").elog("fail : ");
 				</div>
 				<div class="col-sm-12 col-md-6"> -->
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("bye bye!")).log("always : ").slog("done : ").elog("fail : ");
 </pre>
 </div>
@@ -323,7 +323,7 @@ deep.when(new Error("bye bye!")).log("always : ").slog("done : ").elog("fail : "
 <p>It means, by example that you could handle an error in a "fail", return something else that will be seen as success, and then continue normally.</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("oups!"))
 .fail(function(error){
 	return true;		// we return something else than the error
@@ -342,7 +342,7 @@ deep.when(new Error("oups!"))
 <p>When your callbacks returns nothing (i.e. which is the same undefined), the current "state" of the promise (i.e. its succes or its error) isn't modified.</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(s){
 	// doing nothing
@@ -360,7 +360,7 @@ deep.when("hello")
 <div class="row">
 	<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(s){
 	return new Error("oups!");
@@ -372,7 +372,7 @@ deep.when("hello")
 	</div>
 	<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(s){
 	throw new Error("oups!");
@@ -387,7 +387,7 @@ deep.when("hello")
 <p>When your callbacks returns a promise, the main promise will wait the resolution of the returned one, and then forward its success or error.</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(s){
 	return deep.when("world").delay(1000);
@@ -401,7 +401,7 @@ deep.when("hello")
 <p>When you want to force <code>undefined</code> injection as success, as by default undefined will be seen as nothing (see <a href="#undefined-rule">above</a>), the way to force it is to return <code>deep.Undefined</code>.</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(s){
 	return deep.Undefined;
@@ -418,7 +418,7 @@ deep.when("hello")
 <p>When your callback returns anything else (any other type than those explained here), this value will be seen as "success".</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello")
 .done(function(s){
 	return "world";

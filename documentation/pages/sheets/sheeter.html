@@ -1,0 +1,197 @@
+<div>
+    <div id="submenu">
+        <h2>sheeter</h2>
+        <div class="submenu-block dp-enhance"  dp-enhancements="control(js::/js/sub-nav.js)">
+            <ul>
+                <li><a href="#intro">Intro</a>
+                </li>
+                <li><a href="#dq-up-bottom">dq.up &amp; dq.bottom</a>
+                </li>
+                <li><a href="#dq-transform">dq.transform</a>
+                </li>
+                <li><a href="#compilation">compilation rules</a>
+                </li>
+                <li><a href="#sheets-backgrounds">sheets &amp; backgrounds</a>
+                </li>
+                <li><a href="#sheets-foregrounds">sheets foregrounds</a>
+                </li>
+                <li><a href="#async">async API</a>
+                    <ul>
+                        <li>
+                            <a href="async-transform"></a>dq.transform</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="content">
+        <!-- 			<div class="content" >
+			<div class="page-header">
+  <h1>Example page header <small>Subtext for header</small></h1>
+</div>
+			</div> -->
+        <div class="content">
+            <!-- ___________________________________________________________________________ -->
+            <h3 id="intro">Intro</h3>
+            <div class="alert alert-warning">
+                <span class="label label-warning">Warning</span> deep sheets is the conjonction of <a href="/layers">layers</a>, <a href="/queries">queries</a> and <a href="/protocols">protocols</a> tools. So please read and understand those sections before reading this.</div>
+            <p>Think about CSS... and forget Cascading.</p>
+
+            <p>A css is just a list of queries (css selection query) that apply styles to matched DOM elements.</p>
+            <p>A deep sheets it's all the same :</p>
+            <p>A list of queries (deep-queries for the moment) that apply something (and somehow) to matched javascripts properties from a particular root object.</p>
+
+            <p>You define it through a classical js object, where properties are sheets entries.</p>
+            <p>There is two API to apply sheets on something :</p>
+            <ul>
+                <li>Sync : trough deep.up</li>
+                <li>Async : trough deep.sheets or deep(...).sheets(...)</li>
+            </ul>
+            <!-- ___________________________________________________________________________ -->
+            <div class="section-separator-end"></div>
+            <h3 id="dq-up-bottom">dq.up &amp; dq.bottom</h3>
+            <p>Obviously the two more important sheet's actions ar 'up' and 'bottom'.</p>
+
+            <p>Simple example with up...</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep({ a:{ b:true } })
+.up({ 
+	_deep_sheet_:true,
+	"dq.up::/a":{
+		hello:"world"
+	}
+})
+.log()
+</pre>
+            </div>
+            Which is equivalent to :
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep({ a:{ b:true } })
+.query("/a")
+.up({
+    hello:"world"
+})
+.query("/!")
+.log()
+</pre>
+            </div>
+            <p>Obviously, you could have severals entries in a sheet :</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var sheet = {
+	_deep_sheet_:true,
+	"dq.bottom::./!":{
+		array:["from bottom"]
+	},
+	"dq.up::./a":{
+		test:123,
+		other:true
+	}
+};
+deep({
+	array:["base entry"],
+	a:{
+		test:1
+	}
+}).up(sheet).log();
+</pre>
+            </div>
+            <!-- ___________________________________________________________________________ -->
+            <div class="section-separator-end"></div>
+            <h3 id="dq-transform">dq.transform</h3>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep({ a:true, b:12 })
+.up({
+	_deep_sheet_:true,
+	"dq.transform::./b":function(node){
+		return node.value + 20;
+	}
+})
+.log();
+</pre>
+            </div>
+            <p>The callback if fired with each selected <a href="/queries/descriptors">node</a>.</p>
+            <p>
+                <span class="label label-warning">Remarque</span>If you need to perfom async stuffs in transformer callback, please <a href="async">read below</a>.</p>
+            <!-- ___________________________________________________________________________ -->
+            <div class="section-separator-end"></div>
+            <h3 id="compilation">Compilation rules</h3>
+            <p>When you apply (deep.up) a sheet on an object, the sheet is executed.</p>
+            <p>When you apply a sheet on (deep.up) an sheet, the sheets are merged.</p>
+            <p>When you apply an object on (deep.up) a sheet, the sheet is ignored.</p>
+            <!-- ___________________________________________________________________________ -->
+            <div class="section-separator-end"></div>
+            <h3 id="sheets-backgrounds">sheets &amp; backgrounds</h3>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep({ 
+	a:true, 
+	_backgrounds:[
+		{ 
+			b:{ 
+				hello:'world'
+			}
+		}, 
+		{
+			_deep_sheet_:true,
+			"dq.up::./b":{ c:123 }
+		}
+	]
+})
+.flatten()
+.log();
+</pre>
+            </div>
+            <!-- ___________________________________________________________________________ -->
+            <div class="section-separator-end"></div>
+            <h3 id="sheets-foregrounds">Sheets foregrounds</h3>
+            <p>You could gives sheets list directly in your objects, at any levels (as backgrounds) that will be applied <u>after</u> backgrounds application. The difference from backgrounds application is that those sheets will be applied 'up'</p>
+            <p>Sheets list could contains, direct sheets, or any string reference to ressource (with its protocol) e.g. "json::/my/sheet/path.json"</p>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep({ 
+	a:true, 
+	_sheets:[
+		{
+			_deep_sheet_:true,
+			"dq.up::./!":{ c:123 }
+		}
+	]
+})
+.flatten()
+.log();
+</pre>
+            </div>
+            <!-- ___________________________________________________________________________ -->
+            <div class="section-separator-end"></div>
+            <h3 id="async">Async API</h3>
+            <p>When you want to manipulate sheets that do async stuffs, you need to use deep.sheets in place of deep.up to apply sheets on objects.</p>
+            <p>The main reason is that deep.up and deep.bottom are absolutly sync and does not wait promises returned by sheet's application.</p>
+            <!-- ___________________________________________________________________________ -->
+            <h4 id="async-transform">dq.transform</h4>
+            <p>Each selected value is passed as argument in provided function AND the return of this function replaces original value</p>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var sheet = {
+    "dq.transform::./*":function(node){
+        return deep.delay(100)	// async simulation
+        .done(function(){
+        	return "async:"+node.value;
+        });
+    }
+};
+deep.sheet(sheet, [1,2,3,4,5])
+.log();
+</pre>
+            </div>
+
+            <div class="section-separator-end"></div>
+
+        </div>
+    </div>
+</div>

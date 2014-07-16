@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>ocm</h2>
-		<div class="submenu-block dp-enhance"  dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance"  dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#intro">concept</a></li>
 				<li><a href="#sharing">sharing code</a></li>
@@ -33,7 +33,7 @@
 				<div class="col-sm-12 col-md-6">
 					<h5>Classical approach</h5>
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var user = null;
 var myFunc = function(){
 	if(user)
@@ -49,7 +49,7 @@ deep.log(myFunc()); // => output "hello John.":
 				<div class="col-sm-12 col-md-6">
 					<h5>OCM approach</h5>
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var user = null;
 var myFunc = deep.ocm({
 	"public":function(){
@@ -87,7 +87,7 @@ deep.log(myFunc("user")()); // => output "hello John.":
 				<div class="col-sm-12 col-md-6">
 					With the conditionnal example : you will need to modifiy your code and do something like :
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var user = null;
 var myFunc = function(){
 	if(!user)
@@ -107,7 +107,7 @@ deep.log(myFunc()); 		// => output "hello admin":
 				<div class="col-sm-12 col-md-6">
 					With OCM : you simply do this :
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var user = null;
 var myFunc = deep.ocm({
 	"public":function(){
@@ -152,7 +152,7 @@ As you work with deepjs and aspects, you could obviously use internal inheritanc
 to manage common behaviours (or datas) between ocm modes.</p>
 
 					<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var myManager = deep.ocm({
 	mode1:{
 		test:1

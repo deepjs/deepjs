@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>Title</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#intro">Introduction</a></li>
 			</ul>
@@ -13,7 +13,7 @@
 
 			<p>When manipulating a chain (including Promise), we could always change, at any moment, the chain's API (so its identity) by calling any "identity method".</p>
 
-<pre class="dp-enhance dp-box code" dp-try editable="false">
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try" editable="false">
 deep.fs("/my/root")			// identity method 1 : we start a "file system" chain (nodejs) 
 .from("myjsonfile.json")		// read a json file
 .done(function(success){		// manipulate loaded json
@@ -31,7 +31,7 @@ deep.fs("/my/root")			// identity method 1 : we start a "file system" chain (nod
 
                 <div class="section-separator-small"></div>
 			<h3 id="stack">Chains stack</h3>
-<embed class="dp-enhance" dp-svg-trick src="/img/schemas/chain-stack.svg" type="image/svg+xml" width="496" height="593"/>
+<embed class="dp-enhance" dp-enhancements="dp-svg-trick" src="/img/schemas/chain-stack.svg" type="image/svg+xml" width="496" height="593"/>
 
 		</div>
 	</div>

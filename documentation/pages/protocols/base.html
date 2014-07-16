@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>Protocols base</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#simple">simple</a></li>
 				<li><a href="#get">deep.get</a></li>
@@ -25,7 +25,7 @@
 			<h3 id="simple">Simple example</h3>
 
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = { 
 	get:function(request, options){ 
 		return "deepjs, made with "+request; 
@@ -42,7 +42,7 @@ deep.get("myProtoc::love").log();
                 <div class="section-separator-end"></div>
 <h3 id="get">deep.get(req, opt)</h3>
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.get("dummy::hello world").log();
 </pre>
 						</div>
@@ -53,14 +53,14 @@ deep.get("dummy::hello world").log();
 			<div class="row">
 				<div class="col-sm-12 col-md-6">
 				<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.get({a:true}).log();
 </pre>
 						</div>
 				</div>
 				<div class="col-sm-12 col-md-6">
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.get("hello world").log();
 </pre>
 						</div>
@@ -70,7 +70,7 @@ deep.get("hello world").log();
                 <div class="section-separator-end"></div>
 <h3 id="getAll">deep.getAll([req1, req2, ...], opt)</h3>
 						<div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep
 .getAll(["dummy::hello world", "eval::true", 12, { b:"hello" }])
 .log();
@@ -86,7 +86,7 @@ deep
 <h3 id="sub-protocol">sub-protocol</h3>
 <p>If your provider implements others methods than 'get' (and 'range' : see below), you could access them by using "sub-protocol" notation : e.g. "myProtoc.myMethod::my_request"</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = {
 	//...
 	myMethod:function(request, options){
@@ -103,7 +103,7 @@ deep.get("myProtoc.myMethod::foo")
 <h3 id="range">range</h3>
 <p>If your provider implements a 'range' method (as below - and as <a href="/restful">restful stores</a> do by default), you could access it with this particular protocol notation : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = {
 	range:function(start, end, request, options){
 		// as 'range' method (from restful stores) normally returns a _deep_range_ object 
@@ -124,7 +124,7 @@ deep.get("myProtoc(0,23)::foo")
 <p>Simple function that will retrieve protocol by name. It's this method that deepjs use to get a particular protocol when requests are parsed. So that's trully the service locator.</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = {
 	get:function(request, options){
 		return "hello world : "+request;
@@ -145,7 +145,7 @@ deep.log(provider);
 
 <p>When you place an <a href="/ocm">OCManager</a> in protocols namespaces (deep.protocols or deep.context.protocols - see below), deep.protocol will return the response of the OCManager (depending on current modes - from deep.context or not) in place of the OCManager itself.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = deep.ocm({
 	mode1:{
 		get:function(request, options){
@@ -179,7 +179,7 @@ deep.get("myProtoc::John").log();
 <p>When you wan't to have a provider <u>only accessible in a certain (deep.)context</u>, you could use the deep.context.protocols namespace to store it.</p>
 <p>deep.protocol('xxx') will check first if 'xxx' is present in deep.context.protocols, before checking in deep.protocols and preparing provider.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = {
 	get:function(req){
 		return "hello "+req+" from general protocols";
@@ -216,7 +216,7 @@ deep.delay(50) // async simulation
 <p>While deep.protocol(name) gets your provider, it flattens it (deep.flatten - if it's an ocm by example) and initialise it if needed (if you've provided an init method in your provider).</p>
 <p> <span class="label label-info">Remarque</span>  So deep.protocol(xxx) could return a <a href="/chains/promise">Promise</a> that you'll need to wait for if you use it directly. This promise will return prepared provider.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.protocols.myProtoc = deep.ocm({
 	mode1:{
 		myVar:"lolipop",

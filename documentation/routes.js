@@ -141,13 +141,12 @@ define(["require", "../deep"], function(require, deep) {
 					route: "/sheets/$",
 					how: "docs::/pages/sheets/overview.html"
 				},
-				object: {
-					label: "object sheets",
-					how: "docs::/pages/sheets/object.html"
+				base: {
+					how: "docs::/pages/sheets/base.html"
 				},
-				dom: {
-					label: "dom sheets",
-					how: "docs::/pages/sheets/dom.html"
+				sheeter: {
+					label: "deep-sheeter",
+					how: "docs::/pages/sheets/sheeter.html"
 				}
 			}
 		},
@@ -253,8 +252,8 @@ define(["require", "../deep"], function(require, deep) {
 					route: "/views/$",
 					how: "<div>views basics</div>"
 				},
-				refresh: {
-					how: "docs::/pages/views/refresh.html"
+				api: {
+					how: "docs::/pages/views/api.html"
 				},
 				"dom-protocol": {
 					label: "dom.xxx",
@@ -265,6 +264,10 @@ define(["require", "../deep"], function(require, deep) {
 				},
 				concurrency: {
 					how: "docs::/pages/views/concurrency.html"
+				},
+				"dom-sheeter": {
+					label: "dom.sheeter",
+					how: "docs::/pages/views/dom-protocol.html"
 				}
 			}
 		},

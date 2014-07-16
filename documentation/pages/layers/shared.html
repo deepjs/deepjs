@@ -1,7 +1,7 @@
 <div>
 	<div id="submenu">
 		<h2>Shared</h2>
-		<div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
 			<ul>
 				<li><a href="#intro">Introduction</a>
 				</li>
@@ -19,7 +19,7 @@
 			<h3 id="intro">Intro</h3>
 
 					<div class="dp-example">
-                        <pre class="dp-enhance dp-box code" dp-try>
+                        <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var obj1 = {
 	test:function(){
 		deep.log("this.shared : ", this.myShared);

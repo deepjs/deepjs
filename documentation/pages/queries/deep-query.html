@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>deep query</h2>
-        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">introduction</a></li>
                 <li><a href="#deep-query">deep.query(...)</a>
@@ -58,7 +58,7 @@
 
 <p>Straight query that match : returns the matched value.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello", c:{ d:12 } }, "/c/d");
 deep.log(r);
 </pre>
@@ -66,7 +66,7 @@ deep.log(r);
 
 <p>Straight query that doesn't match : returns 'undefined'.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello", c:{ d:12 } }, "/bar/foo");
 deep.log(r);
 </pre>
@@ -74,14 +74,14 @@ deep.log(r);
 
 <p>Full query that match : returns the array of matched values.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ myProp:true, myProp2:"hello" }, "/(myPro.*)");
 deep.log(r);
 </pre>
 </div>
 <p>Full query that doesn't match : returns an empty array.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ myProp:true, myProp2:"hello" }, "/(foo.*)");
 deep.log(r);
 </pre>
@@ -91,7 +91,7 @@ deep.log(r);
 <h4 id="full-output">opt.fullOutput</h4>
 <p>Optional bool : 'true' means you want <a href="/queries/descriptors">full descriptors</a> of selected properties in place of simple values.</p>
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var obj = {
 	a:1,
 	b:true,
@@ -111,7 +111,7 @@ deep.log(r.path+" = "+r.value);	//   /d/e = world
 <p>deepjs will try to associate correct sub-schema to selected sub-properties.</p>
 <p>You could read it in <a href="/queries/descriptors">properties descriptors</a> (see above and below).</p>
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var obj = {
 	a:1,
 	b:true,
@@ -140,7 +140,7 @@ deep.log(r.path, " = ", r.value, " - schema : ", r.schema);
 <p>If true, if the query is a simple path, it will return the property itself rather than an array of results.</p>
 <p>If false, it always return an array (empty if nothing matchs).</p>
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var obj = {
 	a:1,
 	b:true,
@@ -163,7 +163,7 @@ deep.log(r);	// 'world'
 <p>Perfom a query on current chain success and inject query result (<a href="/queries/descriptors">full descriptors</a> of selected properties) as chain success.</p>
 <p><span class="label label-info">Return</span> : a <a href="/chains/deep">deep chain</a>.</p>
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
 	a:1,
 	b:true,
@@ -190,7 +190,7 @@ deep({
 
 <p>A step is :  A 'move' followed by a 'step selector' and optionally followed by a 'RQL filter'.</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep([{a:2}, {a:4}]).query("/*?a=gt=3").log();
 </pre>
             </div>
@@ -211,7 +211,7 @@ deep([{a:2}, {a:4}]).query("/*?a=gt=3").log();
 <li><strong>//</strong> : start from root and give me any properties at any sub level</li>
 </ul>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:{ b:{ c:"hello world" }, d:true }}).query("//").log();
 </pre>
             </div>
@@ -239,7 +239,7 @@ deep({ a:{ b:{ c:"hello world" }, d:true }}).query("//").log();
 <p>When you apply a query on a query-results-set (previously produced), you could navigate relatively to current(s) node(s), or restart queries from the root object.</p>
 
 <div class="dp-example">
-    <pre class="dp-enhance dp-box code" dp-try>
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({
 	a:1,
 	b:true,
@@ -290,28 +290,28 @@ deep({
 </p>
 
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/myProp1/0")
 .log()
 </pre>
             </div>
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/myProp2/[:4:2]")
 .log()
 </pre>
             </div>
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/(myProp.*)/[3:]")
 .log()
 </pre>
             </div>
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/[myProp1,myProp2]")
 .log()
@@ -321,28 +321,28 @@ deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 <p>All those below are equivalent and say : give me all properties under root.</p>
 
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:1, b:true, c:"hello"})
 .query("/(.*)")
 .log();
 </pre>
             </div>
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:1, b:true, c:"hello"})
 .query("/*")
 .log();
 </pre>
             </div>
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:1, b:true, c:"hello"})
 .query("/[]")
 .log();
 </pre>
             </div>
 <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:1, b:true, c:"hello"})
 .query("/")
 .log();
@@ -357,7 +357,7 @@ deep({ a:1, b:true, c:"hello"})
 <p>In array brackets access : you could use @.length to get the length of the parent (only if it's an array).</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:[1,2,3,4,5,6] })
 .query("/a/[@.length-2]")
 .log();
@@ -369,7 +369,7 @@ deep({ a:[1,2,3,4,5,6] })
 <h4 id="direct-length">length</h4>
 <p>Will give you any 'length' property founded in current level</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep({ a:[1,2,3,4,5,6], b:"hello" })
 .query("/a/length")
 .log()
@@ -386,14 +386,14 @@ deep({ a:[1,2,3,4,5,6], b:"hello" })
 
 <p>any RQL filter (see <a href="/queries/rql">deep-rql</a> for full docs) could be added to any selector.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep([1,2,3,4,5,6])
 .query("/*?=gt=3")
 .log();
 </pre>
 </div>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep([1,2,3,4,5,6])
 .query("/*?sort(-)")
 .log();

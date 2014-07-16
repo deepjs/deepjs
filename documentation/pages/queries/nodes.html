@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>node descriptor</h2>
-        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">introduction</a></li>
 
@@ -33,7 +33,7 @@
         <!-- ______________________________________________________________________ CONTENT ________ -->
 				<div class="section-separator-end"></div>
 <h3 id="node-content">Descriptor content</h3>
-    <pre class="dp-enhance dp-box code" dp-try editable="false">
+    <pre class="dp-enhance dp-box code" dp-enhancements="dp-try" editable="false">
 {
 	// a bool that define it's identity. (it replace instanceOf)
 	_deep_query_node_:true,		
@@ -73,21 +73,21 @@
 
 <p>On an array of descriptors : return array of values</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./*", { fullOutput:true });
 deep.log(deep.nodes.val(r));
 </pre>
 </div>
 <p>On a single descriptor : return single value.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./b", { fullOutput:true });
 deep.log(deep.nodes.val(r));
 </pre>
 </div>
 <p>Anything else : return the value.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.log(deep.nodes.val("hello world"));
 deep.log(deep.nodes.val([1,2]));
 </pre>
@@ -98,7 +98,7 @@ deep.log(deep.nodes.val([1,2]));
 <p>Get path(s) from node(s).</p>
 <p>Always return an array.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./*", { fullOutput:true });
 deep.log(deep.nodes.paths(r));
 </pre>
@@ -109,7 +109,7 @@ deep.log(deep.nodes.paths(r));
 <p>Get schema(s) from node(s).</p>
 <p>Always return an array.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./*", { 
     fullOutput:true, 
     schema:{
@@ -130,7 +130,7 @@ deep.log(deep.nodes.schemas(r));
 <p>Return either a promise (that will return transformed value(s)) or directly the transformed value(s) if there is nothing to wait.</p>
 <p>Straight query (so single node) : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./a", { fullOutput:true });
 deep.nodes.transform(r, function(node){
 	return node.value+":transformed";
@@ -140,7 +140,7 @@ deep.log(deep.nodes.val(r));
 </div>
 <p>Full query (so array of nodes) : </p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./*", { fullOutput:true });
 deep.nodes.transform(r, function(node){
     return node.value+":transformed";
@@ -155,7 +155,7 @@ deep.log(deep.nodes.val(r));
 <p>You should normally not use this directly.</p>
 <p>See <a href="/utils/deepLoad">deepLoad</a> for more infos.</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:"eval::1+3", b:{ c:"dummy::world" } }, "./*", { fullOutput:true });
 deep.nodes.deepLoad(r).log();
 </pre>
@@ -165,7 +165,7 @@ deep.nodes.deepLoad(r).log();
 <h4 id="print">deep.nodes.print(result)</h4>
 <p>Print node(s).</p>
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./*", { fullOutput:true });
 deep.log(deep.nodes.print(r));
 </pre>
@@ -176,7 +176,7 @@ deep.log(deep.nodes.print(r));
 <p>(mainly used internaly by deepjs)</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var rootNode = deep.nodes.root({ a:true, b:12 });
 deep.log(rootNode);
 </pre>

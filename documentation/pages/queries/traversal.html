@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>traversal</h2>
-        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">introduction</a></li>
                 <li><a href="#depthFirst">deep.depthFirst()</a></li>
@@ -33,7 +33,7 @@
             </ul>
             <p>(for full options descritions see <a href="#options">options</a>.)</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var a = {
 	b:{
 		c:{
@@ -62,7 +62,7 @@ deep.log(deep.nodes.paths(r));
             </ul>
             <p>(for full options descritions see <a href="#options">options</a>.)</p>
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var a = {
 	b:{
 		c:{

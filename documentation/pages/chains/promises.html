@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>Promises</h2>
-        <div class="submenu-block dp-enhance" dp-control="js::/js/sub-nav.js">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">intro</a></li>
                 <li><a href="#api">API list</a></li>
@@ -135,7 +135,7 @@
                 <div class="section-separator-small"></div>
 <h4 id="done">.done( function callback(success){} )</h4>
 
-<div class="dp-enhance" dp-api-description >
+<div class="dp-enhance" dp-enhancements="dp-api-description" >
     <dl rel="args" class="dl-horizontal">
         <dt>callback</dt><dd>The success handler.</dd>
     </dl>
@@ -146,7 +146,7 @@
 
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when("hello").done(function (s){ deep.log(s); });
 </pre>
 </div>
@@ -157,7 +157,7 @@ deep.when("hello").done(function (s){ deep.log(s); });
                 <div class="section-separator-small"></div>
 <h4 id="fail">.fail( function callback(error){} )</h4>
 
-<div class="dp-enhance" dp-api-description >
+<div class="dp-enhance" dp-enhancements="dp-api-description" >
     <dl rel="args" class="dl-horizontal">
         <dt>callback</dt><dd>The error handler.</dd>
     </dl>
@@ -167,7 +167,7 @@ deep.when("hello").done(function (s){ deep.log(s); });
 </div>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
 </pre>
 </div>
@@ -180,7 +180,7 @@ deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
                 <div class="section-separator-small"></div>
 <h4 id="then">.then(function(error){})</h4>
 
-<div class="dp-enhance" dp-api-description >
+<div class="dp-enhance" dp-enhancements="dp-api-description" >
     <dl rel="args" class="dl-horizontal">
         <dt>callback</dt><dd>The error handler.</dd>
     </dl>
@@ -190,7 +190,7 @@ deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
 </div>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
 </pre>
 </div>
@@ -202,7 +202,7 @@ deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
 <h4 id="always">.always(function(success, error){})</h4>
 
 
-<div class="dp-enhance" dp-api-description >
+<div class="dp-enhance" dp-enhancements="dp-api-description" >
     <dl rel="args" class="dl-horizontal">
         <dt>callback</dt><dd>The error handler.</dd>
     </dl>
@@ -213,7 +213,7 @@ deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
 <p>will always be executed.</p>
 
 <div class="dp-example">
-<pre class="dp-enhance dp-box code" dp-try>
+<pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(new Error("oups!")).fail(function(e){ deep.log(e); });
 </pre>
 </div>
@@ -233,7 +233,7 @@ if you provide no arguments :
 will log current state. (success or error)
 if you provide a list of arguments (i.e. .log(arg1, "hello", myObject, 12, ...)), it will print them as deep log would do.
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when(true)
 .log("hello", "john", ":");
 </pre></div>
@@ -322,7 +322,7 @@ Not exactly the same thing as deep.when( something ) that return a promise that 
 when you use it in an existant promise chain, it will wait 'something' and take it result as current state before continuing.
 
             <div class="dp-example">
-                <pre class="dp-enhance dp-box code" dp-try>
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.when( something )
 .done(function( somethingResult ))
 .when( anotherthing )
