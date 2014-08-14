@@ -134,6 +134,8 @@ FOREGROUNDS : try to implement it
 
 
 
+
+
 refactor load sequence in view : one object wired arg-return	:					ok
 
 
@@ -188,11 +190,25 @@ WARNING :
 
 
 check promise timeout
+___________________________________________________________________
+should write parser
+
+markdown flavoured language :
+	- enhancements
+	- from
+	- medias
+	- snippets
+	- controller
+	- markdown
+
+	should manage scope (browser and/or server)
+
+markstrap like
 
 
 
 
-
+____________________________________________________________________
 
 More (for after ;)): 
 
