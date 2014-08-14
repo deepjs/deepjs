@@ -58,38 +58,32 @@ define([
 				d = deep.when(obj)
 					.done(function(res) {
 						h._init(res);
-						h._start();
+						h.resolve();
 					});
 			if (schema && (schema.then || schema.promise))
 				if (obj && (obj.then || obj.promise))
 					d = deep.all([obj, schema])
 						.done(function(res) {
 							h._init(res[0], res[1]);
-							h._start();
+							h.resolve();
 						});
 				else
 					d = deep.when(schema)
 						.done(function(res) {
 							h._init(null, res);
-							h._start();
+							h.resolve();
 						});
 			if (d)
 				d.fail(function(error) {
-					h._start({
-						success: null,
-						error: error
-					});
+					h.reject(error);
 				});
 			else {
 				h._init(obj, schema);
-				h._start();
+				h.resolve();
 			}
 		} catch (error) {
 			//console.log("internal chain start error : ", error);
-			h._start({
-				success: null,
-				error: error
-			});
+			h.reject(error);
 		}
 		return h;
 	};
@@ -251,37 +245,54 @@ define([
 	for (var i in restrictions)
 		deep[i] = restrictions[i];
 
-	/**
-	 * deep chain identity method
-	 * @param  {*} val     The value injected as success (optional).
-	 *                     Could be a protocoled ressource reference (e.g. json::myfile.json).
-	 *                     Will be load before injection.
-	 * @param  {Object} schema  Optional : the json-schema associate
-	 * @param  {Object} options Optional (internal use only for the moment)
-	 * @return {deep.Chain}  a deep.Chain holding the success (or error if load fail).
-	 */
-	deep.Promise.API.deep = function(val, schema, options) {
-		options = options || {};
-		var h = new deep.Chain(this._state, options);
-		var self = this;
-		var func = function(s, e) {
-			return deep(val || s, schema, options);
-		};
-		func._isDone_ = true;
-		this._enqueue(h);
-		h._enqueue(func);
-		return h;
-	};
+
 	//_________________________________________________________________________________
 
 	deep.contextualise = function() {
-		return new Promise().contextualise()._start();
+		return new Promise().contextualise().resolve();
 	}
 	deep.fromContext = function(key) {
-		return new Promise()._start({
-			success: deep.context[key]
-		});
+		return new Promise().resolve(deep.context[key]);
 	}
+
+	/**
+	 * contextualised loop on a callback
+	 *
+	 *
+	 * @example 
+	 * 	deep.loop(function(s){ console.log("hello success : ", s); return s+1; }, 50, 10, 1).done(function(s){ console.log("end of loop : ", s); });
+	 *
+	 * @example
+	 * 	// to finish loop :
+	 *
+	 * 	deep.loop(function(s){ console.log("hello success : ", s); if(s >10) this.finish(); return s+1; }, 50, null, 1).done(function(s){ console.log("end of loop : ", s); });
+	 * 
+	 * @param  {Function} callBack     the callback that need to be called several times. receive promise success as single argument.
+	 * @param  {Number} interval     	interval between call
+	 * @param  {Number} maxIteration 	
+	 * @param  {*} input        		First promise success
+	 * @return {Promise}              a promise that could handle end of loop.
+	 */
+	deep.loop = function(callBack, interval, maxIteration, input){
+		var iteration = 0, finished = false;
+		var iterate = function(s){
+			if(finished)
+				return s;
+			if(maxIteration)
+			{
+				iteration++;
+				if(maxIteration < iteration)
+					return s;
+			}
+			this.done(callBack).delay(interval).done(iterate);
+			return s;
+		}
+		var p = new deep.Promise().resolve(input).done(iterate);
+		p.finish = function(){
+			finished = true;
+		};
+		return p;
+	};
 
 	deep.flatten = flattener.flatten;
 
