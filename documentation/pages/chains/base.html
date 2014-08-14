@@ -90,7 +90,7 @@ promise
 // use Deferred or when(...) in place (see below).
 // It's just there to show you how it's managed
 // under scene.
-promise._start({ success:"hello" });
+promise.resolve("hello");
 </pre>
 </div>
 <p>Blam... The queue has been executed !</p>
@@ -121,12 +121,12 @@ promise
 	deep.log("success 2 : ",success);
 });
 
-promise._start({ error:new Error("oups! error!") });
+promise.reject(new Error("oups! error!"));
 </pre>
 </div>
 <p>There, only the "fail" has been fired, because the value passed through callbacks was an error.</p>
 <p>That's it... You've almost all the painting. A promise is just a queue, where you store callbacks, called linearly and selectively when a success or an error is injected.</p>
-<p> <span class="label label-warning">Warning</span> So as describe in comments, you should have understand that you will <u>never create a promise like above or use directly ._start(...)</u>.</p>
+
 <p>If you do so, either you're working on core tools, or you missed something. It was just to show you the class itself (you'll never see it again...;)) and the delayed execution.</p>
 <p>In place, you'll use a <a href="#deferred">deep.Deferred</a> or <a href="#when">deep.when(...)</a>.</p>
                 <div class="section-separator-small"></div>

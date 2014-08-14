@@ -24,7 +24,8 @@
 <!-- __________________________________________________________________________________ -->
                 <div class="section-separator-end"></div>
 			<h3 id="js">js</h3>
-<p>Simple protocol that use requirejs (browser side) and nodejs require (of course server side) to load ASYNCHRONOUSLY javascript ressources (AMD module).</p>
+<p>Simple protocol that use current or preferred (typically requirejs (browser side) and nodejs require) to load ASYNCHRONOUSLY javascript ressources (AMD module).</p>
+<div class="alert alert-warning"><span class="label label-warning">Warning</span> if you use <a href="https://github.com/jrburke/almond">almond</a> (or any light shim loader) to load <a href="http://requirejs.org/docs/faq-optimization.html#wrap">requirejs optimiser output</a> (i.e. you use a static AMD shim loader), you could not use this protocols anymore (there is no more way to dynamically load js files).</div>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep("js::deepjs/lib/unit")
