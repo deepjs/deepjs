@@ -1,6 +1,9 @@
 /**
  * @module deep
  * @author Gilles Coomans <gilles.coomans@gmail.com>
+ * TODO : adding events on : 
+ * 		modes : changed
+ * 		
  */
 if (typeof define !== 'function') {
 	var define = require('amdefine')(module);
