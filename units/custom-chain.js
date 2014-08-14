@@ -9,7 +9,7 @@ define(["require","../deep"], function (require, deep) {
 	    return handler;
 	};
 	deep.chainTest = function(){
-		return new ChainTest(null)._start();
+		return new ChainTest(null).resolve();
 	};
 	var ChainTest = deep.compose.Classes(deep.Promise, function (state) {
 		this._identity = ChainTest;
@@ -35,7 +35,7 @@ define(["require","../deep"], function (require, deep) {
 	    return handler;
 	};
 	deep.chainTest2 = function(){
-		return new ChainTest2(null)._start();
+		return new ChainTest2(null).resolve();
 	};
 	var ChainTest2 = deep.compose.Classes(deep.Promise, function (state) {
 		this._identity = ChainTest2;
