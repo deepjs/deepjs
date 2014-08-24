@@ -256,6 +256,26 @@ define([
 		};
 		return p;
 	};
+	deep.Validator = Validator;
+	/**
+	 * perform a schema validation
+	 * @static
+	 * @method validate
+	 * @param object the object to validate
+	 * @param schema the schema
+	 * @return {deep.validate.Report} the validation report
+	 */
+	deep.validate = Validator.validate;
+	/**
+	 * perform a schema partial validation (only on certain field)
+	 * @static
+	 * @method partialValidation
+	 * @param object the object to validate
+	 * @param fields the array of properties paths to validate
+	 * @param schema the schema
+	 * @return {deep.validate.Report} the validation report
+	 */
+	deep.partialValidation = Validator.partialValidation;
 
 	deep.flatten = flattener.flatten;
 
