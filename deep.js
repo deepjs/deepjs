@@ -213,43 +213,7 @@ define([
 	deep.flatten = flattener.flatten;
 
 	/**
-	 * contextualised loop on a callback
-	 *
-	 *
-	 * @example 
-	 * 	deep.loop(function(s){ console.log("hello success : ", s); return s+1; }, 50, 10, 1).done(function(s){ console.log("end of loop : ", s); });
-	 *
-	 * @example
-	 * 	// to finish loop :
-	 *
-	 * 	deep.loop(function(s){ console.log("hello success : ", s); if(s >10) this.finish(); return s+1; }, 50, null, 1).done(function(s){ console.log("end of loop : ", s); });
-	 * 
-	 * @param  {Function} callBack     the callback that need to be called several times. receive promise success as single argument.
-	 * @param  {Number} interval     	interval between call
-	 * @param  {Number} maxIteration 	
-	 * @param  {*} input        		First promise success
-	 * @return {Promise}              a promise that could handle end of loop.
 	 */
-	deep.loop = function(callBack, interval, maxIteration, input){
-		var iteration = 0, finished = false;
-		var iterate = function(s){
-			if(finished)
-				return s;
-			if(maxIteration)
-			{
-				iteration++;
-				if(maxIteration < iteration)
-					return s;
-			}
-			this.done(callBack).delay(interval).done(iterate);
-			return s;
-		}
-		var p = new deep.Promise().resolve(input).done(iterate);
-		p.finish = function(){
-			finished = true;
-		};
-		return p;
-	};
 	deep.Validator = Validator;
 	/**
 	 * perform a schema validation
