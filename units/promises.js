@@ -16,9 +16,9 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         setup:function(){},
         tests : {
             delayed_arg_injection:function(){
-                return deep.when(deep.when(" world ").delay(1))
+                return deep.when(" world ").delay(1)
                 .done(function(arg){
-                    return deep.when(deep.when(1).delay(1))
+                    return deep.when(1).delay(1)
                     .then(function(arg2){
                         return "hello"+arg+arg2;
                     });
@@ -73,24 +73,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return "should not see this";
                 })
                 .equal("passed through");
-            }/*,  //________________________________________________ STILL FAILING !!! 
-            oldqueue:function(){
-                return deep.when("start")
-                  .done(function(s){
-                      var self = this;
-                      return deep("recurse")
-                      .delay(100)
-                      .done(function(){
-                          self.done(function(s){
-                              return s+"hello";
-                          });
-                      })
-                  })
-                  .done(function(s){
-                      return s+"bye";
-                  })
-                  .equal("recursehellobye");
-            }*/
+            }
         }
     };
 
