@@ -129,11 +129,7 @@ define([
 
 	deep.nodes = nodes;
 	deep.deepLoad = function(entry, context, destructive, excludeFunctions) {
-		if (!entry._deep_query_node_ && !entry._deep_array_)
-			entry = deep.nodes.root(entry);
-		if(entry._deep_array_)
-			return deep.nodes.deepLoad(entry)
-		return deep.nodes.deepLoad([entry])
+		return deep(entry).deepLoad(context, destructive, excludeFunctions);
 	};
 	/**
 	 * final namespace for deepjs/query
