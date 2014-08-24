@@ -115,11 +115,7 @@ if (!Object.keys) {
 }
 if (!Array.isArray) {
     Array.isArray = function(vArg) {
-        var isArray;
-
-        isArray = vArg instanceof Array;
-
-        return isArray;
+        return vArg instanceof Array;
     };
 }
 var split;
