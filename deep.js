@@ -243,6 +243,28 @@ define([
 	 */
 	deep.partialValidation = Validator.partialValidation;
 
+	/**
+	 * applyshcema constraints transformers (see constraints docs).
+	 * For internal use normally.
+	 * @param  {Object} object any object where applying transformers
+	 * @param  {Object} schema the schema containing transformers references to apply.
+	 * @return nothing
+	 */
+	deep.applyTransformers =  function(object, schema) {
+		if (!object._deep_query_node_)
+			object = nodes.root(object, schema);
+		//console.log("apply Transfor on : ", object);
+		var query = ".//?_schema.transformers";
+		var r = deep.query(object, query, {
+			fullOutput: true,
+			schema: schema
+		});
+		if(r)
+			r.forEach(function(node) {
+				for (var i = 0, len = node.schema.transformers.length; i < len; ++i)
+					deep.nodes.transform(node, node.schema.transformers[i]);
+			});
+	};
 
 	deep.coreUnits = deep.coreUnits || [];
 	deep.coreUnits.push(
