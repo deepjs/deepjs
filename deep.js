@@ -204,15 +204,13 @@ define([
 	for (var i in restrictions)
 		deep[i] = restrictions[i];
 
-
 	//_________________________________________________________________________________
 
-	deep.contextualise = function() {
-		return new Promise().contextualise().resolve();
-	}
-	deep.fromContext = function(key) {
-		return new Promise().resolve(deep.context[key]);
-	}
+	deep.contextualise = context.contextualise;
+	deep.fromContext = context.fromContext;
+	deep.context = context.context;
+
+	deep.flatten = flattener.flatten;
 
 	/**
 	 * contextualised loop on a callback
