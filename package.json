@@ -2,7 +2,7 @@
   "name"          : "deepjs",
   "version"       : "0.12.1",
   "author"        : "Gilles Coomans <gilles.coomans@gmail.com>",
-  "description"   : "Powerful atomic tools for managing objects, functions and promises",
+  "description"   : "Atomic tools for better programming",
   "homepage"      : "http://www.deepjs.org",
   "keywords"      : ["util", "promise", "asynch", "AOP", "query", "composition", "server", "client", "browser", "restful", "OCM"],
   "contributors": ["Philippe Delabye <phil@chemicalrules.net>"],
@@ -27,6 +27,6 @@
   "mappings":{
   },
   "engines": {
-        "node": ">=0.10.26"
+        "node": ">=0.10.0"
   }
 }
