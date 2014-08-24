@@ -213,6 +213,9 @@ define([
 	deep.flatten = flattener.flatten;
 
 	/**
+	 * the deep schema validator
+	 * @static
+	 * @property Validator
 	 */
 	deep.Validator = Validator;
 	/**
@@ -235,7 +238,6 @@ define([
 	 */
 	deep.partialValidation = Validator.partialValidation;
 
-	deep.flatten = flattener.flatten;
 
 	deep.coreUnits = deep.coreUnits || [];
 	deep.coreUnits.push(
