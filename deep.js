@@ -11,28 +11,33 @@ if (typeof define !== 'function') {
 define([
 	"require",
 	"./lib/utils",
-	"./lib/nodes",
 	"./lib/query",
+	"./lib/dq-protocol",
 	"./lib/compose",
 	"./lib/collider",
 	"./lib/compiler",
+	"./lib/classes",
+	"./lib/interpret",
 	"./lib/emitter",
 	"./lib/errors",
 	"./lib/rql",
 	"./lib/promise",
+	"./lib/context",
+	"./lib/nodes",
+	"./lib/logs",
+	"./lib/deep-load",
+	"./lib/deep-equal",
 	"./lib/ocm",
+	"./lib/traversal",
+	"./lib/flatten",
+	"./lib/protocol",
 	"./lib/sheet",
 	"./lib/deep-sheeter",
-	"./lib/flatten",
-	// "./lib/flatten-stack",
-	"./lib/protocol",
 	"./lib/deep-chain",
 	"./lib/restrictions",
-	"./lib/traversal"
+	"./lib/validator"
 	//"./lib/schema"
-	//"./lib/view"
-	//"./lib/stores/collection"
-], function(require, utils, nodes, query, composer, collider, compiler, emitter, errors, rql, promise, ocm, sheets, Sheeter, flattener, protocol, deepChain, restrictions, traversal) {
+], function(require, utils,  query, dq, composer, collider, compiler, classes, interpret, emitter, errors, rql,promise, context, nodes, logs,  deepLoader, deepEqual, ocm, traversal, flattener, protocol, sheets, Sheeter, deepChain, restrictions, Validator) {
 
 	if (typeof deep !== 'undefined') {
 		console.log("***********************************************************************************");
