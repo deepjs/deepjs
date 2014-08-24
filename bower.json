@@ -1,7 +1,7 @@
 {
   "name": "deepjs",
   "main": "index.js",
-  "version" : "0.12.1",
+  "version" : "0.13.0",
   "homepage"      : "https://github.com/deepjs/deepjs.git",
   "authors": [
     "Gilles Coomans <gilles.coomans@gmail.com>"
