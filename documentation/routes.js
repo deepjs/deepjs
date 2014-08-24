@@ -196,7 +196,7 @@ define(["require", "../deep"], function(require, deep) {
 				tests: {
 					how: "docs::/pages/tests.html",
 					run: function(verbose) {
-						var $ = deep.context.$;
+						var $ = deep.$();
 						deep.Unit.run(null, {
 							verbose: verbose ? true : false
 						})
