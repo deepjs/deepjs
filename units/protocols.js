@@ -6,12 +6,12 @@ define(["require","../deep"], function (require, deep) {
         title:"deepjs/units/protocols",
         stopOnError:false,
         setup:function(){
-			deep.context.protocols = deep.context.protocols || {};
+			deep.Promise.context.protocols = deep.Promise.context.protocols || {};
         },
         clean:function(){
         	delete deep.protocols.myProtoc;
         	delete deep.protocols.myProtoc2;
-        	delete deep.context.protocols.myProtoc2;
+        	delete deep.Promise.context.protocols.myProtoc2;
         },
         tests : {
 			def:function(){
@@ -47,7 +47,7 @@ define(["require","../deep"], function (require, deep) {
 						return "myprotoc2 received : "+request; 
 					}
 				};
-				deep.context.protocols.myProtoc2 = { 
+				deep.Promise.context.protocols.myProtoc2 = { 
 					get:function(request, options){ 
 						return "myprotoc2 (contextualised) received : "+request; 
 					}
