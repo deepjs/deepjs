@@ -1,7 +1,7 @@
 /**
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
-define(["require", "deepjs/deep", "deepjs/lib/unit", "deepjs/lib/views/view", "deepjs/lib/stores/collection", "deepjs/lib/stores/object", "deepjs/lib/schema"], function(require, deep, Unit){
+define(["require", "deepjs/deep", "deepjs/lib/unit", "deep-views/lib/view", "deepjs/lib/stores/collection", "deepjs/lib/stores/object", "deepjs/lib/schema"], function(require, deep, Unit){
 	console.log("start app-sndbx");
 	var init = function()
 	{
