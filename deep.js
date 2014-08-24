@@ -36,14 +36,13 @@ define([
 
 	if (typeof deep !== 'undefined') {
 		console.log("***********************************************************************************");
-		console.warn("You trying to load deepjs modules two times (maybe from two differents node_modules module)");
-		console.warn("Will use previously loaded deep instance.");
+		console.warn("You trying to load deepjs modules two times (maybe from two differents node_modules (or bower) module)");
+		console.warn("It could be voluntary. If not : you should think it twice. Protocols and context are local to deep instances (by examples).");
 		console.log("***********************************************************************************");
-		return deep;
 	}
 
-	deep = function(obj, schema, options) {
-		// console.log("CHAIN START : context : ", deep.context)
+	var deep = function(obj, schema, options) {
+		// console.log("CHAIN START ", obj)
 		options = options || {};
 		var h = new deep.Chain(options._state || null, options),
 			d;
