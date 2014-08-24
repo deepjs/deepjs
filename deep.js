@@ -88,43 +88,15 @@ define([
 		return h;
 	};
 
-	deep.log = function() {
-		if (deep.context.logger) {
-			var logger = deep.context.logger;
-			if (logger._deep_ocm_)
-				logger = logger();
-			logger.log.apply(logger, arguments);
-		} else if (console.log.apply)
-			console.log.apply(console, arguments);
-		else
-			console.log(deep.utils.argToArr(arguments));
-	};
-	deep.warn = function() {
-		if (deep.context.logger) {
-			var logger = deep.context.logger;
-			if (logger._deep_ocm_)
-				logger = logger();
-			logger.warn.apply(logger, arguments);
-		} else if (console.warn.apply)
-			console.warn.apply(console, arguments);
-		else
-			console.warn(deep.utils.argToArr(arguments));
-	};
-	deep.error = function() {
-		if (deep.context.logger) {
-			var logger = deep.context.logger;
-			if (logger._deep_ocm_)
-				logger = logger();
-			logger.error.apply(logger, arguments);
-		} else if (console.error.apply)
-			console.error.apply(console, arguments);
-		else
-			console.error(deep.utils.argToArr(arguments));
-	};
+
 
 	deep.utils = utils;
 
 	deep.transformers = {};
+
+	deep.log = logs.log;
+	deep.warn = logs.warn;
+	deep.error = logs.error;
 
 	/**
 	 * are you on nodejs or not
