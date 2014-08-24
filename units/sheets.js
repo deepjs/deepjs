@@ -111,16 +111,20 @@ define(["require","../deep"], function (require, deep) {
 					"dq.up::./!":{ fromUp:true },
 					"dq.bottom::./!":{ fromBottom:true },
 					_backgrounds:[{
+						_deep_sheet_:true,
 						"dq.up::./!":{ fromUp2:true },
 					}]
 				})
 				.flatten()
 				.equal({
-					"dq.up::./!":{ fromUp2:true , fromUp:true },
 					_deep_sheet_:true,
+					"dq.up::./!":{ fromUp2:true , fromUp:true },
 					"dq.bottom::./!":{ fromBottom:true }
 				});
 			},
+			/*
+			DEPRECATED TO USE backgrounds in sheets application
+
 			sheets_as_backgrounds_twice:function(){
 				return deep({
 					test:false,
@@ -141,7 +145,7 @@ define(["require","../deep"], function (require, deep) {
 					base:"yes",
 					test:false
 				});
-			},
+			},*/
 
 			
 			sheet_up_sheet:function(){
@@ -277,7 +281,7 @@ define(["require","../deep"], function (require, deep) {
 				.sheet({
 					_deep_sheet_:true,
 					"dq::./test":deep.sheet.transform(function(node){
-						console.log("node : ", node)
+						// console.log("node : ", node)
 						node.value.bloup = true;
 						return node.value;
 					})
