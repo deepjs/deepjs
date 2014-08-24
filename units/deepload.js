@@ -18,7 +18,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         },
         tests : {
             deeploadObject_NonDestructive:function(){
-				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
+				var store = deep.Collection("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
 				return deep(a)
 				.deepLoad(null, false)
@@ -28,7 +28,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				.equal([{ how:{id:"e1", title:"hello"} },{ how:"test::e1" }]);
             },
             deeploadObject_Destructive:function(){
-				var store = deep.store.Collection.create("test", [{id:"e1", title:"hello"}]);
+				var store = deep.Collection("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
 				return deep(a)
 				.deepLoad(null, true)
