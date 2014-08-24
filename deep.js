@@ -106,16 +106,6 @@ define([
 	deep.isNode = (typeof process !== 'undefined' && process.versions && process.versions.node);
 
 	/**
-	 * a magic context that follow promise context and switch automaticaly
-	 * @static
-	 * @property interpret
-	 */
-	deep.context = {
-		rethrow: false,
-		debug: true
-	};
-
-	/**
 	 * where to place YOUR globals (deep does'nt have any globals)
 	 * @static
 	 * @property globals
