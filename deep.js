@@ -161,6 +161,8 @@ define([
 
 	for (var i in compiler)
 		deep[i] = compiler[i];
+	for (var i in classes)
+		deep[i] = classes[i];
 
 	deep.compose = composer.compose;
 	deep.Composition = composer.Composition;
