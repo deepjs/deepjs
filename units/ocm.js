@@ -112,18 +112,18 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						return deep.modes({
 							group2: "mode2"
 						})
-							.delay(1)
-							.done(function(success) {
-								return deep.context.modes;
-							})
-							.equal({
-								group1: "mode1",
-								group2: "mode2"
-							});
+						.delay(1)
+						.done(function(success) {
+							return deep.Promise.context.modes;
+						})
+						.equal({
+							group1: "mode1",
+							group2: "mode2"
+						});
 					})
 					.delay(1)
 					.done(function(success) {
-						return deep.context.modes;
+						return deep.Promise.context.modes;
 					})
 					.equal({
 						group1: "mode1"
