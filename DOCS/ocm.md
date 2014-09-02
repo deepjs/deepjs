@@ -266,7 +266,7 @@ or
 ```javascript
 var manager = deep.ocm({ ... });
 ...
-manager.groups("roles");
+manager.sensibleTo("roles");
 ...
 ```
 
@@ -322,7 +322,7 @@ deep.Modes("roles", "public");
 
 var manager = deep.ocm(...);	// containing a 'user' and a 'public' entry
 
-manager.groups("roles");
+manager.sensibleTo("roles");
 manager.modes("user");
 
 manager()...; // => return 'user' entry (it has use manager current mode(s))

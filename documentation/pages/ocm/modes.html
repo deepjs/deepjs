@@ -161,7 +161,7 @@ var manager = deep.ocm({ ... }, { groups:"roles" });
 or 
 <pre class="dp-box code">
 var manager = deep.ocm({ ... });
-manager.groups("roles");
+manager.sensibleTo("roles");
 </pre>
 <p>
 
@@ -221,7 +221,7 @@ deep.Modes("roles", "public");
 
 var manager = deep.ocm(...);	// containing a 'user' and a 'public' entry
 
-manager.groups("roles");
+manager.sensibleTo("roles");
 manager.modes("user");
 
 manager()...; // => return 'user' entry (it has use manager current mode(s))
