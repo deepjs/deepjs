@@ -20,7 +20,7 @@ deep.fs("/my/root")			// identity method 1 : we start a "file system" chain (nod
 	success.myProp = "hello world";
 	//...
 })
-.rest("myService")		// identity method 2 : we take the "restful chain" API, we keep current success
+.restful("myService")		// identity method 2 : we take the "restful chain" API, we keep current success
 .post()				// post current success (the maniplated loaded json) to myService
 .fail(function(error){
 	// handle any error produced somewhere in the chain

@@ -41,7 +41,7 @@ deep.store.Collection.create("myprotocol");  // native collection-memory-store
 
 //...
 
-deep.rest("myprotocol")
+deep.restful("myprotocol")
 .post( { title:"hello" } )
 .post( { title:"deepjs" } )
 .post( { title:"tools" } )
@@ -73,7 +73,7 @@ var schema = {
 
 deep.store.Collection.create("myprotocol", [], schema);
 
-deep.rest("myprotocol")
+deep.restful("myprotocol")
 .post( { title:"hello", other:1 } )
 .done(function(success){
 	console.log("you should never se this, because schema isn't matched.")
@@ -94,7 +94,7 @@ deep.store.Collection.create("myprotocol", [{ id:"e1", title:"hello", other:true
 
 //...
 
-deep.rest("myprotocol")
+deep.restful("myprotocol")
 .patch( { title:"deepjs" }, { id:"e1"} )
 .log() // ==> { id:"e1", title:"deepjs", other:true }
 .put( { id:"e1", title:"deepjs" } )
@@ -125,7 +125,7 @@ deep.store.Collection.create("myprotocol", [{ id:"e1", title:"hello" }], null, {
 
 //...
 
-deep.rest("myprotocol")
+deep.restful("myprotocol")
 .rpc("myProcedure", [ true, 123 ], "e1")
 .log("rpc result : ")
 .log() // ==> "yeah"
@@ -143,7 +143,7 @@ deep.store.Collection.create("myprotocol", [{ id:"e1", title:"hello" }, { id:"e2
 
 //...
 
-deep.rest("myprotocol")
+deep.restful("myprotocol")
 .bulk([
   {to:"e1", method:"put", body:{title:"updated 2"}, id: 1},
   {to:"e2", method:"put", body:{title:"updated 3"}, id: 2}
@@ -172,7 +172,7 @@ deep.store.Collection.create("myprotocol", [
 
 //...
 
-deep.rest("myprotocol")
+deep.restful("myprotocol")
 .range(1,2)
 .logValues() 	// => two nodes : { id:"e2", title:"deepjs" } and { id:"e3", title:"restful" }
 .log(); 		

@@ -44,7 +44,7 @@ node more complex example
 	http.createServer(function (req, response) {
 
 		deep
-		.rest("myobjects")
+		.restful("myobjects")
 		.post({ title:"hello", date:new Date().valueOf(), random:Math.random() })
 		.get(req.url.substring(1))
 		.each("swig::./items.tpl")

@@ -36,7 +36,7 @@
             return deep.ui.fromJSONBind("#item-form", entrySchema)
             .done(function(output){
 				console.log("form save output = ", output);
-                var d = deep.rest("entry");
+                var d = deep.restful("entry");
                 if(post)
 					d.post(output);
                 else

@@ -10,7 +10,7 @@ So we define the less restrictive API (here 'full'), and we remove capabilities 
 var myStore = deep.ocm({
 	full:{
 		post:function(object){
-			return "full access to : "+JSON.stringify(object); // deep.rest("something").mode("full").post(object);
+			return "full access to : "+JSON.stringify(object); // deep.restful("something").mode("full").post(object);
 		}
 	},
 	middle:{
@@ -34,7 +34,7 @@ var myStore = deep.ocm({
 
 deep
 .roles("full")
-.rest(myStore)
+.restful(myStore)
 .post({ title:"hello", userID:"e12" })
 .log()	// log success
 .roles("middle")
