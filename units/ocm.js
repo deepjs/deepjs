@@ -82,7 +82,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						title: "hello world"
 					}
 				});
-				myManager.group("myGroup");
+				myManager.sensibleTo("myGroup");
 				return deep.modes({
 					"myGroup": "mode1"
 				}) // start a chain with provided modes
@@ -277,18 +277,18 @@ define(["require", "../deep"], function(require, deep, Unit) {
 					env: "dev",
 					roles: "public"
 				})
-					.done(function() {
-						return o().get("hello");
-					})
-					.equal("public:dev:hello")
-					.modes({
-						env: "prod",
-						roles: "public"
-					})
-					.done(function() {
-						return o().get("hello");
-					})
-					.equal("public:hello:prod");
+				.done(function() {
+					return o().get("hello");
+				})
+				.equal("public:dev:hello")
+				.modes({
+					env: "prod",
+					roles: "public"
+				})
+				.done(function() {
+					return o().get("hello");
+				})
+				.equal("public:hello:prod");
 			},
 			ocm_afterCompilation: function() {
 				var manager = deep.ocm({
