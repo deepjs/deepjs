@@ -1,17 +1,510 @@
 <div>
-	<div id="submenu">
-		<h2>Title</h2>
-		<div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
-			<ul>
-				<li><a href="#intro">Introduction</a></li>
-			</ul>
-		</div>
+    <div id="submenu">
+        <h2>Restful</h2>
+        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
+            <ul>
+                <li><a href="#intro">Introduction</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+        <div class="content">
+
+
+            <h3>Specialisation</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var yourObject = {
+	config:{
+		title:"Vegetables"
+	},
+	datas:["orange","apple"],
+	doSomething:function(){
+		return this.config.title + " : " + this.datas.join(",");
+	}
+};
+
+deep.log(yourObject.doSomething());
+</pre>
+            </div>
+            <div class="section-separator-end"></div>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var yourObject = {
+	config:{
+		title:"Vegetables"
+	},
+	datas:["orange","apple"],
+	doSomething:function(){
+		return this.config.title + " : " + this.datas.join(",");
+	}
+};
+var otherObject = {
+	config:{
+		title:"Vegetables",
+		prefix:"hello "
+	},
+	datas:["peer", "citrus"],
+	doSomething:deep.compose.after(function(value){
+		return value + " - (" + this.datas.length + ")";
+	})
+};
+deep.up(otherObject, yourObject);
+
+deep.log(yourObject).log(yourObject.doSomething());
+</pre>
+            </div>
+
+            <div class="section-separator-end"></div>
+
+            <h3>Inheritance</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var yourModel = {
+	datas:["hello", "foo", "bar"],
+	myFunc:function(msg){
+		return "base("+msg+")";
+	}
+};
+var yourInstance = {
+	datas:deep.collider.removeAt(1, 2).push("deepjs"),
+	myFunc:deep.compose.after(function(msg){
+		return "after("+msg+")";
+	})
+	.before(function(msg){
+		return "before("+msg+")";
+	})
+};
+deep.bottom(yourModel, yourInstance);
+
+deep.log(yourInstance).log(yourInstance.myFunc("foo"));
+</pre>
+            </div>
+
+            <div class="section-separator-end"></div>
+            <h3>Backgrounds &amp; foregrounds</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var model = {
+	myFunc:function(msg){
+		return "base("+msg+")";
+	}
+};
+
+var specification = {
+	myFunc:deep.compose.after(function(msg){
+		return "after("+msg+")";
+	})
+};
+
+var myInstance = {
+	_backgrounds:[model],
+	_foregrounds:[specification],
+	myFunc:deep.compose.before(function(msg){
+		return "before("+msg+")";
+	})
+};
+
+deep.flatten(myInstance);
+
+deep.log(myInstance.myFunc("hello"));
+</pre>
+            </div>
+            <div class="section-separator-end"></div>
+            <h3>Few words on flatten algorithm</h3>
+
+            <pre class="dp-box code" style="color:#000">
+_backgrounds and _foregrounds could :
+
+contains : 
+
+- objects references
+- resources references : "json::/path/to/file"
+- internal inheritance : "this::../myBrother"
+- sheets
+
+could load async resources
+
+
+construct full array before merge
+var a = {
+	_backgrounds:[myModel, "js::/my/file.js"],
+	_foregrounds:[mySpecification],
+	//....
+};
+==> [myModel, "js::/my/file.js", a, mySpecification]
+
+recursive
+
+==> [myModel, jsfile_backgrounds,  "js::/my/file.js", jsfile_foregrounds,  a, mySpecification]
+            </pre>
+
+
+
+            <div class="section-separator-end"></div>
+            <div class="section-separator-end"></div>
+            <h3>Queries</h3>
+            <h3>first usage :</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var obj = {
+	a:{	prop:"foo", ready:false },
+	b:{
+		c:{ prop:"bar", ready:true },
+		d:{ /*...*/ }
+	},
+	e:[{ prop:"zoo", ready:true }]
+}
+var r = deep.query(obj, "//*?ready");
+deep.log("selected : ", r);
+                </pre>
+            </div>
+            <h3>Queries expressivity</h3>
+
+            <pre class="dp-box code" style="color:#000">
+./(foo.*)?bar=gt=4/zoo
+
+from current object,
+traverse any foo.* properties
+that have a (sub) property named bar and greater than 4, 
+and give me zoo property from each of them.
+
+
+What's important :
+==> Superset of URL format, so URL compliant
+==> Using RQL as filter
+==> simple
+
+==> same language than for requesting HTTP/Restful services
+            </pre>
+
+            <h3>Second usage :</h3>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep({
+	//...
+})
+.query("./my/query?foo")
+.up("json::/my/file")
+.run("myFunc")
+.done(function(s){
+	//...
+})
+...
+</pre>
+			</div>
+
+<p>	==>	same philosophy than jQuery.</p>
+
+<h3>Third usage : sheets</h3>
+<p>super-aspects or transformation rules</p>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var obj = {
+	a:{
+		//...
+	}
+	//...
+};
+
+var sheet = {
+	_deep_sheet_:true,
+	"dq::/a":deep.sheet.up(/*..., ...*/).bottom(/*..., ...*/).sheet(/*..., ...*/),
+	"dq::/b":deep.sheet.transform(function(node){ /*...*/ }).query("./c?foo").interpret(/*...*/),
+	//...
+};
+
+deep.sheet(sheet, obj)
+.done(function(s){ /*...*/ })
+//...
+</pre>
+			</div>
+<p>the sheets themselves could be merged together (up/bottom).</p>
+
+
+<h3>sheets in backgrounds/foregrounds</h3>
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var obj = {
+	_backgrounds:[..., mySheet, ...],
+	_foregrounds:[..., myOtherSheet, ...],
+	...
+};
+
+deep.flatten(obj)
+.done(function(obj){ /*...*/ })
+//...
+</pre>
+			</div>
+<h3>Context</h3>
+	<small>Gift for Concurrency</small>
+<pre>
+Think about a nodejs server. Requests could be concurrent.
+
+In many places, you need "contextualised" references :
+	- the request itself
+	- session
+	- jQuery reference
+	- flags / modes
+	- logger
+	- cwd
+	- ....
+
+Common middleware pattern says : 
+	- cascade needed references as arguments (at least the request) through callbacks.
+	- to stay usable : decorate request with additional contextualised objects references.
+		(as sessions in expressjs)
+
+==> not good :
+	==> not generic
+	==> no common usage pattern
+	==> poor extensibility
+
+==> We need something really generic
+
+
+
+There come Promises and Context : 
+==> you have acces, at any time, from anywhere, to a "glocal" namespace, called "context", where you store all those references.
+
+SCHEMA
+
+</pre>
+
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep.contextualise({
+	request:request
+})
+.done(function(s){
+	//...
+	var request = deep.context('request');
+	//...
+});
+</pre>
+			</div>
+
+<pre>
+==> usable anywhere
+==> highly generic
+==> allow real isomorphism
+</pre>
+
+<h3>Abstract Resource Locator (protocols)</h3>
+<pre>
+	- Service Locator
+	- dependance injection
+	- ...
+
+	deep.protocols == namespace
+
+	"json::/my/file.json"
+	"products.range(0,9)::?myProp=gt=2"
+	"dq.up::./my/deep?query"
+	"dom.appendTo::#myID"
+	"swig::/my/template.html"
+	"this::../myBrother"
+
+	==> high modularity and abstraction
+	==> another important part of real isomorphism
+	==> so useful, often so elegant
+</pre>
+
+
+<h3>Async Mediators/Decorator through chained syntax</h3>
+	<small>Extended Promise API and dedicated chained API</small>
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep("json::../my/file.json")
+.transform("swig::/my/template.htm")
+.done(function(rendered){
+	// do something with 'rendered'
+})
+.fail(function(error){
+	// handle here any error that happend somewhere in chain
+});
+</pre>
 	</div>
-	<div id="content">
-		<div class="content">
-			<h3>Theory</h3>
-			<a href="http://en.wikipedia.org/wiki/Strategy_pattern">startegy pattern</a>
-		</div>
-	</div>
+
+
+<pre>
+# Object Capability Model
+	ACL sucks
+
+	It comes from the 70's researches on secure OS, and recently, it has been prooved that a lot of design and security problems are coming from Access Control List model, and that OCM could solve many of those.
+
+	 The idea behind is that nature of objects depend on observer.   	
+
+	deep implications but really simple usage.
+</pre>
+
+
+<pre>
+	# Landscape programming resumed
+
+==> allow semi-blind composition of whole structures : apps, config, classes, objects, maps, sheets (transformations)....
+
+Layer paradigm : 
+	describe in objects structure and make it "mergeable friendly"
+
+After that : each time you write something : 
+it could be seen as a model (class meaning) or a specification.
+
+	Welcome to "space-time" paradigm
+
+deepjs core	==> mix of :
+		- Aspect/Features/Subject/Capability/Layer Oriented Programming
+		- selectors philo (css/jquery)
+		- Light MDD
+		- Abstract Resource locators
+		- Async with Promises and chained Mediators
+		- Concurrent Context
+
+		- Object Capability Manager : observer dependant capabilities
+
+Space = layered
+Time = compositions, async and promises, context
+________________________________________
+
+==> core = ~ 85Ko minified  (~ 25 Ko gzipped)
+
+_______________________________________
+______________ CORE END _______________
+_______________________________________
+</pre>
+
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+var map = {
+	header:{
+		how:"swig::/header.html",
+		where:"dom.htmlOf::#header"
+	},
+	content:{
+		subs:{
+			home:{
+				route:"/home",
+				what:"json::/my/home/content.json",
+				how:"swig::/home.html",
+				where:"dom.htmlOf::#content"
+			}
+		}
+	},
+	footer:{
+		how:"swig::/footer.html",
+		where:"dom.htmlOf::#footer"
+	}
+};
+
+var specification = {
+	content:{
+		subs:{
+			products:{
+				route:"/products/?(n:start/n:end)/?q:filter",
+				what:"products.range({ start|0 },{ end|9 })::?{ filter|'' }",
+				how:"swig::/products.html",
+				where:"dom.htmlOf::#content",
+				subs:{
+					detail:{
+						route:"./detail/s:id",
+						what:"products::/{ id }",
+						how:"swig::/product.html",
+						where:"dom.htmlOf::#detail"
+					}
+				}
+			}
+		}
+	}
+};
+
+deep.Swig("swig", "/templates/");
+deep.jquery.dom("dom")
+deep.jquey.HTML("html");
+deep.jquery.JSON("json");
+deep.jquery.JSON("products", "/services/products/");
+deep.jquery.set($);
+
+
+deep("json::/my/map.json")
+.toState("map")
+.up("json::/my/specification.json")
+.query("//?how")
+.bottom(deep.View())
+.fromState("map")
+.done(function(map){
+	return deep.route(map).run("init", "/home");
+})
+.slog("route initiliased")
+.elog("route construction fail");
+</pre>
 </div>
 
+
+            <div class="dp-example">
+                <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
+deep.ocm({
+	dev:deep.Collection({
+		collection:deep.Shared([{ id:"e1", title:"My product", amount:24 }])
+	}),
+	prod:deep.Mongo({
+		url:"...",
+		collectionName:"products"
+	}),
+	admin:{
+		schema:{ 
+			properties:{ 
+				title:{ type:"string", required:true }, 
+				amount:{ type:"number", required:true } 
+			}
+		}
+	},
+	user:{
+		_backgrounds:["this::../admin", deep.Disallow("del", "rpc")],
+		schema:{
+			properties:{ 
+				amount:{ readOnly:true }
+			}
+		},
+		post:deep.compose.after(function(obj){
+			// increment counter somewhere
+		})
+	},
+	"public":{
+		_backgrounds:["this::../user", deep.AllowOnly("get", "range")]
+	}
+}, { 
+	groups:["env","roles"],
+	protocol:"products"
+});
+
+//...
+
+deep.generalModes({
+	env:"dev"
+});
+
+//...
+
+deep.modes("roles", "user")
+.restful("products")
+.put("My new title.", "/e1/title")
+.elog();
+</pre>
+</div>
+
+
+
+        </div>
+    </div>
+</div>

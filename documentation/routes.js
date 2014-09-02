@@ -200,12 +200,12 @@ define(["require", "../deep"], function(require, deep) {
 						deep.Unit.run(null, {
 							verbose: verbose ? true : false
 						})
-							.done(function(report) {
-								// console.log("report : ", report);
-								report.reports = null;
-								$("#reports-container").html("<div>Tests result : <pre class='dp-box'>" + JSON.stringify(report, null, ' ') + '</pre></div>')
-									.slideDown(200);
-							});
+						.done(function(report) {
+							// console.log("report : ", report);
+							report.reports = null;
+							$("#reports-container").html("<div>Tests result : <pre class='dp-box'>" + JSON.stringify(report, null, ' ') + '</pre></div>')
+								.slideDown(200);
+						});
 					}
 				}
 			}
@@ -215,7 +215,7 @@ define(["require", "../deep"], function(require, deep) {
 			subs: {
 				overview: {
 					route: "/restful/$",
-					how: "<div>restful overview</div>"
+					how: "docs::/pages/restful/overview.html"
 				},
 				collection: {
 					how: "docs::/pages/restful/collection.html"
