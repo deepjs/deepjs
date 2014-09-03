@@ -140,8 +140,6 @@ refactor load sequence in view : one object wired arg-return	:					ok
 
 
 
-remove deep.debug log in chain catch
-
 __________________________________ STUDIES FROM BLUEBIRD
 
 Add "state" method : isPending, isRejected, isResolved
@@ -190,22 +188,6 @@ WARNING :
 
 
 check promise timeout
-___________________________________________________________________
-should write parser
-
-markdown flavoured language :
-	- enhancements
-	- from
-	- medias
-	- snippets
-	- controller
-	- markdown
-
-	should manage scope (browser and/or server)
-
-markstrap like
-
-
 
 
 ____________________________________________________________________
@@ -270,6 +252,32 @@ put protocols set in deep.context : ocmise present protocols = parano mode : con
 
 deep.contextualize("protocols", deepCopy:Bool, parano:Bool) : will copy protocols (simple or deep) and apply OCM parano
 
-deep.toContext()
 
-deep.removeFromContext()
+
+
+
+MORE : 
+
+
+
+
+// TODO : .transform => .map
+// look up/bottoms order
+// deep-login
+// 
+// .foregrounds & .backgrounds in chain
+// 
+// 
+// OCM : sensibleTo in place of modes 					OK
+// 
+// 
+// .restful in place of .rest  							OK
+// 
+// 
+// 
+// catched route should be placed in context
+
+
+
+// views : when interpreting strings (what, how, where)
+// ==> context : { context:deep.context(), ctrl:ctrl }
