@@ -484,13 +484,13 @@ deep.ocm({
 		_backgrounds:["this::../user", deep.AllowOnly("get", "range")]
 	}
 }, { 
-	groups:["env","roles"],
+	sensibleTo:["env","roles"],
 	protocol:"products"
 });
 
 //...
 
-deep.generalModes({
+deep.Modes({
 	env:"dev"
 });
 

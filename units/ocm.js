@@ -206,7 +206,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						})
 					}
 				}, {
-					group: ["env", "roles"]
+					sensibleTo: ["env", "roles"]
 				});
 
 				return deep.modes({
@@ -241,7 +241,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						})
 					}
 				}, {
-					group: ["env", "roles"]
+					sensibleTo: ["env", "roles"]
 				});
 
 				return deep.modes({
@@ -271,7 +271,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						})
 					})
 				}, {
-					groups: ["roles", "env"]
+					sensibleTo: ["roles", "env"]
 				});
 				return deep.modes({
 					env: "dev",

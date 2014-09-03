@@ -157,7 +157,7 @@ deep.protocols.myProtoc = deep.ocm({
 			return "Response from mode2 : bye "+request;
 		}
 	}
-},  { groups:"modeGroup" });
+},  { sensibleTo:"modeGroup" });
 //...
 deep.Modes("modeGroup", "mode1");
 //...
@@ -231,7 +231,7 @@ deep.protocols.myProtoc = deep.ocm({
 		_backgrounds:["this::../mode1"],
 		myVar:"hollywood"
 	}
-}, { groups:"myGroup"});
+}, { sensibleTo:"myGroup"});
 //...
 deep.Modes("myGroup", "mode2");
 //...

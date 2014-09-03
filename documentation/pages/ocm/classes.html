@@ -24,8 +24,8 @@ var constructor = deep.ocm({
 
 var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
 ...
-proto.mode("mode2");			// or set it through groups.
-constructor.mode("mode1");			// or set it through groups.
+proto.modes("mode2");			// or set it through groups.
+constructor.modes("mode1");			// or set it through groups.
 ...
 var MyClass = MyClassFactory();			// produce MyClass with current modes
 var instance = new MyClass(); 			// MyClass has constructor.mode1 and proto.mode2

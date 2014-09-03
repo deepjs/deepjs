@@ -9,7 +9,7 @@
 				<li><a href="#hierarchy">hierarchy</a>
 					<ul>
 						<li><a href="#direct-mode">direct modes</a></li>
-						<li><a href="#groups">Groups</a></li>
+						<li><a href="#sensible-to">SensibleTo</a></li>
 						<li><a href="#Modes">Modes</a></li>
 						<li><a href="#hierarchy-resume">resumed</a></li>
 
@@ -17,7 +17,7 @@
 				</li>
 				<li><a href="#modes-null">modes to null</a></li>
 				<li><a href="#map">modes map</a></li>
-				<li><a href="#multi-groups">multi-groups</a></li>
+				<li><a href="#multi-sensibility">multi-sensibility</a></li>
 			</ul>
 		</div>
 	</div>
@@ -129,7 +129,7 @@ myManager("public","user").get(...); // => will warn and return an empty object
 			</div>
 
 
-<h3 id="hierarchy">Mode groups, context and hierarchy</h3>
+<h3 id="hierarchy">Mode sensibility, context and hierarchy</h3>
 
 So... In deep.ocm, there is 4 ways to manage modes.
 
@@ -150,13 +150,13 @@ manager.modes("mode1");			// manager will hold provided mode(s) in it's local cl
 var compiled = manager();		// it will use the internal mode previously defined (here : 'mode1').
 </pre>
 
-<h4 id="groups">Through groups, deep.Modes and deep.modes</h4>
+<h4 id="sensible-to">Through sensibleTo, deep.Modes and deep.modes</h4>
 
 If you want to define once a mode somewhere that could be shared between different managers, 
 you need to set, in your managers, the name(s) of the variable(s) that contain(s) your current mode(s).
-You set it through 'groups' property or method : 
+You set it through 'sensibleTo' property or method : 
 <pre class="dp-box code">
-var manager = deep.ocm({ ... }, { groups:"roles" });
+var manager = deep.ocm({ ... }, { sensibleTo:"roles" });
 </pre>
 or 
 <pre class="dp-box code">
@@ -165,7 +165,7 @@ manager.sensibleTo("roles");
 </pre>
 <p>
 
-<h4 id="Modes">Through groups, deep.Modes and deep.modes</h4>
+<h4 id="Modes">Through sensibleTo, deep.Modes and deep.modes</h4>
 
 Then, when you'll ask to your manager to return something, deep OCM will look in 3 namespaces after related 'group(s)' modes.
 Lets explain the hierarchy between those namespaces:</p>
@@ -180,7 +180,7 @@ So, when you do
 var a = manager();
 </pre>
 deepjs will look first in manager itself after current modes.
-<p>If there is no current mode setted in manager, but there is a 'groups' property, deepjs will look in current deep.context.modes after the 'group(s)' modes, and apply it if any.</p>
+<p>If there is no current mode setted in manager, but there is a 'sensibleTo' property, deepjs will look in current deep.context.modes after the 'group(s)' modes, and apply it if any.</p>
 <p>Finally, if there is no deep.context.modes that could be find with 'group(s)', it will look in deep.Modes namespace after it, and apply it if any.</p>
 
 <p>If deepjs finds nothing : it will warn and return an empty object.</p>
@@ -190,7 +190,7 @@ deepjs will look first in manager itself after current modes.
 <h4 id="hierarchy-resume">Resumed</h4> 
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-var manager = deep.ocm({ 'public':'hello public',  'user':'hello user' }, { groups:"roles" });
+var manager = deep.ocm({ 'public':'hello public',  'user':'hello user' }, { sensibleTo:"roles" });
 //...
 deep.Modes("roles","public");
 //...
@@ -270,12 +270,12 @@ Resumed : when modes map are merged with a namespace (either deep.Modes or deep.
 for(var i in modesMap)
 	namespace[i] = modesMap[i];
 </pre>
-So you conserve OTHER groups that those gives in modesMap.
+So you conserve OTHER modes that those gives in modesMap.
 
 
-<h3 id="multi-groups">Multi groups</h3>
+<h3 id="multi-sensiblility">Multi sensibility</h3>
 
-You could also use a groups collection in your manager.
+You could also use a sensibleTo collection in your manager.
 
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
@@ -284,7 +284,7 @@ var manager = deep.ocm({
 	prod:deep.store.Mongo.create(...),
 	'public':deep.AllowOnly("get", "range"),
 	user:deep.Restrictions("del")
-}, { groups:["env", "roles"] });
+}, { sensibleTo:["env", "roles"] });
 
 deep.Modes({
 	roles:"user",

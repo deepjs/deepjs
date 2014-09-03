@@ -231,7 +231,7 @@ myManager("public","user").get(...); // => will warn and return an empty object
 ```
 
 
-## Mode groups, context and hierarchy
+## Mode sensibleTo, context and hierarchy
 
 So... In deep.ocm, there is 4 ways to manage modes.
 
@@ -254,13 +254,13 @@ var compiled = manager();		// it will use the internal mode previously defined (
 
 ```
 
-### Through groups, deep.Modes and deep.modes
+### Through sensibleTo, deep.Modes and deep.modes
 
 If you want to define once a mode somewhere that could be shared between different managers, 
 you need to set, in your managers, the name(s) of the variable(s) that contain(s) your current mode(s).
-You set it through 'groups' property or method : 
+You set it through 'sensibleTo' property or method : 
 ```javascript
-var manager = deep.ocm({ ... }, { groups:"roles" });
+var manager = deep.ocm({ ... }, { sensibleTo:"roles" });
 ```
 or 
 ```javascript
@@ -283,7 +283,7 @@ Lets explain the hierarchy between those namespaces:
 
 
 So, when you do ```var a = manager();```, deepjs will look first in manager itself after current modes.
-If there is no current mode setted in manager, but there is a 'groups' property, deepjs will look in current deep.context.modes after the 'group(s)' modes, and apply it if any.
+If there is no current mode setted in manager, but there is a 'sensibleTo' property, deepjs will look in current deep.context.modes after the 'group(s)' modes, and apply it if any.
 Finally, if there is no deep.context.modes that could be find with 'group(s)', it will look in deep.Modes namespace after it, and apply it if any.
 
 If deepjs finds nothing : it will warn and return an empty object.
@@ -292,7 +292,7 @@ For full informations on deep.context and how tu use it : see [docs](./asynch/as
 
 Resumed : 
 ```javascript
-var manager = deep.ocm({ 'public':'hello public',  'user':'hello user' }, { groups:"roles" });
+var manager = deep.ocm({ 'public':'hello public',  'user':'hello user' }, { sensibleTo:"roles" });
 ...
 deep.Modes("roles","public");
 ...
@@ -370,12 +370,12 @@ Resumed : when modes map are merged with a namespace (either deep.Modes or deep.
 for(var i in modesMap)
 	namespace[i] = modesMap[i];
 ```
-So you conserve OTHER groups that those gives in modesMap.
+So you conserve OTHER sensibleTo that those gives in modesMap.
 
 
-## Multi groups
+## Multi sensibleTo
 
-You could also use a groups collection in your manager.
+You could also use a sensibleTo collection in your manager.
 
 ```javascript
 var manager = deep.ocm({
@@ -383,7 +383,7 @@ var manager = deep.ocm({
 	prod:deep.store.Mongo.create(...),
 	'public':deep.AllowOnly("get", "range"),
 	user:deep.Restrictions("del")
-}, { groups:["env", "roles"] });
+}, { sensibleTo:["env", "roles"] });
 
 deep.Modes({
 	roles:"user",
@@ -545,8 +545,8 @@ var constructor = deep.ocm({
 
 var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);
 ...
-proto.mode("mode2");			// or set it through groups.
-constructor.mode("mode1");			// or set it through groups.
+proto.modes("mode2");			// or set it through sensibleTo.
+constructor.modes("mode1");			// or set it through sensibleTo.
 ...
 var MyClass = MyClassFactory();			// produce MyClass with current modes
 var instance = new MyClass(); 			// MyClass has constructor.mode1 and proto.mode2
