@@ -261,11 +261,11 @@ MORE :
 
 
 
-// TODO : .transform => .map
+// TODO : .transform => .map  							OK
 // look up/bottoms order
-// deep-login
+// deep-login											LATER
 // 
-// .foregrounds & .backgrounds in chain
+// .foregrounds & .backgrounds in Chain 				LATER
 // 
 // 
 // OCM : sensibleTo in place of modes 					OK
@@ -275,9 +275,9 @@ MORE :
 // 
 // 
 // 
-// catched route should be placed in context
+// catched route should be placed in context  			LATER
 
 
 
-// views : when interpreting strings (what, how, where)
+// views : when interpreting strings (what, how, where) 	LATER
 // ==> context : { context:deep.context(), ctrl:ctrl }
