@@ -5,7 +5,7 @@ if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(["require","../deep"], function (require, deep) {
+define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
     
     //_______________________________________________________________ GENERIC STORE TEST CASES
 
