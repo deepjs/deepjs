@@ -32,7 +32,7 @@ var farmManager = {
 };
 
 // Add aspects
-deep.utils.up({
+deep.aup({
 	// now we add an aspect on water() that will
 	// clean the place before watering the animals (asynchronous)
 	water : deep.compose.before(function(){

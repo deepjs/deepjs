@@ -13,7 +13,7 @@ To make a parallele : Think about photoshop transparent layers stack : pixels fr
 ```javascript
 var a = { ok:true, title:"hello" };
 var b = { title:"deepjs", label:"world" };
-deep.utils.up(b,a);
+deep.aup(b,a);
 console.log(a);	// => a is modified : { ok:true, title:"deepjs", label:"world"}
 console.log(b);	// => b still the same : { title:"deepjs", label:"world"}
 ```
@@ -21,7 +21,7 @@ console.log(b);	// => b still the same : { title:"deepjs", label:"world"}
 ```javascript
 var a = { ok:true, title:"hello" };
 var b = { title:"deepjs", label:"world" };
-deep.utils.bottom(b,a);
+deep.abottom(b,a);
 console.log(a);	// => a is modified : { ok:true, title:"hello", label:"world"}
 console.log(b);	// => b still the same : { title:"deepjs", label:"world"}
 ```

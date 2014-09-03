@@ -97,7 +97,7 @@ sheet : sequential by default
 
 deep.sheet(sh1, sh2, target)   + in deep chain
 
-deep.up(src1, src2, target)	 				 OK 		
+deep.up(target, src1, src2)	 				 OK 		
 deep.bottom(src1, src2, target)				 OK 	
 ==> remove parent and key in up/bottom			OK
 

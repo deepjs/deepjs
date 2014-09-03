@@ -18,7 +18,7 @@ var farmManager = {
 	}
 };
 
-deep.utils.up({
+deep.aup({
     water : deep.compose.before(function(){
         var def = deep.Deferred();
         setTimeout(function(){

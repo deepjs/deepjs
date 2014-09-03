@@ -53,7 +53,7 @@ var c = {
     b:deep.colliders.validate({ type:"string" })
 }
 
-deep.utils.up(b,a);
+deep.aup(b,a);
 
 
 ```

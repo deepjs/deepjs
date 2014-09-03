@@ -6,13 +6,15 @@
 				<li><a href="#intro">Introduction</a></li>
 				<li><a href="#up">up</a>
 					<ul>
-						<li><a href="#direct-up">deep.up(...)</a></li>
+						<li><a href="#atomic-up">deep.aup(...)</a></li>
+						<li><a href="#group-up">deep.up(...)</a></li>
 						<li><a href="#chain-up">deep(...).up(...)</a></li>
 					</ul>
 				</li>
 				<li><a href="#bottom">bottom</a>
 					<ul>
-						<li><a href="#direct-bottom">deep.bottom(...)</a></li>
+						<li><a href="#atomic-bottom">deep.abottom(...)</a></li>
+						<li><a href="#group-bottom">deep.bottom(...)</a></li>
 						<li><a href="#chain-bottom">deep(...).bottom(...)</a></li>
 					</ul>
 				</li>
@@ -68,7 +70,7 @@ deep.log(target);
 				</div>
 			</div>
 			<div class="content">
-				<h4  id="direct-up">deep.up(src, target)</h3>
+				<h4  id="atomic-up">deep.aup(src, target)</h3>
 				<div class="row">
 					<div class="col-sm-12 col-md-12">
 						<p>This method apply the "src" layer by the up side on the "target" layer.</p>
@@ -88,7 +90,7 @@ var obj1 = {
 var obj2 = {
 	b:false
 }
-deep.up(obj2, obj1);
+deep.aup(obj2, obj1);
 
 deep.log(obj1);
 </pre>

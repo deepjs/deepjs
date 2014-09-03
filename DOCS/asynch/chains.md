@@ -356,9 +356,9 @@ see [validation](../json-schemas/validations.md).
 
 deep utils API.
 
-deep.utils.up(src, target, schema)
+deep.aup(src, target, opt)
 
-deep.utils.bottom(src, target, schema)
+deep.abottom(src, target, opt)
 
 deep.utils.deepArrayFusion2(first, second, schema)
 
