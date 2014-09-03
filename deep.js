@@ -262,7 +262,7 @@ define([
 		if(r)
 			r.forEach(function(node) {
 				for (var i = 0, len = node.schema.transformers.length; i < len; ++i)
-					deep.nodes.transform(node, node.schema.transformers[i]);
+					deep.nodes.map(node, node.schema.transformers[i]);
 			});
 	};
 

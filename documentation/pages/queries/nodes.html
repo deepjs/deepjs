@@ -124,7 +124,7 @@ deep.log(deep.nodes.schemas(r));
 </div>
         <!-- ______________________________________________________________ TRANSFORM ________________ -->
 				<div class="section-separator-small"></div>
-<h4 id="transform">deep.nodes.transform(nodes)</h4>
+<h4 id="transform">deep.nodes.map(nodes)</h4>
 <p>Transform node(s) value. So replace original value by the one returned by provided callback.</p>
 <p>Could work on a single descriptor or on a array of descriptors.</p>
 <p>Return either a promise (that will return transformed value(s)) or directly the transformed value(s) if there is nothing to wait.</p>
@@ -132,7 +132,7 @@ deep.log(deep.nodes.schemas(r));
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./a", { fullOutput:true });
-deep.nodes.transform(r, function(node){
+deep.nodes.map(r, function(node){
 	return node.value+":transformed";
 });
 deep.log(deep.nodes.val(r));
@@ -142,7 +142,7 @@ deep.log(deep.nodes.val(r));
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 var r = deep.query({ a:true, b:"hello" }, "./*", { fullOutput:true });
-deep.nodes.transform(r, function(node){
+deep.nodes.map(r, function(node){
     return node.value+":transformed";
 });
 deep.log(deep.nodes.val(r));
