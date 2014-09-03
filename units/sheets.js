@@ -149,7 +149,7 @@ define(["require","../deep"], function (require, deep) {
 
 			
 			sheet_up_sheet:function(){
-				var a = deep.up({
+				var a = deep.aup({
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ bloup:true }
 				},{
@@ -165,7 +165,7 @@ define(["require","../deep"], function (require, deep) {
 				});
 			},
 			sheet_bottom_sheet:function(){
-				var a = deep.bottom({
+				var a = deep.abottom({
 					_deep_sheet_:true,
 					"dq.bottom::.//!":{ bloup:true }
 				},{

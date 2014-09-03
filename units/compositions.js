@@ -92,7 +92,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return closure.test;
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep.when(a.test())
                 .equal("hello test : after");
             },
@@ -110,7 +110,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep.when(closure.test).delay(1);
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep.when(a.test())
                 .equal( "hello test : after" );
             },
@@ -127,7 +127,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         };
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep.when(a.test())
                 .equal("hello test around");
             },
@@ -143,7 +143,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         closure.test += "before : ";
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 a.test();
                 return deep(closure.test)
                 .equal("before : hello test");
@@ -162,7 +162,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep(closure.test).delay(1);
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep.when(a.test())
                 .equal("before : hello test");
             },
@@ -177,7 +177,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return "hello parallele";
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep.when(a.test())
                 .equal(["hello test", "hello parallele"]);
             },
@@ -192,7 +192,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep.when("hello parallele").delay(2);
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep.when(a.test())
                 .equal(["hello test", "hello parallele"]);
             },
@@ -224,7 +224,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     })
                 };
 
-                deep.utils.bottom(b, a);
+                deep.abottom(b, a);
 
                 return deep.when(a.test("bloup")).equal("hello : weee");
             },
@@ -240,7 +240,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     })
                 };
 
-                deep.utils.bottom(b, a);
+                deep.abottom(b, a);
 
                 return deep.when(a.test("bloup")).equal("hello : bloup");
             },
@@ -256,7 +256,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     })
                 };
 
-                deep.utils.bottom(b, a);
+                deep.abottom(b, a);
 
                 return deep.when(a.test("bloup")).equal("hello : bloup");
             },
@@ -272,7 +272,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     })
                 };
 
-                deep.utils.bottom(b, a);
+                deep.abottom(b, a);
                 return deep.when(a.test("bloup"))
                 .equal("hello : bloup!");
             },
@@ -290,7 +290,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep.Arguments(["B1:"+arg1, "B2:"+arg2]);
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep(a.test("hello","world"))
                 .equal(["A1:B1:hello", "A2:B2:world"])
                 .deep(checker)
@@ -313,7 +313,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep.Arguments(["B1:"+arg1, "B2:"+arg2]);
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep(a.test("hello","world"))
                 .equal(["B1:A1:hello", "B2:A2:world"])
                 .deep(checker)
@@ -336,7 +336,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return ["B1:"+arg1, "B2:"+arg2];
                     })
                 };
-                deep.utils.up(b,a);
+                deep.aup(b,a);
                 return deep(a.test("hello","world"))
                 .equal(["B1:hello", "B2:world"])
                 .deep(checker)
@@ -357,7 +357,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     closure.shouldntSeeThis = true;
                 });
 
-                var test3 = deep.utils.up(test2, test);
+                var test3 = deep.aup(test2, test);
 
                 try{
                     test3(1,3);
@@ -371,7 +371,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var a = function(){
                     return "hello";
                 };
-                a = deep.utils.up(deep.compose.branches(function(){
+                a = deep.aup(deep.compose.branches(function(){
                     this.after(function(s){
                         return s+":after";
                     });
@@ -423,14 +423,14 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var func = function(){
                     return "hello";
                 };
-                var r = deep.utils.up(func, compo);
+                var r = deep.aup(func, compo);
                 return deep(r())
                 .equal("hello");
             },
             classes_defaulproto:function(){
                 var Mc = deep.compose.Classes(function(schema){
                     if(schema && this.schema)
-                        deep.utils.up(schema, this.schema);
+                        deep.aup(schema, this.schema);
                 }, {
                     schema:{
                         bloup:true

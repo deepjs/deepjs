@@ -51,7 +51,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 });
             },
             bottom_object:function(){
-              var r = deep.utils.bottom({"a":{"second":true}},{"a":{"hello":"world"}});
+              var r = deep.abottom({"a":{"second":true}},{"a":{"hello":"world"}});
               return deep(r.a).equal({ second:true, hello:"world" });
             },
             bottom_array:function(){
@@ -100,7 +100,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                   hello:"world"
                 }
               });
-              deep.utils.bottom({a:{ second:true }}, ocm);
+              deep.abottom({a:{ second:true }}, ocm);
               return deep(ocm("a")).equal({second:true, hello:"world"});
             }
         }

@@ -20,7 +20,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				var b = {
 					test:deep.Shared([4,5])
 				};
-				deep.utils.bottom(a,b);
+				deep.abottom(a,b);
 				a.test.push(6,7);
 				b.test.push(8,9);
 				return deep(a.test).equal(b.test);
@@ -32,7 +32,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				var b = {
 					test:[4,5]
 				};
-				deep.utils.bottom(a,b);
+				deep.abottom(a,b);
 				a.test.push(6,7);
 				b.test.push(8,9);
 				return deep(a.test).equal(b.test);
@@ -44,7 +44,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				var b = {
 					test:deep.Shared([4,5])
 				};
-				deep.utils.up(a,b);
+				deep.aup(a,b);
 				a.test.push(6,7);
 				b.test.push(8,9);
 				//console.log(a,b);
@@ -58,7 +58,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 					test:[4,5]
 				};
 
-				deep.utils.up(a,b);
+				deep.aup(a,b);
 				a.test.push(6,7);
 				b.test.push(8,9);
 				//console.log(a,b);
