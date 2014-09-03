@@ -162,7 +162,7 @@ The mode collection is really useful to do something like this :   (see deep.sto
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	"public":deep.Restrictions("del","post"),
+	"public":deep.Disallow("del","post"),
 	admin:{}
 });
 
@@ -202,7 +202,7 @@ To disallow this behaviour, simply provide an options object to OCM constructor 
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	"public":deep.Restrictions("del","post"),
+	"public":deep.Disallow("del","post"),
 	admin:{}
 }, { strict:true });
 
@@ -382,7 +382,7 @@ var manager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
 	'public':deep.AllowOnly("get", "range"),
-	user:deep.Restrictions("del")
+	user:deep.Disallow("del")
 }, { sensibleTo:["env", "roles"] });
 
 deep.Modes({
@@ -563,12 +563,12 @@ var proto = deep.ocm({
 	mode2:{
 		//...
 	}
-}, { group:"example"});
+}, { sensibleTo:"example"});
 
 var constructor = deep.ocm({
 	mode1:function(){ /*....*/ },
 	mode2:function(){ /*....*/ }
-}, { group:"example"});
+}, { sensibleTo:"example"});
 
 var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);s
 ...

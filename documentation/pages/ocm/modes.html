@@ -56,7 +56,7 @@ deep.log("mode2 + mode1 : ", myManager("mode2", "mode1")); 		// be careful to or
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	"public":deep.Restrictions("del","post"),
+	"public":deep.Disallow("del","post"),
 	admin:{}
 });
 // try to delete something in local developpement store (a memory collection here) as "public" => return error 405  
@@ -92,7 +92,7 @@ myManager("prod","bloup").del("my_id");
 var myManager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
-	"public":deep.Restrictions("del","post"),
+	"public":deep.Disallow("del","post"),
 	admin:{}
 }, { strict:true });
 //...
@@ -283,7 +283,7 @@ var manager = deep.ocm({
 	dev:deep.store.Collection.create(...),
 	prod:deep.store.Mongo.create(...),
 	'public':deep.AllowOnly("get", "range"),
-	user:deep.Restrictions("del")
+	user:deep.Disallow("del")
 }, { sensibleTo:["env", "roles"] });
 
 deep.Modes({

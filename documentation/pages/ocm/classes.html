@@ -42,12 +42,12 @@ var proto = deep.ocm({
 	mode2:{
 		//...
 	}
-}, { group:"example"});
+}, { sensibleTo:"example"});
 
 var constructor = deep.ocm({
 	mode1:function(){ /*....*/ },
 	mode2:function(){ /*....*/ }
-}, { group:"example"});
+}, { sensibleTo:"example"});
 
 var MyClassFactory = deep.compose.ClassFactory(constructor, proto, ...);s
 ...
