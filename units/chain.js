@@ -52,6 +52,11 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 return deep({ a:true })
                 .up({ b:true }, { c:true })
                 .equal({ a:true, b:true, c:true });
+            },
+            bottom:function(){
+                return deep({ a:true })
+                .bottom({ b:true }, { c:true })
+                .equal({ b:true, c:true, a:true});
             }
         }
     };

@@ -102,6 +102,26 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
               });
               deep.abottom({a:{ second:true }}, ocm);
               return deep(ocm("a")).equal({second:true, hello:"world"});
+            },
+            aup1:function(){
+              var a = { a:true };
+              deep.aup({ b:true }, a);
+              return deep(a).equal({ a:true, b:true });
+            },
+            abottom1:function(){
+              var a = { a:true };
+              deep.abottom({ b:true }, a);
+              return deep(a).equal({ b:true, a:true });
+            },
+            up:function(){
+              var tg = { a:true };
+              deep.up(tg, { b:true }, { c:true });
+              return deep(tg).equal({ a:true, b:true, c:true });
+            },
+            bottom:function(){
+              var tg = { a:true };
+              deep.bottom({ b:true }, { c:true }, tg);
+              return deep(tg).equal({ b:true, c:true, a:true });
             }
         }
     };
