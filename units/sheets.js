@@ -40,10 +40,10 @@ define(["require","../deep"], function (require, deep) {
 				deep.sheet(sheet, obj);
 				return deep(obj).equal({"array":["from bottom","base entry","from up"],"a":{"test":123,"other":true},"hello":"world"});
 			},
-			transform:function(){
+			map:function(){
 				var sheet = {
 					_deep_sheet_:true,
-					"dq.transform::./*":function(input){
+					"dq.map::./*":function(input){
 						return "e"+input.value;
 					}
 				};
@@ -274,13 +274,13 @@ define(["require","../deep"], function (require, deep) {
 					test:{ bloup:"deepjs", hello:"world", lolipop:true }
 				});
 			},
-			sheeter_transform:function(){
+			sheeter_map:function(){
 				return deep({
 					test:{ hello:"world" }
 				})
 				.sheet({
 					_deep_sheet_:true,
-					"dq::./test":deep.sheet.transform(function(node){
+					"dq::./test":deep.sheet.map(function(node){
 						// console.log("node : ", node)
 						node.value.bloup = true;
 						return node.value;
