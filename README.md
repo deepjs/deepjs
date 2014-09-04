@@ -2,9 +2,9 @@
 
 <b>deepjs core</b>(this lib) provides a set of quite atomic tools for better programming.
 
-Alone, it does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
+Alone, deepjs core library does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
 
-Above all, it will help you in <b>modelisation</b>, <b>architecture</b> and <b>concurrent run-time management</b> of your OWN app.
+Above all, it will help you in <b>design</b>, <b>architecture</b> and <b>concurrent run-time management</b> of your OWN app.
 
 Based on Layered and Chained Programmation approach, it provides, uses and mixes : 
 
@@ -14,6 +14,7 @@ Based on Layered and Chained Programmation approach, it provides, uses and mixes
 * Full promised and chained asynch management
 * Homogeneous HTTP/Rest ressources management
 * Modularisation by Protocol approach (Same idea than Dependance Injection of angular)
+* Concurrent context management
 
 It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous (isomorphic) between server and browser sides.
 
@@ -24,7 +25,7 @@ See [tutorials](./DOCS/tutorials.md) page for details.
 Real huge thanks, amoung others, to [Kris Zyp](https://github.com/kriszyp) and all his incredible work on promises, json-schema, compositions, RQL, OCM, Persvr, etc.
 Thanks also a lot to his bunch of articles on Thin-Server, No-SQL, mVC, etc. and all those realy smart architecural considerations that lead us trough our research...
 
-deepjs : simply made with love. 
+deepjs : made with love. 
 
 
 
@@ -35,7 +36,7 @@ deepjs : simply made with love.
 var http = require('http');
 var deep = require('deepjs');
 
-deep.store.Collection.create("myobjects", []);
+deep.Collection("myobjects", []);
 
 var titles = ["hello", "deepjs", "world"];
 var count = 0;
