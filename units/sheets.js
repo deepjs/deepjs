@@ -37,7 +37,7 @@ define(["require","../deep"], function (require, deep) {
 						test:1
 					}
 				};
-				deep.sheet(sheet, obj);
+				deep.sheet(obj, sheet);
 				return deep(obj).equal({"array":["from bottom","base entry","from up"],"a":{"test":123,"other":true},"hello":"world"});
 			},
 			map:function(){

@@ -95,7 +95,7 @@ extract deep-restful						: done by half.
 
 sheet : sequential by default
 
-deep.sheet(sh1, sh2, target)   + in deep chain
+deep.sheet(target, sh1, sh2)   + in deep chain
 
 deep.up(target, src1, src2)	 				 OK 		
 deep.bottom(src1, src2, target)				 OK 	
