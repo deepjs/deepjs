@@ -1,32 +1,45 @@
 {
-  "name"          : "deepjs",
-  "version"       : "0.13.2",
-  "author"        : "Gilles Coomans <gilles.coomans@gmail.com>",
-  "description"   : "Atomic tools for better programming",
-  "homepage"      : "http://www.deepjs.org",
-  "keywords"      : ["util", "promise", "asynch", "AOP", "query", "composition", "server", "client", "browser", "restful", "OCM"],
-  "contributors": ["Philippe Delabye <phil@chemicalrules.net>"],
-  "licenses": [
-    {
-         "type": "LGPLv3.0",
-         "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
-     }
-  ],
-  "directories": {
-    "lib": "./lib"
-  },
-  "repository": {
-    "type":"git",
-    "url":"https://github.com/deepjs/deepjs.git"
-  },
-  "dependencies": {
-    "rql": ">=0.3.1",
-    "amdefine":"*"
-  },
-  "main": "./deep.js",
-  "mappings":{
-  },
-  "engines": {
-        "node": ">=0.10.0"
+ "name": "deepjs",
+ "version": "0.13.3",
+ "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+ "description": "Atomic tools for better programming",
+ "homepage": "http://www.deepjs.org",
+ "keywords": [
+  "util",
+  "promise",
+  "asynch",
+  "AOP",
+  "query",
+  "composition",
+  "server",
+  "client",
+  "browser",
+  "restful",
+  "OCM"
+ ],
+ "contributors": [
+  "Philippe Delabye <phil@chemicalrules.net>"
+ ],
+ "licenses": [
+  {
+   "type": "LGPLv3.0",
+   "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
   }
+ ],
+ "directories": {
+  "lib": "./lib"
+ },
+ "repository": {
+  "type": "git",
+  "url": "https://github.com/deepjs/deepjs.git"
+ },
+ "dependencies": {
+  "rql": ">=0.3.1",
+  "amdefine": "*"
+ },
+ "main": "./deep.js",
+ "mappings": {},
+ "engines": {
+  "node": ">=0.10.0"
+ }
 }
