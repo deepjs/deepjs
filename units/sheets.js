@@ -322,7 +322,7 @@ define(["require","../deep"], function (require, deep) {
 				})
 				.sheet({
 					_deep_sheet_:true,
-					"dq::./!":deep.sheet.after(function(entry, options){
+					"dq::./!":deep.sheet.each(function(entry, options){
 						entry.value.bloup = true;
 					})
 				})
