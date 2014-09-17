@@ -266,6 +266,12 @@ define([
 			});
 	};
 
+	// deep chain's mode management
+	deep.modes = function(name, modes) { // local roles (i.e. in chain's context)
+		return deep({}).modes(name, modes);
+	};
+
+
 	deep.coreUnits = deep.coreUnits || [];
 	deep.coreUnits.push(
 		"js::deepjs/units/equals",
