@@ -33,17 +33,17 @@ var myStore = deep.ocm({
 
 
 deep
-.roles("full")
+.modes('roles', "full")
 .restful(myStore)
 .post({ title:"hello", userID:"e12" })
 .log()	// log success
-.roles("middle")
+.modes('roles', "middle")
 .post({ title:"world", userID:"e12" })
 .log()	// log error 412 (precondition)
-.roles("less")
+.modes('roles', "less")
 .post({ title:"hello", userID:"e13" })
 .log()	// log error 403 (Owner)
-.roles("none")
+.modes('roles', "none")
 .post({ title:"hello", userID:12 })
 .log()	// error 405	(Method not allowed)
 ```

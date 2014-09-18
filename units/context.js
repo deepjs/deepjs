@@ -93,10 +93,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     a:{ hello:"world" },
                     b:{ _backgrounds:["this::../a"] }
                 });
-                deep.Roles("a");
+                deep.Modes("roles", "a");
                 deep.flatten(ocm);
 
-                return deep.roles("b")
+                return deep.modes("roles", "b")
                 .done(function(success){
                     return ocm.flatten()
                     .done(function(){

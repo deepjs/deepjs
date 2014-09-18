@@ -183,9 +183,7 @@ define([
 
 	deep.ocm = ocm;
 	deep.Modes = ocm.Modes;
-	deep.Roles = ocm.Roles;
 	deep.modes = ocm.modes;
-	deep.roles = ocm.roles;
 	deep.getModes = ocm.getModes;
 
 	deep.Event = emitter.Event;
