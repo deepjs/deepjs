@@ -20,8 +20,6 @@ It works both server side and browser side. Its aim is to be totaly unobstrusive
 
 As jquery (that is highly unobstrusive and ergonomic) works on standard DOM objects, deepjs works with any standard js objects and functions, and has a minimal footprint.
 
-See [tutorials](./DOCS/tutorials.md) page for details.   
-
 Real huge thanks, amoung others, to [Kris Zyp](https://github.com/kriszyp) and all his incredible work on promises, json-schema, compositions, RQL, OCM, Persvr, etc.
 Thanks also a lot to his bunch of articles on Thin-Server, No-SQL, mVC, etc. and all those realy smart architecural considerations that lead us trough our research...
 
@@ -34,7 +32,9 @@ deepjs : made with love.
 ```javascript
 
 var http = require('http');
-var deep = require('deepjs');
+var deep = require('deepjs'); // the core
+require('deep-restful'); // homogeneous restful API
+require('deep-restful/lib/collection'); // simple memory collection
 
 deep.Collection("myobjects", []);
 
@@ -131,7 +131,7 @@ http://127.0.0.1:1337/?count=lt=2
 
 ```
 
-See [tutorials](./DOCS/tutorials.md) page for details.   
+See [tutorials](./DOCS/tutorials.md) page for details. (warning : documentation partially deprecated. offical website is on the way...;))  
 
 
 
