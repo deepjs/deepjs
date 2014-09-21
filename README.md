@@ -1,6 +1,6 @@
 #deepjs
 
-<b>deepjs core</b>(this lib) provides a set of quite atomic tools for better programming.
+<b>deepjs core</b> (this lib) provides a set of quite atomic tools for better programming.
 
 Alone, deepjs core library does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
 
@@ -13,7 +13,7 @@ Based on Layered and Chained Programmation approach, it provides, uses and mixes
 * Object Capability Model (or Management)
 * Full promised and chained asynch management
 * Homogeneous HTTP/Rest ressources management
-* Modularisation by Protocol approach (Same idea than Dependance Injection of angular)
+* Modularisation by Protocol approach
 * Concurrent context management
 
 It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous (isomorphic) between server and browser sides.
