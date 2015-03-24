@@ -102,7 +102,7 @@ http://127.0.0.1:1337/?count=lt=2
 		plants : [{uri:"grass",growSpeed:2}]
 	};
 
-	deep(myOwnLand)
+	deep.nodes(myOwnLand)
 	.bottom(land)
 	.up(orchard,kitchenGarden)
 	//Query based object modelisation
@@ -121,7 +121,7 @@ http://127.0.0.1:1337/?count=lt=2
 	myOwnLand.watering();
 
 	//Query based object manipulation
-	deep(myOwnLand)
+	deep.nodes(myOwnLand)
 	.query("/plants/*")
 	.run("grow")
 	.query("/plants/*?size=gt=5")
