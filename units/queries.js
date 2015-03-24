@@ -80,14 +80,14 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 		tests: {
 			a: function() {
 				var r = deep.query({}, '/brol')
-				return deep(r).equal(undefined);
+				return deep.nodes(r).equal(undefined);
 			},
 			b: function() {
 				var r = deep.query({}, '/?brol')
-				return deep(r).equal([]);
+				return deep.nodes(r).equal([]);
 			},
 			"/store/[]": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/store/[]")
 					.equal([
 						[{
@@ -145,12 +145,12 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					]);
 			},
 			"/store/book/3/warehouse/stock": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/store/book/3/warehouse/stock")
 					.equal(12);
 			},
 			"/store/[(glo.*),helmet]": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/store/[(glo.*),helmet]")
 					.equal([{
 						"category": "ride",
@@ -163,7 +163,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"/(store)/book/[0:2]?category=fiction": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/(store)/book/[0:2]?category=fiction")
 					.equal([{
 						"category": "fiction",
@@ -174,12 +174,12 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"/*/book/[2:3,0]?price=lt=10&isbn/price": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/*/book/[2:3,0]?price=lt=10&isbn/price")
 					.equal([8.99, 8.95]);
 			},
 			"/(.*)/book/*?price=lt=10&category=fiction": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/(.*)/book/*?price=lt=10&category=fiction")
 					.equal([{
 						"category": "fiction",
@@ -193,7 +193,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"/(.*)/book/*?price=lt=10&category=fiction": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/(.*)/book/*?price=lt=10&category=fiction")
 					.equal([{
 						"category": "fiction",
@@ -207,7 +207,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"/store//[:3]?warehouse.stock": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("/store//[:3]?warehouse.stock")
 					.equal([{
 						"category": "reference",
@@ -230,7 +230,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"//?price=lt=18": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//?price=lt=18")
 					.equal([{
 						"category": "reference",
@@ -267,22 +267,22 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"//category?=in=(reference,ride)&sort(+)": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//category?=in=(reference,ride)&sort(+)")
 					.equal(["reference", "reference", "ride", "ride", "ride"]);
 			},
 			"//category?distinct()&sort(-)": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//category?distinct()&sort(-)")
 					.equal(["ride", "reference", "fiction"]);
 			},
 			"//price?=gt=10&sort(-)": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//price?=gt=10&sort(-)")
 					.equal([22.99, 19.95, 18.95, 15.95, 12.99]);
 			},
 			"//(^bo)/*?price=lt=15": function(argument) {
-				return deep(datas).query("//(^bo)/*?price=lt=15").equal([{
+				return deep.nodes(datas).query("//(^bo)/*?price=lt=15").equal([{
 					"category": "reference",
 					"author": "Nigel Rees",
 					"isbn": "0-553-21311-3",
@@ -309,7 +309,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				}]);
 			},
 			"//?length=gt=4": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//?length=gt=4")
 					.equal([
 						[{
@@ -376,7 +376,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					]);
 			},
 			"//[@.length-1]": function() {
-				return deep(datas).query("//[@.length-1]").equal([{
+				return deep.nodes(datas).query("//[@.length-1]").equal([{
 				"category": "fiction",
 				"author": "J. R. R. Tolkien",
 				"title": "The Lord of the Rings",
@@ -388,10 +388,10 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				}]);
 			},
 			/*"//length":function(){
-        return deep(datas).query("//length").equal([5,1])
+        return deep.nodes(datas).query("//length").equal([5,1])
       },*/
 			"//[::2]": function() {
-				return deep(datas).query("//[::2]").equal([{
+				return deep.nodes(datas).query("//[::2]").equal([{
 					"category": "reference",
 					"author": "Nigel Rees",
 					"isbn": "0-553-21311-3",
@@ -418,7 +418,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				}]);
 			},
 			"//?_type=string": function() {
-				return deep(datas).query("//?_type=string").equal([
+				return deep.nodes(datas).query("//?_type=string").equal([
 					"reference",
 					"Nigel Rees",
 					"0-553-21311-3",
@@ -449,7 +449,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				]);
 			},
 			"//?_type=number": function() {
-				return deep(datas).query("//?_type=number").equal([
+				return deep.nodes(datas).query("//?_type=number").equal([
 					8.95,
 					12,
 					18.95,
@@ -466,7 +466,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				]);
 			},
 			"//?_type=object": function() {
-				return deep(datas).query("//?_type=object")
+				return deep.nodes(datas).query("//?_type=object")
 				//.query("./!?&isbn&quantity=eq=12")
 				.equal([{
 					"store": {
@@ -658,7 +658,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				}]);
 			},
 			"//?isbn/*?_type=object": function() {
-				return deep(datas).query("//?isbn/*?_type=object")
+				return deep.nodes(datas).query("//?isbn/*?_type=object")
 					.equal([{
 						"stock": 12
 					}, {
@@ -668,7 +668,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			/* "//?_type=object&_parent.isbn":function(){
-        return deep(datas)
+        return deep.nodes(datas)
         .query("//?_type=object&_parent.isbn")
         .equal([
         {"stock":12}
@@ -677,7 +677,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
         ]);
       },
       "//?_type=object&_parent.isbn/../!":function(){
-        return deep(datas)
+        return deep.nodes(datas)
         .query("//?_type=object&_parent.isbn/../!")
         .equal( 
         [
@@ -687,7 +687,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
         ]);
       },*/
 			"//?_type=object/../!?isbn": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//?_type=object/../!?isbn")
 					.equal(
 						[{
@@ -720,7 +720,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						}]);
 			},
 			"//?isbn/*?_type=object/../!": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//?isbn/*?_type=object/../!")
 					.equal(
 						[{
@@ -753,7 +753,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						}]);
 			},
 			"//?_type=array": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//?_type=array")
 					.equal(
 						[
@@ -805,7 +805,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						]);
 			},
 			"//?_type=array/*": function() {
-				return deep(datas)
+				return deep.nodes(datas)
 					.query("//?_type=array/*")
 					.equal(
 						[{
@@ -853,7 +853,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						}]);
 			},
 			"//[:]": function() {
-				return deep(datas).query("//[:]").equal(
+				return deep.nodes(datas).query("//[:]").equal(
 					[{
 						"category": "reference",
 						"author": "Nigel Rees",
@@ -899,7 +899,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"//?_type=array/../*": function() {
-				return deep(datas).query("//?_type=array/../*").equal(
+				return deep.nodes(datas).query("//?_type=array/../*").equal(
 					[
 						[{
 							"category": "reference",
@@ -961,7 +961,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					]);
 			},
 			"//?_type=array/../!": function() {
-				return deep(datas).query("//?_type=array/../!").equal(
+				return deep.nodes(datas).query("//?_type=array/../!").equal(
 					[{
 						"book": [{
 							"category": "reference",
@@ -1027,7 +1027,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}]);
 			},
 			"//": function() {
-				return deep(datas).query("//").equal(
+				return deep.nodes(datas).query("//").equal(
 					[{
 							"store": {
 								"book": [{
@@ -1302,7 +1302,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					]);
 			},
       restartFromRoot:function(){
-        return deep({
+        return deep.nodes({
           a:1,
           b:true,
           c:"hello",

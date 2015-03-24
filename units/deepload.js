@@ -41,7 +41,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var obj = {
                     how:'dummy::bloup'
                 };
-                return deep(obj)
+                return deep.nodes(obj)
                 .query("./how")
                 .deepLoad(null, false)
                 .done(function(){

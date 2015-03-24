@@ -13,7 +13,7 @@
 
 ```javascript
 
-	deep("js::deepjs/lib/unit")
+	deep.nodes("js::deepjs/lib/unit")
 	.done(function(Unit){
 		// run all deep cores tests
 		deep.Unit.run();

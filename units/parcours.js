@@ -39,13 +39,13 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				var r = deep.depthFirst(example, null, {
 					excludeLeafs: true
 				});
-				return deep(deep.nodes.paths(r)).equal(["/", "/b", "/b/c", "/b/d", "/b/d/e", "/f", "/f/g", "/f/g/h"]);
+				return deep.nodes(deep.utils.nodes.paths(r)).equal(["/", "/b", "/b/c", "/b/d", "/b/d/e", "/f", "/f/g", "/f/g/h"]);
 			},
 			breadthFirst: function() {
 				var r = deep.breadthFirst(example, null, {
 					excludeLeafs: true
 				});
-				return deep(deep.nodes.paths(r)).equal([
+				return deep.nodes(deep.utils.nodes.paths(r)).equal([
 					"/",
 					"/b",
 					"/f",
@@ -73,25 +73,25 @@ define(["require", "../deep"], function(require, deep, Unit) {
 					excludeLeafs: true
 				});
                 getPaths(r);
-				return deep(result).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
+				return deep.nodes(result).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
 			},
 			test1:function(){
 				var r = deep.depthFirst(example, function(value){
 					return value.view;
 				});
-				return deep(deep.nodes.paths(r)).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
+				return deep.nodes(deep.utils.nodes.paths(r)).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
 			},
 			test2:function(){
 				var r = deep.depthFirst(example, "view");
-				return deep(deep.nodes.paths(r)).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
+				return deep.nodes(deep.utils.nodes.paths(r)).equal(["/", "/b/c", "/b/d/e", "/f", "/f/g/h"]);
 			},
 			test3:function(){
 				var r = deep.depthFirst(example, "view&g");
-				return deep(deep.nodes.paths(r)).equal([ "/f"]);
+				return deep.nodes(deep.utils.nodes.paths(r)).equal([ "/f"]);
 			},
 			test4:function(){
 				var r = deep.depthFirst(example, "view & (g | b)");
-				return deep(deep.nodes.paths(r)).equal(["/", "/f"]);
+				return deep.nodes(deep.utils.nodes.paths(r)).equal(["/", "/f"]);
 			}
 		}
 	};

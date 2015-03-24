@@ -63,19 +63,19 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         },
         tests : {
             a:function(){
-                return deep(this.b)
+                return deep.nodes(this.b)
                 .bottom(this.a)
                 .query("/(func.*)")
                 .run()
-                .deep(this.b.res)
+                .nodes(this.b.res)
                 .equal(["func1","func1_1", "func2","func2_2","func3","func3_3"]);
             },
             b:function(){
-                return deep(this.c)
+                return deep.nodes(this.c)
                 .bottom(this.a)
                 .query("./(func.*)")
                 .run()
-                .deep(this.c.res)
+                .nodes(this.c.res)
                 .equal(["func1","func1_1_c", "func2","func2_2_c","func3","func3_3_c"]);
             },
             after:function(){
@@ -145,7 +145,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 };
                 deep.aup(b,a);
                 a.test();
-                return deep(closure.test)
+                return deep.nodes(closure.test)
                 .equal("before : hello test");
             },
             delayed_before:function(){
@@ -153,13 +153,13 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 var a = {
                     test:function(){
                         closure.test += "hello test";
-                        return deep(closure.test).delay(1);
+                        return deep.nodes(closure.test).delay(1);
                     }
                 };
                 var b = {
                     test:deep.compose.before(function(){
                         closure.test += "before : ";
-                        return deep(closure.test).delay(1);
+                        return deep.nodes(closure.test).delay(1);
                     })
                 };
                 deep.aup(b,a);
@@ -290,10 +290,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep.Arguments(["B1:"+arg1, "B2:"+arg2]);
                     })
                 };
-                deep.aup(b,a);
-                return deep(a.test("hello","world"))
+                deep.up(a, b);
+                return deep.nodes(a.test("hello","world"))
                 .equal(["A1:B1:hello", "A2:B2:world"])
-                .deep(checker)
+                .nodes(checker)
                 .equal({
                     fromB:["hello","world"],
                     fromA:["B1:hello", "B2:world"]
@@ -313,10 +313,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return deep.Arguments(["B1:"+arg1, "B2:"+arg2]);
                     })
                 };
-                deep.aup(b,a);
-                return deep(a.test("hello","world"))
+                deep.up(a, b);
+                return deep.nodes(a.test("hello","world"))
                 .equal(["B1:A1:hello", "B2:A2:world"])
-                .deep(checker)
+                .nodes(checker)
                 .equal({
                     fromA:["hello","world"],
                     fromB:["A1:hello", "A2:world"]
@@ -336,10 +336,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         return ["B1:"+arg1, "B2:"+arg2];
                     })
                 };
-                deep.aup(b,a);
-                return deep(a.test("hello","world"))
+                deep.up(a, b);
+                return deep.nodes(a.test("hello","world"))
                 .equal(["B1:hello", "B2:world"])
-                .deep(checker)
+                .nodes(checker)
                 .equal({
                     fromA:["hello", "world"],
                     fromB:["hello", "world"]
@@ -375,8 +375,8 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     this.after(function(s){
                         return s+":after";
                     });
-                }),a);
-                return deep(a()).equal("hello:after");
+                }));
+                return deep.nodes(a()).equal("hello:after");
             },
             branches2:function(){
                 var a = deep.compose.before(function(){
@@ -389,7 +389,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                         };
                     });
                 });
-                return deep(a()).equal("before:hello:after");
+                return deep.nodes(a()).equal("before:hello:after");
             },
             /*dynamicBranches:function(){
                 var closure = { test:true };
@@ -408,7 +408,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                             return "after:"+s;
                         });
                 });
-                return deep(a())
+                return deep.nodes(a())
                 .equal("around:hello:around")
                 .done(function(s){
                     closure.test = false;

@@ -66,7 +66,7 @@ define(["require","../deep"], function (require, deep) {
 			},
 			parseRequest:function(){
 				var parsed = deep.utils.parseRequest("dummy::hello");
-				return deep(parsed)
+				return deep.nodes(parsed)
 				.done(function(s){
 					delete s.execute;
 				})

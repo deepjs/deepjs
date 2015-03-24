@@ -23,7 +23,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				deep.abottom(a,b);
 				a.test.push(6,7);
 				b.test.push(8,9);
-				return deep(a.test).equal(b.test);
+				return deep.nodes(a.test).equal(b.test);
 			},
 			bottom_from_shared:function(){
 				var a = {
@@ -35,7 +35,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				deep.abottom(a,b);
 				a.test.push(6,7);
 				b.test.push(8,9);
-				return deep(a.test).equal(b.test);
+				return deep.nodes(a.test).equal(b.test);
 			},
 			up_on_shared:function(){
 				var a = {
@@ -48,7 +48,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				a.test.push(6,7);
 				b.test.push(8,9);
 				//console.log(a,b);
-				return deep(a).equal(b);
+				return deep.nodes(a).equal(b);
 			},
 			up_from_shared:function(){
 				var a = {
@@ -62,7 +62,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				a.test.push(6,7);
 				b.test.push(8,9);
 				//console.log(a,b);
-				return deep(a).equal(b);
+				return deep.nodes(a).equal(b);
 			}
 		}
 	};

@@ -48,7 +48,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						this.obj.a = true;
 					}
 				};
-				return deep({
+				return deep.nodes({
 					_backgrounds: [a],
 					obj: {
 						second: true
@@ -69,7 +69,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					});
 			},
 			b: function() {
-				return deep({
+				return deep.nodes({
 					sub: {
 						_backgrounds: [this.b],
 						obj: {
@@ -102,7 +102,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					_backgrounds: [bc]
 				};
 
-				return deep({
+				return deep.nodes({
 					_backgrounds: [bc2, b],
 					c: {
 						_backgrounds: [b],
@@ -117,9 +117,9 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				})
 					.flatten()
 					.done(function(s) {
-						return deep(s.test).equal(1)
-							.deep(s.d.prop).equal(2)
-							.deep(s.e.prop).equal(2);
+						return deep.nodes(s.test).equal(1)
+							.nodes(s.d.prop).equal(2)
+							.nodes(s.e.prop).equal(2);
 					});
 			},
 			d: function() {
@@ -163,7 +163,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
                 * @type {[type]}
                 */
 				var tt = obj.test;
-				return deep(obj)
+				return deep.nodes(obj)
 					.flatten()
 					.done(function(success) {
 						return tt("b");

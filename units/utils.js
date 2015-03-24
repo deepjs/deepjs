@@ -15,7 +15,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
         stopOnError:false,
         tests : {
             parseQueryString:function(){
-                return deep(deep.utils.parseQueryString("jos&jos=2&a.bloup=3"))
+                return deep.nodes(deep.utils.parseQueryString("jos&jos=2&a.bloup=3"))
                 .done(function(s){
                     delete s.toString;
                 })
@@ -27,7 +27,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                 });
             },
             toQueryString:function(){
-                return deep(deep.utils.toQueryString({
+                return deep.nodes(deep.utils.toQueryString({
                     jos:[true,2],
                     a:{
                         bloup:3
@@ -41,7 +41,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                     b:24,
                     c:"hello"
                 }, ["a", "c"])
-                return deep(r)
+                return deep.nodes(r)
                 .equal({ b:24 });
             },
             removeInside_obj_obj:function(){
@@ -54,7 +54,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                     },
                     c:"hello"
                 }, { id:"anything" })
-                return deep(r)
+                return deep.nodes(r)
                 .equal({ 
                     b:{
                         id:"anything2"
@@ -72,7 +72,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                     },
                     c:"hello"
                 }, [{ id:"anything"}, "c"])
-                return deep(r)
+                return deep.nodes(r)
                 .equal({ 
                     b:{
                         id:"anything2"
@@ -85,7 +85,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                     "bloup",
                     "hello"
                 ], ["thus", "hello"])
-                return deep(r)
+                return deep.nodes(r)
                 .equal([ 
                     "bloup"
                 ]);
@@ -100,7 +100,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                     },
                     "hello"
                 ], { id:"anything"})
-                return deep(r)
+                return deep.nodes(r)
                 .equal([ 
                     {
                         id:"anything2"
@@ -118,7 +118,7 @@ define(["require","../deep", "../lib/utils/parser"], function (require, deep) {
                     },
                     "hello"
                 ], [{ id:"anything"}, "hello"])
-                return deep(r)
+                return deep.nodes(r)
                 .equal([ 
                     {
                         id:"anything2"

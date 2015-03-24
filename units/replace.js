@@ -26,7 +26,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         },
         tests : {
 			a:function(){
-				return deep(this)
+				return deep.nodes(this)
 				.replace("./anArray/1","replaceString")
 				.equal({
 					aString : "Hello",
@@ -39,7 +39,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 				});
 			},
 			b:function(){
-				return deep(this)
+				return deep.nodes(this)
 				.replace("/anObject/aString",12)
 				.equal({
 					aString : "Hello",

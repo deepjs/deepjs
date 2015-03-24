@@ -20,7 +20,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         tests : {
             setvar:function(){
                 deep.Promise.context = {};
-                var p1 = deep(9999)
+                var p1 = deep.nodes(9999)
                 .contextualise()
                 .toContext("test",1)
                 .done(function(){
@@ -31,16 +31,16 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return this.fromContext('test');
                 })
                 .equal(1);
-                var p2 = deep(deep.Promise.context).equal({});
+                var p2 = deep.nodes(deep.Promise.context).equal({});
                 return deep.all([p1,p2]);
             },
             setvar2:function(){
                 deep.Promise.context = {};
-                var p1 = deep(9999)
+                var p1 = deep.nodes(9999)
                 .contextualise()
                 .toContext("test",1)
                 .done(function(){
-                    return deep(true)
+                    return deep.nodes(true)
                     .contextualise()
                     .toContext("hello","world")
                     .done(function(){
@@ -52,12 +52,12 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                     return deep.Promise.context;
                 })
                 .equal({test:1});
-                var p2 = deep(deep.Promise.context).equal({});
+                var p2 = deep.nodes(deep.Promise.context).equal({});
                 return deep.all([p1,p2]);
             },
             delayed:function(){
                 deep.Promise.context = {};
-                var p1 = deep(9999)
+                var p1 = deep.nodes(9999)
                 .contextualise()
                 .toContext("test",1)
                 .delay(1)
@@ -66,7 +66,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal({test:1});
 
-                var p2 = deep(9999)
+                var p2 = deep.nodes(9999)
                 .contextualise()
                 .toContext("test",2)
                 .delay(3)
@@ -75,7 +75,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal({test:2});
 
-                var p3 = deep(9999)
+                var p3 = deep.nodes(9999)
                 .contextualise()
                 .toContext("test",3)
                 .delay(2)
@@ -84,7 +84,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 })
                 .equal({test:3});
 
-                var p4 = deep(deep.Promise.context).equal({});
+                var p4 = deep.nodes(deep.Promise.context).equal({});
                 return deep.all([p1,p2,p3,p4]);
             },
             delayed2:function(){
@@ -100,12 +100,12 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .done(function(success){
                     return ocm.flatten()
                     .done(function(){
-                        return deep.getModes("roles");
+                        return deep.currentModes("roles");
                     })
                     .equal(["b"])
                 })
                 .done(function(){
-                    return deep.getModes("roles");
+                    return deep.currentModes("roles");
                 })
                 .equal(["b"]);
             }

@@ -21,7 +21,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 						aString : "World"
 					}
 				};
-				return deep(a)
+				return deep.nodes(a)
 				.remove("./anArray/1")
 				.equal({
 					aString : "Hello",
@@ -48,7 +48,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 					},
 					additionalProperties : false
 				};
-				return deep(obj, schema)
+				return deep.nodes(obj, schema)
 				.remove(".//*?_schema.private=true")
 				.equal({
 					email: 'test@test.com',
@@ -73,7 +73,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 						additionalProperties: false
 					}
 				};
-				return deep(objs, schema2)
+				return deep.nodes(objs, schema2)
 				.remove(".//?_schema.private=true")
 				.equal([{
 					email: 'test@test.com',
@@ -98,7 +98,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
 						additionalProperties: false
 					}
 				};
-				return deep(objs, schema2)
+				return deep.nodes(objs, schema2)
 				.remove(".//?_schema.readOnly=true")
 				.equal([{
 					email: 'test@test.com',

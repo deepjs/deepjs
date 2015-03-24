@@ -16,7 +16,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         setup:function(){},
         tests : {
             up:function(){
-                return deep({
+                return deep.nodes({
                     steps:[
                     {
                         id:"client",
@@ -52,10 +52,10 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             },
             bottom_object:function(){
               var r = deep.abottom({"a":{"second":true}},{"a":{"hello":"world"}});
-              return deep(r.a).equal({ second:true, hello:"world" });
+              return deep.nodes(r.a).equal({ second:true, hello:"world" });
             },
             bottom_array:function(){
-                return deep({
+                return deep.nodes({
                     steps:[
                     {
                         id:"client",
@@ -90,7 +90,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 });
             },
             bottom_array2 : function(){
-                return deep([1,2,3,{id:"e1", title:"hello" }])
+                return deep.nodes([1,2,3,{id:"e1", title:"hello" }])
                 .bottom([4,5,{id:"e1", title:"bottom title" }])
                 .equal([4,5,{id:"e1", title:"hello" },1,2,3]);
             },
@@ -101,27 +101,27 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 }
               });
               deep.abottom({a:{ second:true }}, ocm);
-              return deep(ocm("a")).equal({second:true, hello:"world"});
+              return deep.nodes(ocm("a")).equal({second:true, hello:"world"});
             },
             aup1:function(){
               var a = { a:true };
               deep.aup({ b:true }, a);
-              return deep(a).equal({ a:true, b:true });
+              return deep.nodes(a).equal({ a:true, b:true });
             },
             abottom1:function(){
               var a = { a:true };
               deep.abottom({ b:true }, a);
-              return deep(a).equal({ b:true, a:true });
+              return deep.nodes(a).equal({ b:true, a:true });
             },
             up:function(){
               var tg = { a:true };
               deep.up(tg, { b:true }, { c:true });
-              return deep(tg).equal({ a:true, b:true, c:true });
+              return deep.nodes(tg).equal({ a:true, b:true, c:true });
             },
             bottom:function(){
               var tg = { a:true };
               deep.bottom({ b:true }, { c:true }, tg);
-              return deep(tg).equal({ b:true, c:true, a:true });
+              return deep.nodes(tg).equal({ b:true, c:true, a:true });
             }
         }
     };

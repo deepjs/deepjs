@@ -131,14 +131,14 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						}
 					}
 				});
-			},
+			},*/
             mapOn1:function(){
-                return deep({ userId:"e1" })
+                return deep.nodes({ userId:"e1" })
                 .mapOn("user::?", "userId", "id", "myUser")
                 .equal( { "userId": "e1", "myUser": { "id": "e1", "title": "user title" } } );
             },
             mapOn2:function(){
-                return deep([{ title:"my title", id:1}, { title:"my title 2", id:2}])
+                return deep.nodes([{ title:"my title", id:1}, { title:"my title 2", id:2}])
                 .mapOn([
                     {itemId:1, value:true},
                     {itemId:2, value:"133"},

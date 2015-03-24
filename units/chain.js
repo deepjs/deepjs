@@ -15,21 +15,21 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
         stopOnError:false,
         tests : {
             promise_on_chain:function(){
-                return deep.when(deep("hello").delay(1))
+                return deep.when(deep.nodes("hello").delay(1))
                 .equal("hello");
             },
             delayed_run_return:function(){
-                return deep({
+                return deep.nodes({
                     a:true
                 })
                 .run(function(){
                     this.b = true;
-                    return deep(this).delay(1);
+                    return deep.nodes(this).delay(1);
                 })
                 .equal({ a:true, b:true });
             },
             delayed_run_call:function(){
-                return deep({
+                return deep.nodes({
                     c:function(){
                         return "c returned";
                     }
@@ -38,7 +38,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal("c returned");
             },
             branch1:function(){
-                return deep({
+                return deep.nodes({
                     test:1
                 })
                 .branches(function(b){
@@ -49,12 +49,12 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 .equal(["branch 1","branch 2"]);
             },
             up:function(){
-                return deep({ a:true })
+                return deep.nodes({ a:true })
                 .up({ b:true }, { c:true })
                 .equal({ a:true, b:true, c:true });
             },
             bottom:function(){
-                return deep({ a:true })
+                return deep.nodes({ a:true })
                 .bottom({ b:true }, { c:true })
                 .equal({ b:true, c:true, a:true});
             }

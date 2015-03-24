@@ -180,7 +180,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 					}
 				};
 				deep.flatten(a);
-				return deep([a.b("role2"), a.b("role")]).equal([false, true]);
+				return deep.nodes([a.b("role2"), a.b("role")]).equal([false, true]);
 			},
 			
 			multiGroup: function() {
@@ -321,7 +321,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 
 					manager("mode1") // object
 				];
-				return deep(res)
+				return deep.nodes(res)
 					.equal(["JohnDoe", {
 							name: "John",
 							familly: "Doe"
@@ -353,15 +353,15 @@ define(["require", "../deep"], function(require, deep, Unit) {
 					"public":{ "public":true },
 					admin:{ admin:true }
 				}, { strict:true });
-				return deep(myManager("prod", "bloup"))
-				.equal({})
+				return deep.nodes(myManager("prod", "bloup"))
+				.equal(undefined)
 			},
 			multiModesFalse:function(){
 				var myManager = deep.ocm({
 					"public":{ "public":true },
 					"user":{ "user":true }
 				}, { multiModes:false });
-				return deep(myManager("public", "user"))
+				return deep.nodes(myManager("public", "user"))
 				.equal(null);
 			},
 			auto_flatten:function(){
