@@ -3,13 +3,12 @@ if (typeof define !== 'function') {
 }
 define(["require","../deep"], function (require, deep) {
 
-	deep.Promise.API.chainTest = function() {
-	    var handler = new ChainTest(this._state);
-	    this._enqueue(handler);
-	    return handler;
-	};
+
 	deep.chainTest = function(){
 		return new ChainTest(null).resolve();
+	};
+	deep.chainTest2 = function(){
+		return new ChainTest2(null).resolve();
 	};
 	var ChainTest = deep.compose.Classes(deep.Promise, function (state) {
 		this._identity = ChainTest;
@@ -29,15 +28,9 @@ define(["require","../deep"], function (require, deep) {
 		}
 	});
 	//_________________________________________________________
-	deep.Promise.API.chainTest2 = function() {
-	    var handler = new ChainTest2(this._state);
-	    this._enqueue(handler);
-	    return handler;
-	};
-	deep.chainTest2 = function(){
-		return new ChainTest2(null).resolve();
-	};
-	var ChainTest2 = deep.compose.Classes(deep.Promise, function (state) {
+
+
+	var ChainTest2 = deep.Classes(deep.Promise, function (state) {
 		this._identity = ChainTest2;
 		this._name = "ChainTest2";
 	}, {
@@ -52,6 +45,19 @@ define(["require","../deep"], function (require, deep) {
 			};
 			func._isDone_ = true;
 			return self._enqueue(func);
+		}
+	});
+
+	deep.up(deep.Promise, {
+		chainTest : function() {
+		    var handler = new ChainTest(this._state);
+		    this._enqueue(handler);
+		    return handler;
+		},
+		chainTest2 :function() {
+		    var handler = new ChainTest2(this._state);
+		    this._enqueue(handler);
+		    return handler;
 		}
 	});
 
