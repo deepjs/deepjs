@@ -21,7 +21,7 @@ DO
 - store : put/patch manage query nicely										OK
 
 
-- reqrite RQL 																OK
+- rewrite RQL 																OK
 
 
 - contextualise protocols 													OK
@@ -31,7 +31,7 @@ DO
 - test context and modes 													OK		
 
 - homogeneise second arguments (add third) for stores post/put/patch/del : 
-	==> .post(obj, path, ?options) || .post(obj, ?options) 
+	==> .post(obj, path, ?options) || .post(obj, ?options) 					OK ?
 - homogenise .createDefault of stores										OK
 
 
@@ -41,7 +41,7 @@ DO
 
 
 - client micro caching + cache prefix with roles OR clearCache when roles change					
-==> work globally on cache : deep.mediacache should manage FileWatch
+==> work globally on cache : deep.mediacache should manage FileWatch								OK
 
 - manage headers in autobahn : in config + middleware(s)											OK
 
@@ -90,12 +90,9 @@ check deep.log and error.
 
 
 
-extract deep-restful						: done by half.
+extract deep-restful								: 			OK
 
 
-sheet : sequential by default
-
-deep.sheet(target, sh1, sh2)   + in deep chain
 
 deep.up(target, src1, src2)	 				 OK 		
 deep.bottom(src1, src2, target)				 OK 	
@@ -111,7 +108,7 @@ var domSheet = {
 	"dom.from::#selector":[ressource1, ressource2]
 }
 
-rethrow : add flag in context.
+rethrow : add flag in context. 			
 
 view enhance : 
 
@@ -122,21 +119,47 @@ view enhance :
 
 
 		==> read "sheets" attribut			OK : dp-sheets
-		==> apply dom sheets 				
+		==> apply dom sheets 				OK
 
 
 
 rename _backgrounds : 			OK
 
 
-FOREGROUNDS : try to implement it
-
-
-
-
+FOREGROUNDS : try to implement it 				OK
 
 
 refactor load sequence in view : one object wired arg-return	:					ok
+
+
+
+
+
+
+_____________________________________________________________________
+
+SHEETS
+
+sheet : sequential by default 						: OK
+
+deep.sheet(target, sh1, sh2)   + in deep chain 		: OK
+
+Retrouver moyen de passer options pour les sheets 
+options doit dire si parallele ou linéaire
+==> possibilité : dernier argument === true : parallele					OK
+
+
+_____________________________________________________________________ CLASSES
+
+classes : doit en faire un deep_upper
+
+==> permet lazzy compilation + linked auto recompilations
+
+
+______________________________________________________________________ QUERIES
+
+introduce OCM resolution and traversal while querying.
+
 
 
 
@@ -194,16 +217,16 @@ ____________________________________________________________________
 
 More (for after ;)): 
 
-- deep.loop ==> should return a ChainLoop Object : keep chain, restart it. two modes : regular cycle, wait end of chain cycle
+- deep.loop ==> should return a ChainLoop Object : keep chain, restart it. two modes : regular cycle, wait end of chain cycle : 			OK
 
 
-- closure-encapsulate all sensible store stuffs (real collection, schema, config)
+- closure-privatisate all sensible store stuffs (real collection, schema, config)
 	- need : late instance prototype compilation with closure wrapper function for applied layers and sheets that use sensible stuffs.
 	- sensible stuffs should be categorized in : config (cache, uri, root folder, ...), schema, real collection (or driver stuffs)
 	- sensible stuff should be definitly wrapped and hidded in closure at init of store. so schema and config or other needed datas need to be displaced from instance to closure.
 
 
-- deep.utils.set(entry, "/path/[a,b,c]", value);  deep(...).set(path, value); + sheet : "dq.set::./path/[a,b,c]":...
+- deep.utils.set(entry, "/path/[a,b,c]", value);  deep.nodes(...).set(path, value); + sheet : "dq.set::./path/[a,b,c]":...
 
 - add flag in composition for managing error as callBack does, not as promise pipeline.
 
@@ -263,7 +286,7 @@ MORE :
 
 // TODO : .transform => .map  							OK
 // look up/bottoms order
-// deep-login											LATER
+// deep-login											LATER (almost done)
 // 
 // .foregrounds & .backgrounds in Chain 				LATER
 // 
@@ -280,4 +303,4 @@ MORE :
 
 
 // views : when interpreting strings (what, how, where) 	LATER
-// ==> context : { context:deep.context(), ctrl:ctrl }
+// ==> view context : { context:deep.context(), ctrl:ctrl }
