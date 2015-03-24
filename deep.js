@@ -184,7 +184,7 @@ define([
 	deep.ocm = ocm;
 	deep.Modes = ocm.Modes;
 	deep.modes = ocm.modes;
-	deep.getModes = ocm.getModes;
+	deep.currentModes = ocm.currentModes;
 
 	deep.Event = emitter.Event;
 	deep.Emitter = emitter.Emitter;
