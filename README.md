@@ -36,7 +36,7 @@ var deep = require('deepjs'); // the core
 require('deep-restful'); // homogeneous restful API
 require('deep-restful/lib/collection'); // simple memory collection
 
-deep.Collection("myobjects", []);
+new deep.Collection("myobjects", []);
 
 var titles = ["hello", "deepjs", "world"];
 var count = 0;
