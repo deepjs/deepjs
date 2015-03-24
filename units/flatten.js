@@ -174,6 +174,18 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						titleb: "bye"
 					});
 			},
+			top_transformations:function(){
+				var a = {
+					_transformations : [ { "dq.up::./hello":"world" }],
+					lolipop:true
+				};
+				var  b = {
+					_backgrounds:[a],
+					hello:"bloupi"
+				};
+				deep.flatten(b);
+				return deep.when(b.hello).equal("world");
+			},
 			foregrounds_total: function() {
 
 				var a = {
@@ -307,6 +319,43 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					"lolipop": true
 				};
                 return deep.flatten(a).equal(needed);
+			},
+			_transformations1:function(){
+				var a = {
+				  _transformations:[{ 
+				      "dq.up::./!":{ done:"hello done" }
+				  }]
+				}
+
+				return deep.nodes(a)
+				.flatten()
+				.done(function(success){
+					return success.done;
+				})
+				.equal("hello done");
+			},
+			_transformations2:function(){
+				var a = {
+					_backgrounds:[{ reu:"bloupi" }],
+				 	_foregrounds:[{ sub:{ foo:"bar"} }],
+					_transformations:[{ 
+					    "dq.up::.//?_type=string":"lolipop"
+					}],
+					test:{
+						_backgrounds:[{ reu2:"bloupi" }],
+				 		_foregrounds:[{ sub2:{ foo2:"bar"} }],
+				 		_transformations:[{ 
+						    "dq.up::./!":{ roo:"weeee" }
+						}],
+					}
+				}
+
+				return deep.nodes(a)
+				.flatten()
+				.done(function(a){
+					return [a.reu, a.sub.foo, a.test.reu2, a.test.sub2.foo2, a.test.roo];
+				})
+				.equal(["lolipop","lolipop","lolipop","lolipop","weeee"]);
 			}
 		}
 	};
