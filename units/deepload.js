@@ -20,7 +20,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             deeploadObject_NonDestructive:function(){
 				var store = deep.Collection("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
-				return deep(a)
+				return deep.nodes(a)
 				.deepLoad(null, false)
 				.done(function(r){
 					return [r,a];
@@ -30,7 +30,7 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
             deeploadObject_Destructive:function(){
 				var store = deep.Collection("test", [{id:"e1", title:"hello"}]);
 				var a = { how:"test::e1" };
-				return deep(a)
+				return deep.nodes(a)
 				.deepLoad(null, true)
 				.done(function(r){
 					return [r,a];
