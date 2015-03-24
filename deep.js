@@ -11,40 +11,42 @@ if (typeof define !== 'function') {
 define([
 	"require",
 	"./lib/utils",
-	"./lib/query",
-	"./lib/dq-protocol",
+	"./lib/nodes/query",
+	"./lib/nodes/dq-protocol",
 	"./lib/compose",
 	"./lib/collider",
 	"./lib/compiler",
 	"./lib/classes",
-	"./lib/interpret",
+	"./lib/utils/interpret",
 	"./lib/emitter",
 	"./lib/errors",
-	"./lib/rql",
+	"./lib/nodes/rql",
 	"./lib/promise",
 	"./lib/context",
-	"./lib/nodes",
-	"./lib/logs",
-	"./lib/deep-load",
-	"./lib/deep-equal",
+	"./lib/nodes/nodes",
+	"./lib/utils/logs",
+	"./lib/nodes/deep-load",
+	"./lib/utils/deep-equal",
 	"./lib/ocm",
-	"./lib/traversal",
+	"./lib/nodes/traversal",
 	"./lib/flatten",
 	"./lib/protocol",
 	"./lib/sheet",
-	"./lib/deep-sheeter",
-	"./lib/deep-chain",
+	"./lib/nodes/nodes-composer",
+	"./lib/nodes/nodes-chain",
 	"./lib/restrictions",
 	"./lib/validator"
 	//"./lib/schema"
-], function(require, utils,  query, dq, composer, collider, compiler, classes, interpret, emitter, errors, rql,promise, context, nodes, logs,  deepLoader, deepEqual, ocm, traversal, flattener, protocol, sheets, Sheeter, deepChain, restrictions, Validator) {
+], function(require, utils,  query, dq, composer, collider, compiler, classes, interpret, emitter, errors, rql,promise, context, nodes, logs,  deepLoader, deepEqual, ocm, traversal, flattener, protocol, sheets, NodesComposer, NodesChain, restrictions, Validator) {
 
-	if (typeof deep !== 'undefined') {
+	/*if (typeof deep !== 'undefined') {
 		console.log("***********************************************************************************");
 		console.warn("You trying to load deepjs modules two times (maybe from two differents node_modules (or bower) module)");
 		console.warn("It could be voluntary. If not : you should think it twice. Protocols and context are local to deep instances (by examples).");
 		console.log("***********************************************************************************");
+	}*/
 
+	var deep = {};
 
 	deep.utils = utils;
 
@@ -53,6 +55,10 @@ define([
 	deep.log = logs.log;
 	deep.warn = logs.warn;
 	deep.error = logs.error;
+	deep.setLogger = logs.setMain;
+
+	deep.nodes = NodesChain.start;
+	deep.utils.nodes = nodes;
 
 	/**
 	 * are you on nodejs or not
@@ -83,11 +89,6 @@ define([
 	for (var i in traversal)
 		deep[i] = traversal[i];
 
-
-	deep.nodes = nodes;
-	deep.deepLoad = function(entry, context, destructive, excludeFunctions) {
-		return deep(entry).deepLoad(context, destructive, excludeFunctions);
-	};
 	/**
 	 * final namespace for deepjs/query
 	 * @static
@@ -110,7 +111,6 @@ define([
 	deep.query = Querier.query;
 
 	deep.ui = {};
-	deep.client = {};
 
 	for (var i in compiler)
 		deep[i] = compiler[i];
@@ -147,14 +147,10 @@ define([
 	for (var i in promise)
 		deep[i] = promise[i];
 
-	deep.Chain = deepChain;
-
-
-	deep.Sheeter = Sheeter;
-
+	deep.NodesChain = NodesChain;
 	deep.delay = function(ms) {
-		return deep({}).delay(ms);
-	}
+		return deep.nodes({}).delay(ms);
+	};
 
 	for (var i in restrictions)
 		deep[i] = restrictions[i];
@@ -166,6 +162,7 @@ define([
 	deep.context = context.context;
 
 	deep.flatten = flattener.flatten;
+	deep.extendsGrounds = flattener.extendsGrounds;
 
 	/**
 	 * the deep schema validator
@@ -193,34 +190,12 @@ define([
 	 */
 	deep.partialValidation = Validator.partialValidation;
 
-	/**
-	 * applyshcema constraints transformers (see constraints docs).
-	 * For internal use normally.
-	 * @param  {Object} object any object where applying transformers
-	 * @param  {Object} schema the schema containing transformers references to apply.
-	 * @return nothing
-	 */
-	deep.applyTransformers =  function(object, schema) {
-		if (!object._deep_query_node_)
-			object = nodes.root(object, schema);
-		//console.log("apply Transfor on : ", object);
-		var query = ".//?_schema.transformers";
-		var r = deep.query(object, query, {
-			fullOutput: true,
-			schema: schema
-		});
-		if(r)
-			r.forEach(function(node) {
-				for (var i = 0, len = node.schema.transformers.length; i < len; ++i)
-					deep.nodes.map(node, node.schema.transformers[i]);
-			});
-	};
+
 
 	// deep chain's mode management
 	deep.modes = function(name, modes) { // local roles (i.e. in chain's context)
-		return deep({}).modes(name, modes);
+		return deep.nodes({}).modes(name, modes);
 	};
-
 
 	deep.coreUnits = deep.coreUnits || [];
 	deep.coreUnits.push(
@@ -229,6 +204,7 @@ define([
 		"js::deepjs/units/collisions",
 		"js::deepjs/units/colliders",
 		"js::deepjs/units/compositions",
+		"js::deepjs/units/classes",
 		"js::deepjs/units/protocols",
 		"js::deepjs/units/flatten",
 		"js::deepjs/units/promises",
@@ -236,17 +212,16 @@ define([
 		"js::deepjs/units/replace",
 		"js::deepjs/units/remove",
 		"js::deepjs/units/interpret",
-		"js::deepjs/units/relations",
+		//"js::deepjs/units/relations",
 		"js::deepjs/units/context",
 		"js::deepjs/units/ocm",
 		"js::deepjs/units/sheets",
 		"js::deepjs/units/shared",
 		"js::deepjs/units/parcours",
-		"js::deepjs/units/deepload",
+		//"js::deepjs/units/deepload",
 		"js::deepjs/units/utils",
 		"js::deepjs/units/custom-chain"
 	);
-
 	
 	//_________________________________________________________________________________
 	return deep;
