@@ -427,26 +427,28 @@ define(["require","../deep", "../lib/unit"], function (require, deep, Unit) {
                 return deep.nodes(r())
                 .equal("hello");
             },
-            classes_defaulproto:function(){
-                var Mc = deep.compose.Classes(function(schema){
-                    if(schema && this.schema)
-                        deep.aup(schema, this.schema);
-                }, {
-                    schema:{
-                        bloup:true
-                    }
-                });
+            clone_composer : function(){
+                var base = {};
+                var closure = [];
+                var a  = {
+                  bloupi : function(){
+                    closure.push(1);
+                  }
+                };
+                var b  = {
+                  bloupi : deep.compose.after(function(){
+                    closure.push(2);
+                  })
+                };
+                var c = {
+                  bloupi : deep.compose.around(function(old){ 
+                     return function(){ old.call(this); closure.push(3); };
+                   })
+                };
 
-                var a = new Mc({
-                    fromA:true
-                });
-
-                var b = new Mc({
-                    fromB:true
-                });
-
-                return deep(a.schema)
-                .equal({ bloup:true, fromA:true });
+                deep.up(base, b, c )
+                b.bloupi();
+                return deep.when(closure).equal([2]);
             }
         }
     };
