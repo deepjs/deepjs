@@ -8,14 +8,14 @@
 					<ul>
 						<li><a href="#atomic-up">deep.aup(...)</a></li>
 						<li><a href="#group-up">deep.up(...)</a></li>
-						<li><a href="#chain-up">deep(...).up(...)</a></li>
+						<li><a href="#chain-up">deep.nodes(...).up(...)</a></li>
 					</ul>
 				</li>
 				<li><a href="#bottom">bottom</a>
 					<ul>
 						<li><a href="#atomic-bottom">deep.abottom(...)</a></li>
 						<li><a href="#group-bottom">deep.bottom(...)</a></li>
-						<li><a href="#chain-bottom">deep(...).bottom(...)</a></li>
+						<li><a href="#chain-bottom">deep.nodes(...).bottom(...)</a></li>
 					</ul>
 				</li>
 				<li><a href="#collisions">collisions</a></li>
@@ -99,7 +99,7 @@ deep.log(obj1);
 				</div>
 			</div>
 			<div class="content">
-				<h4  id="chain-up">deep(obj).up(layer)</h3>
+				<h4  id="chain-up">deep.nodes(obj).up(layer)</h3>
 				<div class="row">
 					<div class="col-sm-12 col-md-12">
 						<p>This is the chained version of the up method.</p>
@@ -117,7 +117,7 @@ var obj1 = {
 var obj2 = {
 	b:false
 }
-deep(obj1).up(obj2).log();
+deep.nodes(obj1).up(obj2).log();
 </pre>
 						</div>
 					</div>
@@ -162,7 +162,7 @@ deep.log(obj1);
 				</div>
 			</div>
 			<div class="content" >
-				<h4 id="chain-bottom">deep(obj).bottom(layer)</h3>
+				<h4 id="chain-bottom">deep.nodes(obj).bottom(layer)</h3>
 				<div class="row">
 					<div class="col-sm-12 col-md-12">
 						<p>This is the chained version of the bottom method.</p>
@@ -181,7 +181,7 @@ var obj2 = {
 	b:false,
 	d:"world"
 }
-deep(obj1).bottom(obj2).log();
+deep.nodes(obj1).bottom(obj2).log();
 </pre>
 						</div>
 					</div>
@@ -214,7 +214,7 @@ var obj2 = {
 	a:"now a string",
 	b:false
 }
-deep(obj1).up(obj2).log();
+deep.nodes(obj1).up(obj2).log();
 </pre>
 						</div>
 					</div>
@@ -237,7 +237,7 @@ var obj1 = {
 var obj2 = {
 	a:["green", "blue", false]
 }
-deep(obj1).up(obj2).log();
+deep.nodes(obj1).up(obj2).log();
 </pre>
 						</div>
 					</div>
@@ -254,7 +254,7 @@ var obj1 = {
 var obj2 = {
 	a:[{id:"1", lastname:"Doe"}, "blue", 15]
 }
-deep(obj1).up(obj2).log();
+deep.nodes(obj1).up(obj2).log();
 </pre>
 						</div>
 					</div>
@@ -285,7 +285,7 @@ var obj2 = {
 		deep.log("Goodbye");
 	}
 }
-deep(obj1).up(obj2);
+deep.nodes(obj1).up(obj2);
 obj1.myMethod();
 </pre>
 						</div>

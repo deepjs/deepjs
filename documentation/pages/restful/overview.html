@@ -188,7 +188,7 @@ What's important :
 
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	//...
 })
 .query("./my/query?foo")
@@ -217,8 +217,8 @@ var obj = {
 
 var sheet = {
 	_deep_sheet_:true,
-	"dq::/a":deep.sheet.up(/*..., ...*/).bottom(/*..., ...*/).sheet(/*..., ...*/),
-	"dq::/b":deep.sheet.transform(function(node){ /*...*/ }).query("./c?foo").interpret(/*...*/),
+	"dq::/a":deep.compose.nodes.up(/*..., ...*/).bottom(/*..., ...*/).sheet(/*..., ...*/),
+	"dq::/b":deep.compose.nodes.transform(function(node){ /*...*/ }).query("./c?foo").interpret(/*...*/),
 	//...
 };
 
@@ -325,7 +325,7 @@ deep.contextualise({
 
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep("json::../my/file.json")
+deep.nodes("json::../my/file.json")
 .transform("swig::/my/template.htm")
 .done(function(rendered){
 	// do something with 'rendered'
@@ -436,7 +436,7 @@ deep.jquery.JSON("products", "/services/products/");
 deep.jquery.set($);
 
 
-deep("json::/my/map.json")
+deep.nodes("json::/my/map.json")
 .toState("map")
 .up("json::/my/specification.json")
 .query("//?how")
@@ -454,10 +454,10 @@ deep("json::/my/map.json")
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.ocm({
-	dev:deep.Collection({
+	dev: new deep.Collection({
 		collection:deep.Shared([{ id:"e1", title:"My product", amount:24 }])
 	}),
-	prod:deep.Mongo({
+	prod: new deep.Mongo({
 		url:"...",
 		collectionName:"products"
 	}),

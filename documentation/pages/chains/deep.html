@@ -81,8 +81,8 @@
  <h5><a href="#start">start</a></h5>
 
 <dl class="dl-horizontal">
-<dt><a href="#start-simple">deep(...)</a></dt><dd>simple chain.</dd>
-<dt><a href="#start-schema">deep(..., ...)</a></dt><dd>start with schema.</dd>
+<dt><a href="#start-simple">deep.nodes(...)</a></dt><dd>simple chain.</dd>
+<dt><a href="#start-schema">deep.nodes(..., ...)</a></dt><dd>start with schema.</dd>
 </dl>
 
  <h5><a href="#layers">layers</a></h5>
@@ -122,7 +122,7 @@
 <dt><a href="#first">.first()</a></dt><dd>keep first in success</dd>
 <dt><a href="#last">.last()</a></dt><dd>keep last in success</dd>
 <dt><a href="#parent">.parent()</a></dt><dd>take parent(s) in success</dd>
-<dt><a href="#val">.val()</a></dt><dd>inject deep.nodes.val(success)</dd>
+<dt><a href="#val">.val()</a></dt><dd>inject deep.utils.nodes.val(success)</dd>
 </dl>
 
 
@@ -174,7 +174,7 @@
 
 <div class="dp-example">
     <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	a:1,
 	b:true,
 	c:"hello",
@@ -286,13 +286,13 @@ deep({
 
 
 
-<h3 id="chain-query">deep(obj).query(q)...</h3>
+<h3 id="chain-query">deep.nodes(obj).query(q)...</h3>
 <p>Chained query call through <a href="/chains/deep">deep chain</a>. <br/>(for full documentations on chained queries and result management, see <a href="/chains/deep">deep chain docs</a>)</p>
 <p>Perfom a query on current chain success and inject query result (<a href="/queries/descriptors">full descriptors</a> of selected properties) as chain success.</p>
 <p><span class="label label-info">Return</span> : a <a href="/chains/deep">deep chain</a>.</p>
 <div class="dp-example">
     <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	a:1,
 	b:true,
 	c:"hello",
@@ -315,7 +315,7 @@ deep({
 
 <div class="dp-example">
     <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	a:1,
 	b:true,
 	c:"hello",

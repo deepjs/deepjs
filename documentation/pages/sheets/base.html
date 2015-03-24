@@ -43,7 +43,7 @@
             <p>A list of queries (deep-queries for the moment) that apply something (and somehow) to matched javascripts properties from a particular root object.</p>
 
             <p>You define it through a classical js object, where properties are sheets entries.</p>
-                <li>deep.sheets or deep(...).sheets(...)</li>
+                <li>deep.sheets or deep.nodes(...).sheets(...)</li>
             <!-- ___________________________________________________________________________ -->
             <div class="section-separator-end"></div>
             <h3 id="dq-up-bottom">dq.up &amp; dq.bottom</h3>
@@ -52,7 +52,7 @@
             <p>Simple example with up...</p>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:{ b:true } })
+deep.nodes({ a:{ b:true } })
 .up({ 
 	_deep_sheet_:true,
 	"dq.up::/a":{
@@ -65,7 +65,7 @@ deep({ a:{ b:true } })
             Which is equivalent to :
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:{ b:true } })
+deep.nodes({ a:{ b:true } })
 .query("/a")
 .up({
     hello:"world"
@@ -87,7 +87,7 @@ var sheet = {
 		other:true
 	}
 };
-deep({
+deep.nodes({
 	array:["base entry"],
 	a:{
 		test:1
@@ -100,7 +100,7 @@ deep({
             <h3 id="dq-transform">dq.transform</h3>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:true, b:12 })
+deep.nodes({ a:true, b:12 })
 .up({
 	_deep_sheet_:true,
 	"dq.transform::./b":function(node){
@@ -124,7 +124,7 @@ deep({ a:true, b:12 })
             <h3 id="sheets-backgrounds">sheets &amp; backgrounds</h3>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ 
+deep.nodes({ 
 	a:true, 
 	_backgrounds:[
 		{ 
@@ -149,9 +149,9 @@ deep({
             <p>Sheets list could contains, direct sheets, or any string reference to ressource (with its protocol) e.g. "json::/my/sheet/path.json"</p>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ 
+deep.nodes({ 
 	a:true, 
-	_sheets:[
+	_transformations:[
 		{
 			_deep_sheet_:true,
 			"dq.up::./!":{ c:123 }

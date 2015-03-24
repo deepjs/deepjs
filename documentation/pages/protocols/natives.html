@@ -28,7 +28,7 @@
 <div class="alert alert-warning"><span class="label label-warning">Warning</span> if you use <a href="https://github.com/jrburke/almond">almond</a> (or any light shim loader) to load <a href="http://requirejs.org/docs/faq-optimization.html#wrap">requirejs optimiser output</a> (i.e. you use a static AMD shim loader), you could not use this protocols anymore (there is no more way to dynamically load js files).</div>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep("js::deepjs/lib/unit")
+deep.nodes("js::deepjs/lib/unit")
 .log()
 </pre></div>
 <!-- __________________________________________________________________________________ -->
@@ -38,7 +38,7 @@ deep("js::deepjs/lib/unit")
 
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep("instance::/path/to/your/class.js")
+deep.nodes("instance::/path/to/your/class.js")
 .log();
 </pre></div>
 <!-- __________________________________________________________________________________ -->
@@ -47,7 +47,7 @@ deep("instance::/path/to/your/class.js")
 <p>Inner inheritance. Used in backgrounds only. (see <a href="/layers/flatten">backgrounds and flatten</a>)</p>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	a:{
 		hello:"world"
 	},
@@ -69,7 +69,7 @@ deep({
 <p>Just there to make test or demo.</p>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep("dummy::hello").log();
+deep.nodes("dummy::hello").log();
 </pre></div>
 <!-- __________________________________________________________________________________ -->
 <div class="section-separator-end"></div>
@@ -77,7 +77,7 @@ deep("dummy::hello").log();
             <div class="alert alert-warning"><span class="label label-warning">Warning</span> Doesn't work in paranoiac environnements (as Adobe Air)</div>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep("eval::true").log();
+deep.nodes("eval::true").log();
 </pre></div>
 <!-- __________________________________________________________________________________ -->
 <div class="section-separator-end"></div>

@@ -1,0 +1,168 @@
+Todo : 
+- sheets should not be merged together before application
+- deep.nodes should become deep.utils.nodes			OK
+- deep(..., ...) should become deep.nodes(..., ...) 		OK
+- .deep(..., ...) should become .nodes(..., ...)		OK
+- deep.sheeter.xxx should become deep.compose.nodes.xxx		OK
+- deep.domSheeter.xxx should become deep.compose.dom.xxx	OK
+
+___________________________________________________________________________________
+
+
+									Promise
+
+									.when()
+
+									.contextualise()
+									.toContext()
+									.fromContext()
+									.toState()
+									.fromState()
+									.done()
+									.always()
+									.then()
+									.close()
+
+									.modes()
+									.log()
+									.elog()
+									.slog()
+									.clog()
+									.delay()
+									.equal()
+									.validate()
+									.fail()
+
+
+Nodes				Restful 		App 					SH/SSH/Chain			 		FSChain 			FileChain
+(node API)
+
+.nodes()				.restful()		.app()					.sh()/.ssh()					.fs()				.file()
+
+.remove(what) 		.get()			.get()					.exec()							.appendTo()			.open()
+.set(...)			.post()			.reload()				.cd()							.to()				.write()
+.replace()			.put()			.views()				.pwd()							.text()				.read()
+.copy()				.patch() 		.panic()				.ls()							.json()				.append()
+.flatten()			.rpc()			.login()				.echo()							.from()
+.sheet()			.bulk()			.logout()				.mkdir()						.mkdir()
+.bottom()			.range()		.impersonate()			.rm()							.rmdir()
+.up() 				.relation()		.session()				.cat()							.readdir()
+.run()								.resetSession()			.touch()						.readlink()
+.map()								.sessionModes()											.link()
+.each()								.saveSession()											.unlink()
+.interpret()						.reloadSession()										.exists()
+.parent()																					.chmod()
+.first()																					.chown()
+.last()																						.rename()
+.query()																					.stat()
+.deepLoad()																					.cd()
+.reverse()																					.pwd()
+.sort()																						.isExecutable()
+.val()																						.isReadable()
+																							.isWritable()
+
+						Composer
+
+						.after()
+						.before()
+						.around()
+	
+						.modes()	
+						.when()
+						.log()
+						.elog()
+						.slog()
+						.clog()
+						.delay()
+						.equal()
+						.fail()
+
+
+node-composer			dom-composer				restful-composer
+(ex deep-sheeter) 		
+(node API)
+
+.remove()				.find()				.restrictToOwner()
+.set()					.click()
+.replace()				.touch()			.filterPrivates()
+.copy()					.wrap()				.checkReadOnly()
+.flatten() 				.directives()			.post()
+.sheet()				.show()				.put()
+.bottom()				.hide()				
+.up()					.editInPlace()
+.run()					.each()
+.map()					.fadeIn()
+.each()					.fadeOut()
+.interpret()
+.parent()
+.reverse()
+.validate()
+.equal()
+.first()
+.last()
+.query()
+.deepLoad()
+.sort()
+.val()
+
+
+
+
+
+deep.when()
+deep.compose.xxx
+
+deep.utils.nodes(obj, schema)/.nodes()
+deep.compose.nodes.xxx
+deep.utils.nodes.xxx
+
+deep.restful()/.restful()
+
+deep.app()/.app()
+deep.sh()/.sh()
+deep.ssh()/.ssh()
+deep.fs()/.fs()
+
+deep.statics()
+
+deep.views(...) [Promise]
+deep.compose.view
+deep.utils.view
+
+deep.compose.dom
+
+deep.protocol
+deep.get
+deep.getAll
+
+
+deep.ocm
+deep.Classes
+
+deep.email
+
+
+
+
+________________________
+
+
+objects : 
+
+App
+	email
+	session
+		init()
+	modes
+	login()
+	logout()
+	impersonate()
+	routers
+		[ViewRouter]
+			map
+				[View]*
+					what
+					how
+					where
+					done
+					fail

@@ -6,7 +6,7 @@
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.iterate([
-	1,2,deep("delayed").delay(10), new Error("hhh"),4
+	1,2,deep.nodes("delayed").delay(10), new Error("hhh"),4
 ], 
 function(s){
     return "e"+s;
@@ -20,7 +20,7 @@ through chain :
 
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep([1,2,deep("delayed").delay(10), new Error("hhh"),4])
+deep.nodes([1,2,deep.nodes("delayed").delay(10), new Error("hhh"),4])
 .iterate(function(s){
     return "e"+s;
 }, function(e){
@@ -34,8 +34,8 @@ Could be used to iterate through functions as :
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
 deep.utils.iterate([
-	function(arg){ return deep("hello "+arg).delay(5); }, 
-	function(arg){ return deep(arg+" world").delay(8); }
+	function(arg){ return deep.nodes("hello "+arg).delay(5); }, 
+	function(arg){ return deep.nodes(arg+" world").delay(8); }
 ], function(s){
     return s("deep");
 })
@@ -73,7 +73,7 @@ function(e){
 
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
     func1:function(arg1, arg2){
         return ["arg11:"+arg1,"arg21:"+arg2];
     },

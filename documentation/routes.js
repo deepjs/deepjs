@@ -6,7 +6,7 @@ if (typeof define !== 'function') {
 }
 define(["require", "../deep"], function(require, deep) {
 
-	// all sitemap of content that is used to produce routed views tree (IOC from deep-routes).
+	// sitemap of content that is used to produce routed views tree (IOC from deep-routes).
 	return {
 		home: {
 			navigation: false,

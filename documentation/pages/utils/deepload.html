@@ -14,7 +14,7 @@ destructive is false by default.
 
 ```javascript
 
-deep({
+deep.nodes({
 	datas:"json::myfile.json"
 })
 .query("./datas")
@@ -28,7 +28,7 @@ deep({
 
 ```javascript
 
-deep({
+deep.nodes({
 	datas:"json::myfile.json"
 })
 .deepLoad()
@@ -41,7 +41,7 @@ deep({
 
 ```javascript
 
-deep({
+deep.nodes({
 	datas:"json::/{ language }/myfile.json"
 })
 .query("./datas")
@@ -55,7 +55,7 @@ deep({
 
 ```javascript
 
-deep({
+deep.nodes({
 	datas:"json::myfile.json"
 })
 .deepLoad({ language:"uk" }, true)

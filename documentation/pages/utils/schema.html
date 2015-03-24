@@ -44,11 +44,11 @@ var schema = {
 	}
 }
 
-deep(obj, schema).validate().log();
+deep.nodes(obj, schema).validate().log();
 
 // or
 
-deep(obj).validate(schema).log();
+deep.nodes(obj).validate(schema).log();
 
 
 ```

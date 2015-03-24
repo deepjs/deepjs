@@ -47,7 +47,7 @@
 				<div class="col-sm-12 col-md-12">
 					<div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ b:[1,2,3] })
+deep.nodes({ b:[1,2,3] })
 .up({
     b:deep.collider.replace([4,5])
 })
@@ -67,7 +67,7 @@ deep({ b:[1,2,3] })
 				<div class="col-sm-12 col-md-12">
 					<div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ b:[1,2,3] })
+deep.nodes({ b:[1,2,3] })
 .up({
     b:deep.collider.insertAt(["hello"],2)
 })
@@ -96,7 +96,7 @@ var b = {
     balance:deep.collider.sum(33)
 };
 
-deep(a).up(b).log();
+deep.nodes(a).up(b).log();
 </pre>
 					</div>
 				</div>

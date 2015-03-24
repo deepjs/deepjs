@@ -27,7 +27,7 @@ deep.when("hello world")
 <p>But deepjs uses chained syntax also for ergonomy and readability, and provides, by example, chained API for deepjs specific manipulation : </p>
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:"hello" })
+deep.nodes({ a:"hello" })
 .up({ b:"world" })
 .bottom({ c:function(){ return this.a + " " + this.b; } })
 .run("c")

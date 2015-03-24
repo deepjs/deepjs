@@ -11,7 +11,7 @@
                 		<li><a href="#allow-straight">allow straight</a></li>
                 	</ul>
                 </li>
-                <li><a href="#chain-query">deep(...).query(...)</a></li>
+                <li><a href="#chain-query">deep.nodes(...).query(...)</a></li>
                 <li><a href="#syntax">syntaxe</a>
                 	<ul>
                 		<li><a href="#start">start</a></li>
@@ -158,13 +158,13 @@ deep.log(r);	// 'world'
 
 <!-- _______________________________________________________________________ -->
                 <div class="section-separator-end"></div>
-<h3 id="chain-query">deep(obj).query(q)...</h3>
+<h3 id="chain-query">deep.nodes(obj).query(q)...</h3>
 <p>Chained query call through <a href="/chains/deep">deep chain</a>. <br/>(for full documentations on chained queries and result management, see <a href="/chains/deep#query">deep chain docs</a>)</p>
 <p>Perfom a query on current chain success and inject query result (<a href="/queries/descriptors">full descriptors</a> of selected properties) as chain success.</p>
 <p><span class="label label-info">Return</span> : a <a href="/chains/deep">deep chain</a>.</p>
 <div class="dp-example">
     <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	a:1,
 	b:true,
 	c:"hello",
@@ -191,7 +191,7 @@ deep({
 <p>A step is :  A 'move' followed by a 'step selector' and optionally followed by a 'RQL filter'.</p>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep([{a:2}, {a:4}]).query("/*?a=gt=3").log();
+deep.nodes([{a:2}, {a:4}]).query("/*?a=gt=3").log();
 </pre>
             </div>
 
@@ -212,7 +212,7 @@ deep([{a:2}, {a:4}]).query("/*?a=gt=3").log();
 </ul>
             <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:{ b:{ c:"hello world" }, d:true }}).query("//").log();
+deep.nodes({ a:{ b:{ c:"hello world" }, d:true }}).query("//").log();
 </pre>
             </div>
 <!-- _______________________________________________________________________ -->
@@ -240,7 +240,7 @@ deep({ a:{ b:{ c:"hello world" }, d:true }}).query("//").log();
 
 <div class="dp-example">
     <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({
+deep.nodes({
 	a:1,
 	b:true,
 	c:"hello",
@@ -291,28 +291,28 @@ deep({
 
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
+deep.nodes({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/myProp1/0")
 .log()
 </pre>
             </div>
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
+deep.nodes({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/myProp2/[:4:2]")
 .log()
 </pre>
             </div>
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
+deep.nodes({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/(myProp.*)/[3:]")
 .log()
 </pre>
             </div>
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
+deep.nodes({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 .query("/[myProp1,myProp2]")
 .log()
 </pre>
@@ -322,28 +322,28 @@ deep({ myProp1:[1,2,3,4,5,6], myProp2:["a","b","c","d","e"]})
 
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:1, b:true, c:"hello"})
+deep.nodes({ a:1, b:true, c:"hello"})
 .query("/(.*)")
 .log();
 </pre>
             </div>
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:1, b:true, c:"hello"})
+deep.nodes({ a:1, b:true, c:"hello"})
 .query("/*")
 .log();
 </pre>
             </div>
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:1, b:true, c:"hello"})
+deep.nodes({ a:1, b:true, c:"hello"})
 .query("/[]")
 .log();
 </pre>
             </div>
 <div class="dp-example">
                 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:1, b:true, c:"hello"})
+deep.nodes({ a:1, b:true, c:"hello"})
 .query("/")
 .log();
 </pre>
@@ -358,7 +358,7 @@ deep({ a:1, b:true, c:"hello"})
 
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:[1,2,3,4,5,6] })
+deep.nodes({ a:[1,2,3,4,5,6] })
 .query("/a/[@.length-2]")
 .log();
 </pre>
@@ -370,7 +370,7 @@ deep({ a:[1,2,3,4,5,6] })
 <p>Will give you any 'length' property founded in current level</p>
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep({ a:[1,2,3,4,5,6], b:"hello" })
+deep.nodes({ a:[1,2,3,4,5,6], b:"hello" })
 .query("/a/length")
 .log()
 
@@ -387,14 +387,14 @@ deep({ a:[1,2,3,4,5,6], b:"hello" })
 <p>any RQL filter (see <a href="/queries/rql">deep-rql</a> for full docs) could be added to any selector.</p>
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep([1,2,3,4,5,6])
+deep.nodes([1,2,3,4,5,6])
 .query("/*?=gt=3")
 .log();
 </pre>
 </div>
 <div class="dp-example">
 <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep([1,2,3,4,5,6])
+deep.nodes([1,2,3,4,5,6])
 .query("/*?sort(-)")
 .log();
 </pre>

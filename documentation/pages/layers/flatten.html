@@ -34,7 +34,7 @@ var obj2 = {
 	//...
 }
 
-deep(obj2)
+deep.nodes(obj2)
 .flatten()
 //...
 
@@ -57,7 +57,7 @@ var obj2 = {
 	//...
 }
 
-deep(obj2)
+deep.nodes(obj2)
 .flatten()
 //...
 
@@ -70,7 +70,7 @@ You could obviously mix objects, externals and internals references.
 				<div class="col-sm-12 col-md-6">
 					<div class="dp-example">
                         <pre class="dp-enhance dp-box code" dp-enhancements="dp-try">
-deep(1).log();
+deep.nodes(1).log();
 </pre>
 					</div>
 				</div>
@@ -99,7 +99,7 @@ var obj2 = {
 	})
 }
 
-deep(obj2)
+deep.nodes(obj2)
 .flatten()
 .done(function(flattened){
     return flattened.test("hello");
@@ -127,7 +127,7 @@ deep(obj2)
 var obj1 = { a:12, b:true, c:{ d:"hello" } };
 var obj2 = { b:false }
 deep.aup(obj2, obj1);
-deep(obj1).log();
+deep.nodes(obj1).log();
 </pre>
 					</div>
 				</div>
@@ -145,7 +145,7 @@ deep(obj1).log();
 var obj1 = { a:12, b:true, c:{ d:"hello" } };
 var obj2 = { b:false }
 deep.aup(obj2, obj1);
-deep(obj1).log();
+deep.nodes(obj1).log();
 </pre>
 					</div>
 				</div>
