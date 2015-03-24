@@ -253,7 +253,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				})
 				.equal("prod:hello:admin");
 			},
-			ocm_sheets: function() {
+			ocm_transformations: function() {
 				var o = deep.ocm({
 					"public": {
 						get: function(s) {
@@ -370,9 +370,29 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				        test:true
 				    },
 				    "public":{_backgrounds:["this::../user"]}
-				},{protocol:"test"});
+				});
 				store.modes("public")
 				return deep.when(deep.protocol(store)).equal({ test:true });
+			},
+			flattener_wont_stop_flatten:function(){
+				var test = {
+				  pro:{
+				    o:deep.ocm({
+					 	_backgrounds : [ { test:{ yop:true } }],
+					 	bloupi:{
+					 		lolipop:"hello"
+					 	}
+					}, { modes:["bloupi"] })
+				  },
+				  second:{
+				  	_backgrounds:[ { shouldBeThere:true } ]
+				  }
+				};
+				return deep.flatten(test)
+				.done(function (s) {
+					return test.second.shouldBeThere;
+				})
+				.equal(true);
 			}
 		}
 	};
