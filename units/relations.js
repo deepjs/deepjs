@@ -5,7 +5,7 @@ if (typeof define !== 'function') {
 	var define = require('amdefine')(module);
 }
 
-define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
+define(["require", "../deep", "deep-restful/lib/collection"], function(require, deep) {
 
 	//_______________________________________________________________ GENERIC STORE TEST CASES
 
@@ -69,11 +69,11 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 	var unit = {
 		title: "deepjs/units/relations",
 		setup: function() {
-			deep.Collection("plant", [{
+			new deep.Collection("plant", [{
 				id: "e1",
 				title: "plant title"
 			}], schema);
-			deep.Collection("user", [{
+			new deep.Collection("user", [{
 				id: "e1",
 				title: "user title"
 			}], schema);
@@ -84,8 +84,8 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 		},
 		stopOnError: false,
 		tests: {
-			getRelations:function(){
-                return deep({
+			/*getRelations:function(){
+                return deep.nodes({
                     plantId:"e1",
                     userId:"e1",
                     label:"hello"
@@ -105,9 +105,9 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
                     "result":{"id":"e1","title":"user title"}
                 }
                 ]);
-            },
-			mapRelations: function() {
-				return deep({
+            },*/
+			/*mapRelations: function() {
+				return deep.nodes({
 					plantId: "e1",
 					userId: "e1",
 					label: "hello"
