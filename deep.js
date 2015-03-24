@@ -44,54 +44,6 @@ define([
 		console.warn("You trying to load deepjs modules two times (maybe from two differents node_modules (or bower) module)");
 		console.warn("It could be voluntary. If not : you should think it twice. Protocols and context are local to deep instances (by examples).");
 		console.log("***********************************************************************************");
-	}
-
-	var deep = function(obj, schema, options) {
-		// console.log("CHAIN START ", obj)
-		options = options || {};
-		var h = new deep.Chain(options._state || null, options),
-			d;
-		try {
-			if (typeof obj === 'string')
-				obj = deep.get(obj, options);
-
-			if (typeof schema === 'string')
-				schema = deep.get(schema, options);
-
-			if (!schema && obj && (obj.then || obj.promise))
-				d = deep.when(obj)
-					.done(function(res) {
-						h._init(res);
-						h.resolve();
-					});
-			if (schema && (schema.then || schema.promise))
-				if (obj && (obj.then || obj.promise))
-					d = deep.all([obj, schema])
-						.done(function(res) {
-							h._init(res[0], res[1]);
-							h.resolve();
-						});
-				else
-					d = deep.when(schema)
-						.done(function(res) {
-							h._init(null, res);
-							h.resolve();
-						});
-			if (d)
-				d.fail(function(error) {
-					h.reject(error);
-				});
-			else {
-				h._init(obj, schema);
-				h.resolve();
-			}
-		} catch (error) {
-			//console.log("internal chain start error : ", error);
-			h.reject(error);
-		}
-		return h;
-	};
-
 
 
 	deep.utils = utils;
