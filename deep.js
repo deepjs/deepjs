@@ -137,6 +137,7 @@ define([
 	deep.Modes = ocm.Modes;
 	deep.modes = ocm.modes;
 	deep.currentModes = ocm.currentModes;
+	deep.matchModes = ocm.matchModes;
 
 	deep.Event = emitter.Event;
 	deep.Emitter = emitter.Emitter;
