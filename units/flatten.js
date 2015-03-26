@@ -49,15 +49,15 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					}
 				};
 				return deep.nodes({
-					_backgrounds: [a],
-					obj: {
-						second: true
-					},
-					myFunc: deep.compose.after(function() {
-						//console.log("myFunc of b : ", this);
-						this.obj.b = true;
+						_backgrounds: [a],
+						obj: {
+							second: true
+						},
+						myFunc: deep.compose.after(function() {
+							//console.log("myFunc of b : ", this);
+							this.obj.b = true;
+						})
 					})
-				})
 					.flatten()
 					.run("myFunc")
 					.query("./obj")
@@ -70,13 +70,13 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 			},
 			b: function() {
 				return deep.nodes({
-					sub: {
-						_backgrounds: [this.b],
-						obj: {
-							third: true
+						sub: {
+							_backgrounds: [this.b],
+							obj: {
+								third: true
+							}
 						}
-					}
-				})
+					})
 					.flatten()
 					.query("/sub")
 					.run("myFunc")
@@ -103,18 +103,18 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 				};
 
 				return deep.nodes({
-					_backgrounds: [bc2, b],
-					c: {
-						_backgrounds: [b],
-						prop: 2
-					},
-					d: {
-						_backgrounds: ["this::../c"],
-					},
-					e: {
-						_backgrounds: ["this::/c"],
-					}
-				})
+						_backgrounds: [bc2, b],
+						c: {
+							_backgrounds: [b],
+							prop: 2
+						},
+						d: {
+							_backgrounds: ["this::../c"],
+						},
+						e: {
+							_backgrounds: ["this::/c"],
+						}
+					})
 					.flatten()
 					.done(function(s) {
 						return deep.nodes(s.test).equal(1)
@@ -174,14 +174,16 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						titleb: "bye"
 					});
 			},
-			top_transformations:function(){
+			top_transformations: function() {
 				var a = {
-					_transformations : [ { "dq.up::./hello":"world" }],
-					lolipop:true
+					_transformations: [{
+						"dq.up::./hello": "world"
+					}],
+					lolipop: true
 				};
-				var  b = {
-					_backgrounds:[a],
-					hello:"bloupi"
+				var b = {
+					_backgrounds: [a],
+					hello: "bloupi"
 				};
 				deep.flatten(b);
 				return deep.when(b.hello).equal("world");
@@ -246,14 +248,12 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					},
 					obj2: {
 						_backgrounds: [
-							"this::../obj1",
-                            {
+							"this::../obj1", {
 								_backgrounds: [{
 									bloup3: true
 								}],
 								backback3: true
-							},
-                            {
+							}, {
 								_foregrounds: [{
 									hello: "changed!!"
 								}],
@@ -318,44 +318,84 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					"forfor": true,
 					"lolipop": true
 				};
-                return deep.flatten(a).equal(needed);
+				return deep.flatten(a).equal(needed);
 			},
-			_transformations1:function(){
+			_transformations1: function() {
 				var a = {
-				  _transformations:[{ 
-				      "dq.up::./!":{ done:"hello done" }
-				  }]
+					_transformations: [{
+						"dq.up::./!": {
+							done: "hello done"
+						}
+					}]
 				}
 
 				return deep.nodes(a)
-				.flatten()
-				.done(function(success){
-					return success.done;
-				})
-				.equal("hello done");
+					.flatten()
+					.done(function(success) {
+						return success.done;
+					})
+					.equal("hello done");
 			},
-			_transformations2:function(){
+			_transformations2: function() {
 				var a = {
-					_backgrounds:[{ reu:"bloupi" }],
-				 	_foregrounds:[{ sub:{ foo:"bar"} }],
-					_transformations:[{ 
-					    "dq.up::.//?_type=string":"lolipop"
+					_backgrounds: [{
+						reu: "bloupi"
 					}],
-					test:{
-						_backgrounds:[{ reu2:"bloupi" }],
-				 		_foregrounds:[{ sub2:{ foo2:"bar"} }],
-				 		_transformations:[{ 
-						    "dq.up::./!":{ roo:"weeee" }
+					_foregrounds: [{
+						sub: {
+							foo: "bar"
+						}
+					}],
+					_transformations: [{
+						"dq.up::.//?_type=string": "lolipop"
+					}],
+					test: {
+						_backgrounds: [{
+							reu2: "bloupi"
+						}],
+						_foregrounds: [{
+							sub2: {
+								foo2: "bar"
+							}
+						}],
+						_transformations: [{
+							"dq.up::./!": {
+								roo: "weeee"
+							}
 						}],
 					}
 				}
 
-				return deep.nodes(a)
-				.flatten()
-				.done(function(a){
-					return [a.reu, a.sub.foo, a.test.reu2, a.test.sub2.foo2, a.test.roo];
-				})
-				.equal(["lolipop","lolipop","lolipop","lolipop","weeee"]);
+				return deep.flatten(a)
+					.done(function(a) {
+						return [a.reu, a.sub.foo, a.test.reu2, a.test.sub2.foo2, a.test.roo];
+					})
+					.equal(["lolipop", "lolipop", "lolipop", "lolipop", "weeee"]);
+			},
+			_transformations3: function() {
+
+				var a = {
+					_backgrounds: [{
+						b: {
+							_transformations: [{
+								_deep_sheet_: true,
+								"dq.bottom::.//?bloupi": {
+									decorated: true
+								}
+							}],
+							c: {
+								bloupi: true
+							}
+						}
+					}]
+				};
+
+				return deep.flatten(a)
+					.done(function(success) {
+						return a.b.c.decorated || null;
+					})
+					.equal(true);
+
 			}
 		}
 	};
