@@ -52,6 +52,7 @@ define(["require","../deep"], function (require, deep) {
 				.equal(["e1", "e2", "e3", "e4", "e5"]);
 			},
 			sheets_as__backgrounds:function(){
+				// no effect
 				return deep.nodes({
 					test:false,
 					_backgrounds:[{
@@ -65,25 +66,6 @@ define(["require","../deep"], function (require, deep) {
 				.equal({
 					hello:"world",
 					test:false
-				});
-			},
-			sheets_as_backgrounds2:function(){
-				return deep.nodes({
-					_deep_sheet_:true,
-					"dq.up::./!":"testez",
-					"dq.bottom::./!":{ test:true },
-					_backgrounds:[{
-						_deep_sheet_:true,
-						"dq.bottom::./!":{
-							hello:"world"
-						}
-					}]
-				})
-				.flatten()
-				.equal({
-					_deep_sheet_:true,
-					"dq.bottom::./!":{ hello:"world" , test:true },
-					"dq.up::./!":"testez",
 				});
 			},
 			sheets_as_backgrounds3:function(){
@@ -103,23 +85,6 @@ define(["require","../deep"], function (require, deep) {
 					hello:"world",
 					base:"yes",
 					test:false
-				});
-			},
-			sheets_as_backgrounds4:function(){
-				return deep.nodes({
-					_deep_sheet_:true,
-					"dq.up::./!":{ fromUp:true },
-					"dq.bottom::./!":{ fromBottom:true },
-					_backgrounds:[{
-						_deep_sheet_:true,
-						"dq.up::./!":{ fromUp2:true },
-					}]
-				})
-				.flatten()
-				.equal({
-					_deep_sheet_:true,
-					"dq.up::./!":{ fromUp2:true , fromUp:true },
-					"dq.bottom::./!":{ fromBottom:true }
 				});
 			},
 			/*
