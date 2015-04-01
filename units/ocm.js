@@ -260,16 +260,18 @@ define(["require", "../deep"], function(require, deep, Unit) {
 							return "public:" + s;
 						}
 					},
-					prod: deep.Sheet({
+					prod:{
+						_deep_sheet_:true,
 						"dq.up::./get": deep.compose.after(function(s) {
 							return s + ":prod";
 						})
-					}),
-					dev: deep.Sheet({
+					},
+					dev: {
+						_deep_sheet_:true,
 						"dq.up::./get": deep.compose.before(function(s) {
 							return "dev:" + s;
 						})
-					})
+					}
 				}, {
 					sensibleTo: ["roles", "env"]
 				});
