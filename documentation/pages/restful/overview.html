@@ -1,7 +1,7 @@
 <div>
     <div id="submenu">
         <h2>Restful</h2>
-        <div class="submenu-block dp-enhance" dp-enhancements="control(js::/js/sub-nav.js)">
+        <div class="submenu-block dp-enhance" dp-enhancements="control(req::/js/sub-nav.js)">
             <ul>
                 <li><a href="#intro">Introduction</a>
                 </li>
@@ -133,15 +133,15 @@ could load async resources
 
 construct full array before merge
 var a = {
-	_backgrounds:[myModel, "js::/my/file.js"],
+	_backgrounds:[myModel, "req::/my/file.js"],
 	_foregrounds:[mySpecification],
 	//....
 };
-==> [myModel, "js::/my/file.js", a, mySpecification]
+==> [myModel, "req::/my/file.js", a, mySpecification]
 
 recursive
 
-==> [myModel, jsfile_backgrounds,  "js::/my/file.js", jsfile_foregrounds,  a, mySpecification]
+==> [myModel, jsfile_backgrounds,  "req::/my/file.js", jsfile_foregrounds,  a, mySpecification]
             </pre>
 
 
