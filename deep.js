@@ -53,6 +53,7 @@ define([
 	deep.transformers = {};
 
 	deep.log = logs.log;
+	deep.debug = logs.debug;
 	deep.warn = logs.warn;
 	deep.error = logs.error;
 	deep.setLogger = logs.setMain;
