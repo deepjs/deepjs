@@ -84,14 +84,14 @@ http://127.0.0.1:1337/?count=lt=2
 	//-----------------Aspects
 	var orchard = {
 		plants : [{uri:"appletree",growSpeed:10}],
-		watering : deep.compose.after(function () {
+		watering : deep.compose().after(function () {
 			console.log("We put some mulch after watering");
 		})
 	};
 
 	var kitchenGarden = {
 		plants : [{uri:"carrots",growSpeed:6}],
-		watering : deep.compose.before(function () {
+		watering : deep.compose().before(function () {
 			console.log("We protect seedlings before watering");
 		})
 	};

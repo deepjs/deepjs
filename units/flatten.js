@@ -29,7 +29,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 					obj: {
 						second: true
 					},
-					myFunc: deep.compose.after(function() {
+					myFunc: deep.compose().after(function() {
 						//console.log("myFunc of b : ", this);
 						this.obj.b = true;
 					})
@@ -53,7 +53,7 @@ define(["require", "../deep", "../lib/unit"], function(require, deep, Unit) {
 						obj: {
 							second: true
 						},
-						myFunc: deep.compose.after(function() {
+						myFunc: deep.compose().after(function() {
 							//console.log("myFunc of b : ", this);
 							this.obj.b = true;
 						})

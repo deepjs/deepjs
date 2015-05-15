@@ -84,9 +84,9 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				});
 				myManager.sensibleTo("myGroup");
 				return deep.modes({
-					"myGroup": "mode1"
-				}) // start a chain with provided modes
-				.delay(1)
+						"myGroup": "mode1"
+					}) // start a chain with provided modes
+					.delay(1)
 					.done(function(success) {
 						return myManager();
 					})
@@ -106,20 +106,20 @@ define(["require", "../deep"], function(require, deep, Unit) {
 			},
 			groupCollection: function() {
 				return deep.modes({
-					group1: "mode1"
-				})
+						group1: "mode1"
+					})
 					.done(function(success) {
 						return deep.modes({
-							group2: "mode2"
-						})
-						.delay(1)
-						.done(function(success) {
-							return deep.Promise.context.modes;
-						})
-						.equal({
-							group1: "mode1",
-							group2: "mode2"
-						});
+								group2: "mode2"
+							})
+							.delay(1)
+							.done(function(success) {
+								return deep.Promise.context.modes;
+							})
+							.equal({
+								group1: "mode1",
+								group2: "mode2"
+							});
 					})
 					.delay(1)
 					.done(function(success) {
@@ -147,10 +147,10 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				});
 
 				return obj.flatten().done(function(obj) {
-					obj("mode1").myShared.push(6);
-					obj("mode1").myShared2.c = 3;
-					return [obj("mode1"), obj("mode2")];
-				})
+						obj("mode1").myShared.push(6);
+						obj("mode1").myShared2.c = 3;
+						return [obj("mode1"), obj("mode2")];
+					})
 					.equal([{
 						myShared: [1, 2, 3, 4, 5, 6],
 						myShared2: {
@@ -182,7 +182,7 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				deep.flatten(a);
 				return deep.nodes([a.b("role2"), a.b("role")]).equal([false, true]);
 			},
-			
+
 			multiGroup: function() {
 				var o = deep.ocm({
 					dev: {
@@ -196,12 +196,12 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						}
 					},
 					"public": {
-						get: deep.compose.after(function(s) {
+						get: deep.compose().after(function(s) {
 							return s + ":public";
 						})
 					},
 					admin: {
-						get: deep.compose.after(function(s) {
+						get: deep.compose().after(function(s) {
 							return s + ":admin";
 						})
 					}
@@ -210,9 +210,9 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				});
 
 				return deep.modes({
-					env: "dev",
-					roles: "public"
-				})
+						env: "dev",
+						roles: "public"
+					})
 					.done(function() {
 						return o().get("hello");
 					})
@@ -231,12 +231,12 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						}
 					},
 					"public": {
-						get: deep.compose.after(function(s) {
+						get: deep.compose().after(function(s) {
 							return s + ":public";
 						})
 					},
 					admin: {
-						get: deep.compose.after(function(s) {
+						get: deep.compose().after(function(s) {
 							return s + ":admin";
 						})
 					}
@@ -245,13 +245,13 @@ define(["require", "../deep"], function(require, deep, Unit) {
 				});
 
 				return deep.modes({
-					env: "prod",
-					roles:"admin"
-				})
-				.done(function() {
-					return o().get("hello");
-				})
-				.equal("prod:hello:admin");
+						env: "prod",
+						roles: "admin"
+					})
+					.done(function() {
+						return o().get("hello");
+					})
+					.equal("prod:hello:admin");
 			},
 			ocm_transformations: function() {
 				var o = deep.ocm({
@@ -260,15 +260,15 @@ define(["require", "../deep"], function(require, deep, Unit) {
 							return "public:" + s;
 						}
 					},
-					prod:{
-						_deep_sheet_:true,
-						"dq.up::./get": deep.compose.after(function(s) {
+					prod: {
+						_deep_sheet_: true,
+						"dq.up::./get": deep.compose().after(function(s) {
 							return s + ":prod";
 						})
 					},
 					dev: {
-						_deep_sheet_:true,
-						"dq.up::./get": deep.compose.before(function(s) {
+						_deep_sheet_: true,
+						"dq.up::./get": deep.compose().before(function(s) {
 							return "dev:" + s;
 						})
 					}
@@ -276,21 +276,21 @@ define(["require", "../deep"], function(require, deep, Unit) {
 					sensibleTo: ["roles", "env"]
 				});
 				return deep.modes({
-					env: "dev",
-					roles: "public"
-				})
-				.done(function() {
-					return o().get("hello");
-				})
-				.equal("public:dev:hello")
-				.modes({
-					env: "prod",
-					roles: "public"
-				})
-				.done(function() {
-					return o().get("hello");
-				})
-				.equal("public:hello:prod");
+						env: "dev",
+						roles: "public"
+					})
+					.done(function() {
+						return o().get("hello");
+					})
+					.equal("public:dev:hello")
+					.modes({
+						env: "prod",
+						roles: "public"
+					})
+					.done(function() {
+						return o().get("hello");
+					})
+					.equal("public:hello:prod");
 			},
 			ocm_afterCompilation: function() {
 				var manager = deep.ocm({
@@ -346,55 +346,84 @@ define(["require", "../deep"], function(require, deep, Unit) {
 						}, {
 							name: "John",
 							familly: "Doe"
-						}]);
+						}
+					]);
 			},
-			ocm_strict:function(){
+			ocm_strict: function() {
 				var myManager = deep.ocm({
-					dev:{ dev:true },
-					prod:{ prod:true },
-					"public":{ "public":true },
-					admin:{ admin:true }
-				}, { strict:true });
+					dev: {
+						dev: true
+					},
+					prod: {
+						prod: true
+					},
+					"public": {
+						"public": true
+					},
+					admin: {
+						admin: true
+					}
+				}, {
+					strict: true
+				});
 				return deep.nodes(myManager("prod", "bloup"))
-				.equal(undefined)
+					.equal(undefined)
 			},
-			multiModesFalse:function(){
+			multiModesFalse: function() {
 				var myManager = deep.ocm({
-					"public":{ "public":true },
-					"user":{ "user":true }
-				}, { multiModes:false });
+					"public": {
+						"public": true
+					},
+					"user": {
+						"user": true
+					}
+				}, {
+					multiModes: false
+				});
 				return deep.nodes(myManager("public", "user"))
-				.equal(null);
+					.equal(null);
 			},
-			auto_flatten:function(){
+			auto_flatten: function() {
 				var store = deep.ocm({
-				    "user":{
-				        test:true
-				    },
-				    "public":{_backgrounds:["this::../user"]}
+					"user": {
+						test: true
+					},
+					"public": {
+						_backgrounds: ["this::../user"]
+					}
 				});
 				store.modes("public")
-				return deep.when(deep.protocol(store)).equal({ test:true });
+				return deep.when(deep.protocol(store)).equal({
+					test: true
+				});
 			},
-			flattener_wont_stop_flatten:function(){
+			flattener_wont_stop_flatten: function() {
 				var test = {
-				  pro:{
-				    o:deep.ocm({
-					 	_backgrounds : [ { test:{ yop:true } }],
-					 	bloupi:{
-					 		lolipop:"hello"
-					 	}
-					}, { modes:["bloupi"] })
-				  },
-				  second:{
-				  	_backgrounds:[ { shouldBeThere:true } ]
-				  }
+					pro: {
+						o: deep.ocm({
+							_backgrounds: [{
+								test: {
+									yop: true
+								}
+							}],
+							bloupi: {
+								lolipop: "hello"
+							}
+						}, {
+							modes: ["bloupi"]
+						})
+					},
+					second: {
+						_backgrounds: [{
+							shouldBeThere: true
+						}]
+					}
 				};
 				return deep.flatten(test)
-				.done(function (s) {
-					return test.second.shouldBeThere;
-				})
-				.equal(true);
+					.done(function(s) {
+						return test.second.shouldBeThere;
+					})
+					.equal(true);
 			}
 		}
 	};

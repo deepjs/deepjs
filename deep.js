@@ -1,230 +1,182 @@
-/**
- * @module deep
- * @author Gilles Coomans <gilles.coomans@gmail.com>
- * TODO : adding events on : 
- * 		modes : changed
- * 		
- */
+/**  @author Gilles Coomans <gilles.coomans@gmail.com> */
 if (typeof define !== 'function') {
 	var define = require('amdefine')(module);
 }
 define([
-	"require",
-	"./lib/utils",
-	"./lib/nodes/query",
-	"./lib/nodes/dq-protocol",
-	"./lib/compose",
-	"./lib/collider",
-	"./lib/compiler",
-	"./lib/classes",
-	"./lib/utils/interpret",
-	"./lib/emitter",
-	"./lib/errors",
-	"./lib/nodes/rql",
-	"./lib/promise",
-	"./lib/context",
-	"./lib/nodes/nodes",
-	"./lib/utils/logs",
-	"./lib/nodes/deep-load",
-	"./lib/utils/deep-equal",
-	"./lib/ocm",
-	"./lib/nodes/traversal",
-	"./lib/flatten",
-	"./lib/protocol",
-	"./lib/sheet",
-	"./lib/nodes/nodes-composer",
-	"./lib/nodes/nodes-chain",
-	"./lib/restrictions",
-	"./lib/validator"
-	//"./lib/schema"
-], function(require, utils,  query, dq, composer, collider, compiler, classes, interpret, emitter, errors, rql,promise, context, nodes, logs,  deepLoader, deepEqual, ocm, traversal, flattener, protocol, sheets, NodesComposer, NodesChain, restrictions, Validator) {
+		"deep-compiler/index",
+		"deep-compiler/lib/classes",
+		"deep-compiler/lib/restrictions",
+		"deep-protocols/index",
+		"./lib/cache",
+		"./lib/promise",
+		"deep-modes/index",
+		"decompose/index",
+		"./lib/nodes",
+		"deep-nodes/lib/query",
+		"deep-nodes/lib/rql",
+		"deep-nodes/lib/traversal",
+		"deep-nodes/lib/chained-api",
+		"deep-ocm/index",
+		"deep-flatten/index",
+		"deep-sheets/index",
+		"deep-utils/index",
+		"deep-utils/lib/string",
+		"deep-utils/lib/errors",
+		"./lib/validator",
+		"./lib/deepequal",
+		"./lib/emitter",
+		"./lib/logs",
+		"deep-utils/lib/interpret"
+	],
+	function(
+		compiler,
+		Classes,
+		restrictions,
+		protocol,
+		cache,
+		promise,
+		modes,
+		decompose,
+		nodes,
+		Querier,
+		rql,
+		traversal,
+		nodesChainedApi,
+		ocm,
+		flattener,
+		sheeter,
+		utils,
+		stringUtils,
+		errors,
+		Validator,
+		deepEqual,
+		emitter,
+		logger
+	) {
 
-	/*if (typeof deep !== 'undefined') {
-		console.log("***********************************************************************************");
-		console.warn("You trying to load deepjs modules two times (maybe from two differents node_modules (or bower) module)");
-		console.warn("It could be voluntary. If not : you should think it twice. Protocols and context are local to deep instances (by examples).");
-		console.log("***********************************************************************************");
-	}*/
+		function copyTo(what, where) {
+			for (var i in what)
+				where[i] = what[i];
+		}
 
-	var deep = {};
+		var deep = {
+			Classes: Classes,
+			compose: decompose,
+			Querier: Querier,
+			rql: rql,
+			ocm: ocm,
+			flatten: flattener.flatten,
+			sheet: sheeter.sheet,
+			utils: utils,
+			cache: cache,
+			Arguments: decompose.Arguments,
+			errors: errors,
+			query: Querier.query,
+			isNode: (typeof process !== 'undefined' && process.versions && process.versions.node)
+		};
 
-	deep.utils = utils;
+		utils.nodes = nodes;
+		utils.deepEqual = deepEqual;
 
-	deep.transformers = {};
+		copyTo(promise, deep);
+		copyTo(compiler, deep);
+		copyTo(restrictions, deep);
+		copyTo(protocol, deep);
+		copyTo(traversal, deep);
+		copyTo(modes, deep);
+		copyTo(stringUtils, utils);
+		copyTo(emitter, deep);
+		copyTo(logger, deep);
 
-	deep.log = logs.log;
-	deep.debug = logs.debug;
-	deep.warn = logs.warn;
-	deep.error = logs.error;
-	deep.setLogger = logs.setMain;
+		delete deep.setModesIn;
+		//___________________________________________________
+		// deepjs cross module definitions
+		//___________________________________________________
 
-	deep.nodes = NodesChain.start;
-	deep.utils.nodes = nodes;
 
-	/**
-	 * are you on nodejs or not
-	 * @static
-	 * @property isNode
-	 * @type {Boolean}
-	 */
-	deep.isNode = (typeof process !== 'undefined' && process.versions && process.versions.node);
-
-	/**
-	 * where to place YOUR globals (deep does'nt have any globals)
-	 * @static
-	 * @property globals
-	 */
-	deep.globals = {};
-
-	/**
-	 * where to place YOUR globals headers to set on each store call (deep does'nt have any globals)
-	 * @static
-	 * @property globals
-	 */
-	deep.globalHaders = {};
-
-	//require("./lib/utils")(deep);
-	deep.errors = errors;
-	deep.rql = rql;
-	deep.collider = collider;
-	for (var i in traversal)
-		deep[i] = traversal[i];
-
-	/**
-	 * final namespace for deepjs/query
-	 * @static
-	 * @property Querier
-	 * @type {DeepQuery}
-	 */
-	var Querier = deep.Querier = query;
-	/**
-	 * perform a (synched) query query
-	 * @example
-	 *
-	 * deep.query({ hello:"world", test:1 }, "/*?=world"); // will return ["world"]
-	 *
-	 * @method query
-	 * @param {Object} object any object to query
-	 * @param {String} query the query
-	 * @static
-	 * @return {Array} the result aray
-	 */
-	deep.query = Querier.query;
-
-	deep.ui = {};
-
-	for (var i in compiler)
-		deep[i] = compiler[i];
-	for (var i in classes)
-		deep[i] = classes[i];
-
-	deep.compose = composer.compose;
-	deep.Composition = composer.Composition;
-	deep.Composer = composer.Composer;
-	deep.compose.Classes = deep.Classes;		// for backward compatibility
-	deep.compose.ClassFactory = deep.ClassFactory;	// for backward compatibility
-	deep.Arguments = deep.compose.Arguments;
-
-	//deep.extendsChilds = flatten.extendsChilds;
-	//deep.extendsBackgrounds = flatten.extendsBackgrounds;
-	//utils.flatten = deep.flatten = flatten.flatten;
-
-	deep.protocol = protocol.protocol;
-	deep.protocols = protocol.protocols;
-	deep.get = protocol.get;
-	deep.getAll = protocol.getAll;
-
-	deep.ocm = ocm;
-	deep.Modes = ocm.Modes;
-	deep.modes = ocm.modes;
-	deep.currentModes = ocm.currentModes;
-	deep.matchModes = ocm.matchModes;
-
-	deep.Event = emitter.Event;
-	deep.Emitter = emitter.Emitter;
-
-	for (var i in sheets)
-		deep[i] = sheets[i];
-
-	for (var i in promise)
-		deep[i] = promise[i];
-
-	deep.NodesChain = NodesChain;
-	deep.delay = function(ms) {
-		return deep.nodes({}).delay(ms);
-	};
-
-	for (var i in restrictions)
-		deep[i] = restrictions[i];
-
-	//_________________________________________________________________________________
-
-	deep.contextualise = context.contextualise;
-	deep.fromContext = context.fromContext;
-	deep.context = context.context;
-
-	deep.flatten = flattener.flatten;
-	deep.extendsGrounds = flattener.extendsGrounds;
-
-	/**
-	 * the deep schema validator
-	 * @static
-	 * @property Validator
-	 */
-	deep.Validator = Validator;
-	/**
-	 * perform a schema validation
-	 * @static
-	 * @method validate
-	 * @param object the object to validate
-	 * @param schema the schema
-	 * @return {deep.validate.Report} the validation report
-	 */
-	deep.validate = Validator.validate;
-	/**
-	 * perform a schema partial validation (only on certain field)
-	 * @static
-	 * @method partialValidation
-	 * @param object the object to validate
-	 * @param fields the array of properties paths to validate
-	 * @param schema the schema
-	 * @return {deep.validate.Report} the validation report
-	 */
-	deep.partialValidation = Validator.partialValidation;
+		deep.context = function(name, value) {
+			if (!name)
+				return deep.Promise.context;
+			if (!value)
+				return deep.Promise.context[name];
+			return deep.Promise.context[name] = value;
+		};
+		deep.contextualise = function(arg) {
+			return new deep.Promise().contextualise(arg).fromContext().resolve();
+		};
 
 
 
-	// deep chain's mode management
-	deep.modes = function(name, modes) { // local roles (i.e. in chain's context)
-		return deep.nodes({}).modes(name, modes);
-	};
+		/**
+		 * equal test strict equality on success value against provided object
+		 * If equal, forward success (it's transparent).
+		 * If not equal, inject 412 error with report
+		 */
+		nodes.equal = function(s, needed) {
+			var tmp = s;
+			if (tmp && (tmp._deep_query_node_ || tmp._deep_array_))
+				tmp = nodes.val(s);
+			if (deepEqual(tmp, needed))
+				return s;
+			return deep.errors.PreconditionFail("deep.equal failed ! ", {
+				equal: false,
+				value: tmp,
+				needed: needed
+			});
+		};
 
-	deep.coreUnits = deep.coreUnits || [];
-	deep.coreUnits.push(
-		"js::deepjs/units/equals",
-		"js::deepjs/units/queries",
-		"js::deepjs/units/collisions",
-		"js::deepjs/units/colliders",
-		"js::deepjs/units/compositions",
-		"js::deepjs/units/classes",
-		"js::deepjs/units/protocols",
-		"js::deepjs/units/flatten",
-		"js::deepjs/units/promises",
-		"js::deepjs/units/chain",
-		"js::deepjs/units/replace",
-		"js::deepjs/units/remove",
-		"js::deepjs/units/interpret",
-		//"js::deepjs/units/relations",
-		"js::deepjs/units/context",
-		"js::deepjs/units/ocm",
-		"js::deepjs/units/sheets",
-		"js::deepjs/units/shared",
-		"js::deepjs/units/parcours",
-		//"js::deepjs/units/deepload",
-		"js::deepjs/units/utils",
-		"js::deepjs/units/custom-chain"
-	);
-	
-	//_________________________________________________________________________________
-	return deep;
-});
+		nodesChainedApi.equal = function(obj) {
+			return this.done(function(s) {
+				return nodes.equal(s, needed);
+			});
+		};
+
+		deep.Promise._up({
+			equal: nodesChainedApi.equal,
+			modes: function(arg, arg2) {
+				var self = this;
+				return this.done(function(s, e) {
+					if (!self._contextualised)
+						deep.contextualisePromise(self);
+					self._context.modes = self._context.modes || {};
+					modes.setModesIn(self._context.modes, arg, arg2);
+					return s;
+				});
+			}
+		});
+
+		deep.modes = function(arg, arg2) {
+			return new deep.Promise().resolve(undefined).modes(arg, arg2);
+		};
+
+		// ____________________ SHEETS
+
+		ocm.applySheet = deep.sheet;
+		Classes.applySheet = deep.sheet;
+
+		sheeter.methods = {
+			up: function(catched, toApply, options) {
+				return protocol.getAll(toApply)
+					.done(function(objects) {
+						return nodes.up.apply(nodes, [catched].concat(objects));
+					});
+			},
+			bottom: function(catched, toApply, options) {
+				return protocol.getAll(toApply)
+					.done(function(objects) {
+						return nodes.bottom.apply(nodes, [catched].concat(objects));
+					});
+			},
+			map: function(catched, toApply, options) {
+				return nodes.map(catched, toApply);
+			}
+		};
+
+
+		//______________________ VALIDATOR
+		deep.Validator = Validator;
+		deep.validate = Validator.validate;
+		deep.partialValidation = Validator.partialValidation;
+
+		return deep;
+	});
