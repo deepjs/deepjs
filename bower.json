@@ -11,7 +11,7 @@
         "amd",
         "node"
     ],
-    "keywords": ["util", "promise", "asynch", "AOP", "query", "composition", "server", "client", "browser", "restful", "OCM"],
+    "keywords": ["utils", "promise", "asynch", "AOP", "query", "composition", "isomorphic", "OCM"],
     "license": "LGPL 3.0",
     "ignore": [
         "**/.*",
@@ -32,5 +32,5 @@
         "deep-protocols": ">=1.0.0",
         "deep-sheets": ">=1.0.0",
         "deep-utils": ">=1.0.0"
-    },
+    }
 }

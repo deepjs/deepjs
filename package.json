@@ -4,19 +4,7 @@
     "author": "Gilles Coomans <gilles.coomans@gmail.com>",
     "description": "Atomic tools for better programming",
     "homepage": "http://www.deepjs.org",
-    "keywords": [
-        "util",
-        "promise",
-        "asynch",
-        "AOP",
-        "query",
-        "composition",
-        "server",
-        "client",
-        "browser",
-        "restful",
-        "OCM"
-    ],
+    "keywords": ["utils", "promise", "asynch", "AOP", "query", "composition", "isomorphic", "OCM"],
     "contributors": [
         "Philippe Delabye <phil@chemicalrules.net>"
     ],
