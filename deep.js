@@ -72,7 +72,8 @@ define([
 			Arguments: decompose.Arguments,
 			errors: errors,
 			query: Querier.query,
-			isNode: (typeof process !== 'undefined' && process.versions && process.versions.node)
+			isNode: (typeof process !== 'undefined' && process.versions && process.versions.node),
+			globals: {}
 		};
 
 		utils.nodes = nodes;
