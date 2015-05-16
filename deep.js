@@ -167,9 +167,6 @@ define([
 					.done(function(objects) {
 						return nodes.bottom.apply(nodes, [catched].concat(objects));
 					});
-			},
-			map: function(catched, toApply, options) {
-				return nodes.map(catched, toApply);
 			}
 		};
 
@@ -181,3 +178,4 @@ define([
 
 		return deep;
 	});
+
