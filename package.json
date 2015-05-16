@@ -43,7 +43,7 @@
         "deep-promise": ">=1.0.0",
         "deep-protocols": ">=1.0.0",
         "deep-sheets": ">=1.0.0",
-        "deep-utils": ">=1.0.0",
+        "deep-utils": ">=1.0.0"
     },
     "main": "./deep.js",
     "mappings": {},
