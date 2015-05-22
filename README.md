@@ -1,20 +1,11 @@
 #deepjs
 
-<b>deepjs core</b> (this lib) provides a set of quite atomic tools for better programming.
-
-Alone, deepjs core library does not provides anything but nice, fast and lightweight tools that allow you to develop your OWN application faster.
+<b>deepjs core</b> (this lib) gathers a bunch of atomic and generic tools for better programming.
+Each module could be used independently or together.
 
 Above all, it will help you in <b>design</b>, <b>architecture</b> and <b>concurrent run-time management</b> of your OWN app.
 
 Based on Layered and Chained Programmation approach, it provides, uses and mixes : 
-
-* Layered Aspect Oriented Programmation
-* Query Based Programmation including Code Sheet
-* Object Capability Model (or Management)
-* Full promised and chained asynch management
-* Homogeneous HTTP/Rest ressources management
-* Modularisation by Protocol approach
-* Concurrent context management
 
 It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous (isomorphic) between server and browser sides.
 
@@ -24,7 +15,6 @@ Real huge thanks, amoung others, to [Kris Zyp](https://github.com/kriszyp) and a
 Thanks also a lot to his bunch of articles on Thin-Server, No-SQL, mVC, etc. and all those realy smart architecural considerations that lead us trough our research...
 
 deepjs : made with love. 
-
 
 
 ## Nodejs simple example
@@ -106,7 +96,7 @@ http://127.0.0.1:1337/?count=lt=2
 	.bottom(land)
 	.up(orchard,kitchenGarden)
 	//Query based object modelisation
-	.query("/plants/*").up({
+	.find("/plants/*").up({
 		size : 0,
 		grow : function () {
 			this.size += this.growSpeed;
@@ -124,14 +114,24 @@ http://127.0.0.1:1337/?count=lt=2
 	deep.nodes(myOwnLand)
 	.query("/plants/*")
 	.run("grow")
-	.query("/plants/*?size=gt=5")
+	.find("/plants/*?size=gt=5")
 	.run("prune",[2]);
 
 	console.log("myOwnLand is : ", myOwnLand);
 
 ```
 
-See [tutorials](./DOCS/tutorials.md) page for details. (warning : documentation partially deprecated. offical website is on the way...;))  
+## Licence
+
+The [MIT](http://opensource.org/licenses/MIT) License
+
+Copyright (c) 2015 Gilles Coomans <gilles.coomans@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 
