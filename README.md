@@ -7,7 +7,7 @@ Above all, it will help you in <b>design</b>, <b>architecture</b> and <b>concurr
 
 Based on Layered and Chained Programmation approach, it provides, uses and mixes : 
 
-It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutly homogeneous (isomorphic) between server and browser sides.
+It works both server side and browser side. Its aim is to be totaly unobstrusive, ergonomic as possible and usable with any other js lib/framework. It wants also to be absolutely homogeneous (isomorphic) between server and browser sides.
 
 As jquery (that is highly unobstrusive and ergonomic) works on standard DOM objects, deepjs works with any standard js objects and functions, and has a minimal footprint.
 
